@@ -734,7 +734,10 @@ Item {
 
             // Skip device selection if offline (no network = no device list available)
             // Start with language selection if requested, otherwise device selection if online, or OS selection if offline
-            initialItem: root.showLanguageSelection ? languageSelectionStep : (root.hasNetworkConnectivity ? deviceSelectionStep : osSelectionStep)
+            // Keep the initial page aligned with currentStep. Device metadata
+            // may load asynchronously, so offline/unknown connectivity must
+            // not cause the OS page to appear under the Device tab.
+            initialItem: root.showLanguageSelection ? languageSelectionStep : deviceSelectionStep
 
             // Smooth transitions between steps
             pushEnter: Transition {
