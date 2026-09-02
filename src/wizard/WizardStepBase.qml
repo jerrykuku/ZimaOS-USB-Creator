@@ -134,14 +134,14 @@ FocusScope {
             Layout.maximumHeight: Style.contentMaxHeight
             color: Style.listViewRowBackgroundColor
             border.color: Style.popupBorderColor
-            border.width: 1
-            radius: 14
+            border.width: Style.borderWidth
+            radius: Style.contentRadius
 
             // Content area (no Flickable to prevent input interception)
             Item {
                 id: contentArea
                 anchors.fill: parent
-                anchors.margins: Style.stepContentMargins
+                anchors.margins: Style.contentInset
             }
         }
         

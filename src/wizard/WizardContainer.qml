@@ -402,7 +402,7 @@ Item {
         anchors.leftMargin: 0
         anchors.rightMargin: 0
         // Single source of truth for the gap between the sidebar and content.
-        spacing: 16
+        spacing: Style.panelGap
 
         // Sidebar
         Rectangle {
@@ -413,8 +413,8 @@ Item {
             Layout.fillHeight: true
             color: Style.sidebarBackgroundColour
             border.color: Style.sidebarBorderColour
-            border.width: 1
-            radius: 8
+            border.width: Style.borderWidth
+            radius: Style.panelRadius
 
             // Soft card shadow matching the settings-style navigation panel.
             Rectangle {
@@ -422,7 +422,7 @@ Item {
                 anchors.margins: -1
                 anchors.topMargin: 4
                 color: Qt.rgba(0, 0, 0, 0.05)
-                radius: 8
+                radius: Style.panelRadius
                 z: -1
             }
 
@@ -701,13 +701,13 @@ Item {
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 8
-                    width: 32
-                    height: 32
+                    width: Style.iconButtonSize
+                    height: Style.iconButtonSize
                     padding: 4
                     activeFocusOnTab: true
                     background: Rectangle {
                         color: optionsButton.activeFocus ? Style.buttonFocusedBackgroundColor : (optionsButton.hovered ? Style.buttonHoveredBackgroundColor : Style.transparent)
-                        radius: 8
+                        radius: Style.panelRadius
                         border.color: Style.transparent
                         border.width: 0
                         antialiasing: true
@@ -719,8 +719,8 @@ Item {
                         smooth: true
                         antialiasing: true
                         anchors.centerIn: parent
-                        width: 16
-                        height: 16
+                        width: Style.iconSmallSize
+                        height: Style.iconSmallSize
                     }
                     Accessible.role: Accessible.Button
                     Accessible.name: qsTr("App Options")

@@ -31,7 +31,7 @@ ApplicationWindow {
         id: windowSurface
         anchors.fill: parent
         color: Style.mainBackgroundColor
-        radius: 14
+        radius: Style.contentRadius
         clip: true
         z: 0
     }
@@ -74,9 +74,9 @@ ApplicationWindow {
         anchors.top: windowSurface.top
         anchors.left: windowSurface.left
         anchors.right: windowSurface.right
-        height: 26
+        height: Style.titleBarHeight
         color: Style.mainBackgroundColor
-        radius: 14
+        radius: Style.titleBarRadius
         clip: true
         z: 2000
 
@@ -87,21 +87,21 @@ ApplicationWindow {
 
         Row {
             anchors.left: parent.left
-            anchors.leftMargin: 12
+            anchors.leftMargin: Style.cardInset
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 8
+            spacing: Style.contentInset
 
             Repeater {
                 model: ["#ff5f57", "#febc2e", "#28c840"]
                 delegate: Rectangle {
                     required property string modelData
                     required property int index
-                    width: 12
-                    height: 12
-                    radius: 6
+                    width: Style.titleBarControlSize
+                    height: Style.titleBarControlSize
+                    radius: Style.titleBarControlSize / 2
                     color: modelData
                     border.color: Qt.darker(modelData, 1.08)
-                    border.width: 1
+                    border.width: Style.borderWidth
 
                     property bool hovered: false
 
@@ -202,12 +202,12 @@ ApplicationWindow {
         anchors.right: windowSurface.right
         anchors.bottom: windowSurface.bottom
         anchors.top: customTitleBar.bottom
-        anchors.leftMargin: 8
-        anchors.rightMargin: 8
-        anchors.bottomMargin: 8
-        anchors.topMargin: 8
+        anchors.leftMargin: Style.pageMargin
+        anchors.rightMargin: Style.pageMargin
+        anchors.bottomMargin: Style.pageMargin
+        anchors.topMargin: Style.pageMargin
         color: Style.mainBackgroundColor
-        radius: 12
+        radius: Style.contentRadius
         clip: true
 
         WizardContainer {

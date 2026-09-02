@@ -162,6 +162,19 @@ Item {
     readonly property int listItemPadding: 12
     readonly property int cardPadding: 16
     readonly property int popupMargin: 16
+    // Shared layout tokens for the main application surface.
+    readonly property int pageMargin: 8
+    readonly property int panelGap: 16
+    readonly property int panelRadius: 8
+    readonly property int contentRadius: 14
+    readonly property int borderWidth: 1
+    readonly property int titleBarHeight: 26
+    readonly property int titleBarRadius: 14
+    readonly property int titleBarControlSize: 12
+    readonly property int iconButtonSize: 32
+    readonly property int iconSmallSize: 16
+    readonly property int contentInset: 8
+    readonly property int cardInset: 12
     readonly property int scrollBarWidth: 10
     readonly property int sidebarWidth: 180
     readonly property int sidebarMinWidth: 150
