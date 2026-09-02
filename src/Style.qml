@@ -6,9 +6,25 @@
 pragma Singleton
 
 import QtQuick
+import RpiImager
 
 Item {
     id: root
+
+    // === TEXT SCALING ===
+    // Platform text-scaling factor (1.0 = default, 1.5 = 150%, etc.)
+    // Reflects OS-level accessibility preferences (Windows "Make text bigger",
+    // GNOME text-scaling-factor, etc.) that Qt QML does not honour automatically.
+    // DPI normalization is handled by Qt via font.pointSize + screen logical DPI.
+    readonly property real textScale: PlatformHelper.textScaleFactor
+
+    // Font-specific scale: DPI correction (72/96 on Windows/Linux, 1.0 on macOS)
+    // multiplied by the accessibility text scale. Applied only to font sizes so
+    // that layout, spacing, and button sizes are unaffected.
+    readonly property real fontScale: PlatformHelper.fontDpiCorrection * textScale
+
+    // Scale a base value by the text scaling factor, rounding to nearest int.
+    function scaled(base) { return Math.round(base * textScale) }
 
     // === COLORS ===
     readonly property color mainBackgroundColor: "#FAFAFA"
@@ -95,24 +111,25 @@ Item {
     readonly property string fontFamilyLight: Qt.platform.os === "windows" ? "Microsoft YaHei UI" : robotoLight.name
     readonly property string fontFamilyBold: Qt.platform.os === "windows" ? "Microsoft YaHei UI" : robotoBold.name
 
-    // Font sizes
+    // Font sizes (point sizes — DPI-aware, scaled by Qt based on screen logical DPI)
+    // Additionally scaled by the OS accessibility text-scaling factor.
     // Base scale (single source of truth)
-    readonly property int fontSizeXs: 12
-    readonly property int fontSizeSm: 14
-    readonly property int fontSizeMd: 16
-    readonly property int fontSizeXl: 24
+    readonly property real fontSizeXs: Math.round(12 * fontScale)
+    readonly property real fontSizeSm: Math.round(14 * fontScale)
+    readonly property real fontSizeMd: Math.round(16 * fontScale)
+    readonly property real fontSizeXl: Math.round(24 * fontScale)
 
     // Role tokens mapped to base scale
-    readonly property int fontSizeTitle: fontSizeXl
-    readonly property int fontSizeHeading: fontSizeMd
-    readonly property int fontSizeLargeHeading: fontSizeMd
-    readonly property int fontSizeFormLabel: fontSizeSm
-    readonly property int fontSizeSubtitle: fontSizeSm
-    readonly property int fontSizeDescription: fontSizeXs
-    readonly property int fontSizeInput: fontSizeXs
-    readonly property int fontSizeCaption: fontSizeXs
-    readonly property int fontSizeSmall: fontSizeXs
-    readonly property int fontSizeSidebarItem: fontSizeSm
+    readonly property real fontSizeTitle: fontSizeXl
+    readonly property real fontSizeHeading: fontSizeMd
+    readonly property real fontSizeLargeHeading: fontSizeMd
+    readonly property real fontSizeFormLabel: fontSizeSm
+    readonly property real fontSizeSubtitle: fontSizeSm
+    readonly property real fontSizeDescription: fontSizeXs
+    readonly property real fontSizeInput: fontSizeSm
+    readonly property real fontSizeCaption: fontSizeXs
+    readonly property real fontSizeSmall: fontSizeXs
+    readonly property real fontSizeSidebarItem: fontSizeSm
 
     // === SPACING ===
     readonly property int spacingXXSmall: 2
@@ -154,11 +171,11 @@ Item {
     readonly property int sidebarItemHeight: 40
     readonly property int sidebarSubItemHeight: sidebarItemHeight - 12
 
-    // === LAYOUT ===
-    readonly property int formColumnSpacing: 20
-    readonly property int formRowSpacing: 15
-    readonly property int stepContentMargins: 24
-    readonly property int stepContentSpacing: 16
+    // === LAYOUT (scaled by text scale factor) ===
+    readonly property int formColumnSpacing: scaled(20)
+    readonly property int formRowSpacing: scaled(15)
+    readonly property int stepContentMargins: scaled(24)
+    readonly property int stepContentSpacing: scaled(16)
 
     // Font loaders
     FontLoader { id: robotoRegular; source: "fonts/Roboto-Regular.ttf" }

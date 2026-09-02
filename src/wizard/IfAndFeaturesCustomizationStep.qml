@@ -3,11 +3,11 @@
  * Copyright (C) 2025 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import QtQuick.Dialogs
-import QtCore
 import "../qmlcomponents"
 import "components"
 
@@ -15,9 +15,6 @@ import RpiImager
 
 WizardStepBase {
     id: root
-
-    required property ImageWriter imageWriter
-    required property var wizardContainer
 
     // Capability flags for each UI option
     property bool supportsI2c: false
@@ -39,29 +36,48 @@ WizardStepBase {
 
     function updateCaps() {
         // Check individual capabilities for each interface/feature
-        supportsI2c = imageWriter.checkHWAndSWCapability("i2c")
-        supportsSpi = imageWriter.checkHWAndSWCapability("spi")
-        supports1Wire = imageWriter.checkHWAndSWCapability("onewire")
-        supportsSerial = imageWriter.checkHWAndSWCapability("serial")
-        supportsSerialConsoleOnly = imageWriter.checkHWCapability("serial_on_console_only")
-        supportsUsbOtg = imageWriter.checkHWAndSWCapability("usb_otg")
+        supportsI2c = ImageWriterSingleton.checkHWAndSWCapability("i2c")
+        supportsSpi = ImageWriterSingleton.checkHWAndSWCapability("spi")
+        supports1Wire = ImageWriterSingleton.checkHWAndSWCapability("onewire")
+        supportsSerial = ImageWriterSingleton.checkHWAndSWCapability("serial")
+        supportsSerialConsoleOnly = ImageWriterSingleton.checkHWCapability("serial_on_console_only")
+        supportsUsbOtg = ImageWriterSingleton.checkHWAndSWCapability("usb_otg")
     }
 
     content: [
         ScrollView {
             id: ifAndFeatScroll
-            anchors.fill: parent
+            // Size explicitly instead of anchors.fill: an anchored height is not an
+            // "explicit" height as far as QQuickItem is concerned, so the holder's
+            // implicitHeight below would propagate up through ScrollView's implicit
+            // size, transiently resize this view and feed back into availableHeight
+            // — a binding loop.
+            width: parent.width
+            height: parent.height
             clip: true
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
             rightPadding: 20
+
+            // Holder that is at least as tall as the viewport so the content can be
+            // vertically centred when it fits, and scroll when it doesn't. Anchoring
+            // verticalCenter directly inside the ScrollView's flickable would be a
+            // no-op (the flickable content item is sized to the content itself).
+            Item {
+                id: ifAndFeatContentHolder
+                width: ifAndFeatScroll.availableWidth
+                implicitWidth: ifAndFeatScroll.availableWidth
+                implicitHeight: Math.max(ifAndFeatScroll.availableHeight, scrollContent.implicitHeight)
+
             ColumnLayout {
                 id: scrollContent
-                width: ifAndFeatScroll.availableWidth
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
                 spacing: Style.stepContentSpacing
 
                 // === Interfaces ===
                 WizardSectionContainer {
-                    visible: supportsI2c || supportsSpi || supports1Wire || supportsSerial
+                    visible: root.supportsI2c || root.supportsSpi || root.supports1Wire || root.supportsSerial
 
                     ColumnLayout {
                         Layout.fillWidth: true
@@ -71,7 +87,7 @@ WizardStepBase {
                         Label {
                             text: qsTr("Interfaces")
                             font.bold: true
-                            font.pixelSize: Style.fontSizeTitle
+                            font.pointSize: Style.fontSizeTitle
                             Layout.alignment: Qt.AlignLeft
                         }
 
@@ -82,7 +98,7 @@ WizardStepBase {
                             text: qsTr("Enable I2C")
                             accessibleDescription: qsTr("Enable the I2C (Inter-Integrated Circuit) interface for connecting sensors and other low-speed peripherals")
                             checked: false
-                            visible: supportsI2c
+                            visible: root.supportsI2c
                         }
 
                         ImOptionPill {
@@ -91,7 +107,7 @@ WizardStepBase {
                             text: qsTr("Enable SPI")
                             accessibleDescription: qsTr("Enable the SPI (Serial Peripheral Interface) for high-speed communication with displays and sensors")
                             checked: false
-                            visible: supportsSpi
+                            visible: root.supportsSpi
                         }
 
                         ImOptionPill {
@@ -100,13 +116,13 @@ WizardStepBase {
                             text: qsTr("Enable 1-Wire")
                             accessibleDescription: qsTr("Enable the 1-Wire interface for connecting temperature sensors and other Dallas/Maxim devices")
                             checked: false
-                            visible: supports1Wire
+                            visible: root.supports1Wire
                         }
 
                         RowLayout {
                             Layout.fillWidth: true
                             spacing: Style.spacingMedium
-                            visible: supportsSerial
+                            visible: root.supportsSerial
 
                             WizardFormLabel {
                                 id: labelSerial
@@ -128,7 +144,7 @@ WizardStepBase {
                                 editable: false
                                 selectTextByMouse: false
                                 activeFocusOnTab: true
-                                font.pixelSize: Style.fontSizeInput
+                                font.pointSize: Style.fontSizeInput
                                 Layout.alignment: Qt.AlignRight
                             }
                         }
@@ -137,7 +153,7 @@ WizardStepBase {
 
                 // === Features ===
                 WizardSectionContainer {
-                    visible: supportsUsbOtg
+                    visible: root.supportsUsbOtg
 
                     ColumnLayout {
                         Layout.fillWidth: true
@@ -147,7 +163,7 @@ WizardStepBase {
                         Label {
                             text: qsTr("Features")
                             font.bold: true
-                            font.pixelSize: Style.fontSizeTitle
+                            font.pointSize: Style.fontSizeTitle
                             Layout.alignment: Qt.AlignLeft
                         }
 
@@ -159,8 +175,8 @@ WizardStepBase {
                                 Layout.fillWidth: true
                                 text: qsTr("Enable USB Gadget Mode")
                                 accessibleDescription: qsTr("Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage")
-                                helpLabel: imageWriter.isEmbeddedMode() ? "" : qsTr("Learn more about USB Gadget Mode")
-                                helpUrl: imageWriter.isEmbeddedMode() ? "" : "https://github.com/raspberrypi/rpi-usb-gadget?tab=readme-ov-file"
+                                helpLabel: ImageWriterSingleton.isEmbeddedMode() ? "" : qsTr("Learn more about USB Gadget Mode")
+                                helpUrl: ImageWriterSingleton.isEmbeddedMode() ? "" : "https://github.com/raspberrypi/rpi-usb-gadget?tab=readme-ov-file"
                                 checked: false
                             }
 
@@ -168,6 +184,7 @@ WizardStepBase {
                         }
                     }
                 }
+            }
             }
         }
     ]
@@ -187,7 +204,7 @@ WizardStepBase {
         }
         root.isConfirmed = false
 
-        // Defer capability check to ensure imageWriter capabilities are fully available
+        // Defer capability check to ensure ImageWriterSingleton capabilities are fully available
         // and QML bindings are established
         Qt.callLater(function() {
             updateCaps()
@@ -293,12 +310,13 @@ WizardStepBase {
         wizardContainer.customizationSettings.enableSerial = serialVal
         wizardContainer.customizationSettings.enableUsbGadget = usbGadgetVal
 
-        // Persist for future sessions
-        imageWriter.setPersistedCustomisationSetting("enableI2C", i2cVal)
-        imageWriter.setPersistedCustomisationSetting("enableSPI", spiVal)
-        imageWriter.setPersistedCustomisationSetting("enable1Wire", oneWireVal)
-        imageWriter.setPersistedCustomisationSetting("enableSerial", serialVal)
-        imageWriter.setPersistedCustomisationSetting("enableUsbGadget", usbGadgetVal)
+        // These settings depend on per-OS capabilities so must NOT be persisted.
+        // Remove any stale values left by older versions.
+        ImageWriterSingleton.removePersistedCustomisationSetting("enableI2C")
+        ImageWriterSingleton.removePersistedCustomisationSetting("enableSPI")
+        ImageWriterSingleton.removePersistedCustomisationSetting("enable1Wire")
+        ImageWriterSingleton.removePersistedCustomisationSetting("enableSerial")
+        ImageWriterSingleton.removePersistedCustomisationSetting("enableUsbGadget")
 
         // Mirror into wizardContainer
         wizardContainer.ifI2cEnabled     = i2cVal
@@ -317,8 +335,7 @@ WizardStepBase {
     // Confirmation dialog
     BaseDialog {
         id: confirmDialog
-        imageWriter: root.imageWriter
-        parent: wizardContainer && wizardContainer.overlayRootRef ? wizardContainer.overlayRootRef : undefined
+        parent: root.wizardContainer && root.wizardContainer.overlayRootRef ? root.wizardContainer.overlayRootRef : undefined
         anchors.centerIn: parent
         visible: false
         title: qsTr("USB Gadget Mode Warning")
@@ -350,7 +367,7 @@ WizardStepBase {
         // Dialog content
         Text {
             text: qsTr("USB Gadget Mode can change how your device behaves and may impact connectivity and host interaction.")
-            font.pixelSize: Style.fontSizeHeading
+            font.pointSize: Style.fontSizeHeading
             font.family: Style.fontFamilyBold
             font.bold: true
             color: Style.formLabelErrorColor
@@ -361,15 +378,15 @@ WizardStepBase {
         }
 
         Text {
-            textFormat: Text.RichText
+            textFormat: Text.StyledText
             text: qsTr("Please review the <a href='%1'>documentation</a> before proceeding.").arg(chkEnableUsbGadget.helpUrl)
-            font.pixelSize: Style.fontSizeFormLabel
+            font.pointSize: Style.fontSizeFormLabel
             font.family: Style.fontFamilyBold
             color: Style.formLabelColor
             wrapMode: Text.WordWrap
             onLinkActivated: function(link) {
-                if (imageWriter) {
-                    imageWriter.openUrl(link)
+                if (ImageWriterSingleton) {
+                    ImageWriterSingleton.openUrl(link)
                 } else {
                     Qt.openUrlExternally(link)
                 }
@@ -381,7 +398,7 @@ WizardStepBase {
 
         Text {
             text: qsTr("Only continue if you are sure you know what you are doing.")
-            font.pixelSize: Style.fontSizeFormLabel
+            font.pointSize: Style.fontSizeFormLabel
             font.family: Style.fontFamilyBold
             color: Style.formLabelErrorColor
             wrapMode: Text.WordWrap
@@ -413,7 +430,7 @@ WizardStepBase {
                     confirmDialog.close()
                     root.isConfirmed = true
                     // Advance to next step
-                    wizardContainer.nextStep()
+                    root.wizardContainer.nextStep()
                 }
             }
         }
@@ -451,20 +468,20 @@ WizardStepBase {
 
     Connections {
         // Recompute caps if the selected device changes elsewhere
-        target: wizardContainer
+        target: root.wizardContainer
         function onSelectedDeviceNameChanged() {
             // Defer capability check to ensure capabilities are fully propagated
             Qt.callLater(function() {
                 updateCaps()
                 
                 // Update availability flag for sidebar navigation
-                var hasAnyCapabilities = supportsI2c || supportsSpi || supports1Wire || supportsSerial || supportsUsbOtg
-                wizardContainer.ifAndFeaturesAvailable = hasAnyCapabilities
+                var hasAnyCapabilities = root.supportsI2c || root.supportsSpi || root.supports1Wire || root.supportsSerial || root.supportsUsbOtg
+                root.wizardContainer.ifAndFeaturesAvailable = hasAnyCapabilities
                 
                 // Rebuild focus order based on new capabilities
                 root.rebuildFocusOrder()
                 // If Console is no longer supported and was selected, fall back
-                if (!supportsSerialConsoleOnly && comboSerial.editText === qsTr("Console"))
+                if (!root.supportsSerialConsoleOnly && comboSerial.editText === qsTr("Console"))
                     comboSerial.currentIndex = 0;
             })
         }

@@ -1,8 +1,6 @@
 androiddeployqt
 appstore-compliant
 assistant
-batch_test_support
-bluetooth
 calendarwidget
 completer
 concatenatetablesproxymodel
@@ -10,60 +8,35 @@ designer
 dial
 distancefieldgenerator
 emojisegmenter
-example-hwr
 gestures
 graphicsframecapture
+gif
 gssapi
 hijricalendar
 identityproxymodel
 islamiccivilcalendar
-itemmodeltester
 jalalicalendar
 keysequenceedit
 lcdnumber
 localserver
 macdeployqt
 movie
-nfc
 pdf
 pixeltool
 poll-exit-on-error
-printdialog
-printer
-printpreviewdialog
-printpreviewwidget
 printsupport
 qdoc
 qev
-qt3d-animation
-qt3d-extras
-qt3d-input
-qt3d-logic
-qt3d-opengl-renderer
-qt3d-render
-qt3d-rhi-renderer
 qtattributionsscanner
-qtpdf-build
-qtpdf-quick-build
-qtpdf-widgets-build
 qtplugininfo
-qtprotobufgen
 rubberband
 sanitize_fuzzer_no_link
-scxml
-scxml-ecmascriptdatamodel
 sizegrip
 socks5
 sql
-sqlmodel
-statemachine
-statemachine-qml
-systemsemaphore
 systemtrayicon
 tabletevent
 testlib
-testlib_selfcover
-texthtmlparser
 textmarkdownreader
 textmarkdownwriter
 textodfwriter
@@ -73,13 +46,16 @@ undocommand
 undogroup
 undostack
 undoview
-valgrind
 wasm-exceptions
 wasm-jspi
 wasm-simd128
-wayland-compositor-quick
-webengine-developer-build
-webengine-jumbo-build
+wayland-server
 windeployqt
-sql-sqlite
-gif
+
+# ICU: Qt only uses it for extended QStringConverter codecs, QCollator
+# collation and localised timezone display names. rpi-imager uses none of
+# these (UTF-8 only, no collation, timezones handled as IANA ID strings), and
+# Qt has non-ICU fallbacks for all three. Excluding it drops ~35 MB of
+# libicudata/libicui18n/libicuuc per package and removes the per-release
+# soname pin (libicu72 on bookworm, libicu76 on trixie).
+icu

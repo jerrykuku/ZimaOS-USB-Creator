@@ -48,6 +48,34 @@
         <translation>Modifier</translation>
     </message>
     <message>
+        <source>Saved Customisation</source>
+        <translation>Personnalisation enregistrée</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Effacer</translation>
+    </message>
+    <message>
+        <source>This will remove all saved OS customisation settings such as hostname, WiFi, and user credentials.</source>
+        <translation>Cette action supprimera tous les paramètres de personnalisation du système d&apos;exploitation enregistrés, tels que le nom d&apos;hôte, le Wi-Fi et les identifiants utilisateur.</translation>
+    </message>
+    <message>
+        <source>Remove all saved OS customisation settings such as hostname, WiFi, and user credentials</source>
+        <translation>Supprimer tous les paramètres de personnalisation du système d&apos;exploitation enregistrés, tels que le nom d&apos;hôte, le Wi-Fi et les identifiants utilisateur.</translation>
+    </message>
+    <message>
+        <source>Clear saved customisation?</source>
+        <translation>Effacer la personnalisation enregistrée&#xa0;?</translation>
+    </message>
+    <message>
+        <source>Keep saved customisation settings and return to the options dialog</source>
+        <translation>Conserver les paramètres de personnalisation enregistrés et revenir à la fenêtre des options</translation>
+    </message>
+    <message>
+        <source>Remove all saved OS customisation settings permanently</source>
+        <translation>Supprimer de manière permanente tous les paramètres de personnalisation du système d&apos;exploitation enregistrés</translation>
+    </message>
+    <message>
         <source>Close the options dialog without saving any changes</source>
         <translation>Fermer la fenêtre des options sans rien enregistrer</translation>
     </message>
@@ -105,7 +133,7 @@
     </message>
     <message>
         <source>PEM Files (*.pem);;All Files (*)</source>
-        <translation>Fichiers PEM Files (*.pem);;Tous les fichiers (*)</translation>
+        <translation>Fichiers PEM (*.pem);;Tous les fichiers (*)</translation>
     </message>
     <message>
         <source>PEM Files (*.pem)</source>
@@ -114,6 +142,14 @@
     <message>
         <source>All Files (*)</source>
         <translation>Tous les fichiers (*)</translation>
+    </message>
+    <message>
+        <source>Audio notification unavailable - no viable audio player found on this system</source>
+        <translation>Notification audio indisponible - aucun lecteur audio utilisable trouvé sur ce système</translation>
+    </message>
+    <message>
+        <source>Version: %1</source>
+        <translation>Version&#xa0;: %1</translation>
     </message>
 </context>
 <context>
@@ -144,10 +180,6 @@
     <message>
         <source>Image files (%1)</source>
         <translation>Fichiers image (%1)</translation>
-    </message>
-    <message>
-        <source>Imager Repository Files (*.json)</source>
-        <translation>Fichiers de dépôt Imager (*.json)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -257,6 +289,69 @@
         <source>Authorized keys files (authorized_keys)</source>
         <translation>Fichiers clés autorisées (authorized_keys)</translation>
     </message>
+    <message>
+        <source>Imager Repository Files (*.json *.%1)</source>
+        <translation>Fichiers Dépôt Imager</translation>
+    </message>
+</context>
+<context>
+    <name>ConfirmOtpProgramDialog</name>
+    <message>
+        <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
+        <translation>ATTENTION&#xa0;! La programmation OTP est PERMANENTE et IRRÉVERSIBLE</translation>
+    </message>
+    <message>
+        <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
+        <translation>Cette opération programmera de manière permanente le hachage de la clé publique de démarrage sécurisé dans la mémoire programmable une fois (OTP) de l&apos;appareil. Une fois programmé, cet appareil NE démarrera QU&apos;avec les images signées au moyen de la clé privée correspondante. Cette action ne peut pas être annulée.</translation>
+    </message>
+    <message>
+        <source>Device: %1</source>
+        <translation>Appareil&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Serial: %1</source>
+        <translation>No de série&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Key fingerprint: %1</source>
+        <translation>Empreinte de la clé&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Also lock JTAG debug port (additional irreversible action)</source>
+        <translation>Verrouiller aussi le port JTAG de débogage (action irréversible supplémentaire)</translation>
+    </message>
+    <message>
+        <source>To confirm, type the device serial number below:</source>
+        <translation>Pour confirmer, saisir ci-dessous le numéro de série de l&apos;appareil&#xa0;:</translation>
+    </message>
+    <message>
+        <source>Serial to type: %1</source>
+        <translation>No de série à saisir&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Type device serial number exactly</source>
+        <translation>Saisir le numéro de série exact</translation>
+    </message>
+    <message>
+        <source>Confirmation input. Type exactly: %1</source>
+        <translation>Confirmation de saisie. Saisir exactement&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>CANCEL</source>
+        <translation>ANNULER</translation>
+    </message>
+    <message>
+        <source>Cancel OTP programming and return to previous screen</source>
+        <translation>Annuler la programmation OTP et revenir à l&apos;étape précédente</translation>
+    </message>
+    <message>
+        <source>PROGRAM OTP</source>
+        <translation>PROGRAMMER OTP</translation>
+    </message>
+    <message>
+        <source>Permanently program the secure boot key into device OTP memory</source>
+        <translation>Programmer de manière permanente la clé de démarrage sécurisée dans la mémoire OTP</translation>
+    </message>
 </context>
 <context>
     <name>ConfirmSystemDriveDialog</name>
@@ -333,6 +428,161 @@
     </message>
 </context>
 <context>
+    <name>DebugOptionsDialog</name>
+    <message>
+        <source>Debug Options</source>
+        <translation>Options de débogage</translation>
+    </message>
+    <message>
+        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation>⚠️ Ces options sont destinées au débogage et aux tests. Leur modification peut compromettre les performances et l&apos;intégrité des données.</translation>
+    </message>
+    <message>
+        <source>I/O Options</source>
+        <translation>Options I/O</translation>
+    </message>
+    <message>
+        <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
+        <translation>Activer l&apos;I/O directe (F_NOCACHE / O_DIRECT)</translation>
+    </message>
+    <message>
+        <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
+        <translation>Contourner le cache de pages du système d&apos;exploitation pour les écritures. Plus lent, mais garantit que les données vont directement sur l&apos;appareil.</translation>
+    </message>
+    <message>
+        <source>Enable Async I/O</source>
+        <translation>Activer l&apos;I/O asynchrone</translation>
+    </message>
+    <message>
+        <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
+        <translation>Mettre en attente plusieurs opérations d&apos;écriture pour compenser la latence de l&apos;appareil. Améliore les performances lorsque l&apos;I/O directe est activée.</translation>
+    </message>
+    <message>
+        <source>Queue Depth:</source>
+        <translation>Longueur de la file d&apos;attente&#xa0;:</translation>
+    </message>
+    <message>
+        <source>Async queue depth: %1</source>
+        <translation>Longueur de la file d&apos;attente asynchrone&#xa0;:</translation>
+    </message>
+    <message>
+        <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
+        <translation>Mémoire tampon&#xa0;:~%1-%2 MB (dépend de la mémoire vive du système)</translation>
+    </message>
+    <message>
+        <source>Enable Periodic Sync</source>
+        <translation>Activer la synchronisation périodique</translation>
+    </message>
+    <message>
+        <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
+        <translation>Écrire périodiquement les données sur le disque au cours des opérations d&apos;écriture. Cette option est automatiquement désactivée lorsque l&apos;I/O directe est active.</translation>
+    </message>
+    <message>
+        <source>Debugging</source>
+        <translation>Débogage</translation>
+    </message>
+    <message>
+        <source>Verbose Performance Logging</source>
+        <translation>Journalisation détaillée des performances</translation>
+    </message>
+    <message>
+        <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
+        <translation>Enregistrer des informations détaillées sur la durée de chaque opération d&apos;écriture pour faciliter le diagnostic des problèmes de performances.</translation>
+    </message>
+    <message>
+        <source>Network Options</source>
+        <translation>Options réseau</translation>
+    </message>
+    <message>
+        <source>Force IPv4-only Downloads</source>
+        <translation>Forcer les téléchargements en IPv4 uniquement</translation>
+    </message>
+    <message>
+        <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
+        <translation>N&apos;utiliser que IPv4 pour les téléchargements. Activer ceci si des problèmes de connexion ont lieu en raison d&apos;un routage IPv6 défaillant.</translation>
+    </message>
+    <message>
+        <source>Workarounds</source>
+        <translation>Contournements</translation>
+    </message>
+    <message>
+        <source>Counterfeit Card Mode (skip end-of-device checks)</source>
+        <translation>Mode carte contrefaite (ignorer les vérifications de fin de carte)</translation>
+    </message>
+    <message>
+        <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
+        <translation>Ignorer les opérations à la fin du périphérique de stockage. Activer cette option avec les cartes SD contrefaites indiquant une capacité supérieure à la réalité. L&apos;image doit être d&apos;une taille inférieure à la capacité réelle de la carte.</translation>
+    </message>
+    <message>
+        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>⚠️ N&apos;activer ceci que si la carte SD annonce une capacité plus grande que sa capacité réelle. Assurez-vous que la taille de l&apos;image est plus petite que la capacité réelle de la carte&#xa0;!</translation>
+    </message>
+    <message>
+        <source>Advanced Features</source>
+        <translation>Fonctionnalités avancées</translation>
+    </message>
+    <message>
+        <source>Enable Rpiboot/Fastboot Support</source>
+        <translation>Activer la prise en charge de rpiboot/fastboot</translation>
+    </message>
+    <message>
+        <source>Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.</source>
+        <translation>Chercher les appareils Raspberry Pi en mode démarrage USB (rpiboot). Nécessite libusb.</translation>
+    </message>
+    <message>
+        <source>Custom Fastboot Gadget:</source>
+        <translation>Gadget fastboot personnalisé&#xa0;:</translation>
+    </message>
+    <message>
+        <source>(default)</source>
+        <translation>(défaut)</translation>
+    </message>
+    <message>
+        <source>Browse...</source>
+        <translation>Parcourir...</translation>
+    </message>
+    <message>
+        <source>Select a local fastboot gadget boot.img file</source>
+        <translation>Sélectionner un fichier gadget fastboot boot.img local</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Effacer</translation>
+    </message>
+    <message>
+        <source>Revert to the default fastboot gadget from GitHub</source>
+        <translation>Revenir au gadget fastboot par défaut de Github</translation>
+    </message>
+    <message>
+        <source>Select Fastboot Gadget Image</source>
+        <translation>Sélectionner une image fastboot gadget</translation>
+    </message>
+    <message>
+        <source>Boot images (*.img *.bin)</source>
+        <translation>Images de démarrage (*.img *.bin)</translation>
+    </message>
+    <message>
+        <source>All files (*)</source>
+        <translation>Tous les fichiers (*)</translation>
+    </message>
+    <message>
+        <source>Current Status</source>
+        <translation>Statut actuel</translation>
+    </message>
+    <message>
+        <source>Close the debug options dialog without saving any changes</source>
+        <translation>Fermer la fenêtre des options de débogage sans enregistrer les modifications</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>Appliquer</translation>
+    </message>
+    <message>
+        <source>Apply the selected debug options</source>
+        <translation>Appliquer les options de débogage sélectionnées</translation>
+    </message>
+</context>
+<context>
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
@@ -357,6 +607,30 @@
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
         <translation>Utiliser les flèches pour naviguer, Entrée ou Espace pour sélectionner</translation>
+    </message>
+    <message>
+        <source>Unable to load device list</source>
+        <translation>Impossible de charger la liste des appareils</translation>
+    </message>
+    <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
+        <translation>La liste des appareils n&apos;a pas pu être téléchargée. Vérifier la connexion Internet et ré-essayer.
+
+Il est possible d&apos;écrire une image locale en cliquant sur Continuer et en sélectionnant «&#xa0;Utiliser image personnalisée#xa0;» à l&apos;étape suivante.</translation>
+    </message>
+    <message>
+        <source>Retry</source>
+        <translation>Ré-essayer</translation>
+    </message>
+    <message>
+        <source>Retry downloading the device list</source>
+        <translation>Ré-essayer de télécharger la liste des appareils</translation>
+    </message>
+    <message>
+        <source>Connected via USB</source>
+        <translation>Connecté via USB</translation>
     </message>
 </context>
 <context>
@@ -437,12 +711,44 @@
         <translation>Erreur lors du changement du répertoire &apos;%1&apos;</translation>
     </message>
     <message>
-        <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
-        <translation>Erreur de lecture du stockage.&lt;br&gt;La carte SD est peut-être défectueuse.</translation>
+        <source>The write operation has stalled.
+
+No data has been written for 30 seconds. This could be caused by:
+• Storage device disconnected or unresponsive
+• Device has failed or is faulty
+• System resource exhaustion
+
+Please check the storage device and try again.</source>
+        <translation>L&apos;operation d&apos;écriture s&apos;est interrompue.
+
+Aucune donnée écrite durant 30 secondes. La cause peut en être&#xa0;:
+• périphérique de stockage déconnecté ou sans réponse
+• appareil en panne ou défectueux
+• épuisement des ressources système
+
+Veuillez vérifier le périphérique de stockage et ré-essayer.</translation>
     </message>
     <message>
-        <source>Verifying write failed. Contents of SD card is different from what was written to it.</source>
-        <translation>La vérification de l&apos;écriture à échoué. Le contenu de la carte SD est différent de ce qui y a été écrit.</translation>
+        <source>Failed to acquire write buffer slot</source>
+        <translation>Échec de l&apos;acquisition du tampon d&apos;écriture</translation>
+    </message>
+    <message>
+        <source>The download has stalled.
+
+No data received for 30 seconds. This could be caused by:
+• Network connection lost or unstable
+• Remote server became unresponsive
+• Firewall or proxy blocking the connection
+
+Please check your network connection and try again.</source>
+        <translation>Le téléchargement s&apos;est interrompu.
+
+Aucune donnée reçue durant 30 secondes. La cause peut en être&#xa0;:
+• connexion réseau perdue ou instable
+• pas de réponse du serveur distant
+• un pare-feu ou un serveur mandataire bloque la connexion
+
+Veuillez vérifier la connexion réseau et ré-essayer.</translation>
     </message>
 </context>
 <context>
@@ -456,32 +762,12 @@
         <translation>Impossible d&apos;ouvrir le périphérique de stockage &apos;%1&apos;.</translation>
     </message>
     <message>
-        <source>Write error while zero&apos;ing out MBR</source>
-        <translation>Erreur d&apos;écriture lors du formatage du MBR</translation>
-    </message>
-    <message>
-        <source>Write error while trying to zero out last part of card.&lt;br&gt;Card could be advertising wrong capacity (possible counterfeit).</source>
-        <translation>Erreur d&apos;écriture lors de la tentative de formatage de la dernière partie de la carte.&lt;br&gt;La carte annonce peut-être une capacité erronée (contrefaçon possible).</translation>
-    </message>
-    <message>
         <source>Error downloading: %1</source>
         <translation>Erreur de téléchargement&#xa0;: %1</translation>
     </message>
     <message>
         <source>Access denied error while writing file to disk.</source>
         <translation>Accès refusé lors de l&apos;écriture d&apos;un fichier sur le disque.</translation>
-    </message>
-    <message>
-        <source>Error writing to storage (while flushing)</source>
-        <translation>Erreur d&apos;écriture dans le stockage (lors du formatage)</translation>
-    </message>
-    <message>
-        <source>Error writing to storage (while fsync)</source>
-        <translation>Erreur d&apos;écriture dans le stockage (pendant l&apos;exécution de fsync)</translation>
-    </message>
-    <message>
-        <source>Error writing first block (partition table)</source>
-        <translation>Erreur lors de l&apos;écriture du premier bloc (table de partition)</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
@@ -540,10 +826,6 @@
         <translation>Erreur à l&apos;ouverture du disque &apos;%1&apos;</translation>
     </message>
     <message>
-        <source>Error getting device size</source>
-        <translation>Erreur lors de l&apos;obtention de la taille du périphérique</translation>
-    </message>
-    <message>
         <source>Error writing to storage device. Please check if the device is writable, has sufficient space, and is not write-protected.</source>
         <translation>Erreur lors de l&apos;écriture sur le périphérique. Vérifiez que le disque est accessible en écriture, qu&apos;il a assez d&apos;espace et qu&apos;il n&apos;est pas protégé en écriture.</translation>
     </message>
@@ -554,10 +836,6 @@
     <message>
         <source>Opening drive...</source>
         <translation>Ouverture du disque</translation>
-    </message>
-    <message>
-        <source>Discarding existing data on drive...</source>
-        <translation>Suppression des données existantes sur le disque...</translation>
     </message>
     <message>
         <source>Zero&apos;ing out first and last MB of drive...</source>
@@ -668,8 +946,170 @@
         <translation>Écriture des fichiers de personnalisation...</translation>
     </message>
     <message>
-        <source>Failed to allocate buffer for MBR zeroing</source>
-        <translation>Échec l&apos;allocation du tampon pour la mise à zéro du MBR</translation>
+        <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
+        <translation>Échec de démontage du disque «&#xa0;%1&#xa0;». Veuillez fermer toute application qui utilise le disque et ré-essayer.</translation>
+    </message>
+    <message>
+        <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation>Échec de démontage du disque «&#xa0;%1&#xa0;».</translation>
+    </message>
+    <message>
+        <source>getting device size</source>
+        <translation>obtention de la taille du périphérique</translation>
+    </message>
+    <message>
+        <source>Failed to allocate buffer for MBR zeroing.
+
+The system may be low on memory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>preparing storage device</source>
+        <translation>préparation du périphérique de stockage</translation>
+    </message>
+    <message>
+        <source>Zero&apos;ing out end of drive...</source>
+        <translation>Mise à zéro de la fin du périphérique...</translation>
+    </message>
+    <message>
+        <source>Timeout writing to end of storage device.
+
+This may indicate a counterfeit SD card with fake capacity.
+
+Please try a different storage device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write error while trying to zero out last part of card.
+
+This could indicate the card is advertising wrong capacity (possible counterfeit).
+
+Please try a different storage device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Storage device responding slowly. Restarting in compatibility mode...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>storage operation</source>
+        <translation>opération de stockage</translation>
+    </message>
+    <message>
+        <source>Failed to open storage device.
+
+The device may be in use by another application, or you may not have permission to access it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error writing to storage device during %1.
+
+This could be caused by:
+• Device disconnected or became unresponsive
+• Device is full or write-protected
+• Hardware failure or bad sectors
+
+Please check the device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error reading from storage device during %1.
+
+The device may have been disconnected or is malfunctioning.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error seeking on storage device during %1.
+
+The device may be malfunctioning or disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error getting storage device size.
+
+The device may not be properly recognized.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error closing storage device.
+
+The device may have been disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to lock storage device.
+
+The device may be in use by another application. Please close any applications using this device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error syncing data to storage device.
+
+The device may have been disconnected or is not responding. Data may not have been fully written.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error flushing data to storage device.
+
+The device may have been disconnected or is not responding.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Storage device timed out during %1.
+
+The device is not responding. This may indicate:
+• Device was disconnected
+• Device has failed
+• Driver or system issue
+
+Please disconnect and reconnect the device, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown storage error during %1.
+
+Please try again or use a different storage device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The storage device is not responding. This may indicate:
+• The device was disconnected
+• The device has failed
+• A driver or system issue
+
+Please disconnect and reconnect the device, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error writing to storage device.
+
+Some writes failed to complete. This could be caused by:
+• Storage device disconnected during write
+• Device is full or write-protected
+• Hardware failure
+
+Please check the device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>flush</source>
+        <translation>vidage</translation>
+    </message>
+    <message>
+        <source>sync</source>
+        <translation>sync</translation>
+    </message>
+    <message>
+        <source>writing partition table</source>
+        <translation>écriture de la table de partition</translation>
+    </message>
+    <message>
+        <source>final flush</source>
+        <translation>vidage final</translation>
+    </message>
+    <message>
+        <source>final sync</source>
+        <translation>sync final</translation>
     </message>
 </context>
 <context>
@@ -713,6 +1153,113 @@
     <message>
         <source>Cannot format device: insufficient permissions. Please run with elevated privileges (sudo).</source>
         <translation>Impossible de formater le disque&#xa0;: permissions insuffisantes. Lancer l&apos;application avec des privilèges élevés (sudo).</translation>
+    </message>
+    <message>
+        <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
+        <translation>Échec de démontage du disque «&#xa0;%1&#xa0;». Veuillez fermer toute application qui utilise le disque et ré-essayer.</translation>
+    </message>
+    <message>
+        <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation>Échec de démontage du disque «&#xa0;%1&#xa0;».</translation>
+    </message>
+</context>
+<context>
+    <name>FastbootFlashThread</name>
+    <message>
+        <source>Applying OS customisation...</source>
+        <translation>Application de la personnalisation OS</translation>
+    </message>
+    <message>
+        <source>Failed to mount boot partition: %1</source>
+        <translation>Échec de montage de la partition boot&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to read config.txt: %1</source>
+        <translation>Échec de lecture du fichier config.txt&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to write config.txt: %1</source>
+        <translation>Échec d&apos;écriture du fichier config.txt&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to write firstrun.sh: %1</source>
+        <translation>Échec d&apos;écriture du fichier firstun.sh&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to write meta-data: %1</source>
+        <translation>Échec d&apos;écriture du fichier meta-data&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to write user-data: %1</source>
+        <translation>Échec d&apos;écriture du fichier user-data&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to write network-config: %1</source>
+        <translation>Échec d&apos;écriture du fichier network-config&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to read cmdline.txt: %1</source>
+        <translation>Échec de lecture du fichier cmdline.txt&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to write cmdline.txt: %1</source>
+        <translation>Échec d&apos;écriture du fichier cmdline.txt&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Failed to initialize curl</source>
+        <translation>Échec d&apos;initialisation curl</translation>
+    </message>
+    <message>
+        <source>No entries in image archive</source>
+        <translation>Aucune valeur dans l&apos;archive d&apos;image</translation>
+    </message>
+    <message>
+        <source>Fastboot error: %1</source>
+        <translation>Erreur fastboot&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Fastboot error: unexpected internal error</source>
+        <translation>Erreur fastboot&#xa0;: erreur interne inattendue</translation>
+    </message>
+    <message>
+        <source>Connecting to fastboot device...</source>
+        <translation>Connexion au périphérique fastboot...</translation>
+    </message>
+    <message>
+        <source>Failed to open fastboot device: %1</source>
+        <translation>Échec d&apos;ouverture du périphérique fastboot&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Downloading and flashing OS image...</source>
+        <translation>Téléchargement et copie l&apos;image OS...</translation>
+    </message>
+    <message>
+        <source>Fetching block map...</source>
+        <translation>Récupération de la carte des blocs...</translation>
+    </message>
+    <message>
+        <source>Fastboot download failed: %1</source>
+        <translation>Échec du téléchargement fastboot#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Fastboot flash failed: %1</source>
+        <translation>Échec de copie fastboot#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Download failed: %1</source>
+        <translation>Échec du téléchargement#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Decompression failed: %1</source>
+        <translation>Échec de décompression#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Cancelled</source>
+        <translation>Annulé</translation>
+    </message>
+    <message>
+        <source>Image hash mismatch. Expected: %1 Got: %2</source>
+        <translation>Hachages d&apos;image non concordants. Attendu#xa0;: %1 Reçu#xa0;: %2</translation>
     </message>
 </context>
 <context>
@@ -867,12 +1414,16 @@
 <context>
     <name>ImComboBox</name>
     <message>
-        <source>Type to search: &quot;%1&quot;</source>
-        <translation>Type à rechercher&#xa0;: &quot;%1&quot;</translation>
+        <source>Search: &quot;%1&quot;</source>
+        <translation>Recherche&#xa0;: %1</translation>
     </message>
     <message>
-        <source>(press again to cycle)</source>
-        <translation>(presser de nouveau pour tourner)</translation>
+        <source>%1 of %2</source>
+        <translation>%1 sur %2</translation>
+    </message>
+    <message>
+        <source>No matches</source>
+        <translation>Pas de correspondance</translation>
     </message>
 </context>
 <context>
@@ -942,6 +1493,10 @@ ou saisir un chemin dans la barre d&apos;adresse ci-dessus.</translation>
     <message>
         <source>Save</source>
         <translation>Enregistrer</translation>
+    </message>
+    <message>
+        <source>Enter folder or file path…</source>
+        <translation>Saisir le chemin du dossier ou du fichier…</translation>
     </message>
 </context>
 <context>
@@ -1021,20 +1576,12 @@ ou saisir un chemin dans la barre d&apos;adresse ci-dessus.</translation>
 <context>
     <name>ImageWriter</name>
     <message>
-        <source>Input file is not a valid disk image.&lt;br&gt;File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>Le fichier source n&apos;est pas une image disque valide.&lt;br&gt;La taille du fichier (d&apos;%1 octets) n&apos;est pas un multiple de 512 octets.</translation>
-    </message>
-    <message>
         <source>Select image</source>
         <translation>Sélectionner l&apos;image</translation>
     </message>
     <message>
         <source>STP is enabled on your Ethernet switch. Getting IP will take long time.</source>
         <translation>Le protocole STP est activé sur votre commutateur Ethernet. L&apos;obtention de l&apos;adresse IP prendra beaucoup de temps.</translation>
-    </message>
-    <message>
-        <source>Storage capacity is not large enough.&lt;br&gt;Needs to be at least %1.</source>
-        <translation>La capacité de stockage est insuffisante.&lt;br&gt;Elle doit être d&apos;au moins %1.</translation>
     </message>
     <message>
         <source>B</source>
@@ -1111,6 +1658,54 @@ ou saisir un chemin dans la barre d&apos;adresse ci-dessus.</translation>
     <message>
         <source>JSON files (*.json);;All files (*)</source>
         <translation>Fichiers JSON (*.json);;Tous les fichiers (*)</translation>
+    </message>
+    <message>
+        <source>Starting fastboot flash...</source>
+        <translation>Début de copie fastboot...</translation>
+    </message>
+    <message>
+        <source>Preparing device for imaging...</source>
+        <translation>Préparation du périphérique pour copie...</translation>
+    </message>
+    <message>
+        <source>Storage capacity is not large enough.
+
+The image requires at least %1 of storage.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input file is not a valid disk image.
+
+File size %1 bytes is not a multiple of 512 bytes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to start write operation: insufficient memory.
+
+The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
+
+Technical details: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to start write operation: %1</source>
+        <translation>Échec au démarrage de l&apos;opération d&apos;écriture&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Limited by download speed</source>
+        <translation>Limité par la vitesse de téléchargement</translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation>Limité par la vitesse de décompression</translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation>Limité par la vitesse du périphérique de stockage</translation>
+    </message>
+    <message>
+        <source>Verifying written data</source>
+        <translation>Vérification des données écrites</translation>
     </message>
 </context>
 <context>
@@ -1228,19 +1823,13 @@ ou saisir un chemin dans la barre d&apos;adresse ci-dessus.</translation>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
         <translation>Choisir le type de votre clavier afin que les touches produisent les caractères corrects lorsque vous tapez. Ce type est automatiquement recommandé en fonction de la sélection de votre capitale, mais vous pouvez la modifier si vous utilisez une disposition de clavier différente.</translation>
     </message>
-</context>
-<context>
-    <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
         <translation>ZimaOS USB Creator a besoin d&apos;accéder au disque pour écrire l&apos;image.</translation>
     </message>
-</context>
-<context>
-    <name>NativeFileDialog</name>
     <message>
-        <source>File type:</source>
-        <translation>Type de fichier&#xa0;:</translation>
+        <source>This also sets the Wi-Fi regulatory domain for your region.</source>
+        <translation>Ce réglage définit le domaine de réglation Wi-Fi de votre région.</translation>
     </message>
 </context>
 <context>
@@ -1315,6 +1904,49 @@ ou saisir un chemin dans la barre d&apos;adresse ci-dessus.</translation>
     <message>
         <source>Released: %1</source>
         <translation>Publié&#xa0;: %1</translation>
+    </message>
+    <message>
+        <source>Unable to download OS list. You can still use a local image file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry downloading the OS list</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PasswordlessSudoWarningDialog</name>
+    <message>
+        <source>Passwordless Sudo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CANCEL</source>
+        <translation>ANNULER</translation>
+    </message>
+    <message>
+        <source>Cancel and keep sudo requiring a password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ENABLE</source>
+        <translation>ACTIVER</translation>
+    </message>
+    <message>
+        <source>Enable passwordless sudo for this user account</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1430,6 +2062,38 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
 
 Cliquer &quot;Autorisation d&apos;installation&quot; pour permettre l&apos;élévation automatique de privilèges ou lancer manuellement avec&#xa0;: sudo %1</translation>
     </message>
+    <message>
+        <source>Invalid Windows physical drive path: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open disk for cleaning. Error code: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to clear partition table. Error code: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to start disk cleanup utility. Please ensure you have administrator privileges.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk cleaning operation timed out. The disk may be in use by another application.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to clean disk. Error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to clean disk after %1 attempts. %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RemoteAccessStep</name>
@@ -1463,7 +2127,7 @@ Cliquer &quot;Autorisation d&apos;installation&quot; pour permettre l&apos;élé
     </message>
     <message>
         <source>Enable secure shell access for remote command-line control of your Raspberry Pi</source>
-        <translation>Activer l&apos;accès Secure Shell pour contrôler à distance en ligne de commande votre Rasbperry Pi</translation>
+        <translation>Activer l&apos;accès Secure Shell pour contrôler à distance en ligne de commande votre Raspberry Pi</translation>
     </message>
     <message>
         <source>Save SSH settings and continue to next customisation step</source>
@@ -1551,6 +2215,65 @@ Cliquer &quot;Autorisation d&apos;installation&quot; pour permettre l&apos;élé
     <message>
         <source>Download operating system list from a custom web address</source>
         <translation>Télécharger une liste de systèmes d&apos;exploitation à partir d&apos;une URL personnalisée</translation>
+    </message>
+</context>
+<context>
+    <name>RpibootThread</name>
+    <message>
+        <source>Downloading firmware...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to obtain rpiboot firmware: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connecting to device...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open USB device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>rpiboot protocol failed: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>USB error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for device to restart...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open USB device after re-enumeration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for fastboot device...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timed out waiting for fastboot device to appear.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for device to disconnect (%1/%2)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device disconnected, waiting for reconnect...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for device to reconnect (%1/%2s)...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timed out waiting for device to re-enumerate after bootcode upload (waited %1s).</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1646,6 +2369,26 @@ Cliquer &quot;Autorisation d&apos;installation&quot; pour permettre l&apos;élé
     <message>
         <source>All Files (*)</source>
         <translation>Tous les fichiers (*)</translation>
+    </message>
+    <message>
+        <source>OTP Secure Boot Provisioning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Program the secure boot public key hash into the device&apos;s OTP memory. This is a permanent, irreversible operation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Provision Secure Boot OTP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Permanently program the secure boot key into device OTP memory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1819,6 +2562,22 @@ pour afficher les disques système.</translation>
         <source>No valid storage devices are currently available. Uncheck &apos;Exclude system drives&apos; to show hidden system drives, or connect a new storage device.</source>
         <translation>Aucun périphérique de stockage valide n&apos;est actuellement disponible. Décochez &apos;Exclure les disques système&apos; pour afficher les disques système cachés, ou branchez un autre périphérique de stockage.</translation>
     </message>
+    <message>
+        <source>Could not list storage devices: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: Could not list storage devices. %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ready for USB boot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UpdateAvailableDialog</name>
@@ -1837,6 +2596,14 @@ pour afficher les disques système.</translation>
     <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
         <translation>Ouvrir le site web Raspberry Pi dans votre navigateur pour télécharger la dernière version</translation>
+    </message>
+    <message>
+        <source>Imager version %1 is available. Would you like to visit the website to download it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1912,6 +2679,22 @@ pour afficher les disques système.</translation>
     <message>
         <source>Re-enter the password to confirm it matches.</source>
         <translation>Re-saisir le mot de passe pour confirmer qu&apos;il correspond.</translation>
+    </message>
+    <message>
+        <source>Enable passwordless sudo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow this user to run sudo commands without entering a password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Passwordless sudo information: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2143,6 +2926,60 @@ pour afficher les disques système.</translation>
         <source>Warning: Only overwrite the token if you initiated this action.</source>
         <translation>Attention&#xa0;! N&apos;écraser le jeton que si vous avez initié cette action.</translation>
     </message>
+    <message>
+        <source>Sidebar resize handle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open local repository file?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch to a custom repository?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are opening a local Raspberry Pi Imager manifest file. This will replace the current OS list with the contents of this file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A website is requesting to switch Raspberry Pi Imager to use a custom OS repository.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Repository URL: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation>Ouvrir</translation>
+    </message>
+    <message>
+        <source>Switch repository</source>
+        <translation>Changer de dépôt</translation>
+    </message>
+    <message>
+        <source>Open the local manifest file and use it as the OS repository</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch to the custom repository from the link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Keep your current repository settings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WizardStepBase</name>
@@ -2153,6 +2990,23 @@ pour afficher les disques système.</translation>
     <message>
         <source>Skip customisation</source>
         <translation>Sauter la personnalisation</translation>
+    </message>
+</context>
+<context>
+    <name>WriteProgressWatchdog</name>
+    <message>
+        <source>Switched to compatibility mode - write continuing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write stalled - no progress for %1 seconds.
+
+Please check your storage device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Storage device not responding. Restarting in compatibility mode...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2183,7 +3037,7 @@ pour afficher les disques système.</translation>
     </message>
     <message>
         <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Cette action est PERMANENTE et NE PEUX PAS être annulée.</translation>
+        <translation>Cette action est PERMANENTE et NE PEUT PAS être annulée.</translation>
     </message>
     <message>
         <source>I understand, erase and write</source>
@@ -2289,6 +3143,10 @@ pour afficher les disques système.</translation>
         <source>Please wait... %1</source>
         <translation>Veuillez patienter... %1</translation>
     </message>
+    <message>
+        <source>Writing... %1 MB written</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>main</name>
@@ -2387,6 +3245,14 @@ pour afficher les disques système.</translation>
     <message>
         <source>All files (*)</source>
         <translation>Tous les fichiers (*)</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation>Hors ligne</translation>
+    </message>
+    <message>
+        <source>Using data from %1</source>
+        <translation>Utilisation des données de %1</translation>
     </message>
 </context>
 </TS>

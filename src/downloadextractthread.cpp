@@ -4,11 +4,11 @@
  */
 
 #include "downloadextractthread.h"
+#include "block_batcher.h"
 #include "config.h"
 #include "platformquirks.h"
 #include "systemmemorymanager.h"
-#include "dependencies/drivelist/src/drivelist.hpp"
-#include "dependencies/mountutils/src/mountutils.hpp"
+#include "drivelist/drivelist.h"
 #include <iostream>
 #include <archive.h>
 #include <archive_entry.h>
@@ -27,6 +27,13 @@
 #include <windows.h>
 #else
 #include <unistd.h>
+#endif
+
+#ifdef Q_OS_LINUX
+#include <sys/ioctl.h>
+#include <linux/fs.h>   // BLKRRPART
+#include <cerrno>
+#include <QFile>
 #endif
 
 using namespace std;
@@ -81,7 +88,28 @@ DownloadExtractThread::DownloadExtractThread(const QByteArray &url, const QByteA
     // Get optimal buffer slot sizes (hints based on total system memory)
     size_t inputBufferSizeHint = SystemMemoryManager::instance().getOptimalInputBufferSize();
     size_t writeBufferSizeHint = _writeBufferSize;  // Already set from getOptimalWriteBufferSize()
-    
+
+    // Cap write buffer to the device's maximum single-request I/O size.
+    // This prevents the OS from splitting each write into many sub-requests,
+    // which amplifies queue pressure on devices with low queue depth. See #1592.
+    {
+        auto limits = rpi_imager::FileOperations::QueryDeviceIOLimits(_filename.toStdString());
+        if (limits.max_transfer_bytes > 0 && limits.max_transfer_bytes < writeBufferSizeHint)
+        {
+            size_t deviceMaxBytes = limits.max_transfer_bytes;
+            // Align down to page boundary for O_DIRECT / FILE_FLAG_NO_BUFFERING compatibility
+            deviceMaxBytes = (deviceMaxBytes / pageSize) * pageSize;
+            if (deviceMaxBytes >= pageSize)
+            {
+                qDebug() << "Capping write buffer from" << writeBufferSizeHint
+                         << "to" << deviceMaxBytes << "bytes"
+                         << "(device max transfer:" << limits.max_transfer_bytes << ")";
+                writeBufferSizeHint = deviceMaxBytes;
+                _writeBufferSize = deviceMaxBytes;
+            }
+        }
+    }
+
     // Use COORDINATED ring buffer allocation to prevent memory exhaustion
     // This ensures both ring buffers together fit within 30% of available memory.
     // Buffer sizes may be scaled down on low-memory systems while maintaining
@@ -103,7 +131,7 @@ DownloadExtractThread::DownloadExtractThread(const QByteArray &url, const QByteA
     _ringBuffer = std::make_unique<RingBuffer>(inputSlots, actualInputSize, pageSize);
     
     // Create ring buffer for decompress -> write path (decompressed data)
-    _writeRingBuffer = std::make_unique<RingBuffer>(writeSlots, actualWriteSize, pageSize);
+    _writeRingBuffer = std::make_shared<RingBuffer>(writeSlots, actualWriteSize, pageSize);
     
     qDebug() << "Using buffer size:" << _writeBufferSize << "bytes with page size:" << pageSize << "bytes";
     qDebug() << "Input ring buffer:" << inputSlots << "slots of" << actualInputSize << "bytes";
@@ -131,6 +159,42 @@ DownloadExtractThread::~DownloadExtractThread()
     // Ring buffer destructors handle memory cleanup
     _writeRingBuffer.reset();
     _ringBuffer.reset();
+}
+
+void DownloadExtractThread::_onDevicePrepared()
+{
+    // If the user asked to ignore device limits and the write buffer was capped
+    // below the RAM-based optimum, reallocate the ring buffers at full size.
+    // This runs after _openAndPrepareDevice() but before any ring buffer access.
+    if (!_debugIgnoreDeviceLimits)
+        return;
+
+    size_t optimalWriteSize = SystemMemoryManager::instance().getOptimalWriteBufferSize();
+    if (_writeBufferSize >= optimalWriteSize)
+        return;  // wasn't capped — nothing to do
+
+    qDebug() << "Ignoring device I/O limits: reallocating ring buffers"
+             << "(write buffer" << _writeBufferSize << "->" << optimalWriteSize << ")";
+
+    size_t pageSize = SystemMemoryManager::instance().getSystemPageSize();
+    size_t inputBufferSizeHint = SystemMemoryManager::instance().getOptimalInputBufferSize();
+    size_t writeBufferSizeHint = optimalWriteSize;
+
+    size_t inputSlots, writeSlots;
+    size_t actualInputSize, actualWriteSize;
+    size_t totalMemory = SystemMemoryManager::instance().getCoordinatedRingBufferConfig(
+        inputBufferSizeHint, writeBufferSizeHint,
+        inputSlots, writeSlots,
+        actualInputSize, actualWriteSize);
+
+    _writeBufferSize = actualWriteSize;
+    _ringBuffer = std::make_unique<RingBuffer>(inputSlots, actualInputSize, pageSize);
+    _writeRingBuffer = std::make_shared<RingBuffer>(writeSlots, actualWriteSize, pageSize);
+
+    qDebug() << "Reallocated ring buffers:"
+             << "input" << inputSlots << "x" << actualInputSize
+             << "write" << writeSlots << "x" << actualWriteSize
+             << "total" << (totalMemory / (1024 * 1024)) << "MB";
 }
 
 void DownloadExtractThread::_emitProgressUpdate()
@@ -254,8 +318,19 @@ void DownloadExtractThread::_onDownloadSuccess()
     
     // Wait for extraction thread to finish processing all data
     _extractThread->wait();
-    
-    // Extraction thread already called _writeComplete(), so just emit success to signal thread completion
+
+    // The download half succeeded, but the extraction thread may have aborted
+    // while draining the ring buffer (or the write was cancelled). Emitting
+    // success() unconditionally here would override an already-reported error
+    // and bounce the UI to the "write complete" screen. (#1603)
+    if (_extractFailed || _cancelled) {
+        qDebug() << "Extraction did not complete successfully; suppressing success signal";
+        return;
+    }
+
+    // Extraction thread already called _writeComplete() (image mode) or
+    // performed the eject itself (multi-file mode), so just emit success to
+    // signal thread completion.
     emit success();
 }
 
@@ -405,14 +480,17 @@ void DownloadExtractThread::extractImageRun()
             // Emit progress updates during extraction
             _emitProgressUpdate();
 
-            // Create a completion callback that releases the ring buffer slot
+            // Create a completion callback that releases the ring buffer slot.
             // This enables ZERO-COPY async I/O: the slot stays valid until the
             // async write truly completes, then is returned to the pool.
-            // Capture slot and buffer pointers by value for the callback.
-            RingBuffer* ringBuf = _writeRingBuffer.get();
+            // Capture a shared_ptr copy to extend the ring buffer's lifetime
+            // until all outstanding async callbacks have completed, preventing
+            // use-after-free if the owning thread resets _writeRingBuffer
+            // while callbacks are still pending.
+            std::shared_ptr<RingBuffer> ringBufRef = _writeRingBuffer;
             RingBuffer::Slot* slotToRelease = slot;
-            DownloadThread::WriteCompleteCallback releaseCallback = [ringBuf, slotToRelease]() {
-                ringBuf->releaseReadSlot(slotToRelease);
+            DownloadThread::WriteCompleteCallback releaseCallback = [ringBufRef, slotToRelease]() {
+                ringBufRef->releaseReadSlot(slotToRelease);
             };
             
             // IMPORTANT: Call _writeFile directly from extraction thread instead of via
@@ -449,6 +527,7 @@ void DownloadExtractThread::extractImageRun()
         if (!_cancelled)
         {
             // Fatal error
+            _extractFailed = true;
             DownloadThread::cancelDownload();
             
             // Use stall error message if set (from ring buffer stall), otherwise use exception message
@@ -547,6 +626,50 @@ void DownloadExtractThread::extractMultiFileRun()
             fatpartition += "p1";
         else
             fatpartition += "1";
+
+        // The partition node for the freshly written table may not
+        // exist yet. The kernel re-reads the table when the last writer
+        // closes the whole-disk device, but the exclusive (O_EXCL) open used
+        // during formatting means that re-read can fail with EBUSY and only
+        // happen later — mounting immediately then dies with "special device
+        // does not exist". Wait for the node, and after a grace period ask
+        // the kernel for a re-read ourselves.
+        if (!QFile::exists(fatpartition))
+        {
+            QElapsedTimer nodeWait;
+            nodeWait.start();
+            bool rereadRequested = false;
+            while (!_cancelled && !QFile::exists(fatpartition) && nodeWait.elapsed() < 10000)
+            {
+                if (!rereadRequested && nodeWait.elapsed() >= 2000)
+                {
+                    rereadRequested = true;
+                    int fd = open(_filename.constData(), O_RDONLY | O_NONBLOCK | O_CLOEXEC);
+                    if (fd >= 0)
+                    {
+                        if (ioctl(fd, BLKRRPART) != 0)
+                            qDebug() << "BLKRRPART on" << _filename << "failed:" << strerror(errno);
+                        else
+                            qDebug() << "Requested partition table re-read on" << _filename;
+                        close(fd);
+                    }
+                    else
+                    {
+                        qDebug() << "Could not open" << _filename << "for partition re-read:" << strerror(errno);
+                    }
+                }
+                QThread::msleep(100);
+            }
+            qDebug() << "Waited" << nodeWait.elapsed() << "ms for partition node" << fatpartition
+                     << "- exists:" << QFile::exists(fatpartition);
+
+            // A cancel during that wait must not fall through to mount: the
+            // cancel path has already torn the write down, and _joinExtractThread()
+            // is blocked on this function returning.
+            if (_cancelled)
+                return;
+        }
+
         args << "-t" << "vfat" << fatpartition << folder;
 
         if (QProcess::execute("mount", args) != 0)
@@ -610,6 +733,48 @@ void DownloadExtractThread::extractMultiFileRun()
     {
         // Log the compression filter(s) being used
         _logCompressionFilters(a);
+
+        // Coalesce libarchive's data blocks into large sequential writes.
+        //
+        // archive_write_data_block() issues one write per block libarchive hands
+        // us, and its per-call overhead dominates when the blocks are small. This
+        // is a known libarchive limitation, not a misuse of the API:
+        // https://github.com/libarchive/libarchive/issues/1835 reports the same
+        // copy loop running ~2x slower than writing to a file descriptor, and it
+        // is still open with no upstream fix. libarchive's own IO notes say large
+        // blocks are almost always better because it charges overhead per block.
+        //
+        // The alternative that issue suggests, archive_read_data_into_fd(), is not
+        // usable here: on Windows the file is already open after
+        // archive_write_header(), and libarchive exposes no way to reuse that
+        // handle. Writing the files ourselves would mean giving up
+        // archive_write_disk()'s SECURE_NOABSOLUTEPATHS / SECURE_NODOTDOT /
+        // SECURE_SYMLINKS / NO_OVERWRITE handling, which is not worth trading for
+        // throughput. So we keep archive_write_disk and simply hand it bigger
+        // blocks, which is what libarchive asks for.
+        //
+        // It matters most on removable media, which is mounted with write caching
+        // disabled by default (Windows "quick removal"; the kernel logs
+        // "Write cache: disabled"), so every small write is flushed individually.
+        //
+        // Measured on a SanDisk Ultra Flair: Windows Copy-Item moves 1 GiB to the
+        // same FAT32 volume in 207.7 s (5.17 MB/s), while extraction managed about
+        // 0.8 MB/s -- roughly 6.5x slower on identical hardware and filesystem.
+        //
+        // Buffer contiguous blocks and emit one write per buffer. Non-contiguous
+        // offsets (sparse files) flush first, so libarchive still sees the same
+        // offsets and keeps its sparse handling.
+        // The buffering rules live in BlockBatcher so they can be unit tested
+        // without a download or a device -- see test/block_batcher_test.cpp.
+        constexpr size_t kExtractWriteBufferSize = 8u * 1024 * 1024;
+        quint64 blockCount = 0;   // for the average-block-size diagnostic below
+        quint64 blockBytes = 0;
+
+        rpi_imager::BlockBatcher batcher(kExtractWriteBufferSize,
+            [ext](const void *data, size_t size, int64_t offset) {
+                return static_cast<int>(archive_write_data_block(ext, data, size, offset));
+            });
+
         while ( (r = archive_read_next_header(a, &entry)) != ARCHIVE_EOF)
         {
           _checkResult(r, a);
@@ -632,11 +797,26 @@ void DownloadExtractThread::extractMultiFileRun()
               while ( (r = archive_read_data_block(a, &buff, &size, &offset)) != ARCHIVE_EOF)
               {
                   _checkResult(r, a);
-                  _checkResult(archive_write_data_block(ext, buff, size, offset), ext);
+
+                  ++blockCount;
+                  blockBytes += size;
+
+                  _checkResult(batcher.Add(buff, size, offset), ext);
+
                   _bytesWritten += size;
               }
+              // The entry's tail is still buffered; it must go out before
+              // archive_write_finish_entry() closes the file.
+              _checkResult(batcher.Flush(), ext);
           }
           _checkResult(archive_write_finish_entry(ext), ext);
+        }
+
+        // Record what libarchive handed us so batching can be assessed from logs.
+        if (blockCount > 0) {
+            qDebug() << "Extraction:" << blockCount << "data blocks,"
+                     << (blockBytes / blockCount) << "bytes average, batched into"
+                     << kExtractWriteBufferSize << "byte writes";
         }
 
         QByteArray computedHash = _inputHash.result().toHex();
@@ -666,6 +846,11 @@ void DownloadExtractThread::extractMultiFileRun()
             }
         }
 
+        // Announce the eject before success() so the done screen never claims
+        // the drive is safe to remove while the flush is still running; the
+        // eject itself runs in the cleanup section below, after this signal.
+        if (_ejectEnabled)
+            emit ejectStarted();
         emit success();
     }
     catch (exception &e)
@@ -695,6 +880,7 @@ void DownloadExtractThread::extractMultiFileRun()
         if (!_cancelled)
         {
             /* Fatal error */
+            _extractFailed = true;
             DownloadThread::cancelDownload();
             
             // Use stall error message if set (from ring buffer stall), otherwise use exception message
@@ -736,15 +922,14 @@ void DownloadExtractThread::extractMultiFileRun()
     }
 #endif
 
-    // Give the filesystem a moment to settle after sync before ejecting
-    QThread::msleep(500);
-
+    // The eject is announced before success() and performed here afterwards,
+    // so the done screen appears immediately and shows a live "ejecting"
+    // status instead of the write screen freezing on "Finalising…". On macOS
+    // the unmount inside ejectDisk() is what flushes the freshly extracted
+    // files out of the page cache, which can take tens of seconds on a slow
+    // stick.
     if (_ejectEnabled)
-    {
-        // Use canonical device path for eject (e.g., /dev/disk on macOS, not rdisk)
-        QString ejectPath = PlatformQuirks::getEjectDevicePath(_filename);
-        eject_disk(ejectPath.toLocal8Bit().constData());
-    }
+        _performEject();
 }
 
 ssize_t DownloadExtractThread::_on_read(struct archive *, const void **buff)

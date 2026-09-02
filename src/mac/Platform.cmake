@@ -17,10 +17,8 @@ set(PLATFORM_SOURCES
     mac/macfile.cpp
     mac/macfile.h
     mac/bootimgcreator_macos.cpp
-    mac/rsakeyfingerprint_macos.mm
-    dependencies/mountutils/src/darwin/functions.cpp
-    dependencies/drivelist/src/darwin/list.mm
-    dependencies/drivelist/src/darwin/REDiskList.m
+    mac/secureboot_crypto_macos.cpp
+    drivelist/drivelist_darwin.mm
     mac/file_operations_macos.cpp
     mac/platformquirks_macos.mm
     mac/mac_suspend_inhibitor.cpp
@@ -54,12 +52,13 @@ enable_language(OBJC C)
 # Frameworks for linking
 find_library(Cocoa Cocoa)
 find_library(CoreFoundation CoreFoundation)
+find_library(CoreServices CoreServices)  # LSSetDefaultHandlerForURLScheme (PlatformQuirks::registerUriScheme)
 find_library(DiskArbitration DiskArbitration)
 find_library(Security Security)
 find_library(IOKit IOKit)
 find_library(SystemConfiguration SystemConfiguration)
 find_library(CoreWLAN CoreWLAN)
 find_library(CoreLocation CoreLocation)
-set(EXTRALIBS ${EXTRALIBS} ${CoreFoundation} ${DiskArbitration} ${Security} ${Cocoa} ${IOKit} ${SystemConfiguration} ${CoreWLAN} ${CoreLocation} iconv)
+set(EXTRALIBS ${EXTRALIBS} ${CoreFoundation} ${CoreServices} ${DiskArbitration} ${Security} ${Cocoa} ${IOKit} ${SystemConfiguration} ${CoreWLAN} ${CoreLocation} iconv)
 
 

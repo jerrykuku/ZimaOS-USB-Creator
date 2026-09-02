@@ -5,7 +5,7 @@
 
 #include "drivelistmodel.h"
 #include "config.h"
-#include "dependencies/drivelist/src/drivelist.hpp"
+#include "drivelist/drivelist.h"
 #include <QSet>
 #include <QDebug>
 
@@ -21,19 +21,25 @@ DriveListModel::DriveListModel(QObject *parent)
         {isReadOnlyRole, "isReadOnly"},
         {isSystemRole, "isSystem"},
         {mountpointsRole, "mountpoints"},
-        {childDevicesRole, "childDevices"}
+        {childDevicesRole, "childDevices"},
+        {isRpibootRole, "isRpiboot"},
+        {isFastbootStorageRole, "isFastbootStorage"},
+        {fastbootBlockDeviceRole, "fastbootBlockDevice"},
+        {fastbootStorageTypeRole, "fastbootStorageType"}
     };
 
-    // Enumerate drives in seperate thread, but process results in UI thread
-    connect(&_thread, SIGNAL(newDriveList(std::vector<Drivelist::DeviceDescriptor>)), SLOT(processDriveList(std::vector<Drivelist::DeviceDescriptor>)));
+    // Enumerate drives in separate thread, but process results in UI thread
+    connect(&_thread, &DriveListModelPollThread::newDriveList,
+            this, &DriveListModel::processDriveList);
     
     // Forward performance event signal
     connect(&_thread, &DriveListModelPollThread::eventDriveListPoll,
             this, &DriveListModel::eventDriveListPoll);
 }
 
-int DriveListModel::rowCount(const QModelIndex &) const
+int DriveListModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return _drivelist.count();
 }
 
@@ -60,7 +66,31 @@ QVariant DriveListModel::data(const QModelIndex &index, int role) const
 
 void DriveListModel::processDriveList(std::vector<Drivelist::DeviceDescriptor> l)
 {
+    // Check for enumeration error sentinel
+    // If present, emit error signal and don't process further
+    // The sentinel has device == "__error__" and error contains the message
+    if (!l.empty() && l[0].device == "__error__") {
+        QString errorMsg = QString::fromStdString(l[0].error);
+        if (_lastError != errorMsg) {
+            _lastError = errorMsg;
+            qWarning() << "Drive enumeration failed:" << errorMsg;
+            emit lastErrorChanged();        // For Q_PROPERTY binding
+            emit enumerationError(errorMsg); // For QML signal handler
+        }
+        // Don't clear the existing drive list - keep showing what we had
+        // This prevents UI flicker during transient errors
+        return;
+    }
+    
+    // Clear any previous error since enumeration succeeded
+    if (!_lastError.isEmpty()) {
+        _lastError.clear();
+        emit lastErrorChanged();         // For Q_PROPERTY binding
+        emit enumerationError(QString()); // For QML signal handler (empty = cleared)
+    }
+    
     QSet<QString> drivesInNewList;
+    QSet<QString> rpibootInThisPoll;  // separate tracking for naked rpiboot devices
 
     // First pass: collect all valid drives from the new list
     // We need to do this before modifications to correctly calculate row indices
@@ -75,14 +105,18 @@ void DriveListModel::processDriveList(std::vector<Drivelist::DeviceDescriptor> l
         bool isSystem;
         QStringList mountpoints;
         QStringList childDevices;
+        bool isRpiboot = false;
+        bool isFastbootStorage = false;
+        QString fastbootBlockDevice;
+        QString fastbootStorageType;
     };
     QList<NewDriveInfo> drivesToAdd;
 
-    for (auto &i: l)
+    for (const auto &i : l)
     {
         // Convert STL vector<string> to Qt QStringList
         QStringList mountpoints;
-        for (auto &s: i.mountpoints)
+        for (const auto &s : i.mountpoints)
         {
             mountpoints.append(QString::fromStdString(s));
         }
@@ -91,20 +125,58 @@ void DriveListModel::processDriveList(std::vector<Drivelist::DeviceDescriptor> l
         if (mountpoints.contains("/") || mountpoints.contains("C://"))
             continue;
 
-        // Skip zero-sized devices
-        if (i.size == 0)
+        bool isRpibootDevice = i.isRpiboot;
+        bool isFastbootStorage = i.isFastbootStorage;
+
+        // Naked rpiboot devices aren't user-selectable storage — they're just
+        // a device-state we react to by triggering auto-bootstrap.  Track
+        // them in a separate set so we still:
+        //   - emit rpibootDeviceDetected exactly once per new device
+        //   - keep them out of _drivelist (and therefore out of the QML
+        //     storage selection list, where a "Compute Module 5 / SD" entry
+        //     with no actual block device is just confusing UX)
+        // We continue past this entry without touching drivesInNewList /
+        // drivesToAdd / _drivelist.
+        if (isRpibootDevice) {
+            QString devUri = QString::fromStdString(i.device);
+            rpibootInThisPoll.insert(devUri);
+            if (!_seenRpibootDevices.contains(devUri)) {
+                QList<uint8_t> portPath(i.usbPortPath.begin(), i.usbPortPath.end());
+                uint8_t bus = 0, addr = 0;
+                QString devPath = devUri.startsWith("rpiboot://") ? devUri.mid(10) : devUri;
+                QStringList uriParts = devPath.split(':');
+                if (uriParts.size() >= 2) {
+                    bus  = static_cast<uint8_t>(uriParts[0].toUInt());
+                    addr = static_cast<uint8_t>(uriParts[1].toUInt());
+                }
+                emit rpibootDeviceDetected(devUri, bus, addr, portPath, i.rpibootPid);
+            }
+            continue;
+        }
+
+        // Skip zero-sized devices (but not fastboot devices, which can be
+        // valid storage targets even when their reported size is 0)
+        if (i.size == 0 && !isFastbootStorage)
             continue;
 
-        // Allow read/write virtual devices (mounted disk images) but filter out:
-        // - Read-only virtual devices
-        // - System virtual devices (like APFS volumes on macOS)
-        // - Virtual devices that are not removable/ejectable (likely system virtual devices)
-        if (i.isVirtual && (i.isReadOnly || i.isSystem || !i.isRemovable))
-            continue;
+        // Filter virtual devices (loop devices, APFS volumes, VHDs, Storage Spaces).
+        // Read-only and system virtual devices are always hidden.
+        // On macOS/Windows, also require removable/ejectable — isSystem detection
+        // can miss edge cases (e.g., APFS on non-ejectable external enclosures,
+        // non-system Storage Spaces pools).
+        // On Linux, isSystem is set by explicit mountpoint checks (/, /usr, /var,
+        // /home, /boot, /snap/*) which is sufficient — and loop devices created
+        // via losetup are never removable, so requiring it would hide them.
+        if (i.isVirtual) {
+            if (i.isReadOnly || i.isSystem)
+                continue;
+#ifndef Q_OS_LINUX
+            if (!i.isRemovable)
+                continue;
+#endif
+        }
 
-        QString deviceNamePlusSize = QString::fromStdString(i.device)+":"+QString::number(i.size);
-        if (i.isReadOnly)
-            deviceNamePlusSize += "ro";
+        QString deviceNamePlusSize = QString::fromStdString(i.uniqueKey());
         drivesInNewList.insert(deviceNamePlusSize);
 
         if (!_drivelist.contains(deviceNamePlusSize))
@@ -120,7 +192,7 @@ void DriveListModel::processDriveList(std::vector<Drivelist::DeviceDescriptor> l
 
             // Convert child devices (APFS volumes on macOS) to QStringList
             QStringList childDevices;
-            for (auto &s: i.childDevices)
+            for (const auto &s : i.childDevices)
             {
                 childDevices.append(QString::fromStdString(s));
             }
@@ -136,9 +208,17 @@ void DriveListModel::processDriveList(std::vector<Drivelist::DeviceDescriptor> l
             info.isSystem = isSystemOverride;
             info.mountpoints = mountpoints;
             info.childDevices = childDevices;
+            info.isRpiboot = isRpibootDevice;
+            info.isFastbootStorage = isFastbootStorage;
+            info.fastbootBlockDevice = QString::fromStdString(i.fastbootBlockDevice);
+            info.fastbootStorageType = QString::fromStdString(i.fastbootStorageType);
             drivesToAdd.append(info);
         }
     }
+
+    // Update the rpiboot tracking set so disappeared devices can re-fire
+    // rpibootDeviceDetected if they reconnect later (e.g. user reseats USB).
+    _seenRpibootDevices = rpibootInThisPoll;
 
     // Remove drives that are no longer present (iterate in reverse to maintain valid indices)
     QStringList drivesInOldList = _drivelist.keys();
@@ -182,10 +262,28 @@ void DriveListModel::processDriveList(std::vector<Drivelist::DeviceDescriptor> l
         _drivelist[info.key] = new DriveListItem(
             info.device, info.description, info.size,
             info.isUSB, info.isScsi, info.isReadOnly, info.isSystem,
-            info.mountpoints, info.childDevices, this);
+            info.mountpoints, info.childDevices,
+            info.isRpiboot,
+            info.isFastbootStorage, info.fastbootBlockDevice, info.fastbootStorageType,
+            this);
         endInsertRows();
 
         qDebug() << "Drive added:" << info.device;
+    }
+
+    // Extract connected rpiboot chip names and notify if changed
+    QStringList newChips;
+    for (const auto &i : l) {
+        if (i.isRpiboot && !i.rpibootChipName.empty()) {
+            QString chip = QString::fromStdString(i.rpibootChipName);
+            if (!newChips.contains(chip))
+                newChips.append(chip);
+        }
+    }
+    newChips.sort();
+    if (newChips != _connectedRpibootChips) {
+        _connectedRpibootChips = newChips;
+        emit connectedRpibootChipsChanged(_connectedRpibootChips);
     }
 }
 
@@ -212,6 +310,16 @@ void DriveListModel::resumePolling()
 void DriveListModel::setSlowPolling()
 {
     _thread.setScanMode(DriveListModelPollThread::ScanMode::Slow);
+}
+
+void DriveListModel::setRpibootEnabled(bool enabled)
+{
+    _thread.setRpibootEnabled(enabled);
+}
+
+void DriveListModel::setFastbootScanEnabled(bool enabled)
+{
+    _thread.setFastbootScanEnabled(enabled);
 }
 
 QStringList DriveListModel::getChildDevices(const QString &device) const

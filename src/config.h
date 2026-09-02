@@ -11,22 +11,22 @@
 #define OSLIST_URL                        "https://get.casaos.io/zimaos-manifest-example.json"
 
 /* Custom repository manifest file extension (without leading dot) */
-#define MANIFEST_EXTENSION                "rpi-imager-manifest"
+#define MANIFEST_EXTENSION                      "rpi-imager-manifest"
 
 /* MIME type for manifest files */
-#define MANIFEST_MIME_TYPE                "application/vnd.raspberrypi.imager-manifest+json"
+#define MANIFEST_MIME_TYPE                      "application/vnd.raspberrypi.imager-manifest+json"
 
 /* Time synchronization URL (only used on linuxfb QPA platform, URL must be HTTP) */
-#define TIME_URL                          "http://downloads.raspberrypi.com/"
+#define TIME_URL                                "http://downloads.raspberrypi.com/"
 
 /* Hash algorithm for verifying (uncompressed image) checksum */
-#define OSLIST_HASH_ALGORITHM             QCryptographicHash::Sha256
+#define OSLIST_HASH_ALGORITHM                   QCryptographicHash::Sha256
 
 /* Update progressbar every 0.1 second */
-#define PROGRESS_UPDATE_INTERVAL          100
+#define PROGRESS_UPDATE_INTERVAL                100
 
 /* Default block size for buffer allocation (dynamically adjusted at runtime) */
-#define IMAGEWRITER_BLOCKSIZE             1*1024*1024
+#define IMAGEWRITER_BLOCKSIZE                   1*1024*1024
 
 /* Enable caching */
 #define IMAGEWRITER_ENABLE_CACHE_DEFAULT        true

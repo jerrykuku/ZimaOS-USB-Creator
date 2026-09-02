@@ -1,43 +1,303 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2025 Raspberry Pi Ltd
+ *
+ * macOS platform-specific implementation.
+ *
+ * Design notes:
+ * - Uses os_log for unified logging (Console.app, log collect)
+ * - Uses DiskArbitration for disk operations (unmount, eject)
+ * - Uses SystemConfiguration for network reachability
  */
 
 #include "../platformquirks.h"
 #include <cstdlib>
 #include <cstdio>
+#include <pthread.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <QProcess>
+#include <QDebug>
 #import <AppKit/AppKit.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <DiskArbitration/DiskArbitration.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreServices/CoreServices.h>  // LSSetDefaultHandlerForURLScheme
+#include <os/log.h>
+
+// Unified logging - visible in Console.app
+// Users can capture with: log collect --device --last 1h
+static os_log_t platform_log() {
+    static os_log_t log = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        log = os_log_create("com.raspberrypi.imager", "platform");
+    });
+    return log;
+}
+
+#define PLATFORM_LOG_INFO(fmt, ...) os_log_info(platform_log(), fmt, ##__VA_ARGS__)
+#define PLATFORM_LOG_ERROR(fmt, ...) os_log_error(platform_log(), fmt, ##__VA_ARGS__)
+#define PLATFORM_LOG_DEBUG(fmt, ...) os_log_debug(platform_log(), fmt, ##__VA_ARGS__)
 
 namespace {
     // Network monitoring state
     SCNetworkReachabilityRef g_reachabilityRef = nullptr;
     PlatformQuirks::NetworkStatusCallback g_networkCallback = nullptr;
+    pthread_mutex_t g_networkCallbackMutex = PTHREAD_MUTEX_INITIALIZER;
     
     void reachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* info) {
         (void)target;
         (void)info;
         
-        if (!g_networkCallback) return;
+        // Lock mutex to safely access callback - prevents race with stopNetworkMonitoring()
+        pthread_mutex_lock(&g_networkCallbackMutex);
+        PlatformQuirks::NetworkStatusCallback callback = g_networkCallback;
+        pthread_mutex_unlock(&g_networkCallbackMutex);
+        
+        if (!callback) return;
         
         bool isReachable = (flags & kSCNetworkReachabilityFlagsReachable) != 0;
         bool needsConnection = (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0;
         bool isAvailable = isReachable && !needsConnection;
         
-        fprintf(stderr, "Network status changed: reachable=%d needsConnection=%d\n", isReachable, needsConnection);
-        g_networkCallback(isAvailable);
+        PLATFORM_LOG_INFO("Network status changed: flags=%#x reachable=%d needsConnection=%d available=%d",
+                          flags, isReachable, needsConnection, isAvailable);
+        callback(isAvailable);
+    }
+    
+    // DiskArbitration context for unmount/eject operations
+    struct DiskOpContext {
+        PlatformQuirks::DiskResult result = PlatformQuirks::DiskResult::Success;
+        bool completed = false;
+        // Signalled by the callback when the operation finishes. Non-null only when a
+        // worker thread is waiting off the run loop; null when we pump inline on main.
+        dispatch_semaphore_t done = nullptr;
+    };
+    
+    PlatformQuirks::DiskResult translateDissenter(DADissenterRef dissenter) {
+        if (!dissenter) {
+            return PlatformQuirks::DiskResult::Success;
+        }
+        
+        DAReturn status = DADissenterGetStatus(dissenter);
+        CFStringRef statusString = DADissenterGetStatusString(dissenter);
+        
+        // Log the full error details for remote debugging
+        if (statusString) {
+            PLATFORM_LOG_ERROR("DiskArbitration error: status=%#x (%{public}@)", 
+                               status, (__bridge NSString*)statusString);
+        } else {
+            PLATFORM_LOG_ERROR("DiskArbitration error: status=%#x", status);
+        }
+        
+        // Map DAReturn to our result enum
+        // See DiskArbitration/DADissenter.h for full list
+        switch (status) {
+            case kDAReturnSuccess:
+                return PlatformQuirks::DiskResult::Success;
+            case kDAReturnBadArgument:
+            case kDAReturnNotFound:
+                return PlatformQuirks::DiskResult::InvalidDrive;
+            case kDAReturnNotPermitted:
+            case kDAReturnNotPrivileged:
+                return PlatformQuirks::DiskResult::AccessDenied;
+            case kDAReturnBusy:
+            case kDAReturnExclusiveAccess:
+                return PlatformQuirks::DiskResult::Busy;
+            default:
+                return PlatformQuirks::DiskResult::Error;
+        }
+    }
+    
+    // Mark an operation complete and wake any worker thread waiting on it. The
+    // semaphore is only present on the worker-thread path; the main-thread path
+    // polls context.completed via a nested run loop instead.
+    void finishOp(DiskOpContext* ctx, PlatformQuirks::DiskResult result) {
+        ctx->result = result;
+        ctx->completed = true;
+        if (ctx->done) {
+            dispatch_semaphore_signal(ctx->done);
+        }
+    }
+
+    void unmountCallback(DADiskRef disk, DADissenterRef dissenter, void* context) {
+        (void)disk;
+        finishOp(static_cast<DiskOpContext*>(context), translateDissenter(dissenter));
+    }
+
+    void ejectCallback(DADiskRef disk, DADissenterRef dissenter, void* context) {
+        (void)disk;
+        finishOp(static_cast<DiskOpContext*>(context), translateDissenter(dissenter));
+    }
+
+    void ejectUnmountCallback(DADiskRef disk, DADissenterRef dissenter, void* context) {
+        DiskOpContext* ctx = static_cast<DiskOpContext*>(context);
+        if (dissenter) {
+            finishOp(ctx, translateDissenter(dissenter));
+        } else {
+            // Unmount succeeded, now eject (its callback signals completion).
+            DADiskEject(disk, kDADiskEjectOptionDefault, ejectCallback, context);
+        }
+    }
+    
+    // Timeout: maxRetries * 100 iterations * 0.05s, so maxRetries=12 -> 60s.
+    // Slow USB drives with many files open may take significant time to unmount
+    PlatformQuirks::DiskResult runDiskOperationOnMainRunLoop(const char* device,
+                                                                DADiskUnmountCallback callback,
+                                                                int maxRetries = 12) {
+        DiskOpContext context;
+        
+        PLATFORM_LOG_INFO("runDiskOperation: starting operation on %{public}s", device);
+        
+        CFRunLoopRef run_loop = [[NSRunLoop mainRunLoop] getCFRunLoop];
+
+        // Create DiskArbitration session
+        DASessionRef session = DASessionCreate(kCFAllocatorDefault);
+        if (!session) {
+            PLATFORM_LOG_ERROR("runDiskOperation: failed to create DA session");
+            return PlatformQuirks::DiskResult::Error;
+        }
+        
+        // Get disk object from BSD name
+        DADiskRef disk = DADiskCreateFromBSDName(kCFAllocatorDefault, session, device);
+        if (!disk) {
+            PLATFORM_LOG_ERROR("runDiskOperation: failed to create disk object for %{public}s", device);
+            CFRelease(session);
+            return PlatformQuirks::DiskResult::InvalidDrive;
+        }
+        
+        // Schedule before initiating the operation (Apple requirement).
+        DASessionScheduleWithRunLoop(session, run_loop, kCFRunLoopDefaultMode);
+
+        DADiskUnmount(disk, kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
+                      callback, &context);
+        
+        // Block for up to 50ms per iteration so the asynchronous DiskArbitration
+        // callback (delivered by diskarbitrationd via this run loop) actually has
+        // time to arrive. A zero timeout turns this into a busy-poll that races
+        // through all iterations in a few milliseconds and gives up before a real
+        // unmount completes, so the first attempt on a mounted volume always times
+        // out even though the unmount ultimately succeeds in the background.
+        //
+        // returnAfterSourceHandled must stay false: the callbacks deliberately do
+        // not call CFRunLoopStop() (this is the main run loop shared with Qt), so
+        // the retry count only maps to the intended 60s budget when each iteration
+        // waits out its full 50ms slice rather than returning early on any source.
+        int retries = 0;
+        while (!context.completed && retries < maxRetries * 100) {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.05, false);
+            retries++;
+        }
+        
+        // Clean up
+        DASessionUnscheduleFromRunLoop(session, run_loop, kCFRunLoopDefaultMode);
+        CFRelease(disk);
+        CFRelease(session);
+        
+        if (!context.completed) {
+            PLATFORM_LOG_ERROR("runDiskOperation: timeout after %d iterations on %{public}s", retries, device);
+            return PlatformQuirks::DiskResult::Busy;
+        }
+        
+        PLATFORM_LOG_INFO("runDiskOperation: completed on %{public}s with result %d", 
+                          device, static_cast<int>(context.result));
+        return context.result;
+    }
+
+    // Worker-thread path: drive the DA session on the main run loop (always pumped
+    // by the app, so callbacks arrive reliably) but block THIS thread on a
+    // semaphore. No nested run loop -> no re-entrant Qt event processing, and the
+    // main thread stays free to keep the UI responsive during a slow unmount.
+    PlatformQuirks::DiskResult runDiskOperationOffMainThread(const char* device,
+                                                              DADiskUnmountCallback callback,
+                                                              int maxRetries) {
+        DiskOpContext context;
+        context.done = dispatch_semaphore_create(0);
+        DiskOpContext* ctxp = &context;   // stable pointer for the async callback
+
+        PLATFORM_LOG_INFO("runDiskOperation: starting operation on %{public}s", device);
+
+        __block DASessionRef session = nullptr;
+        __block DADiskRef disk = nullptr;
+
+        // Create the session and kick off the async unmount on the main thread.
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            session = DASessionCreate(kCFAllocatorDefault);
+            if (!session) {
+                PLATFORM_LOG_ERROR("runDiskOperation: failed to create DA session");
+                finishOp(ctxp, PlatformQuirks::DiskResult::Error);
+                return;
+            }
+            disk = DADiskCreateFromBSDName(kCFAllocatorDefault, session, device);
+            if (!disk) {
+                PLATFORM_LOG_ERROR("runDiskOperation: failed to create disk object for %{public}s", device);
+                finishOp(ctxp, PlatformQuirks::DiskResult::InvalidDrive);
+                return;
+            }
+            DASessionScheduleWithRunLoop(session, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+            DADiskUnmount(disk, kDADiskUnmountOptionWhole | kDADiskUnmountOptionForce,
+                          callback, ctxp);
+        });
+
+        // Wait off the run loop. Preserves the previous 60s budget (maxRetries * 5s).
+        dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW,
+                                                (int64_t)maxRetries * 5 * NSEC_PER_SEC);
+        bool timedOut = (dispatch_semaphore_wait(context.done, timeout) != 0);
+
+        // Tear down on the main thread. Callbacks are delivered there too, so this is
+        // serialized against them: once this block returns the session is unscheduled
+        // and released, and no further callback can reference `context`.
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (session) {
+                DASessionUnscheduleFromRunLoop(session, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
+            }
+            if (disk) {
+                CFRelease(disk);
+            }
+            if (session) {
+                CFRelease(session);
+            }
+        });
+
+        dispatch_release(context.done);   // MRC: dispatch objects aren't auto-managed here
+
+        if (timedOut && !context.completed) {
+            PLATFORM_LOG_ERROR("runDiskOperation: timeout on %{public}s", device);
+            return PlatformQuirks::DiskResult::Busy;
+        }
+        PLATFORM_LOG_INFO("runDiskOperation: completed on %{public}s with result %d",
+                          device, static_cast<int>(context.result));
+        return context.result;
+    }
+
+    PlatformQuirks::DiskResult runDiskOperation(const char* device,
+                                                 DADiskUnmountCallback callback,
+                                                 int maxRetries = 12) {
+        if ([NSThread isMainThread]) {
+            // Can't block the main thread on a semaphore — the callback needs this
+            // very run loop — so pump it inline instead.
+            return runDiskOperationOnMainRunLoop(device, callback, maxRetries);
+        }
+        return runDiskOperationOffMainThread(device, callback, maxRetries);
     }
 }
 
 namespace PlatformQuirks {
 
 void applyQuirks() {
-    // Currently no platform-specific quirks needed for macOS
-    // macOS has a sensible permissions model that operates as expected
-    
-    // Example of how to set environment variables without Qt:
-    // setenv("VARIABLE_NAME", "value", 1);
+    @autoreleasepool {
+        // Log macOS version for remote debugging
+        NSOperatingSystemVersion osVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+        PLATFORM_LOG_INFO("Platform: macOS %ld.%ld.%ld (%{public}s)",
+                          (long)osVersion.majorVersion,
+                          (long)osVersion.minorVersion,
+                          (long)osVersion.patchVersion,
+                          [[[NSProcessInfo processInfo] operatingSystemVersionString] UTF8String]);
+        
+        // Currently no platform-specific quirks needed for macOS
+        // macOS has a sensible permissions model that operates as expected
+    }
 }
 
 void beep() {
@@ -52,23 +312,36 @@ bool isBeepAvailable() {
 
 bool hasNetworkConnectivity() {
     // Use SystemConfiguration framework to check network reachability
-    SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(NULL, "www.raspberrypi.com");
+    // Check reachability to 0.0.0.0 (general internet connectivity)
+    // rather than a specific host, which would fail if DNS is broken
+    struct sockaddr_in zeroAddress;
+    bzero(&zeroAddress, sizeof(zeroAddress));
+    zeroAddress.sin_len = sizeof(zeroAddress);
+    zeroAddress.sin_family = AF_INET;
+    
+    SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithAddress(
+        NULL, reinterpret_cast<const struct sockaddr*>(&zeroAddress));
     if (!reachability) {
+        PLATFORM_LOG_ERROR("hasNetworkConnectivity: failed to create reachability ref");
         return false;
     }
     
-    SCNetworkReachabilityFlags flags;
+    SCNetworkReachabilityFlags flags = 0;
     bool success = SCNetworkReachabilityGetFlags(reachability, &flags);
     CFRelease(reachability);
     
     if (!success) {
+        PLATFORM_LOG_ERROR("hasNetworkConnectivity: failed to get reachability flags");
         return false;
     }
     
     // Check if network is reachable
     bool isReachable = (flags & kSCNetworkReachabilityFlagsReachable) != 0;
-    // Check if connection is required (e.g., captive portal)
+    // Check if connection is required (e.g., captive portal, VPN on demand)
     bool needsConnection = (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0;
+    
+    PLATFORM_LOG_DEBUG("hasNetworkConnectivity: flags=%#x reachable=%d needsConnection=%d",
+                       flags, isReachable, needsConnection);
     
     return isReachable && !needsConnection;
 }
@@ -82,12 +355,22 @@ void startNetworkMonitoring(NetworkStatusCallback callback) {
     // Stop any existing monitoring
     stopNetworkMonitoring();
     
+    // Set callback under mutex
+    pthread_mutex_lock(&g_networkCallbackMutex);
     g_networkCallback = callback;
+    pthread_mutex_unlock(&g_networkCallbackMutex);
     
-    // Create reachability reference for a known host
-    g_reachabilityRef = SCNetworkReachabilityCreateWithName(NULL, "www.raspberrypi.com");
+    // Create reachability reference for general connectivity (0.0.0.0)
+    // This monitors overall network status rather than a specific host
+    struct sockaddr_in zeroAddress;
+    bzero(&zeroAddress, sizeof(zeroAddress));
+    zeroAddress.sin_len = sizeof(zeroAddress);
+    zeroAddress.sin_family = AF_INET;
+    
+    g_reachabilityRef = SCNetworkReachabilityCreateWithAddress(
+        NULL, reinterpret_cast<const struct sockaddr*>(&zeroAddress));
     if (!g_reachabilityRef) {
-        fprintf(stderr, "Failed to create network reachability reference\n");
+        PLATFORM_LOG_ERROR("startNetworkMonitoring: failed to create reachability reference");
         return;
     }
     
@@ -95,7 +378,7 @@ void startNetworkMonitoring(NetworkStatusCallback callback) {
     SCNetworkReachabilityContext context = {0, nullptr, nullptr, nullptr, nullptr};
     
     if (!SCNetworkReachabilitySetCallback(g_reachabilityRef, reachabilityCallback, &context)) {
-        fprintf(stderr, "Failed to set network reachability callback\n");
+        PLATFORM_LOG_ERROR("startNetworkMonitoring: failed to set callback");
         CFRelease(g_reachabilityRef);
         g_reachabilityRef = nullptr;
         return;
@@ -103,13 +386,13 @@ void startNetworkMonitoring(NetworkStatusCallback callback) {
     
     // Schedule on main run loop
     if (!SCNetworkReachabilityScheduleWithRunLoop(g_reachabilityRef, CFRunLoopGetMain(), kCFRunLoopDefaultMode)) {
-        fprintf(stderr, "Failed to schedule network reachability on run loop\n");
+        PLATFORM_LOG_ERROR("startNetworkMonitoring: failed to schedule on run loop");
         CFRelease(g_reachabilityRef);
         g_reachabilityRef = nullptr;
         return;
     }
     
-    fprintf(stderr, "Network monitoring started\n");
+    PLATFORM_LOG_INFO("Network monitoring started");
 }
 
 void stopNetworkMonitoring() {
@@ -117,16 +400,34 @@ void stopNetworkMonitoring() {
         SCNetworkReachabilityUnscheduleFromRunLoop(g_reachabilityRef, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
         CFRelease(g_reachabilityRef);
         g_reachabilityRef = nullptr;
-        fprintf(stderr, "Network monitoring stopped\n");
+        PLATFORM_LOG_INFO("Network monitoring stopped");
     }
+    
+    // Clear callback under mutex to prevent race with reachabilityCallback
+    pthread_mutex_lock(&g_networkCallbackMutex);
     g_networkCallback = nullptr;
+    pthread_mutex_unlock(&g_networkCallbackMutex);
 }
 
 void bringWindowToForeground(void* windowHandle) {
-    // No-op on macOS - not implemented
-    // macOS handles window activation differently and has restrictions on
-    // applications bringing themselves to the foreground
-    (void)windowHandle;
+    @autoreleasepool {
+        // Activate the application and bring it to foreground
+        // This works when called from user interaction context
+        [NSApp activateIgnoringOtherApps:YES];
+        
+        // If we have a specific window handle, make it key
+        if (windowHandle) {
+            // windowHandle could be NSWindow* or NSView*
+            // For Qt windows, it's typically the NSView from QWindow::winId()
+            NSView* view = (__bridge NSView*)windowHandle;
+            NSWindow* window = [view window];
+            if (window) {
+                [window makeKeyAndOrderFront:nil];
+            }
+        }
+        
+        PLATFORM_LOG_DEBUG("bringWindowToForeground: activated app");
+    }
 }
 
 bool hasElevatedPrivileges() {
@@ -172,6 +473,28 @@ bool launchDetached(const QString& program, const QStringList& arguments) {
     return QProcess::startDetached(program, arguments);
 }
 
+bool openUrlExternally(const QUrl& url) {
+    // `open` is always present on macOS and hands the URL to Launch Services.
+    return launchDetached(QStringLiteral("open"), QStringList() << url.toString());
+}
+
+bool registerUriScheme() {
+    // Claim the rpi-imager:// scheme via Launch Services so the browser can
+    // hand the Connect auth token back to us. Requires a bundle identity, so
+    // this is a no-op (returns false) for a plain executable without an
+    // Info.plist (e.g. a unit-test binary).
+    CFBundleRef bundle = CFBundleGetMainBundle();
+    if (!bundle) {
+        return false;
+    }
+    CFStringRef bundleId = static_cast<CFStringRef>(CFBundleGetIdentifier(bundle));
+    if (!bundleId) {
+        return false;
+    }
+    OSStatus status = LSSetDefaultHandlerForURLScheme(CFSTR("rpi-imager"), bundleId);
+    return status == noErr;
+}
+
 bool runElevatedPolicyInstaller() {
     return false;
 }
@@ -184,6 +507,12 @@ bool isScrollInverted(bool qtInvertedFlag) {
     // On macOS, Qt correctly reports the inverted flag in WheelEvent
     // so we just pass through the Qt value.
     return qtInvertedFlag;
+}
+
+bool prefersReducedMotion() {
+    // System Settings > Accessibility > Display > Reduce motion
+    // Available since macOS 10.12 (Sierra).
+    return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
 }
 
 QString getWriteDevicePath(const QString& devicePath) {
@@ -202,6 +531,68 @@ QString getEjectDevicePath(const QString& devicePath) {
     QString result = devicePath;
     result.replace("/dev/rdisk", "/dev/disk");
     return result;
+}
+
+DiskResult unmountDisk(const QString& device) {
+    // Ensure we're using block device path (disk, not rdisk)
+    QString diskPath = getEjectDevicePath(device);
+    
+    // Extract BSD name (remove /dev/ prefix)
+    QString bsdName = diskPath;
+    if (bsdName.startsWith("/dev/")) {
+        bsdName = bsdName.mid(5);
+    }
+    
+    QByteArray bsdNameBytes = bsdName.toUtf8();
+    qDebug() << "unmountDisk: unmounting" << bsdNameBytes.constData();
+    
+    return runDiskOperation(bsdNameBytes.constData(), unmountCallback);
+}
+
+DiskResult refreshDiskView(const QString& device) {
+    // DiskArbitration handles partition rescans when we close the device, and
+    // re-mounts removable media automatically. Nothing for us to do here.
+    Q_UNUSED(device);
+    return DiskResult::Success;
+}
+
+DiskResult ejectDisk(const QString& device) {
+    // Ensure we're using block device path (disk, not rdisk)
+    QString diskPath = getEjectDevicePath(device);
+    
+    // Extract BSD name (remove /dev/ prefix)
+    QString bsdName = diskPath;
+    if (bsdName.startsWith("/dev/")) {
+        bsdName = bsdName.mid(5);
+    }
+    
+    QByteArray bsdNameBytes = bsdName.toUtf8();
+    qDebug() << "ejectDisk: ejecting" << bsdNameBytes.constData();
+
+    // Use the combined unmount+eject callback. The unmount is what flushes
+    // everything the extract path just wrote out of the page cache, and on a
+    // slow stick that alone can exceed the 60-second default. Give the flush
+    // five minutes; the callers treat the result as best-effort, but timing
+    // out early would let the UI claim the drive is safe to remove while the
+    // kernel is still writing to it.
+    return runDiskOperation(bsdNameBytes.constData(), ejectUnmountCallback, 60);
+}
+
+qreal detectTextScaleFactor()
+{
+    // macOS handles DPI scaling correctly via Retina support.
+    // No additional text scaling needed.
+    return 1.0;
+}
+
+qreal fontDpiCorrection()
+{
+    return 1.0;
+}
+
+void logFontEngine()
+{
+    qDebug() << "Font engine: Core Text";
 }
 
 } // namespace PlatformQuirks

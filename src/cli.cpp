@@ -10,7 +10,7 @@
 #include <QCommandLineParser>
 #include <QFileInfo>
 #include "drivelistmodel.h"
-#include "dependencies/drivelist/src/drivelist.hpp"
+#include "drivelist/drivelist.h"
 #include "imageadvancedoptions.h"
 #include "platformquirks.h"
 
@@ -105,7 +105,7 @@ int Cli::run()
     }
 
     // Now create ImageWriter for actual write operations
-    _imageWriter = new ImageWriter;
+    _imageWriter = new ImageWriter(nullptr);
     connect(_imageWriter, &ImageWriter::success, this, &Cli::onSuccess);
     connect(_imageWriter, &ImageWriter::error, this, &Cli::onError);
     connect(_imageWriter, &ImageWriter::preparationStatusUpdate, this, &Cli::onPreparationStatusUpdate);

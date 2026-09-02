@@ -3,6 +3,8 @@
  * Copyright (C) 2025 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -16,7 +18,6 @@ BaseDialog {
     // Height based on window size minus padding - content scrolls within
     height: parent ? Math.min(500, parent.height - Style.cardPadding * 2) : 500
     
-    // imageWriter is inherited from BaseDialog
     property var wizardContainer: null
     
     property bool initialized: false
@@ -30,13 +31,13 @@ BaseDialog {
     // Register focus groups when component is ready
     Component.onCompleted: {
         registerFocusGroup("header", function(){ 
-            if (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) {
+            if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
                 return [headerText, warningText]
             }
             return []
         }, 0)
-        registerFocusGroup("options", function(){ 
-            return [chkDirectIO.focusItem, chkAsyncIO.focusItem, chkPeriodicSync.focusItem, chkVerboseLogging.focusItem, chkIPv4Only.focusItem, chkSkipEndOfDevice.focusItem]
+        registerFocusGroup("options", function(){
+            return [chkDirectIO.focusItem, chkAsyncIO.focusItem, chkIgnoreDeviceLimits.focusItem, chkPeriodicSync.focusItem, chkVerboseLogging.focusItem, chkIPv4Only.focusItem, chkSkipEndOfDevice.focusItem, chkRpiboot.focusItem, browseGadgetButton, chkForceSecureBoot.focusItem, chkSignFastbootGadget.focusItem]
         }, 1)
         registerFocusGroup("buttons", function(){ 
             return [cancelButton, applyButton]
@@ -44,37 +45,27 @@ BaseDialog {
     }
 
     // Header
-    Text {
+    FocusableHeading {
         id: headerText
         text: qsTr("Debug Options")
-        font.pixelSize: Style.fontSizeLargeHeading
+        font.pointSize: Style.fontSizeLargeHeading
         font.family: Style.fontFamilyBold
         font.bold: true
         color: Style.formLabelColor
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignHCenter
-        Accessible.role: Accessible.Heading
-        Accessible.name: text
-        Accessible.focusable: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
     }
 
     // Warning text
-    Text {
+    FocusableText {
         id: warningText
         text: qsTr("⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.")
-        font.pixelSize: Style.fontSizeDescription
+        font.pointSize: Style.fontSizeDescription
         font.family: Style.fontFamily
         color: Style.formLabelErrorColor
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignHCenter
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
-        Accessible.focusable: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
     }
 
     // Scrollable options section
@@ -96,7 +87,7 @@ BaseDialog {
             // Section header for I/O options
             Text {
                 text: qsTr("I/O Options")
-                font.pixelSize: Style.fontSizeFormLabel
+                font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
                 color: Style.textDescriptionColor
@@ -133,7 +124,7 @@ BaseDialog {
                 
                 Text {
                     text: qsTr("Queue Depth:")
-                    font.pixelSize: Style.fontSizeDescription
+                    font.pointSize: Style.fontSizeDescription
                     font.family: Style.fontFamily
                     color: Style.formLabelColor
                 }
@@ -169,7 +160,7 @@ BaseDialog {
                 
                 Text {
                     text: Math.round(asyncQueueDepthSlider.value)
-                    font.pixelSize: Style.fontSizeDescription
+                    font.pointSize: Style.fontSizeDescription
                     font.family: Style.fontFamilyBold
                     font.bold: true
                     color: Style.formLabelColor
@@ -184,9 +175,20 @@ BaseDialog {
                 Layout.leftMargin: Style.spacingLarge
                 visible: chkAsyncIO.checked
                 text: qsTr("Buffer memory: ~%1-%2 MB (varies by system RAM)").arg(Math.round(asyncQueueDepthSlider.value * 1)).arg(Math.round(asyncQueueDepthSlider.value * 8))
-                font.pixelSize: Style.fontSizeSmall
+                font.pointSize: Style.fontSizeSmall
                 font.family: Style.fontFamily
                 color: Style.textDescriptionColor
+            }
+
+            ImOptionPill {
+                id: chkIgnoreDeviceLimits
+                text: qsTr("Ignore Device I/O Limits")
+                accessibleDescription: qsTr("Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.")
+                Layout.fillWidth: true
+                visible: chkAsyncIO.checked
+                Component.onCompleted: {
+                    focusItem.activeFocusOnTab = true
+                }
             }
 
             ImOptionPill {
@@ -207,7 +209,7 @@ BaseDialog {
             // Section header for debugging options
             Text {
                 text: qsTr("Debugging")
-                font.pixelSize: Style.fontSizeFormLabel
+                font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
                 color: Style.textDescriptionColor
@@ -232,7 +234,7 @@ BaseDialog {
             // Section header for network options
             Text {
                 text: qsTr("Network Options")
-                font.pixelSize: Style.fontSizeFormLabel
+                font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
                 color: Style.textDescriptionColor
@@ -257,7 +259,7 @@ BaseDialog {
             // Section header for workarounds
             Text {
                 text: qsTr("Workarounds")
-                font.pixelSize: Style.fontSizeFormLabel
+                font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
                 color: Style.textDescriptionColor
@@ -280,7 +282,141 @@ BaseDialog {
                 Layout.leftMargin: Style.spacingLarge
                 visible: chkSkipEndOfDevice.checked
                 text: qsTr("⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card's real capacity!")
-                font.pixelSize: Style.fontSizeSmall
+                font.pointSize: Style.fontSizeSmall
+                font.family: Style.fontFamily
+                color: Style.formLabelErrorColor
+                wrapMode: Text.WordWrap
+            }
+
+            // Spacer
+            Item {
+                Layout.preferredHeight: Style.spacingMedium
+            }
+
+            // Section header for advanced features
+            Text {
+                text: qsTr("Advanced Features")
+                font.pointSize: Style.fontSizeFormLabel
+                font.family: Style.fontFamilyBold
+                font.bold: true
+                color: Style.textDescriptionColor
+                Layout.fillWidth: true
+            }
+
+            ImOptionPill {
+                id: chkRpiboot
+                text: qsTr("Enable Rpiboot/Fastboot Support")
+                accessibleDescription: qsTr("Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.")
+                Layout.fillWidth: true
+                Component.onCompleted: {
+                    focusItem.activeFocusOnTab = true
+                }
+            }
+
+            // Custom fastboot gadget file picker (only visible when rpiboot enabled)
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.leftMargin: Style.spacingLarge
+                visible: chkRpiboot.checked
+                spacing: Style.spacingSmall
+
+                Text {
+                    text: qsTr("Custom Fastboot Gadget:")
+                    font.pointSize: Style.fontSizeDescription
+                    font.family: Style.fontFamily
+                    color: Style.formLabelColor
+                    Layout.alignment: Qt.AlignVCenter
+                }
+
+                Text {
+                    id: gadgetPathText
+                    text: gadgetPathText.gadgetPath || qsTr("(default)")
+                    font.pointSize: Style.fontSizeDescription
+                    font.family: Style.fontFamily
+                    font.italic: !gadgetPathText.gadgetPath
+                    color: gadgetPathText.gadgetPath ? Style.formLabelColor : Style.textDescriptionColor
+                    Layout.fillWidth: true
+                    elide: Text.ElideMiddle
+                    Layout.alignment: Qt.AlignVCenter
+
+                    property string gadgetPath: ""
+                }
+
+                ImButton {
+                    id: browseGadgetButton
+                    text: qsTr("Browse...")
+                    accessibleDescription: qsTr("Select a local fastboot gadget boot.img file")
+                    Layout.minimumWidth: 80
+                    activeFocusOnTab: true
+                    onClicked: {
+                        gadgetFileDialog.open()
+                    }
+                }
+
+                ImButton {
+                    text: qsTr("Clear")
+                    accessibleDescription: qsTr("Revert to the default fastboot gadget from GitHub")
+                    Layout.minimumWidth: 60
+                    activeFocusOnTab: true
+                    visible: !!gadgetPathText.gadgetPath
+                    onClicked: {
+                        gadgetPathText.gadgetPath = ""
+                    }
+                }
+            }
+
+            ImFileDialog {
+                id: gadgetFileDialog
+                parent: popup.parent
+                dialogTitle: qsTr("Select Fastboot Gadget Image")
+                nameFilters: [qsTr("Boot images (*.img *.bin)"), qsTr("All files (*)")]
+                onAccepted: {
+                    gadgetPathText.gadgetPath = selectedFile
+                }
+            }
+
+            // Spacer
+            Item {
+                Layout.preferredHeight: Style.spacingMedium
+            }
+
+            // Section header for secure boot
+            Text {
+                text: qsTr("Secure Boot")
+                font.pointSize: Style.fontSizeFormLabel
+                font.family: Style.fontFamilyBold
+                font.bold: true
+                color: Style.textDescriptionColor
+                Layout.fillWidth: true
+            }
+
+            ImOptionPill {
+                id: chkForceSecureBoot
+                text: qsTr("Force Secure Boot Available")
+                accessibleDescription: qsTr("Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.")
+                Layout.fillWidth: true
+                Component.onCompleted: {
+                    focusItem.activeFocusOnTab = true
+                }
+            }
+
+            ImOptionPill {
+                id: chkSignFastbootGadget
+                text: qsTr("CM5 re-provisioning mode (special-reprovision-device)")
+                accessibleDescription: qsTr("Match rpi-sb-provisioner's special-reprovision-device: run secure-boot recovery (re-sign recovery.bin from upstream, reuse cached pieeprom) then fastboot (sign bootfiles and gadget). Requires the RSA key in App Options. Only for Compute Modules whose secure-boot OTP is already fused.")
+                Layout.fillWidth: true
+                Component.onCompleted: {
+                    focusItem.activeFocusOnTab = true
+                }
+            }
+
+            // Warning when signing is enabled without an RSA key configured
+            Text {
+                Layout.fillWidth: true
+                Layout.leftMargin: Style.spacingLarge
+                visible: chkSignFastbootGadget.checked && !ImageWriterSingleton.getStringSetting("secureboot_rsa_key")
+                text: qsTr("⚠️ No Secure Boot RSA key configured. Set one in App Options → Secure Boot RSA Key, otherwise signing will be skipped.")
+                font.pointSize: Style.fontSizeSmall
                 font.family: Style.fontFamily
                 color: Style.formLabelErrorColor
                 wrapMode: Text.WordWrap
@@ -302,7 +438,7 @@ BaseDialog {
 
                     Text {
                         text: qsTr("Current Status")
-                        font.pixelSize: Style.fontSizeDescription
+                        font.pointSize: Style.fontSizeDescription
                         font.family: Style.fontFamilyBold
                         font.bold: true
                         color: Style.textDescriptionColor
@@ -318,6 +454,9 @@ BaseDialog {
                             lines.push("Periodic Sync: " + (chkPeriodicSync.checked ? "Enabled" : "Disabled"));
                             lines.push("IPv4-only: " + (chkIPv4Only.checked ? "Enabled" : "Disabled"));
                             lines.push("Counterfeit Card Mode: " + (chkSkipEndOfDevice.checked ? "Enabled" : "Disabled"));
+                            lines.push("Rpiboot/Fastboot: " + (chkRpiboot.checked ? "Enabled" : "Disabled"));
+                            if (chkRpiboot.checked && gadgetPathText.gadgetPath)
+                                lines.push("Custom Gadget: " + gadgetPathText.gadgetPath);
                             if (chkDirectIO.checked && chkAsyncIO.checked) {
                                 lines.push("✓ Optimal: Direct I/O + Async I/O for best performance");
                             } else if (chkDirectIO.checked) {
@@ -334,7 +473,7 @@ BaseDialog {
                             }
                             return lines.join("\n");
                         }
-                        font.pixelSize: Style.fontSizeSmall
+                        font.pointSize: Style.fontSizeSmall
                         font.family: Style.fontFamily
                         color: Style.formLabelColor
                         wrapMode: Text.WordWrap
@@ -391,13 +530,18 @@ BaseDialog {
             isInitializing = true;
             
             // Load current settings from ImageWriter
-            chkDirectIO.checked = imageWriter.getDebugDirectIO();
-            chkAsyncIO.checked = imageWriter.getDebugAsyncIO();
-            asyncQueueDepthSlider.value = imageWriter.getDebugAsyncQueueDepth();
-            chkPeriodicSync.checked = imageWriter.getDebugPeriodicSync();
-            chkVerboseLogging.checked = imageWriter.getDebugVerboseLogging();
-            chkIPv4Only.checked = imageWriter.getDebugIPv4Only();
-            chkSkipEndOfDevice.checked = imageWriter.getDebugSkipEndOfDevice();
+            chkDirectIO.checked = ImageWriterSingleton.getDebugDirectIO();
+            chkAsyncIO.checked = ImageWriterSingleton.getDebugAsyncIO();
+            asyncQueueDepthSlider.value = ImageWriterSingleton.getDebugAsyncQueueDepth();
+            chkPeriodicSync.checked = ImageWriterSingleton.getDebugPeriodicSync();
+            chkVerboseLogging.checked = ImageWriterSingleton.getDebugVerboseLogging();
+            chkIPv4Only.checked = ImageWriterSingleton.getDebugIPv4Only();
+            chkIgnoreDeviceLimits.checked = ImageWriterSingleton.getDebugIgnoreDeviceLimits();
+            chkSkipEndOfDevice.checked = ImageWriterSingleton.getDebugSkipEndOfDevice();
+            chkRpiboot.checked = ImageWriterSingleton.getDebugRpiboot();
+            gadgetPathText.gadgetPath = ImageWriterSingleton.getDebugCustomFastbootGadget();
+            chkForceSecureBoot.checked = ImageWriterSingleton.getDebugForceSecureBoot();
+            chkSignFastbootGadget.checked = ImageWriterSingleton.getDebugSignFastbootGadget();
 
             initialized = true;
             isInitializing = false;
@@ -406,21 +550,29 @@ BaseDialog {
 
     function applySettings() {
         // Apply settings to ImageWriter
-        imageWriter.setDebugDirectIO(chkDirectIO.checked);
-        imageWriter.setDebugAsyncIO(chkAsyncIO.checked);
-        imageWriter.setDebugAsyncQueueDepth(Math.round(asyncQueueDepthSlider.value));
-        imageWriter.setDebugPeriodicSync(chkPeriodicSync.checked);
-        imageWriter.setDebugVerboseLogging(chkVerboseLogging.checked);
-        imageWriter.setDebugIPv4Only(chkIPv4Only.checked);
-        imageWriter.setDebugSkipEndOfDevice(chkSkipEndOfDevice.checked);
-        
-        console.log("Debug options applied: DirectIO=" + chkDirectIO.checked + 
+        ImageWriterSingleton.setDebugDirectIO(chkDirectIO.checked);
+        ImageWriterSingleton.setDebugAsyncIO(chkAsyncIO.checked);
+        ImageWriterSingleton.setDebugAsyncQueueDepth(Math.round(asyncQueueDepthSlider.value));
+        ImageWriterSingleton.setDebugPeriodicSync(chkPeriodicSync.checked);
+        ImageWriterSingleton.setDebugVerboseLogging(chkVerboseLogging.checked);
+        ImageWriterSingleton.setDebugIPv4Only(chkIPv4Only.checked);
+        ImageWriterSingleton.setDebugIgnoreDeviceLimits(chkIgnoreDeviceLimits.checked);
+        ImageWriterSingleton.setDebugSkipEndOfDevice(chkSkipEndOfDevice.checked);
+        ImageWriterSingleton.setDebugRpiboot(chkRpiboot.checked);
+        ImageWriterSingleton.setDebugCustomFastbootGadget(gadgetPathText.gadgetPath || "");
+        ImageWriterSingleton.setDebugForceSecureBoot(chkForceSecureBoot.checked);
+        ImageWriterSingleton.setDebugSignFastbootGadget(chkSignFastbootGadget.checked);
+
+        console.log("Debug options applied: DirectIO=" + chkDirectIO.checked +
                     ", AsyncIO=" + chkAsyncIO.checked +
                     ", AsyncQueueDepth=" + Math.round(asyncQueueDepthSlider.value) +
                     ", PeriodicSync=" + chkPeriodicSync.checked +
                     ", VerboseLogging=" + chkVerboseLogging.checked +
                     ", IPv4Only=" + chkIPv4Only.checked +
-                    ", SkipEndOfDevice=" + chkSkipEndOfDevice.checked);
+                    ", SkipEndOfDevice=" + chkSkipEndOfDevice.checked +
+                    ", Rpiboot=" + chkRpiboot.checked +
+                    ", ForceSecureBoot=" + chkForceSecureBoot.checked +
+                    ", SignFastbootGadget=" + chkSignFastbootGadget.checked);
     }
 
     onOpened: {

@@ -27,6 +27,7 @@ namespace {
         QStringLiteral("systemd"),
         QStringLiteral("cloudinit"),
         QStringLiteral("cloudinit-rpi"),
+        QStringLiteral("rpi-preseed"),
         QStringLiteral("none")
     };
 
@@ -48,7 +49,7 @@ namespace {
                 QString name = entry["name"].toString();
                 qWarning() << "OSListModel: Pruning OS entry with invalid init_format '" 
                            << initFormat << "':" << name
-                           << "(valid values: '', 'systemd', 'cloudinit', 'cloudinit-rpi', 'none')";
+                           << "(valid values: '', 'systemd', 'cloudinit', 'cloudinit-rpi', 'rpi-preseed', 'none')";
                 continue;
             }
             
@@ -325,6 +326,7 @@ bool OSListModel::reload()
         os.random = obj["random"].toBool();
 
         os.extractSha256 = obj["extract_sha256"].toString();
+        os.bmapUrl = obj["bmap_url"].toString();
         // Icon source: rewrite to image provider to avoid network head-of-line blocking
         {
             const QString rawIcon = obj["icon"].toString();
@@ -382,6 +384,7 @@ QHash<int, QByteArray> OSListModel::roleNames() const
         { DevicesRole, "devices" },
         { CapabilitiesRole, "capabilities" },
         { ExtractSha256Role, "extract_sha256" },
+        { BmapUrlRole, "bmap_url" },
         { ExtractSizeRole, "extract_size" },
         { IconRole, "icon" },
         { ImageDownloadSizeRole, "image_download_size" },
@@ -414,6 +417,8 @@ QVariant OSListModel::data(const QModelIndex &index, int role) const {
             return os.capabilities;
         case ExtractSha256Role:
             return os.extractSha256;
+        case BmapUrlRole:
+            return os.bmapUrl;
         case ExtractSizeRole:
             return os.extractSize;
         case IconRole:

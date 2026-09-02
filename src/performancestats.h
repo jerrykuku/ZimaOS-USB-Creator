@@ -100,6 +100,7 @@ public:
         
         // Customisation
         Customisation,         // Time to apply customisation (config, firstrun, etc.)
+        CustomisationVerify,   // Read-back check that the media kept the customisation files
         CloudInitGeneration,   // Time to generate cloud-init config
         FirstRunGeneration,    // Time to generate firstrun script
         SecureBootSetup,       // Time to set up secure boot files
@@ -112,7 +113,13 @@ public:
         
         // UI operations
         FileDialogOpen,        // Time to open native file dialog (with detailed breakdown)
-        
+
+        // Rpiboot / Fastboot
+        RpibootFirmwareSetup,    // Firmware download/cache lookup (FirmwareManager)
+        RpibootProtocol,         // USB sideload protocol execution
+        RpibootFastbootWait,     // Polling for fastboot device to appear
+        FastbootDeviceOpen,      // Opening fastboot USB device
+
         _Count                 // Sentinel for array sizing
     };
     Q_ENUM(EventType)

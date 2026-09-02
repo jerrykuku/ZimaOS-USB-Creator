@@ -5,21 +5,21 @@
 
 #include "downloadextractthread.h"
 #include "imagewriter.h"
+#include "imager_version.h"
 #include "writeprogresswatchdog.h"
 #include "embedded_config.h"
 #include "config.h"
 #include "file_operations.h"
 #include "drivelistitem.h"
 #include "customization_generator.h"
-#include "dependencies/drivelist/src/drivelist.hpp"
-#include "dependencies/sha256crypt/sha256crypt.h"
-#include "dependencies/yescrypt/yescrypt_wrapper.h"
+#include "drivelist/drivelist.h"
 #include "driveformatthread.h"
 #include "localfileextractthread.h"
 #include "systemmemorymanager.h"
 #include "wlancredentials.h"
 #include "device_info.h"
 #include "platformquirks.h"
+#include "secureboot_crypto.h"
 #ifndef CLI_ONLY_BUILD
 #include "iconimageprovider.h"
 #include "iconmultifetcher.h"
@@ -30,6 +30,8 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <lzma.h>
+#define ZSTD_STATIC_LINKING_ONLY  // for ZSTD_FRAMEHEADERSIZE_MAX
+#include <zstd.h>
 #include <qjsondocument.h>
 #include <QJsonArray>
 #include <random>
@@ -43,6 +45,7 @@
 #include <QTimeZone>
 #include <QNetworkInterface>
 #include <QCoreApplication>
+#include <QPointer>
 #ifndef CLI_ONLY_BUILD
 #include <QQmlContext>
 #include <QWindow>
@@ -56,11 +59,14 @@
 #include <QHostAddress>
 #include <QDateTime>
 #include "curlfetcher.h"
+#include "rpibootthread.h"
+#include "fastbootflashthread.h"
+#include "fastbootflashthread.h"
+#include "connect_device_registrar.h"
 #include "curlnetworkconfig.h"
 #include <QDebug>
 #include <QJsonObject>
 #include <QTranslator>
-#include <QPasswordDigestor>
 #include <QVersionNumber>
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -95,6 +101,18 @@ namespace {
 // Initialize static member for secure boot CLI override
 bool ImageWriter::_forceSecureBootEnabled = false;
 
+#ifndef CLI_ONLY_BUILD
+ImageWriter *ImageWriter::s_qmlInstance = nullptr;
+
+ImageWriter *ImageWriter::create(QQmlEngine *, QJSEngine *)
+{
+    Q_ASSERT(s_qmlInstance);
+    // The instance is owned by main() (stack-allocated), not the QML engine.
+    QQmlEngine::setObjectOwnership(s_qmlInstance, QQmlEngine::CppOwnership);
+    return s_qmlInstance;
+}
+#endif
+
 ImageWriter::ImageWriter(QObject *parent)
     : QObject(parent),
       _cacheManager(nullptr),
@@ -113,6 +131,7 @@ ImageWriter::ImageWriter(QObject *parent)
       _engine(nullptr),
       _networkchecktimer(),
       _osListRefreshTimer(),
+      _screenReaderPollTimer(),
       _suspendInhibitor(nullptr),
       _thread(nullptr),
       _verifyEnabled(true), _multipleFilesInZip(false), _online(false), _extractSizeKnown(true),
@@ -145,7 +164,22 @@ ImageWriter::ImageWriter(QObject *parent)
     _debugAsyncIO = true;       // Async I/O enabled by default for performance
     _debugIPv4Only = false;     // Use both IPv4 and IPv6 by default
     _debugSkipEndOfDevice = false; // Normal behavior; enable for counterfeit cards
-    
+    _debugIgnoreDeviceLimits = false; // Use device-reported I/O limits by default
+    // Rpiboot/fastboot support is off by default, but sticky once turned on:
+    // the people who need it (CM provisioning) want it every session, and
+    // re-entering the secret menu on every launch is needless friction.
+    _debugRpiboot = _settings.value(QStringLiteral("debug_rpiboot"), false).toBool();
+    _debugForceSecureBoot = false;  // No UI override; CLI flag still wins
+    _debugSignFastbootGadget = false; // CM5 special-reprovision-device (SBR then fastboot)
+
+    // Propagate a restored rpiboot setting to the poll thread; these only set
+    // atomics, so it is safe before polling starts.
+    if (_debugRpiboot) {
+        _drivelist.setRpibootEnabled(true);
+        _drivelist.setFastbootScanEnabled(true);
+        qDebug() << "Debug: Rpiboot/fastboot support enabled from saved settings";
+    }
+
     // Calculate optimal async queue depth based on system memory
     _debugAsyncQueueDepth = SystemMemoryManager::instance().getOptimalAsyncQueueDepth();
     
@@ -167,6 +201,22 @@ ImageWriter::ImageWriter(QObject *parent)
         platform = "cli";
     }
     _device_info = std::make_unique<DeviceInfo>();
+
+#ifndef CLI_ONLY_BUILD
+    // QAccessible::isActive() has no change notification on macOS/Windows, so
+    // we poll. Toggling a screen reader is a deliberate user gesture, so a
+    // 500 ms cadence is plenty without being a measurable cost.
+    _screenReaderActiveCached = QAccessible::isActive();
+    _screenReaderPollTimer.setInterval(500);
+    connect(&_screenReaderPollTimer, &QTimer::timeout, this, [this]() {
+        const bool now = QAccessible::isActive();
+        if (now != _screenReaderActiveCached) {
+            _screenReaderActiveCached = now;
+            emit screenReaderActiveChanged();
+        }
+    });
+    _screenReaderPollTimer.start();
+#endif
 
     if (::isEmbeddedMode())
     {
@@ -312,6 +362,14 @@ ImageWriter::ImageWriter(QObject *parent)
     connect(&_drivelist, &DriveListModel::deviceRemoved,
             this, &ImageWriter::onSelectedDeviceRemoved);
     
+    // Forward connected rpiboot chip names to hardware list model for USB boot annotations
+    connect(&_drivelist, &DriveListModel::connectedRpibootChipsChanged,
+            &_hwlist, &HWListModel::setConnectedRpibootChips);
+
+    // Auto-bootstrap: when a new rpiboot device is detected, start sideloading fastbootd
+    connect(&_drivelist, &DriveListModel::rpibootDeviceDetected,
+            this, &ImageWriter::onRpibootDeviceDetected);
+
     // Connect drive list poll timing events for performance tracking
     // Only record polls that take longer than 200ms to avoid noise from normal fast polls
     connect(&_drivelist, &DriveListModel::eventDriveListPoll,
@@ -423,6 +481,24 @@ ImageWriter::~ImageWriter()
     qDebug() << "Stopping network monitoring";
     PlatformQuirks::stopNetworkMonitoring();
     
+    // Cancel FastbootFlashThread before stopping drive list polling.
+    // Both use libusb; concurrent libusb_exit (FastbootFlashThread) and
+    // libusb_init (DriveListModelPollThread) trigger a macOS libusb deadlock
+    // where darwin_exit holds active_contexts_lock while waiting for the
+    // IONotification thread, which itself needs that lock for a pending IOKit
+    // callback.  Stopping FastbootFlashThread first eliminates the conflict.
+    if (_fastbootFlashThread) {
+        qDebug() << "Stopping FastbootFlashThread";
+        _fastbootFlashThread->cancel();
+        if (!_fastbootFlashThread->wait(10000)) {
+            qWarning() << "FastbootFlashThread did not stop within 10s, terminating";
+            _fastbootFlashThread->terminate();
+            _fastbootFlashThread->wait();
+        }
+        delete _fastbootFlashThread;
+        _fastbootFlashThread = nullptr;
+    }
+
     // Stop background drive list polling
     qDebug() << "Stopping background drive list polling";
     _drivelist.stopPolling();
@@ -433,6 +509,22 @@ ImageWriter::~ImageWriter()
         qDebug() << "Cleaning up CacheManager";
         delete _cacheManager;
         _cacheManager = nullptr;
+    }
+
+    // Give a user-triggered eject a chance to finish before teardown. Never
+    // terminate() it: killing the thread mid-DiskArbitration call is unsafe,
+    // and deleting a QThread that survived terminate() is a qFatal. If it is
+    // still flushing after the grace period, leave it to finish detached — the
+    // worker only reaches this object through a guarded QPointer, so it cannot
+    // touch a destroyed ImageWriter.
+    if (_manualEjectThread) {
+        qDebug() << "Waiting for manual eject thread to finish";
+        if (_manualEjectThread->wait(10000)) {
+            delete _manualEjectThread;
+        } else {
+            qWarning() << "Manual eject still running at teardown; leaving it to finish detached";
+        }
+        _manualEjectThread = nullptr;
     }
 
     // Ensure any running thread is properly cleaned up
@@ -477,19 +569,20 @@ void ImageWriter::setEngine(QQmlApplicationEngine *engine)
 }
 
 /* Set URL to download from */
-void ImageWriter::setSrc(const QUrl &url, quint64 downloadLen, quint64 extrLen, QByteArray expectedHash, bool multifilesinzip, QString parentcategory, QString osname, QByteArray initFormat, QString releaseDate)
+void ImageWriter::setSrc(const QUrl &url, quint64 downloadLen, quint64 extrLen, QByteArray expectedHash, bool multifilesinzip, QString parentcategory, QString osname, QByteArray initFormat, QString releaseDate, QString bmapUrl)
 {
     _src = url;
     _downloadLen = downloadLen;
-    _extrLen = extrLen;
     _expectedHash = expectedHash;
+    _extractSizeKnown = false;
+    _extrLen = extrLen;
     _multipleFilesInZip = multifilesinzip;
     _parentCategory = parentcategory;
     _osName = osname;
     _initFormat = (initFormat == "none") ? "" : initFormat;
     _osReleaseDate = releaseDate;
-    // If extract size is provided from manifest, we can trust it; otherwise assume known until proven otherwise
-    _extractSizeKnown = true;
+    _bmapUrl = bmapUrl;
+
     qDebug() << "setSrc: initFormat parameter:" << initFormat << "-> _initFormat set to:" << _initFormat;
 
     if (!_downloadLen && url.isLocalFile())
@@ -497,6 +590,37 @@ void ImageWriter::setSrc(const QUrl &url, quint64 downloadLen, quint64 extrLen, 
         QFileInfo fi(url.toLocalFile());
         _downloadLen = fi.size();
     }
+
+    // Parse local compressed files to estimate _extrLen for capacity checks.
+    if (!extrLen && _src.isLocalFile())
+    {
+        QString lowercaseurl = _src.toLocalFile().toLower();
+        bool compressed = lowercaseurl.endsWith(".zip") ||
+                          lowercaseurl.endsWith(".xz") ||
+                          lowercaseurl.endsWith(".bz2") ||
+                          lowercaseurl.endsWith(".gz") ||
+                          lowercaseurl.endsWith(".7z") ||
+                          lowercaseurl.endsWith(".zst") ||
+                          lowercaseurl.endsWith(".cache");
+
+        if (!compressed)
+            _extrLen = _downloadLen;
+        else if (lowercaseurl.endsWith(".xz"))
+            _parseXZFile();
+        else if (lowercaseurl.endsWith(".gz"))
+            _parseGzFile();
+        else if (lowercaseurl.endsWith(".zst"))
+            _parseZstdFile();
+        else
+            _parseCompressedFile();
+    }
+
+    // Gzip ISIZE is 32-bit, so uncompressed size is unreliable for files >4GB.
+    // The only extract size we can trust when calculating progress for gzipped
+    // images is the size provided by the manifest.
+    if (extrLen
+        || (_extrLen && !url.toString().toLower().endsWith(".gz")))
+        _extractSizeKnown = true;
 }
 
 /* Set device to write to */
@@ -505,6 +629,8 @@ void ImageWriter::setDst(const QString &device, quint64 deviceSize)
     _dst = device;
     _devLen = deviceSize;
     _selectedDeviceValid = !device.isEmpty();
+    _isRpibootDevice = false;  // Reset — setRpibootDevice() will re-set if needed
+    _isFastbootDevice = false;  // Reset — setFastbootDevice() will re-set if needed
 
     // Reset write completion state when device selection changes
     if (device.isEmpty()) {
@@ -512,6 +638,292 @@ void ImageWriter::setDst(const QString &device, quint64 deviceSize)
     }
 
     qDebug() << "Device selection changed to:" << device;
+}
+
+void ImageWriter::setRpibootDevice(const QString &deviceId,
+                                    const QString &storageTarget)
+{
+    _rpibootDeviceId = deviceId;
+    _rpibootStorageTarget = storageTarget;
+    _isRpibootDevice = true;
+    _selectedDeviceValid = true;
+    // Set _dst to the rpiboot ID so readyToWrite() passes
+    _dst = deviceId;
+    _devLen = 0;
+
+    qDebug() << "rpiboot device selected:" << deviceId
+             << "storageTarget=" << (storageTarget.isEmpty() ? QStringLiteral("<unset>") : storageTarget);
+}
+
+bool ImageWriter::isRpibootDevice() const
+{
+    return _isRpibootDevice;
+}
+
+void ImageWriter::setFastbootDevice(const QString &device, quint64 size)
+{
+    // device format: "fastboot://bus:addr/blockdevice"
+    QString path = device;
+    if (path.startsWith("fastboot://"))
+        path = path.mid(11); // strip scheme
+
+    // Parse "bus:addr/blockdevice"
+    int slashIdx = path.indexOf('/');
+    if (slashIdx > 0) {
+        _fastbootId = path.left(slashIdx);
+        _fastbootBlockDevice = path.mid(slashIdx + 1);
+    } else {
+        _fastbootId = path;
+        _fastbootBlockDevice = QStringLiteral("mmcblk0");
+    }
+
+    _isFastbootDevice = true;
+    _isRpibootDevice = false;
+    _dst = device;
+    _devLen = size;
+    _selectedDeviceValid = true;
+
+    qDebug() << "Fastboot device selected:" << device
+             << "id=" << _fastbootId << "block=" << _fastbootBlockDevice;
+}
+
+bool ImageWriter::isFastbootDevice() const
+{
+    return _isFastbootDevice;
+}
+
+void ImageWriter::onRpibootDeviceDetected(const QString &deviceId,
+                                            uint8_t busNumber, uint8_t deviceAddress,
+                                            const QList<uint8_t> &portPath, uint16_t productId)
+{
+    // Only auto-bootstrap when rpiboot/fastboot debug mode is enabled
+    if (!_debugRpiboot)
+        return;
+
+    // Compute port path key for dedup
+    QString ppKey;
+    for (int i = 0; i < portPath.size(); ++i) {
+        if (i > 0) ppKey += '.';
+        ppKey += QString::number(portPath[i]);
+    }
+
+    // Skip if already bootstrapping this device
+    if (_bootstrappingDevices.contains(ppKey))
+        return;
+
+    _bootstrappingDevices.insert(ppKey);
+    qDebug() << "Auto-bootstrap: starting rpiboot for" << ppKey << "deviceId=" << deviceId;
+
+    // Create DeviceInfo from parameters
+    RpibootThread::DeviceInfo devInfo;
+    devInfo.busNumber = busNumber;
+    devInfo.deviceAddress = deviceAddress;
+    for (const auto& p : portPath)
+        devInfo.portPath.push_back(p);
+
+    // Determine chip generation from PID
+    devInfo.chipGeneration = rpiboot::ChipGeneration::BCM2711; // safe default
+    if (auto gen = rpiboot::chipGenerationFromPid(productId))
+        devInfo.chipGeneration = *gen;
+
+    auto *thread = new RpibootThread(devInfo, _rpibootSideloadMode, this);
+    if (!_debugCustomFastbootGadget.isEmpty())
+        thread->setCustomFastbootGadget(_debugCustomFastbootGadget);
+    // Plumb the re-provisioning key through to FirmwareManager so the
+    // bootcode upload + gadget signing run on auto-bootstrap too — without
+    // this a pre-fused CM5 silently rejects the unsigned bootcode and the
+    // 15s re-enumerate timeout fires.
+    if (_debugSignFastbootGadget) {
+        QString rsaKey = _settings.value(QStringLiteral("secureboot_rsa_key")).toString();
+        if (rsaKey.isEmpty()) {
+            qWarning() << "Auto-bootstrap: re-provisioning enabled but no secure boot RSA key configured; "
+                          "uploaded bootcode will not be counter-signed and the device will reject it";
+        } else {
+            thread->setSignFastbootGadgetKey(rsaKey);
+        }
+        thread->setReprovisionDevice(true);
+    }
+
+    connect(thread, &RpibootThread::fastbootDeviceReady, this,
+            [this, ppKey](const QString &fastbootId) {
+                onBootstrapComplete(ppKey, fastbootId);
+            });
+    connect(thread, &RpibootThread::error, this,
+            [this, ppKey](const QString &msg) {
+                onBootstrapError(ppKey, msg);
+            });
+    connect(thread, &RpibootThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
+
+    _activeBootstrapThreads[ppKey] = thread;
+
+    // Pause drive scanning for the duration of the bootstrap.  The poll
+    // thread also calls libusb_get_device_list / scanRpibootDevices on a
+    // 1 s tick, and on macOS concurrent libusb access against the same
+    // bus while the bootstrap thread is doing sustained bulk transfers
+    // produces sporadic LIBUSB_ERROR_IO / NO_DEVICE failures partway
+    // through boot.img upload (variable cutoff at ~12-14 MB).  Same
+    // pattern the regular write path uses while WriteState != Idle.
+    qDebug() << "Auto-bootstrap: pausing drive scan to avoid concurrent libusb access";
+    _drivelist.pausePolling();
+
+    thread->start();
+}
+
+void ImageWriter::onBootstrapComplete(const QString &portPathKey, const QString &fastbootId)
+{
+    qDebug() << "Auto-bootstrap complete:" << portPathKey << "fastbootId=" << fastbootId;
+
+    // Clean up the thread
+    if (_activeBootstrapThreads.contains(portPathKey)) {
+        _activeBootstrapThreads[portPathKey]->deleteLater();
+        _activeBootstrapThreads.remove(portPathKey);
+    }
+    _bootstrappingDevices.remove(portPathKey);
+
+    // Enable fastboot scanning so the poll thread discovers storage devices,
+    // then unpause polling — paired with pausePolling() in the bootstrap kickoff.
+    _drivelist.setFastbootScanEnabled(true);
+    if (_activeBootstrapThreads.isEmpty()) {
+        qDebug() << "Auto-bootstrap: resuming drive scan";
+        _drivelist.resumePolling();
+    }
+}
+
+void ImageWriter::onBootstrapError(const QString &portPathKey, const QString &msg)
+{
+    qWarning() << "Auto-bootstrap error for" << portPathKey << ":" << msg;
+
+    // Clean up the thread
+    if (_activeBootstrapThreads.contains(portPathKey)) {
+        _activeBootstrapThreads[portPathKey]->deleteLater();
+        _activeBootstrapThreads.remove(portPathKey);
+    }
+    _bootstrappingDevices.remove(portPathKey);
+
+    // Unpause drive scanning when the last bootstrap finishes (success or
+    // error).  Only resume once no bootstraps remain in flight, in case
+    // multiple devices are being bootstrapped simultaneously.
+    if (_activeBootstrapThreads.isEmpty()) {
+        qDebug() << "Auto-bootstrap: resuming drive scan after error";
+        _drivelist.resumePolling();
+    }
+}
+
+void ImageWriter::onRpibootFastbootReady(const QString &fastbootId)
+{
+    qDebug() << "rpiboot fastboot device ready:" << fastbootId;
+
+    if (_rpibootThread) {
+        _rpibootThread->deleteLater();
+        _rpibootThread = nullptr;
+    }
+
+    // Resolve cache before starting the flash thread.  The regular
+    // (non-fastboot) write path at startWrite() does this — if a cached
+    // image exists and has been background-verified, it substitutes a
+    // file:// URL for _src so libcurl reads off disk instead of going to
+    // the network.  Without the same logic here, fastboot writes always
+    // hit the network even when the OS image is fully cached locally,
+    // which is what produced the "Recv failure: Connection reset by peer"
+    // we just saw despite the user reporting a cached image.
+    QUrl flashSrc = _src;
+    if (_cacheManager && !_expectedHash.isEmpty() &&
+        _cacheManager->hasPotentialCache(_expectedHash)) {
+        auto cacheStatus = _cacheManager->getCacheStatus();
+        if (cacheStatus.verificationComplete && cacheStatus.isValid) {
+            qDebug() << "FastbootFlashThread: using verified cache file"
+                     << cacheStatus.cacheFileName;
+            flashSrc = QUrl::fromLocalFile(cacheStatus.cacheFileName);
+        } else {
+            qDebug() << "FastbootFlashThread: cached file present but not yet"
+                        " verified — falling back to network download";
+        }
+    }
+
+    // Start FastbootFlashThread.  Use the storage target the user picked
+    // in the wizard --- this drives both where the image is written and
+    // the BOOT_ORDER nibble we'll set in the EEPROM afterwards.  An empty
+    // target here means the rpiboot selection didn't carry one through,
+    // in which case fall back to the eMMC (the only storage every CM is
+    // guaranteed to have) and log a warning so the mismatch is visible
+    // in support logs.
+    QString storageTarget = _rpibootStorageTarget;
+    if (storageTarget.isEmpty()) {
+        qWarning() << "rpiboot fastboot handoff: no storage target carried"
+                      " through selection --- defaulting to mmcblk0;"
+                      " EEPROM BOOT_ORDER will reflect SD/eMMC, not the"
+                      " user's intended target";
+        storageTarget = QStringLiteral("mmcblk0");
+    }
+    _fastbootFlashThread = new FastbootFlashThread(fastbootId, storageTarget, flashSrc, _downloadLen, _extrLen, _expectedHash, this);
+    _fastbootFlashThread->setImageCustomisation(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat);
+    if (!_bmapUrl.isEmpty())
+        _fastbootFlashThread->setBmapUrl(QUrl(_bmapUrl));
+
+    // Propagate Raspberry Pi Connect organisation registration.
+    // The API key is persisted in QSettings but never handed back to
+    // QML; read it directly here and forward to the flash thread.
+    // Only applies when "Raspberry Pi Connect for Organisations" is
+    // enabled in App Options.
+    if (_settings.value(QStringLiteral("connect_org_enabled")).toBool()) {
+        const QString orgKey =
+            _settings.value(QStringLiteral("connect_org_api_key")).toString();
+        if (!orgKey.isEmpty()) {
+            const QString orgDesc =
+                _settings.value(QStringLiteral("connect_org_description")).toString();
+            _fastbootFlashThread->setConnectRegistration(orgKey, orgDesc);
+        }
+    }
+    connect(_fastbootFlashThread, &FastbootFlashThread::success, this, &ImageWriter::onSuccess);
+    connect(_fastbootFlashThread, &FastbootFlashThread::error, this, &ImageWriter::onError);
+    connect(_fastbootFlashThread, &FastbootFlashThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
+    connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress, this, [this](quint64 now, quint64 total) {
+        emit downloadProgress(QVariant(now), QVariant(total));
+    });
+    connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress, this, [this](quint64 now, quint64 total) {
+        emit writeProgress(QVariant(now), QVariant(total));
+    });
+    connect(_fastbootFlashThread, &FastbootFlashThread::finalizing, this, &ImageWriter::onFinalizing);
+    connect(_fastbootFlashThread, &FastbootFlashThread::writing, this, [this]() {
+        setWriteState(WriteState::Writing);
+        startProgressPolling();
+    });
+
+    // Clean up thread pointer when finished
+    connect(_fastbootFlashThread, &QThread::finished, this, [this]() {
+        if (_fastbootFlashThread) {
+            _fastbootFlashThread->deleteLater();
+            _fastbootFlashThread = nullptr;
+        }
+    });
+
+    // Wire fastboot timing events and progress to PerformanceStats
+    connect(_fastbootFlashThread, &FastbootFlashThread::eventFastbootDeviceOpen,
+            this, [this](quint32 ms, bool ok, QString meta){
+                _performanceStats->recordEvent(PerformanceStats::EventType::FastbootDeviceOpen, ms, ok, meta);
+            });
+    connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress,
+            this, [this](quint64 now, quint64 total){
+                _performanceStats->recordDownloadProgress(now, total);
+            });
+    connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress,
+            this, [this](quint64 now, quint64 total){
+                _performanceStats->recordWriteProgress(now, total);
+            });
+
+    _fastbootFlashThread->start();
+}
+
+void ImageWriter::onRpibootError(const QString &msg)
+{
+    qWarning() << "rpiboot error:" << msg;
+
+    if (_rpibootThread) {
+        _rpibootThread->deleteLater();
+        _rpibootThread = nullptr;
+    }
+
+    onError(msg);
 }
 
 /* Returns true if src and dst are set and destination device is still valid */
@@ -560,6 +972,47 @@ QString ImageWriter::getHardwareName()
 /* Start writing */
 void ImageWriter::startWrite()
 {
+    // Refuse re-entry while a write is already in progress.  The deferred-watchdog
+    // fix (#1511) prevents false stall timeouts during macOS auth, so users should
+    // no longer reach this path.  The guard remains as defence-in-depth. (#1511)
+    if (_writeState == WriteState::Preparing || _writeState == WriteState::Writing ||
+        _writeState == WriteState::Verifying || _writeState == WriteState::Finalizing ||
+        _writeState == WriteState::Cancelling) {
+        qDebug() << "startWrite: ignoring — write already in progress, state:" << _writeState;
+        return;
+    }
+
+    // Clean up a finished-but-not-yet-collected thread (deleteLater timing gap).
+    // A *running* thread here is a bug — our exit paths (onError, onCancelled,
+    // QThread::finished handler) should have cleaned up already.
+    if (_thread) {
+        Q_ASSERT(!_thread->isRunning());
+        _thread->deleteLater();
+        _thread = nullptr;
+    }
+
+    // Same for the rpiboot thread — if a previous attempt finished or was
+    // cancelled, the handler sets _rpibootThread = nullptr via deleteLater(),
+    // but the deletion may still be pending in the event queue.
+    if (_rpibootThread) {
+        if (_rpibootThread->isRunning()) {
+            _rpibootThread->cancel();
+            _rpibootThread->wait(5000);
+        }
+        delete _rpibootThread;
+        _rpibootThread = nullptr;
+    }
+
+    // Same for the fastboot flash thread.
+    if (_fastbootFlashThread) {
+        if (_fastbootFlashThread->isRunning()) {
+            _fastbootFlashThread->cancel();
+            _fastbootFlashThread->wait(5000);
+        }
+        delete _fastbootFlashThread;
+        _fastbootFlashThread = nullptr;
+    }
+
     if (!readyToWrite())
     {
         // Provide a user-visible error rather than silently returning, so the UI can recover
@@ -591,6 +1044,133 @@ void ImageWriter::startWrite()
     }
 
     setWriteState(WriteState::Preparing);
+    setEjectState(EjectState::EjectIdle);
+
+    if (_isFastbootDevice)
+    {
+        // Already in fastboot mode — go directly to flash
+        emit preparationStatusUpdate(tr("Starting fastboot flash..."));
+        _fastbootFlashThread = new FastbootFlashThread(
+            _fastbootId, _fastbootBlockDevice, _src, _downloadLen, _extrLen, _expectedHash, this);
+        _fastbootFlashThread->setImageCustomisation(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat);
+        if (!_bmapUrl.isEmpty())
+            _fastbootFlashThread->setBmapUrl(QUrl(_bmapUrl));
+        // Same Connect-org wire-up as the rpiboot path: when the user
+        // picked a fastboot storage device directly, register the
+        // device's firmware identity with the organisation before
+        // reboot.
+        if (_settings.value(QStringLiteral("connect_org_enabled")).toBool()) {
+            const QString orgKey =
+                _settings.value(QStringLiteral("connect_org_api_key")).toString();
+            if (!orgKey.isEmpty()) {
+                const QString orgDesc =
+                    _settings.value(QStringLiteral("connect_org_description")).toString();
+                _fastbootFlashThread->setConnectRegistration(orgKey, orgDesc);
+            }
+        }
+        connect(_fastbootFlashThread, &FastbootFlashThread::success, this, &ImageWriter::onSuccess);
+        connect(_fastbootFlashThread, &FastbootFlashThread::error, this, &ImageWriter::onError);
+        connect(_fastbootFlashThread, &FastbootFlashThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
+        connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress, this, [this](quint64 now, quint64 total) {
+            emit downloadProgress(QVariant(now), QVariant(total));
+        });
+        connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress, this, [this](quint64 now, quint64 total) {
+            emit writeProgress(QVariant(now), QVariant(total));
+        });
+        connect(_fastbootFlashThread, &FastbootFlashThread::finalizing, this, &ImageWriter::onFinalizing);
+        connect(_fastbootFlashThread, &FastbootFlashThread::writing, this, [this]() {
+            setWriteState(WriteState::Writing);
+            startProgressPolling();
+        });
+        connect(_fastbootFlashThread, &QThread::finished, this, [this]() {
+            if (_fastbootFlashThread) {
+                _fastbootFlashThread->deleteLater();
+                _fastbootFlashThread = nullptr;
+            }
+        });
+        connect(_fastbootFlashThread, &FastbootFlashThread::eventFastbootDeviceOpen,
+                this, [this](quint32 ms, bool ok, QString meta){
+                    _performanceStats->recordEvent(PerformanceStats::EventType::FastbootDeviceOpen, ms, ok, meta);
+                });
+        connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress,
+                this, [this](quint64 now, quint64 total){
+                    _performanceStats->recordDownloadProgress(now, total);
+                });
+        connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress,
+                this, [this](quint64 now, quint64 total){
+                    _performanceStats->recordWriteProgress(now, total);
+                });
+        _fastbootFlashThread->start();
+        return;
+    }
+
+    if (_isRpibootDevice)
+    {
+        emit preparationStatusUpdate(tr("Preparing device for imaging..."));
+
+        // Parse the rpiboot device ID to extract USB bus/address/port info
+        RpibootThread::DeviceInfo devInfo;
+
+        // Parse "rpiboot://bus:addr:port1.port2..."
+        QString devPath = _rpibootDeviceId;
+        if (devPath.startsWith("rpiboot://"))
+            devPath = devPath.mid(10);
+        QStringList parts = devPath.split(':');
+        if (parts.size() >= 2) {
+            devInfo.busNumber = static_cast<uint8_t>(parts[0].toUInt());
+            devInfo.deviceAddress = static_cast<uint8_t>(parts[1].toUInt());
+        }
+        if (parts.size() >= 3) {
+            for (const auto& p : parts[2].split('.'))
+                if (!p.isEmpty())
+                    devInfo.portPath.push_back(static_cast<uint8_t>(p.toUInt()));
+        }
+
+        // Part 4 is the USB PID, which encodes the chip generation.
+        // Format added in rpiboot_scanner.cpp: rpiboot://bus:addr:portpath:pid
+        devInfo.chipGeneration = rpiboot::ChipGeneration::BCM2711;  // safe default
+        if (parts.size() >= 4) {
+            auto pid = static_cast<uint16_t>(parts[3].toUInt());
+            if (auto gen = rpiboot::chipGenerationFromPid(pid))
+                devInfo.chipGeneration = *gen;
+        }
+
+        _rpibootThread = new RpibootThread(devInfo, _rpibootSideloadMode, this);
+        if (!_debugCustomFastbootGadget.isEmpty())
+            _rpibootThread->setCustomFastbootGadget(_debugCustomFastbootGadget);
+        if (_debugSignFastbootGadget) {
+            QString rsaKey = _settings.value("secureboot_rsa_key").toString();
+            if (rsaKey.isEmpty()) {
+                qWarning() << "Debug: Re-provisioning requested, but no secure boot RSA key is configured; signing will be skipped";
+            } else {
+                _rpibootThread->setSignFastbootGadgetKey(rsaKey);
+            }
+            _rpibootThread->setReprovisionDevice(true);
+        }
+
+        // After sideload, start FastbootFlashThread
+        connect(_rpibootThread, &RpibootThread::fastbootDeviceReady, this, &ImageWriter::onRpibootFastbootReady);
+
+        connect(_rpibootThread, &RpibootThread::error, this, &ImageWriter::onRpibootError);
+        connect(_rpibootThread, &RpibootThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
+
+        // Wire rpiboot timing events to PerformanceStats
+        connect(_rpibootThread, &RpibootThread::eventFirmwareSetup,
+                this, [this](quint32 ms, bool ok, QString meta){
+                    _performanceStats->recordEvent(PerformanceStats::EventType::RpibootFirmwareSetup, ms, ok, meta);
+                });
+        connect(_rpibootThread, &RpibootThread::eventRpibootProtocol,
+                this, [this](quint32 ms, bool ok, QString meta){
+                    _performanceStats->recordEvent(PerformanceStats::EventType::RpibootProtocol, ms, ok, meta);
+                });
+        connect(_rpibootThread, &RpibootThread::eventFastbootWait,
+                this, [this](quint32 ms, bool ok){
+                    _performanceStats->recordEvent(PerformanceStats::EventType::RpibootFastbootWait, ms, ok);
+                });
+
+        _rpibootThread->start();
+        return;
+    }
 
     if (_src.toString() == "internal://format")
     {
@@ -609,14 +1189,6 @@ void ImageWriter::startWrite()
     }
 
     QByteArray urlstr = _src.toString(_src.FullyEncoded).toLatin1();
-    QString lowercaseurl = urlstr.toLower();
-    const bool compressed = lowercaseurl.endsWith(".zip") ||
-                            lowercaseurl.endsWith(".xz") ||
-                            lowercaseurl.endsWith(".bz2") ||
-                            lowercaseurl.endsWith(".gz") ||
-                            lowercaseurl.endsWith(".7z") ||
-                            lowercaseurl.endsWith(".zst") ||
-                            lowercaseurl.endsWith(".cache");
 
     // Proactive validation for local sources before spawning threads
     if (_src.isLocalFile())
@@ -640,18 +1212,6 @@ void ImageWriter::startWrite()
         }
     }
 
-    if (!_extrLen && _src.isLocalFile())
-    {
-        if (!compressed)
-            _extrLen = _downloadLen;
-        else if (lowercaseurl.endsWith(".xz"))
-            _parseXZFile();
-        else if (lowercaseurl.endsWith(".gz"))
-            _parseGzFile();
-        else
-            _parseCompressedFile();
-    }
-
     if (_devLen && _extrLen > _devLen)
     {
         emit error(tr("Storage capacity is not large enough.\n\n"
@@ -662,10 +1222,7 @@ void ImageWriter::startWrite()
 
     if (_extrLen && !_multipleFilesInZip && _extrLen % 512 != 0)
     {
-        emit error(tr("Input file is not a valid disk image.\n\n"
-                      "File size %1 bytes is not a multiple of 512 bytes.")
-                   .arg(_extrLen));
-        return;
+        qDebug() << "Image size" << _extrLen << "is not a multiple of 512 bytes. The last sector will be zero-padded.";
     }
 
     // Start performance stats session early so cache lookup is captured
@@ -857,6 +1414,8 @@ void ImageWriter::startWrite()
     connect(_thread, SIGNAL(error(QString)), SLOT(onError(QString)));
     connect(_thread, SIGNAL(finalizing()), SLOT(onFinalizing()));
     connect(_thread, SIGNAL(preparationStatusUpdate(QString)), SLOT(onPreparationStatusUpdate(QString)));
+    connect(_thread, &DownloadThread::ejectStarted, this, &ImageWriter::onEjectStarted);
+    connect(_thread, &DownloadThread::ejectFinished, this, &ImageWriter::onEjectFinished);
     // Ensure cleanup of thread pointer on finish in all paths
     connect(_thread, &QThread::finished, this, [this]() {
         if (_thread)
@@ -906,7 +1465,8 @@ void ImageWriter::startWrite()
         // Also transition state to Verifying when verify progress first arrives
         connect(downloadThread, &DownloadExtractThread::verifyProgressChanged,
                 this, [this](quint64 /*now*/, quint64 /*total*/){
-                    if (_writeState != WriteState::Verifying && _writeState != WriteState::Finalizing && _writeState != WriteState::Succeeded)
+                    if (_writeState != WriteState::Verifying && _writeState != WriteState::Finalizing &&
+                        _writeState != WriteState::Succeeded && _writeState != WriteState::Cancelling)
                         setWriteState(WriteState::Verifying);
                 });
         
@@ -977,7 +1537,26 @@ void ImageWriter::startWrite()
     connect(_thread, &DownloadThread::eventDriveAuthorization,
             this, [this](quint32 durationMs, bool success){
                 _performanceStats->recordEvent(PerformanceStats::EventType::DriveAuthorization, durationMs, success);
+                // Start the progress watchdog only after device authorization completes.
+                // On macOS, authorization shows system dialogs (passkey + removable media access)
+                // that can take an indeterminate amount of time. Starting the watchdog earlier
+                // would cause false stall detection during this auth period. (#1511)
+                if (success && _progressWatchdog && _thread) {
+                    _progressWatchdog->start(_thread);
+                }
             });
+    // Stop the watchdog before the post-write sync. The fdatasync/fsync can
+    // block for minutes on slow cards and no progress indicators advance during
+    // it, so the watchdog would otherwise fire a false stall timeout.
+    // BlockingQueuedConnection ensures the watchdog is stopped before the
+    // download thread enters fdatasync (safe — main thread never waits on
+    // the download thread during normal operation).
+    connect(_thread, &DownloadThread::finalSyncStarting,
+            this, [this](){
+                if (_progressWatchdog) {
+                    _progressWatchdog->stop();
+                }
+            }, Qt::BlockingQueuedConnection);
     connect(_thread, &DownloadThread::eventDriveMbrZeroing,
             this, [this](quint32 durationMs, bool success, QString metadata){
                 _performanceStats->recordEvent(PerformanceStats::EventType::DriveMbrZeroing, durationMs, success, metadata);
@@ -997,6 +1576,10 @@ void ImageWriter::startWrite()
     connect(_thread, &DownloadThread::eventCustomisation,
             this, [this](quint32 durationMs, bool success, QString metadata){
                 _performanceStats->recordEvent(PerformanceStats::EventType::Customisation, durationMs, success, metadata);
+            });
+    connect(_thread, &DownloadThread::eventCustomisationVerify,
+            this, [this](quint32 durationMs, bool success, QString metadata){
+                _performanceStats->recordEvent(PerformanceStats::EventType::CustomisationVerify, durationMs, success, metadata);
             });
     connect(_thread, &DownloadThread::eventFinalSync,
             this, [this](quint32 durationMs, bool success){
@@ -1129,7 +1712,9 @@ void ImageWriter::startWrite()
             });
 
     _thread->setVerifyEnabled(_verifyEnabled);
-    _thread->setUserAgent(QString("Mozilla/5.0 rpi-imager/%1").arg(staticVersion()).toUtf8());
+    // Single source of truth for the User-Agent: CurlNetworkConfig (also used by
+    // all the libcurl fetch paths via applyCurlSettings) so it can never drift.
+    _thread->setUserAgent(CurlNetworkConfig::instance().userAgent());
     qDebug() << "startWrite: Passing to thread - initFormat:" << _initFormat << "cloudinit empty:" << _cloudinit.isEmpty() << "cloudinitNetwork empty:" << _cloudinitNetwork.isEmpty();
     _thread->setImageCustomisation(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat, _advancedOptions);
     
@@ -1145,6 +1730,7 @@ void ImageWriter::startWrite()
     _thread->setDebugAsyncQueueDepth(_debugAsyncQueueDepth);
     _thread->setDebugIPv4Only(_debugIPv4Only);
     _thread->setDebugSkipEndOfDevice(_debugSkipEndOfDevice);
+    _thread->setDebugIgnoreDeviceLimits(_debugIgnoreDeviceLimits);
 
     // Only set up cache operations for remote downloads, not when using cached files as source
     if (!_expectedHash.isEmpty() && !QUrl(urlstr).isLocalFile())
@@ -1201,9 +1787,39 @@ void ImageWriter::startWrite()
 /* Cancel write - for user-initiated cancellation only */
 void ImageWriter::cancelWrite()
 {
+    setWriteState(WriteState::Cancelling);
+
     if (_waitingForCacheVerification)
     {
         skipCacheVerification();
+        return;
+    }
+
+    if (_rpibootThread)
+    {
+        _rpibootThread->cancel();
+        connect(_rpibootThread, &QThread::finished, this, [this]() {
+            if (_rpibootThread) {
+                _rpibootThread->deleteLater();
+                _rpibootThread = nullptr;
+            }
+            setWriteState(WriteState::Cancelled);
+            emit cancelled();
+        });
+        return;
+    }
+
+    if (_fastbootFlashThread)
+    {
+        _fastbootFlashThread->cancel();
+        connect(_fastbootFlashThread, &QThread::finished, this, [this]() {
+            if (_fastbootFlashThread) {
+                _fastbootFlashThread->deleteLater();
+                _fastbootFlashThread = nullptr;
+            }
+            setWriteState(WriteState::Cancelled);
+            emit cancelled();
+        });
         return;
     }
 
@@ -1261,7 +1877,8 @@ void ImageWriter::skipCacheVerification()
 void ImageWriter::onCancelled()
 {
     setWriteState(WriteState::Cancelled);
-    
+    stopProgressPolling();
+
     // Clean up thread
     QObject *senderObj = sender();
     if (senderObj) {
@@ -1540,7 +2157,7 @@ bool ImageWriter::checkSWCapability(const QString &cap) {
     return false;
 }
 
-void ImageWriter::onOsListFetchComplete(const QByteArray &data, const QUrl &url)
+void ImageWriter::onOsListFetchComplete(const QByteArray &data, const QUrl &url, const QUrl &effectiveUrl)
 {
     // Calculate request duration for performance tracking
     quint32 durationMs = 0;
@@ -1553,6 +2170,20 @@ void ImageWriter::onOsListFetchComplete(const QByteArray &data, const QUrl &url)
     
     // Track if this is the top-level OS list request
     bool isTopLevelRequest = (url == osListUrl());
+    
+    // If this is the top-level custom repo request and the URL was redirected,
+    // update _repo to reflect the final URL. This ensures "Using data from X"
+    // shows the actual server that served the data, not the original redirect source.
+    // This is a security consideration - users should see where data actually came from.
+    if (isTopLevelRequest && customRepo() && effectiveUrl.isValid() && effectiveUrl != url) {
+        QString oldHost = _repo.host();
+        _repo = effectiveUrl;
+        QString newHost = _repo.host();
+        qDebug() << "Custom repo URL was redirected. Updated display from" << oldHost << "to" << newHost;
+        if (oldHost != newHost) {
+            emit customRepoHostChanged();
+        }
+    }
 
     auto response_object = QJsonDocument::fromJson(data).object();
 
@@ -1628,7 +2259,21 @@ void ImageWriter::onOsListFetchError(const QString &errorMessage, const QUrl &ur
     }
 
     qDebug() << "Failed to fetch URL [" << url << "]:" << errorMessage;
-    
+
+    // If the top-level OS list fetch fails with a connection error and we haven't
+    // tried IPv4-only yet, retry with IPv4-only mode. This handles Windows 11 systems
+    // with broken IPv6 routing where DNS returns AAAA records but IPv6 connections
+    // time out, while the browser's Happy Eyeballs falls back to IPv4 transparently.
+    if (isTopLevelRequest && _completeOsList.isEmpty()
+        && !CurlNetworkConfig::instance().ipv4Only()
+        && PlatformQuirks::hasNetworkConnectivity()) {
+        qDebug() << "OS list fetch failed with connectivity present - retrying with IPv4-only";
+        CurlNetworkConfig::instance().setIPv4Only(true);
+        _debugIPv4Only = true;
+        beginOSListFetch();
+        return;
+    }
+
     if (isTopLevelRequest) {
         if (_completeOsList.isEmpty()) {
             // No data at all - notify UI of offline state
@@ -1763,6 +2408,10 @@ void ImageWriter::beginOSListFetch() {
     if (!preflightValidateUrl(topUrl, QStringLiteral("repository:"))) {
         return;
     }
+
+    // Auto-detect system proxy (e.g. corporate proxy configured in Windows Internet Options).
+    // This is a no-op if a proxy was already detected or manually configured.
+    CurlNetworkConfig::instance().detectSystemProxy(topUrl);
 
     // Create a CurlFetcher to fetch the OS list
     auto *fetcher = new CurlFetcher(this);
@@ -1942,9 +2591,10 @@ void ImageWriter::startProgressPolling()
                 });
     }
     
-    if (_thread) {
-        _progressWatchdog->start(_thread);
-    }
+    // NOTE: The watchdog is NOT started here. It will be started after device
+    // authorization completes, via the eventDriveAuthorization signal handler.
+    // This prevents false stall detection during the indeterminate macOS auth
+    // period where system dialogs block the thread but no I/O has begun. (#1511)
 }
 
 void ImageWriter::stopProgressPolling()
@@ -1994,6 +2644,67 @@ void ImageWriter::restartWrite(QString reason)
     }
 }
 
+void ImageWriter::setEjectState(EjectState state)
+{
+    if (_ejectState == state)
+        return;
+
+    _ejectState = state;
+    emit ejectStateChanged();
+}
+
+void ImageWriter::onEjectStarted()
+{
+    setEjectState(EjectState::EjectInProgress);
+}
+
+void ImageWriter::onEjectFinished(bool succeeded)
+{
+    // Ignore a stale result if a new write has already reset the state
+    if (_ejectState != EjectState::EjectInProgress)
+        return;
+
+    setEjectState(succeeded ? EjectState::EjectSucceeded : EjectState::EjectFailed);
+}
+
+void ImageWriter::ejectDrive()
+{
+    // The eject result (queued onEjectFinished) can arrive before the worker's
+    // finished() signal, so ejectState alone would let a retry overwrite a
+    // thread that is still winding down — check the thread pointer too.
+    if (_ejectState == EjectState::EjectInProgress || _manualEjectThread)
+        return;
+
+    // Only regular block devices can be ejected (not fastboot targets)
+    if (_dst.isEmpty() || _dst.startsWith("fastboot://"))
+        return;
+
+    setEjectState(EjectState::EjectInProgress);
+
+    const QString device = _dst;
+    // Guard `this` with a QPointer and deliver via the application object: the
+    // destructor does not join a slow eject, so the worker must never touch a
+    // destroyed ImageWriter.
+    QPointer<ImageWriter> self(this);
+    QThread *thread = QThread::create([self, device]() {
+        PlatformQuirks::DiskResult result =
+            PlatformQuirks::ejectDisk(PlatformQuirks::getEjectDevicePath(device));
+        const bool succeeded = (result == PlatformQuirks::DiskResult::Success);
+        QMetaObject::invokeMethod(QCoreApplication::instance(), [self, succeeded]() {
+            if (self)
+                self->onEjectFinished(succeeded);
+        }, Qt::QueuedConnection);
+    });
+    _manualEjectThread = thread;
+    connect(thread, &QThread::finished, this, [this, thread]() {
+        thread->deleteLater();
+        // A retry may already own the member; only clear our own pointer.
+        if (_manualEjectThread == thread)
+            _manualEjectThread = nullptr;
+    });
+    thread->start();
+}
+
 void ImageWriter::setWriteState(WriteState state)
 {
     if (_writeState == state)
@@ -2015,6 +2726,7 @@ void ImageWriter::setWriteState(WriteState state)
         case WriteState::Writing:
         case WriteState::Verifying:
         case WriteState::Finalizing:
+        case WriteState::Cancelling:
             // Pause all scanning during write operations
             // Device removal will be detected by I/O errors in the write thread
             // This avoids 20+ seconds of overhead from drive enumeration
@@ -2047,15 +2759,24 @@ void ImageWriter::setVerifyEnabled(bool verify)
 /* Relay events from download thread to QML */
 void ImageWriter::onSuccess()
 {
+    // Guard against a late success signal arriving after an error has
+    // already been reported (e.g. FastbootFlashThread falling through
+    // after a flash failure).
+    if (_writeState == WriteState::Failed || _writeState == WriteState::Cancelled ||
+        _writeState == WriteState::Cancelling) {
+        qDebug() << "Ignoring late success signal — write already in state:" << _writeState;
+        return;
+    }
+
     setWriteState(WriteState::Succeeded);
     stopProgressPolling();
-    
+
     // End performance stats session
     _performanceStats->endSession(true);
-    
+
     // Clear Pi Connect token on successful write completion
     clearConnectToken();
-    
+
     emit success();
 
     if (_settings.value("beep").toBool()) {
@@ -2067,15 +2788,26 @@ void ImageWriter::onError(QString msg)
 {
     // Guard against duplicate errors - device removal disconnects error signal,
     // but this catches any already-queued signals
-    if (_cancelledDueToDeviceRemoval || 
-        _writeState == WriteState::Failed || 
-        _writeState == WriteState::Cancelled) {
+    if (_cancelledDueToDeviceRemoval ||
+        _writeState == WriteState::Failed ||
+        _writeState == WriteState::Cancelled ||
+        _writeState == WriteState::Cancelling) {
         qDebug() << "Ignoring duplicate/late error:" << msg;
         return;
     }
     
     setWriteState(WriteState::Failed);
     stopProgressPolling();
+    
+    // Cancel any running write thread to prevent orphaned operations.
+    // Without this, a thread blocked on macOS auth could resume writing
+    // after the user starts a new write attempt, causing dual-write crashes. (#1511)
+    if (_thread && _thread->isRunning()) {
+        _thread->cancelDownload();
+    }
+    if (_fastbootFlashThread && _fastbootFlashThread->isRunning()) {
+        _fastbootFlashThread->cancel();
+    }
     
     // End performance stats session with error
     _performanceStats->endSession(false, msg);
@@ -2238,16 +2970,10 @@ void ImageWriter::_parseGzFile()
     // - CRC32 (4 bytes, little-endian)
     // - ISIZE (4 bytes, little-endian) - original file size modulo 2^32
     //
-    // IMPORTANT: The ISIZE field is only 32 bits, so it stores the original size
-    // modulo 2^32. This means we cannot reliably determine the uncompressed size
-    // for files larger than 4GB. We still parse it for storage space estimation,
-    // but mark the size as unreliable for progress display purposes.
+    // ISIZE is only 32 bits so this is a best-effort estimate for capacity
+    // checks.  The caller (setSrc) owns the _extractSizeKnown flag that
+    // controls whether the UI trusts this value for progress display.
     const qint64 GZIP_TRAILER_SIZE = 8;
-
-    // Mark gzip extract size as unreliable - the format cannot accurately represent
-    // sizes >4GB, so progress percentage cannot be reliably calculated.
-    // This causes the UI to show an indeterminate progress bar instead of misleading percentages.
-    _extractSizeKnown = false;
 
     if (f.size() > GZIP_TRAILER_SIZE && f.open(QIODevice::ReadOnly))
     {
@@ -2288,6 +3014,59 @@ void ImageWriter::_parseGzFile()
     {
         qDebug() << "Unable to open .gz file for parsing";
     }
+}
+
+void ImageWriter::_parseZstdFile()
+{
+    QFile f(_src.toLocalFile());
+    _extrLen = 0;
+
+    if (!f.open(QIODevice::ReadOnly))
+    {
+        qDebug() << "Unable to open .zst file for parsing";
+        return;
+    }
+
+    // ZSTD_findDecompressedSize() iterates through all concatenated frames
+    // to compute the total decompressed size. It requires the full compressed
+    // data in memory, but this is acceptable for custom file size estimates.
+    QByteArray data = f.readAll();
+    f.close();
+
+    if (data.isEmpty())
+    {
+        qDebug() << "Empty .zst file";
+        return;
+    }
+
+    unsigned long long fcs = ZSTD_findDecompressedSize(data.constData(), data.size());
+
+    // The failure sentinels are (0ULL - 2) and (0ULL - 1), not 0, so they have to
+    // be tested by name: comparing against 0 alone lets ZSTD_CONTENTSIZE_UNKNOWN
+    // through as _extrLen = ULLONG_MAX, and startWrite() then rejects a perfectly
+    // good local image with "Storage capacity is not large enough".
+    if (fcs == ZSTD_CONTENTSIZE_ERROR)
+    {
+        qDebug() << "Unable to parse .zst file (invalid or truncated frames)";
+        return;
+    }
+
+    if (fcs == ZSTD_CONTENTSIZE_UNKNOWN)
+    {
+        // Size not recorded in the frame headers (streaming-compressed input).
+        // Leave _extrLen unknown and let progress fall back to the download size.
+        qDebug() << "Parsed .zst file. Uncompressed size: unknown (FCS not present)";
+        return;
+    }
+
+    if (fcs == 0)
+    {
+        qDebug() << "Unable to determine decompressed size of .zst file";
+        return;
+    }
+
+    _extrLen = fcs;
+    qDebug() << "Parsed .zst file. Uncompressed size:" << _extrLen;
 }
 
 bool ImageWriter::isOnline()
@@ -2805,7 +3584,117 @@ bool ImageWriter::getBoolSetting(const QString &key)
 
 QString ImageWriter::getStringSetting(const QString &key)
 {
+    // The Connect organisation API key is a persisted secret: the
+    // UI is never allowed to read it back.  Use hasConnectOrgRegistration()
+    // / clearConnectOrgRegistration() from QML instead.
+    if (key == QLatin1String("connect_org_api_key"))
+        return QString();
     return _settings.value(key).toString();
+}
+
+void ImageWriter::setConnectOrgRegistration(const QString &apiKey,
+                                              const QString &descriptionPrefix)
+{
+    const QString trimmedKey = apiKey.trimmed();
+    const QString trimmedDesc = descriptionPrefix.trimmed();
+    if (trimmedKey.isEmpty()) {
+        // Leave any existing stored key intact; only update description.
+        setConnectOrgDescription(trimmedDesc);
+        return;
+    }
+    // The key is concatenated into "Authorization: Bearer <key>" before
+    // hitting curl_slist_append.  Any control character (CR, LF, NUL,
+    // etc.) would let a pasted value split the request and inject extra
+    // headers — reject up front rather than rely on the receiver.
+    for (QChar ch : trimmedKey) {
+        if (ch.unicode() < 0x20 || ch.unicode() == 0x7F) {
+            qWarning() << "Connect: refusing organisation API key with control characters";
+            return;
+        }
+    }
+    _settings.setValue(QStringLiteral("connect_org_api_key"), trimmedKey);
+    _settings.setValue(QStringLiteral("connect_org_description"), trimmedDesc);
+    _settings.sync();
+}
+
+void ImageWriter::setConnectOrgDescription(const QString &descriptionPrefix)
+{
+    _settings.setValue(QStringLiteral("connect_org_description"),
+                       descriptionPrefix.trimmed());
+    _settings.sync();
+}
+
+void ImageWriter::clearConnectOrgRegistration()
+{
+    _settings.remove(QStringLiteral("connect_org_api_key"));
+    _settings.remove(QStringLiteral("connect_org_description"));
+    _settings.sync();
+}
+
+bool ImageWriter::hasConnectOrgRegistration() const
+{
+    return !_settings.value(QStringLiteral("connect_org_api_key"))
+                     .toString().isEmpty();
+}
+
+QString ImageWriter::getConnectOrgDescription() const
+{
+    return _settings.value(QStringLiteral("connect_org_description")).toString();
+}
+
+QVariantMap ImageWriter::requestOrgAuthKey(const QString &description, int ttlDays)
+{
+    QVariantMap out;
+    out.insert(QStringLiteral("ok"), false);
+
+    const QString apiKey =
+        _settings.value(QStringLiteral("connect_org_api_key")).toString();
+    if (apiKey.isEmpty()) {
+        qWarning() << "Connect: cannot mint auth key — no organisation API key set";
+        out.insert(QStringLiteral("error"),
+                   tr("No organisation API key is configured."));
+        return out;
+    }
+
+    // Clamp the TTL.  The signature is Q_INVOKABLE so any QML caller
+    // (including a future bug) could ask for a 10-year key; cap it
+    // server-independently to a sensible window.  <= 0 falls through
+    // to the registrar's "omit field" path so the server picks its
+    // own default.
+    constexpr int kMaxTtlDays = 30;
+    if (ttlDays > kMaxTtlDays)
+        ttlDays = kMaxTtlDays;
+
+    ConnectDeviceRegistrar registrar(apiKey, QString());
+    auto result = registrar.requestAuthKey(description, ttlDays);
+    if (!result.ok) {
+        qWarning() << "Connect: auth-key request failed:" << result.errorMessage;
+        out.insert(QStringLiteral("error"), result.errorMessage);
+        return out;
+    }
+    // Defence-in-depth: the secret is about to be written into a
+    // shell heredoc / cloud-init runcmd as a Pi Connect token.  An
+    // attacker who can MITM (or compromise) the Connect API could
+    // return a "secret" containing newlines / shell metacharacters,
+    // closing the heredoc early and gaining root execution at first
+    // boot.  Reject anything that doesn't look like a real auth key.
+    if (!verifyAuthKey(result.secret, /*strict=*/false)) {
+        qWarning() << "Connect: API returned a secret that does not match the "
+                      "expected auth-key format; refusing to use it";
+        out.insert(QStringLiteral("error"),
+                   tr("Raspberry Pi Connect returned an unexpected response."));
+        return out;
+    }
+    qDebug() << "Connect: minted auth key id=" << result.id;
+    // Stash the secret directly in _piConnectToken (and emit the
+    // received signal so QML reflects the new token) instead of
+    // returning it to QML — keeps the secret off the QML stack and
+    // lets discardOrgMintedConnectToken() recognise it later.
+    _piConnectToken = result.secret;
+    _piConnectTokenIsOrgMinted = true;
+    emit connectTokenReceived(result.secret);
+    out.insert(QStringLiteral("ok"), true);
+    return out;
 }
 
 // Debug options implementation (secret menu: Cmd+Option+S on macOS, Ctrl+Alt+S on others)
@@ -2911,13 +3800,107 @@ void ImageWriter::setDebugSkipEndOfDevice(bool enabled)
     }
 }
 
-// Platform-specific implementation (defined in platform-specific source files)
-extern QString getRsaKeyFingerprint(const QString &keyPath);
+bool ImageWriter::getDebugIgnoreDeviceLimits() const
+{
+    return _debugIgnoreDeviceLimits;
+}
+
+void ImageWriter::setDebugIgnoreDeviceLimits(bool enabled)
+{
+    if (_debugIgnoreDeviceLimits != enabled) {
+        _debugIgnoreDeviceLimits = enabled;
+        qDebug() << "Debug: Ignore device I/O limits" << (enabled ? "enabled" : "disabled");
+    }
+}
+
+bool ImageWriter::getDebugRpiboot() const
+{
+    return _debugRpiboot;
+}
+
+void ImageWriter::setDebugRpiboot(bool enabled)
+{
+    if (_debugRpiboot != enabled) {
+        _debugRpiboot = enabled;
+        _drivelist.setRpibootEnabled(enabled);
+        _drivelist.setFastbootScanEnabled(enabled);
+        // Sticky across runs — restored in the constructor.
+        _settings.setValue(QStringLiteral("debug_rpiboot"), enabled);
+        _settings.sync();
+        qDebug() << "Debug: Rpiboot/fastboot support" << (enabled ? "enabled" : "disabled");
+    }
+}
+
+QString ImageWriter::getDebugCustomFastbootGadget() const
+{
+    return _debugCustomFastbootGadget;
+}
+
+void ImageWriter::setDebugCustomFastbootGadget(const QString &path)
+{
+    // The QML file dialog returns file:// URLs; convert to a local path
+    // so downstream code (FirmwareManager::ensureAvailable) can use it
+    // with std::filesystem::copy_file.
+    QString localPath = path;
+    if (localPath.startsWith(QStringLiteral("file://"))) {
+        localPath = QUrl(localPath).toLocalFile();
+    }
+    if (_debugCustomFastbootGadget != localPath) {
+        _debugCustomFastbootGadget = localPath;
+        qDebug() << "Debug: Custom fastboot gadget" << (localPath.isEmpty() ? "cleared" : localPath);
+    }
+}
+
+bool ImageWriter::getDebugForceSecureBoot() const
+{
+    return _debugForceSecureBoot;
+}
+
+void ImageWriter::setDebugForceSecureBoot(bool enabled)
+{
+    if (_debugForceSecureBoot != enabled) {
+        _debugForceSecureBoot = enabled;
+        qDebug() << "Debug: Force Secure Boot available" << (enabled ? "enabled" : "disabled");
+    }
+}
+
+bool ImageWriter::getDebugSignFastbootGadget() const
+{
+    return _debugSignFastbootGadget;
+}
+
+void ImageWriter::setDebugSignFastbootGadget(bool enabled)
+{
+    if (_debugSignFastbootGadget != enabled) {
+        _debugSignFastbootGadget = enabled;
+        qDebug() << "Debug: Sign fastboot gadget" << (enabled ? "enabled" : "disabled");
+    }
+}
 
 QString ImageWriter::getRsaKeyFingerprint(const QString &keyPath)
 {
-    // Delegate to platform-specific implementation
-    return ::getRsaKeyFingerprint(keyPath);
+    if (keyPath.isEmpty() || !QFile::exists(keyPath)) {
+        return QString();
+    }
+
+    // The boot ROM hashes its 264-byte (N little-endian || E little-endian) blob
+    // to produce the fingerprint it reports back. The PAL builds that same blob
+    // natively on every platform, so the fingerprint is just SHA-256 of it.
+    const QByteArray bootloaderFormat = SecureBootCrypto::extractRsaPubkeyBin(keyPath);
+    if (bootloaderFormat.size() != 264) {
+        qDebug() << "getRsaKeyFingerprint: extractRsaPubkeyBin returned"
+                 << bootloaderFormat.size() << "bytes, expected 264";
+        return QString();
+    }
+
+    const QByteArray hash = QCryptographicHash::hash(bootloaderFormat, QCryptographicHash::Sha256);
+
+    QString fingerprint;
+    for (int i = 0; i < 16 && i < hash.size(); i++) {
+        fingerprint += QString("%1").arg(static_cast<unsigned char>(hash[i]), 2, 16, QChar('0'));
+        if (i == 7) fingerprint += ":";
+    }
+    return fingerprint.toUpper();
 }
 
 void ImageWriter::setSetting(const QString &key, const QVariant &value)
@@ -2972,11 +3955,19 @@ void ImageWriter::applyCustomisationFromSettings(const QVariantMap &settings)
         return;
     }
 
+    // Make the selected OS release date available to the generator so it can
+    // choose the right password hashing algorithm (yescrypt vs sha256crypt)
+    // when hashing a freshly entered plaintext password at generation time.
+    QVariantMap s = settings;
+    s.insert(QStringLiteral("osReleaseDate"), _osReleaseDate);
+
     if (_initFormat == "systemd") {
-        _applySystemdCustomisationFromSettings(settings);
+        _applySystemdCustomisationFromSettings(s);
+    } else if (_initFormat == "rpi-preseed") {
+        _applyRpiPreseedCustomisationFromSettings(s);
     } else {
         // customisation for cloudinit and cloudinit-rpi
-        _applyCloudInitCustomisationFromSettings(settings);
+        _applyCloudInitCustomisationFromSettings(s);
     }
 }
 
@@ -2984,23 +3975,25 @@ void ImageWriter::_applySystemdCustomisationFromSettings(const QVariantMap &s)
 {
     // Use CustomisationGenerator for script generation
     QByteArray script = rpi_imager::CustomisationGenerator::generateSystemdScript(s, _piConnectToken);
-    
-    // Extract recommendedWifiCountry for cmdline append
-    QByteArray cmdlineAppend;
-    const QString wifiCountry = s.value("recommendedWifiCountry").toString().trimmed();
-    if (!wifiCountry.isEmpty()) {
-        cmdlineAppend = QByteArray(" ") + QByteArray("cfg80211.ieee80211_regdom=") + wifiCountry.toUtf8();
-    }
 
-    // Check if secure boot should be enabled
-    // Note: Don't validate rsaKeyPath with QFile::exists() here - it can be slow on
-    // iCloud-synced or network paths. The actual write operation will validate the file.
+    QByteArray cmdlineAppend;
     ImageOptions::AdvancedOptions advOpts = NoAdvancedOptions;
-    bool secureBootEnabled = s.value("secureBootEnabled").toBool();
-    QString rsaKeyPath = _settings.value("secureboot_rsa_key").toString();
-    if (secureBootEnabled && !rsaKeyPath.isEmpty()) {
-        advOpts |= ImageOptions::EnableSecureBoot;
-        qDebug() << "Secure boot enabled with RSA key:" << rsaKeyPath;
+
+    if (!script.isEmpty()) {
+        const QString wifiCountry = s.value("recommendedWifiCountry").toString().trimmed();
+        if (!wifiCountry.isEmpty()) {
+            cmdlineAppend = QByteArray(" ") + QByteArray("cfg80211.ieee80211_regdom=") + wifiCountry.toUtf8();
+        }
+
+        // Check if secure boot should be enabled
+        // Note: Don't validate rsaKeyPath with QFile::exists() here - it can be slow on
+        // iCloud-synced or network paths. The actual write operation will validate the file.
+        bool secureBootEnabled = s.value("secureBootEnabled").toBool();
+        QString rsaKeyPath = _settings.value("secureboot_rsa_key").toString();
+        if (secureBootEnabled && !rsaKeyPath.isEmpty()) {
+            advOpts |= ImageOptions::EnableSecureBoot;
+            qDebug() << "Secure boot enabled with RSA key:" << rsaKeyPath;
+        }
     }
 
     setImageCustomisation(QByteArray(), cmdlineAppend, script, QByteArray(), QByteArray(), advOpts);
@@ -3018,67 +4011,119 @@ void ImageWriter::_applyCloudInitCustomisationFromSettings(const QVariantMap &s)
     QByteArray netcfg = rpi_imager::CustomisationGenerator::generateCloudInitNetworkConfig(
         s, hasCcRpi);
     
-    // Extract recommendedWifiCountry for cmdline append
+    // Only emit cmdline / advanced options when there is actual content to
+    // customise.  A stale persisted recommendedWifiCountry should not cause
+    // device writes when customisation was skipped.
     QByteArray cmdlineAppend;
-    const QString wifiCountry = s.value("recommendedWifiCountry").toString().trimmed();
-    if (!wifiCountry.isEmpty()) {
-        cmdlineAppend = QByteArray(" ") + QByteArray("cfg80211.ieee80211_regdom=") + wifiCountry.toUtf8();
-    }
-    
-    // Check if secure boot should be enabled
-    // Note: Don't validate rsaKeyPath with QFile::exists() here - it can be slow on
-    // iCloud-synced or network paths. The actual write operation will validate the file.
     ImageOptions::AdvancedOptions advOpts = NoAdvancedOptions;
-    bool secureBootEnabled = s.value("secureBootEnabled").toBool();
-    QString rsaKeyPath = _settings.value("secureboot_rsa_key").toString();
-    if (secureBootEnabled && !rsaKeyPath.isEmpty()) {
-        advOpts |= ImageOptions::EnableSecureBoot;
-        qDebug() << "Secure boot enabled with RSA key:" << rsaKeyPath;
-    }
-    
-    setImageCustomisation(QByteArray(), cmdlineAppend, QByteArray(), cloud, netcfg, advOpts);
-}
 
-QString ImageWriter::crypt(const QByteArray &password)
-{
-    QByteArray saltchars =
-      "./0123456789ABCDEFGHIJKLMNOPQRST"
-      "UVWXYZabcdefghijklmnopqrstuvwxyz";
-    std::mt19937 gen(static_cast<unsigned>(QDateTime::currentMSecsSinceEpoch()));
-    std::uniform_int_distribution<> uid(0, saltchars.length()-1);
+    bool hasContent = !cloud.isEmpty() || !netcfg.isEmpty();
+    if (hasContent) {
+        const QString wifiCountry = s.value("recommendedWifiCountry").toString().trimmed();
+        if (!wifiCountry.isEmpty()) {
+            cmdlineAppend = QByteArray(" ") + QByteArray("cfg80211.ieee80211_regdom=") + wifiCountry.toUtf8();
+        }
 
-    // Determine whether to use yescrypt (for OS released after Jan 1, 2023) or sha256crypt
-    bool useYescrypt = false;
-    if (!_osReleaseDate.isEmpty()) {
-        // Parse release date in format "YYYY-MM-DD"
-        QDate releaseDate = QDate::fromString(_osReleaseDate, "yyyy-MM-dd");
-        QDate cutoffDate(2023, 1, 1);
-        if (releaseDate.isValid() && releaseDate >= cutoffDate) {
-            useYescrypt = true;
+        // Check if secure boot should be enabled
+        // Note: Don't validate rsaKeyPath with QFile::exists() here - it can be slow on
+        // iCloud-synced or network paths. The actual write operation will validate the file.
+        bool secureBootEnabled = s.value("secureBootEnabled").toBool();
+        QString rsaKeyPath = _settings.value("secureboot_rsa_key").toString();
+        if (secureBootEnabled && !rsaKeyPath.isEmpty()) {
+            advOpts |= ImageOptions::EnableSecureBoot;
+            qDebug() << "Secure boot enabled with RSA key:" << rsaKeyPath;
         }
     }
 
-    if (useYescrypt) {
-        // Use yescrypt for newer OS releases
-        QByteArray salt;
-        for (int i=0; i<16; i++)  // yescrypt uses longer salts
-            salt += saltchars[uid(gen)];
-        
-        char *result = yescrypt_crypt(password.constData(), salt.constData());
-        return result ? QString(result) : QString();
-    } else {
-        // Use sha256crypt for older OS releases
-        QByteArray salt = "$5$";
-        for (int i=0; i<10; i++)
-            salt += saltchars[uid(gen)];
-        
-        return sha256_crypt(password.constData(), salt.constData());
-    }
+    setImageCustomisation(QByteArray(), cmdlineAppend, QByteArray(), cloud, netcfg, advOpts);
 }
 
-QString ImageWriter::pbkdf2(const QByteArray &psk, const QByteArray &ssid)
+void ImageWriter::_applyRpiPreseedCustomisationFromSettings(const QVariantMap &s)
 {
-    return QPasswordDigestor::deriveKeyPbkdf2(QCryptographicHash::Sha1, psk, ssid, 4096, 32).toHex();
+    // Use CustomisationGenerator for rpi-preseed.toml generation
+    const bool sshEnabled = s.value("sshEnabled").toBool();
+    const bool hasCcRpi = imageSupportsCcRpi();
+
+    QByteArray toml = rpi_imager::CustomisationGenerator::generateRpiPreseedToml(
+        s, _piConnectToken, hasCcRpi, sshEnabled, getCurrentUser());
+
+    QByteArray cmdlineAppend;
+    ImageOptions::AdvancedOptions advOpts = NoAdvancedOptions;
+
+    // Only emit cmdline / advanced options when there is actual content to
+    // customise, so a stale persisted recommendedWifiCountry cannot trigger a
+    // device write when customisation was skipped.
+    if (!toml.isEmpty()) {
+        // Set the Wi-Fi regulatory domain on the kernel cmdline, as the systemd
+        // and cloud-init paths do. rpi-preseed's [wlan] applier also sets the
+        // country, but only when an SSID is present; doing it here additionally
+        // covers the country-without-SSID case and is harmless when both apply.
+        const QString wifiCountry = s.value("recommendedWifiCountry").toString().trimmed();
+        if (!wifiCountry.isEmpty()) {
+            cmdlineAppend = QByteArray(" ") + QByteArray("cfg80211.ieee80211_regdom=") + wifiCountry.toUtf8();
+        }
+
+        // Check if secure boot should be enabled
+        // Note: Don't validate rsaKeyPath with QFile::exists() here - it can be slow on
+        // iCloud-synced or network paths. The actual write operation will validate the file.
+        bool secureBootEnabled = s.value("secureBootEnabled").toBool();
+        QString rsaKeyPath = _settings.value("secureboot_rsa_key").toString();
+        if (secureBootEnabled && !rsaKeyPath.isEmpty()) {
+            advOpts |= ImageOptions::EnableSecureBoot;
+            qDebug() << "Secure boot enabled with RSA key:" << rsaKeyPath;
+        }
+    }
+
+    // rpi-preseed consumes a single /boot/firmware/rpi-preseed.toml on first
+    // boot, so the payload is staged in the firstrun slot; the device writers
+    // pick the destination filename from _initFormat. No cmdline pointer to the
+    // file is needed (unlike systemd.run= or ds=nocloud): rpi-preseed's units
+    // are triggered by the file's presence on the boot partition.
+    setImageCustomisation(QByteArray(), cmdlineAppend, toml, QByteArray(), QByteArray(), advOpts);
+}
+
+QString ImageWriter::hashUserPassword(const QString &plaintext)
+{
+    // Hash eagerly so the caller can discard the plaintext immediately and keep
+    // only the hash. The algorithm choice (yescrypt vs sha256crypt) follows the
+    // currently selected OS's release date. Crypto lives in CustomisationGenerator.
+    if (plaintext.isEmpty())
+        return QString();
+    return rpi_imager::CustomisationGenerator::cryptPassword(plaintext.toUtf8(), _osReleaseDate);
+}
+
+bool ImageWriter::savedUserPasswordUsableWithCurrentOs(const QString &cryptHash) const
+{
+    if (cryptHash.isEmpty())
+        return true;
+    // sha256crypt is accepted on every target; only a yescrypt hash can be
+    // incompatible, and only when the selected OS predates yescrypt support.
+    if (!rpi_imager::CustomisationGenerator::isYescryptHash(cryptHash))
+        return true;
+    return rpi_imager::CustomisationGenerator::osUsesYescrypt(_osReleaseDate);
+}
+
+QString ImageWriter::deriveWifiPsk(const QString &ssid, const QString &plaintext)
+{
+    // Strip CR/LF before measuring the length. ImTextField scrubs control
+    // characters out of the field, so the UI should never send them, but this is
+    // the same trust boundary cryptPassword() guards: a trailing newline would
+    // push a 63-character passphrase to 64 and flip the branch below, returning
+    // the plaintext verbatim as though it were a pre-computed PSK.
+    const QString password = rpi_imager::CustomisationGenerator::stripLineTerminators(plaintext);
+    if (password.isEmpty())
+        return QString();
+    // Passphrase length per WPA spec is 8..63; anything else is taken to be a
+    // pre-computed PSK and returned verbatim.
+    const bool isPassphrase = (password.length() >= 8 && password.length() < 64);
+    return isPassphrase
+        ? rpi_imager::CustomisationGenerator::pbkdf2(password.toUtf8(), ssid.toUtf8())
+        : password;
+}
+
+QString ImageWriter::wifiSsidOctetsBase64(const QString &ssid) const
+{
+    return QString::fromLatin1(ssid.toUtf8().toBase64());
 }
 
 void ImageWriter::setSavedCustomisationSettings(const QVariantMap &map)
@@ -3148,6 +4193,14 @@ void ImageWriter::removePersistedCustomisationSetting(const QString &key)
     _settings.sync();
 }
 
+void ImageWriter::clearSavedCustomisationSettings()
+{
+    _settings.beginGroup("imagecustomization");
+    _settings.remove("");
+    _settings.endGroup();
+    _settings.sync();
+}
+
 bool ImageWriter::imageSupportsCustomization()
 {
     return !_initFormat.isEmpty();
@@ -3156,6 +4209,11 @@ bool ImageWriter::imageSupportsCustomization()
 bool ImageWriter::imageSupportsCcRpi()
 {
     return _initFormat == "cloudinit-rpi";
+}
+
+bool ImageWriter::imageSupportsInterfaceCustomisation()
+{
+    return _initFormat == "cloudinit-rpi" || _initFormat == "rpi-preseed";
 }
 
 QStringList ImageWriter::getTranslations()
@@ -3316,7 +4374,7 @@ bool ImageWriter::hasMouse()
 bool ImageWriter::isScreenReaderActive() const
 {
 #ifndef CLI_ONLY_BUILD
-    return QAccessible::isActive();
+    return _screenReaderActiveCached;
 #else
     return false;
 #endif
@@ -3338,9 +4396,31 @@ QString ImageWriter::customRepoHost()
         return _repo.fileName();
     }
     
-    // For remote URLs, return the host in ASCII (punycode) to prevent IDN homograph attacks
-    // Also truncate very long hostnames to prevent UI issues
+    // Security: Detect IDN homograph attacks where attackers use lookalike Unicode
+    // characters (e.g., Cyrillic 'а' U+0430 looks identical to Latin 'a' U+0061)
+    // to create domains like "rаspberrypi.com" that appear legitimate.
+    //
+    // Strategy: Always display the punycode (ASCII) form of the hostname.
+    // If the domain contains non-ASCII characters, the punycode will start with
+    // "xn--" making it obvious something is unusual. For example:
+    // - "raspberrypi.com" → "raspberrypi.com" (safe, no change)
+    // - "rаspberrypi.com" (Cyrillic а) → "xn--rspberrypi-h4e.com" (suspicious)
+    
     QString host = _repo.host(QUrl::FullyEncoded);
+    
+    // Additional check: if decoded host differs from encoded, it contains IDN
+    // In this case, prepend a warning indicator
+    QString decodedHost = _repo.host(QUrl::FullyDecoded);
+    if (!decodedHost.isEmpty() && decodedHost != host) {
+        // IDN detected - the punycode form will already show "xn--" prefix
+        // Add explicit warning prefix so users know to be cautious
+        host = QStringLiteral("⚠ ") + host;
+        qWarning() << "IDN hostname detected in custom repo URL:"
+                   << "displayed as" << host
+                   << "decoded form:" << decodedHost;
+    }
+    
+    // Truncate very long hostnames to prevent UI issues
     if (host.length() > 50) {
         host = host.left(47) + QStringLiteral("...");
     }
@@ -3349,9 +4429,22 @@ QString ImageWriter::customRepoHost()
 
 bool ImageWriter::isValidRepoUrl(const QString &url) const
 {
-    // Validate: must be http/https URL ending with .json or manifest extension
+    // Validate: must be an http/https URL whose path ends with .json or the
+    // manifest extension. An optional query string and/or fragment is allowed
+    // after the extension so that pre-signed URLs (e.g. cloud blob storage with
+    // a SAS token: ".../manifest.json?sv=...&sig=...") are accepted. The path
+    // portion excludes '?' and '#' so the extension must appear before any
+    // query/fragment rather than merely somewhere in the URL.
+    //
+    // Anchored with \A..\z rather than ^..$: PCRE2 lets '$' match immediately
+    // before a newline at the end of the subject, so "...repo.json\n" matched
+    // despite '\n' being excluded from every character class above. That is
+    // exactly what a URL copied out of a browser looks like, and it reached
+    // refreshOsListFrom() as a %0A-suffixed URL (issue #1687). This also guards
+    // the deep-link "repo=" path, which never passes through a text field.
     static const QRegularExpression repoUrlRe(
-        QStringLiteral("^https?://[^ \\t\\r\\n]+\\.(json|" MANIFEST_EXTENSION ")$"), 
+        QRegularExpression::anchoredPattern(
+            QStringLiteral("https?://[^ \\t\\r\\n?#]+\\.(json|" MANIFEST_EXTENSION ")([?#][^ \\t\\r\\n]*)?")),
         QRegularExpression::CaseInsensitiveOption);
     return repoUrlRe.match(url).hasMatch();
 }
@@ -3411,7 +4504,7 @@ void ImageWriter::onSelectedDeviceRemoved(const QString &device)
         _selectedDeviceValid = false;
 
         // If we're currently writing to this device, cancel the write immediately
-        if (_writeState == WriteState::Preparing || _writeState == WriteState::Writing || _writeState == WriteState::Verifying || _writeState == WriteState::Finalizing) {
+        if (_writeState == WriteState::Preparing || _writeState == WriteState::Writing || _writeState == WriteState::Verifying || _writeState == WriteState::Finalizing || _writeState == WriteState::Cancelling) {
             _selectedDeviceValid = false;
             qDebug() << "Cancelling write operation due to device removal";
             
@@ -3508,6 +4601,8 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
     connect(_thread, SIGNAL(error(QString)), SLOT(onError(QString)));
     connect(_thread, SIGNAL(finalizing()), SLOT(onFinalizing()));
     connect(_thread, SIGNAL(preparationStatusUpdate(QString)), SLOT(onPreparationStatusUpdate(QString)));
+    connect(_thread, &DownloadThread::ejectStarted, this, &ImageWriter::onEjectStarted);
+    connect(_thread, &DownloadThread::ejectFinished, this, &ImageWriter::onEjectFinished);
     // Ensure cleanup of thread pointer on finish in all paths
     connect(_thread, &QThread::finished, this, [this]() {
         if (_thread)
@@ -3557,7 +4652,8 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
         // Also transition state to Verifying when verify progress first arrives
         connect(downloadThread, &DownloadExtractThread::verifyProgressChanged,
                 this, [this](quint64 /*now*/, quint64 /*total*/){
-                    if (_writeState != WriteState::Verifying && _writeState != WriteState::Finalizing && _writeState != WriteState::Succeeded)
+                    if (_writeState != WriteState::Verifying && _writeState != WriteState::Finalizing &&
+                        _writeState != WriteState::Succeeded && _writeState != WriteState::Cancelling)
                         setWriteState(WriteState::Verifying);
                 });
         
@@ -3628,7 +4724,26 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
     connect(_thread, &DownloadThread::eventDriveAuthorization,
             this, [this](quint32 durationMs, bool success){
                 _performanceStats->recordEvent(PerformanceStats::EventType::DriveAuthorization, durationMs, success);
+                // Start the progress watchdog only after device authorization completes.
+                // On macOS, authorization shows system dialogs (passkey + removable media access)
+                // that can take an indeterminate amount of time. Starting the watchdog earlier
+                // would cause false stall detection during this auth period. (#1511)
+                if (success && _progressWatchdog && _thread) {
+                    _progressWatchdog->start(_thread);
+                }
             });
+    // Stop the watchdog before the post-write sync. The fdatasync/fsync can
+    // block for minutes on slow cards and no progress indicators advance during
+    // it, so the watchdog would otherwise fire a false stall timeout.
+    // BlockingQueuedConnection ensures the watchdog is stopped before the
+    // download thread enters fdatasync (safe — main thread never waits on
+    // the download thread during normal operation).
+    connect(_thread, &DownloadThread::finalSyncStarting,
+            this, [this](){
+                if (_progressWatchdog) {
+                    _progressWatchdog->stop();
+                }
+            }, Qt::BlockingQueuedConnection);
     connect(_thread, &DownloadThread::eventDriveMbrZeroing,
             this, [this](quint32 durationMs, bool success, QString metadata){
                 _performanceStats->recordEvent(PerformanceStats::EventType::DriveMbrZeroing, durationMs, success, metadata);
@@ -3648,6 +4763,10 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
     connect(_thread, &DownloadThread::eventCustomisation,
             this, [this](quint32 durationMs, bool success, QString metadata){
                 _performanceStats->recordEvent(PerformanceStats::EventType::Customisation, durationMs, success, metadata);
+            });
+    connect(_thread, &DownloadThread::eventCustomisationVerify,
+            this, [this](quint32 durationMs, bool success, QString metadata){
+                _performanceStats->recordEvent(PerformanceStats::EventType::CustomisationVerify, durationMs, success, metadata);
             });
     connect(_thread, &DownloadThread::eventFinalSync,
             this, [this](quint32 durationMs, bool success){
@@ -3780,7 +4899,8 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
             });
 
     _thread->setVerifyEnabled(_verifyEnabled);
-    _thread->setUserAgent(QString("Mozilla/5.0 rpi-imager/%1").arg(staticVersion()).toUtf8());
+    // Single source of truth for the User-Agent (see startWrite).
+    _thread->setUserAgent(CurlNetworkConfig::instance().userAgent());
     qDebug() << "_continueStartWrite: Passing to thread - initFormat:" << _initFormat << "cloudinit empty:" << _cloudinit.isEmpty() << "cloudinitNetwork empty:" << _cloudinitNetwork.isEmpty();
     _thread->setImageCustomisation(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat, _advancedOptions);
     
@@ -3796,6 +4916,7 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
     _thread->setDebugAsyncQueueDepth(_debugAsyncQueueDepth);
     _thread->setDebugIPv4Only(_debugIPv4Only);
     _thread->setDebugSkipEndOfDevice(_debugSkipEndOfDevice);
+    _thread->setDebugIgnoreDeviceLimits(_debugIgnoreDeviceLimits);
 
     // Handle caching setup for downloads using CacheManager
     // Only set up caching when we're downloading (not using cached file as source)
@@ -3849,173 +4970,31 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
     startProgressPolling();
 }
 
-void MountUtilsLog(std::string msg) {
-    Q_UNUSED(msg)
-    //qDebug() << "mountutils:" << msg.c_str();
-}
-
 void ImageWriter::reboot()
 {
     qDebug() << "Rebooting system.";
-    (void)system("reboot");
+    QProcess::execute(QStringLiteral("/sbin/reboot"), QStringList());
 }
 
 void ImageWriter::openUrl(const QUrl &url)
 {
     qDebug() << "Opening URL:" << url.toString();
 
-    bool success = false;
+    // Platform-native URL launching lives in the PAL (PlatformQuirks). It
+    // returns false when it cannot — or deliberately will not — open the URL
+    // itself (e.g. xdg-open is missing, or Windows defers to Qt to avoid
+    // passing the URL through a shell), in which case we fall back to Qt's
+    // cross-platform opener below.
+    if (PlatformQuirks::openUrlExternally(url)) {
+        return;
+    }
 
-#ifdef Q_OS_LINUX
-    // Use xdg-open on Linux (including AppImage environments)
-    // When running with elevated privileges (sudo/pkexec), we need to run xdg-open
-    // as the original user, not as root, so it can access the user's desktop session
-    if (::geteuid() == 0) {
-        // Running as root - use pkexec to run xdg-open as the original user
-        // Determine the original user's UID and username
-        uid_t targetUid = 0;
-        QString targetUsername;
-        
-        // Check if we were invoked via pkexec or sudo
-        const char* pkexecUid = ::getenv("PKEXEC_UID");
-        const char* sudoUid = ::getenv("SUDO_UID");
-        
-        if (pkexecUid) {
-            // Running under pkexec
-            targetUid = static_cast<uid_t>(::atoi(pkexecUid));
-        } else if (sudoUid) {
-            // Running under sudo
-            targetUid = static_cast<uid_t>(::atoi(sudoUid));
-        } else if (::getuid() != ::geteuid()) {
-            // Running under sudo but SUDO_UID not set - use real UID
-            targetUid = ::getuid();
-        }
-        
-        if (targetUid != 0) {
-            // Look up the username for this UID
-            struct passwd* pw = ::getpwuid(targetUid);
-            if (pw && pw->pw_name) {
-                targetUsername = QString::fromUtf8(pw->pw_name);
-            }
-        }
-        
-        if (!targetUsername.isEmpty()) {
-            // Use runuser to run xdg-open as the original user
-            // runuser is better than pkexec --user because it preserves environment variables
-            // and doesn't require authentication when already running as root
-            // We need to pass the D-Bus session bus address and other environment variables
-            // so xdg-open can connect to the user's desktop session
-            
-            // Get environment variables needed for xdg-open to work
-            QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-            
-            // Preserve critical environment variables for D-Bus and display
-            QString dbusSessionAddress = env.value("DBUS_SESSION_BUS_ADDRESS");
-            QString xdgRuntimeDir = env.value("XDG_RUNTIME_DIR");
-            QString display = env.value("DISPLAY");
-            QString waylandDisplay = env.value("WAYLAND_DISPLAY");
-            QString xauthority = env.value("XAUTHORITY");
-            
-            // Build environment for the child process
-            QProcessEnvironment childEnv;
-            if (!dbusSessionAddress.isEmpty()) {
-                childEnv.insert("DBUS_SESSION_BUS_ADDRESS", dbusSessionAddress);
-            }
-            if (!xdgRuntimeDir.isEmpty()) {
-                childEnv.insert("XDG_RUNTIME_DIR", xdgRuntimeDir);
-            }
-            if (!display.isEmpty()) {
-                childEnv.insert("DISPLAY", display);
-            }
-            if (!waylandDisplay.isEmpty()) {
-                childEnv.insert("WAYLAND_DISPLAY", waylandDisplay);
-            }
-            if (!xauthority.isEmpty()) {
-                childEnv.insert("XAUTHORITY", xauthority);
-            }
-            
-            // Use runuser with environment variables passed via env command
-            // Format: runuser -u <username> -- env VAR=value ... xdg-open <url>
-            QStringList runuserArgs;
-            runuserArgs << "-u" << targetUsername << "--";
-            
-            // Build env command with all necessary variables
-            QStringList envArgs;
-            envArgs << "env";
-            if (!dbusSessionAddress.isEmpty()) {
-                envArgs << QString("DBUS_SESSION_BUS_ADDRESS=%1").arg(dbusSessionAddress);
-            }
-            if (!xdgRuntimeDir.isEmpty()) {
-                envArgs << QString("XDG_RUNTIME_DIR=%1").arg(xdgRuntimeDir);
-            }
-            if (!display.isEmpty()) {
-                envArgs << QString("DISPLAY=%1").arg(display);
-            }
-            if (!waylandDisplay.isEmpty()) {
-                envArgs << QString("WAYLAND_DISPLAY=%1").arg(waylandDisplay);
-            }
-            if (!xauthority.isEmpty()) {
-                envArgs << QString("XAUTHORITY=%1").arg(xauthority);
-            }
-            envArgs << "xdg-open" << url.toString();
-            
-            runuserArgs << envArgs;
-            
-            success = PlatformQuirks::launchDetached("runuser", runuserArgs);
-            if (!success) {
-                qWarning() << "Failed to start runuser xdg-open process, falling back to pkexec";
-                // Fallback to pkexec if runuser fails (might not be available on all systems)
-                QStringList pkexecArgs;
-                pkexecArgs << "--user" << targetUsername << "xdg-open" << url.toString();
-                success = PlatformQuirks::launchDetached("pkexec", pkexecArgs);
-                if (!success) {
-                    qWarning() << "Failed to start pkexec xdg-open process";
-                } else {
-                    qDebug() << "Started pkexec xdg-open";
-                }
-            } else {
-                qDebug() << "Started runuser xdg-open";
-            }
-        } else {
-            qWarning() << "Could not determine original user for xdg-open";
-            success = false;
-        }
-    } else {
-        // Not running as root - launch detached to avoid blocking
-        success = PlatformQuirks::launchDetached("xdg-open", QStringList() << url.toString());
-        if (!success) {
-            qWarning() << "Failed to start xdg-open process";
-        } else {
-            qDebug() << "Started xdg-open";
-        }
-    }
-#elif defined(Q_OS_DARWIN)
-    // Use open on macOS
-    success = PlatformQuirks::launchDetached("open", QStringList() << url.toString());
-    if (!success) {
-        qWarning() << "Failed to start open process";
-    } else {
-        qDebug() << "Started open";
-    }
-#elif defined(Q_OS_WIN)
-    // Use start on Windows
-    success = PlatformQuirks::launchDetached("cmd", QStringList() << "/c" << "start" << url.toString());
-    if (!success) {
-        qWarning() << "Failed to start cmd /c start process";
-    } else {
-        qDebug() << "Started cmd /c start";
-    }
-#endif
-
-    // Fallback to Qt's method if platform command failed or platform is unsupported
-    if (!success) {
 #ifndef CLI_ONLY_BUILD
-        qDebug() << "Falling back to QDesktopServices::openUrl";
-        QDesktopServices::openUrl(url);
+    qDebug() << "Falling back to QDesktopServices::openUrl";
+    QDesktopServices::openUrl(url);
 #else
-        qWarning() << "Unable to open URL in CLI mode:" << url.toString();
+    qWarning() << "Unable to open URL in CLI mode:" << url.toString();
 #endif
-    }
 }
 
 bool ImageWriter::verifyAuthKey(const QString &s, bool strict) const
@@ -4073,7 +5052,9 @@ void ImageWriter::handleIncomingUrl(const QUrl &url)
             QFileInfo fi(localPath);
             if (fi.isFile() && fi.isReadable()) {
                 qDebug() << "Local manifest file opened:" << localPath;
-                emit repositoryUrlReceived(url.toString());
+                // Local files are trusted (user explicitly opened them) — load directly
+                // without a confirmation dialog, consistent with --repo CLI behavior.
+                refreshOsListFrom(url);
                 return;
             } else {
                 qWarning() << "Cannot read manifest file:" << localPath;
@@ -4114,8 +5095,11 @@ void ImageWriter::overwriteConnectToken(const QString &token)
 {
     // Ephemeral session-only Connect token (never persisted)
     _piConnectToken = token;
+    // User-supplied (typed / pasted / browser-callback) — clear the
+    // org-minted bit so discardOrgMintedConnectToken() leaves it alone.
+    _piConnectTokenIsOrgMinted = false;
     emit connectTokenReceived(token);
-    
+
     // Bring the window to the foreground on Windows when token is received
     bringWindowToForeground();
 }
@@ -4128,6 +5112,17 @@ QString ImageWriter::getRuntimeConnectToken() const
 void ImageWriter::clearConnectToken()
 {
     _piConnectToken.clear();
+    _piConnectTokenIsOrgMinted = false;
+    emit connectTokenCleared();
+}
+
+void ImageWriter::discardOrgMintedConnectToken()
+{
+    if (!_piConnectTokenIsOrgMinted)
+        return;
+    qDebug() << "Connect: discarding org-minted auth key (storage / OS changed)";
+    _piConnectToken.clear();
+    _piConnectTokenIsOrgMinted = false;
     emit connectTokenCleared();
 }
 

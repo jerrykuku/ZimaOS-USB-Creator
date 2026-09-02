@@ -3,15 +3,20 @@
  * Copyright (C) 2022-2025 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtQuick.Layouts
+import RpiImager
 
 RadioButton {
     id: control
     Material.accent: Style.formControlActiveColor
+    font.pointSize: Style.fontSizeSm
+    font.family: Style.fontFamily
     activeFocusOnTab: true
+    focusPolicy: Qt.TabFocus
     
     // Allow custom accessibility description
     property string accessibleDescription: ""
@@ -37,21 +42,9 @@ RadioButton {
         width: control.availableWidth  // Constrain width so text wraps
     }
     
-    // Access imageWriter from parent context
-    property var imageWriter: {
-        var item = parent;
-        while (item) {
-            if (item.imageWriter !== undefined) {
-                return item.imageWriter;
-            }
-            item = item.parent;
-        }
-        return null;
-    }
-    
     // Custom square indicator for embedded mode to avoid circular rendering artifacts
     Component.onCompleted: {
-        if (control.imageWriter && control.imageWriter.isEmbeddedMode()) {
+        if (ImageWriterSingleton && ImageWriterSingleton.isEmbeddedMode()) {
             control.indicator = squareIndicatorComponent.createObject(control)
         }
     }
@@ -82,11 +75,7 @@ RadioButton {
     
     // Accessibility properties - combine text with description in name
     Accessible.role: Accessible.RadioButton
-    Accessible.name: {
-        var name = text
-        var desc = accessibleDescription
-        return desc !== "" ? (name + ", " + desc) : name
-    }
+    Accessible.name: CommonStrings.controlAccessibleName(text, accessibleDescription, enabled)
     Accessible.description: ""
     Accessible.checkable: true
     Accessible.checked: checked
@@ -99,7 +88,7 @@ RadioButton {
         color: Style.transparent
         border.color: control.activeFocus ? Style.focusOutlineColor : Style.transparent
         border.width: Style.focusOutlineWidth
-        radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? 0 : Style.focusOutlineRadius
+        radius: Style.cornerRadius(Style.focusOutlineRadius)
         z: -1
     }
     

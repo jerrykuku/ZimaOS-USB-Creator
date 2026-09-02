@@ -4,12 +4,14 @@
  */
 
 #include "../platformquirks.h"
+#include "diskpart_util.h"
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0A00  // Windows 10 or later
 #endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
+#include <winioctl.h>
 #include <wbemidl.h>
 #include <oleauto.h>
 #include <iphlpapi.h>
@@ -19,6 +21,10 @@
 #include <cstdio>
 #include <iostream>
 #include <QProcess>
+#include <QDebug>
+#include <QFont>
+#include <QFontDatabase>
+#include <QString>
 
 namespace {
     // Network monitoring state
@@ -207,6 +213,66 @@ static bool hasNvidiaGraphicsCard() {
     return foundNvidia;
 }
 
+// Qt 6.11 defaults to DirectWrite on Windows, which corrupts uppercase button
+// text on some systems (https://github.com/raspberrypi/rpi-imager/issues/1648).
+// Force the cross-platform FreeType engine before QGuiApplication starts.
+static QByteArray ensureWindowsFreeTypeFontEngine()
+{
+    static constexpr char kFreeTypeArg[] = "fontengine=freetype";
+    QByteArray platform = qgetenv("QT_QPA_PLATFORM");
+
+    if (platform.isEmpty()) {
+        return QByteArrayLiteral("windows:") + kFreeTypeArg;
+    }
+
+    if (platform.contains(kFreeTypeArg)) {
+        return platform;
+    }
+
+    const int fontEngineIdx = platform.indexOf("fontengine=");
+    if (fontEngineIdx >= 0) {
+        const int commaIdx = platform.indexOf(',', fontEngineIdx);
+        platform.remove(fontEngineIdx,
+                        (commaIdx < 0 ? platform.size() : commaIdx) - fontEngineIdx);
+        if (platform.endsWith(',')) {
+            platform.chop(1);
+        }
+    }
+
+    if (!platform.contains(':')) {
+        if (platform == "windows") {
+            platform = QByteArrayLiteral("windows:");
+        } else {
+            platform = QByteArrayLiteral("windows:") + platform;
+        }
+    }
+
+    if (!platform.endsWith(':') && !platform.endsWith(',')) {
+        platform += ',';
+    }
+
+    return platform + kFreeTypeArg;
+}
+
+static QString windowsFontEngineFromPlatformArgs(const QByteArray &platformArgs)
+{
+    const QString args = QString::fromLatin1(platformArgs);
+    const int idx = args.indexOf(QStringLiteral("fontengine="), Qt::CaseInsensitive);
+    if (idx < 0) {
+        if (args.contains(QStringLiteral("nodirectwrite"), Qt::CaseInsensitive)) {
+            return QStringLiteral("gdi");
+        }
+        return QStringLiteral("directwrite (default)");
+    }
+
+    const int start = idx + QStringLiteral("fontengine=").size();
+    int end = args.indexOf(QLatin1Char(','), start);
+    if (end < 0) {
+        end = args.size();
+    }
+    return args.mid(start, end - start);
+}
+
 void applyQuirks() {
     // Suppress Windows "Insert a disk" / "not accessible" system error dialogs
     // for the main thread. This prevents Windows from showing modal dialogs
@@ -223,6 +289,9 @@ void applyQuirks() {
     if (hasNvidiaGraphicsCard()) {
         SetEnvironmentVariableA("QSG_RHI_PREFER_SOFTWARE_RENDERER", "1");
     }
+
+    const QByteArray fontPlatform = ensureWindowsFreeTypeFontEngine();
+    qputenv("QT_QPA_PLATFORM", fontPlatform);
 
     // make imager single instance because of rpi-connect callback server
     // will be automatically released once the process exits cleanly or crashes
@@ -441,6 +510,21 @@ bool launchDetached(const QString& program, const QStringList& arguments) {
     return QProcess::startDetached(program, arguments);
 }
 
+bool openUrlExternally(const QUrl& url) {
+    // Deliberately decline native launching: invoking the URL via cmd /c start
+    // would pass it through the shell, letting metacharacters (&, |, ...) run
+    // arbitrary commands. The caller falls back to QDesktopServices::openUrl,
+    // which opens the URL safely on Windows.
+    Q_UNUSED(url);
+    return false;
+}
+
+bool registerUriScheme() {
+    // The rpi-imager:// scheme association is written to the registry by the
+    // installer at install time, so there is nothing to do at runtime.
+    return true;
+}
+
 bool runElevatedPolicyInstaller() {
     return false;
 }
@@ -475,6 +559,14 @@ bool isScrollInverted(bool qtInvertedFlag) {
     return scrollDirection == 0;
 }
 
+bool prefersReducedMotion() {
+    // Windows Settings > Accessibility > Visual effects > Animation effects
+    // SPI_GETCLIENTAREAANIMATION reflects the "Show animations in Windows" toggle.
+    BOOL animationsEnabled = TRUE;
+    SystemParametersInfoW(SPI_GETCLIENTAREAANIMATION, 0, &animationsEnabled, 0);
+    return !animationsEnabled;
+}
+
 QString getWriteDevicePath(const QString& devicePath) {
     // Windows uses PhysicalDrive paths which don't have a raw device equivalent.
     // Direct I/O is controlled via FILE_FLAG_NO_BUFFERING, not device path.
@@ -484,6 +576,310 @@ QString getWriteDevicePath(const QString& devicePath) {
 QString getEjectDevicePath(const QString& devicePath) {
     // No path transformation needed on Windows.
     return devicePath;
+}
+
+// Helper to extract device number from PhysicalDrive path
+// Defined outside anonymous namespace for test API access
+static int parseDeviceNumberImpl(const QString& device) {
+    // Expected format: \\.\PhysicalDriveN
+    QByteArray deviceBytes = device.toLower().toUtf8();
+    const char* deviceStr = deviceBytes.constData();
+    
+    int deviceId = -1;
+    
+    // Try to parse as \\.\PhysicalDriveN
+    if (sscanf(deviceStr, "\\\\.\\physicaldrive%d", &deviceId) == 1) {
+        return deviceId;
+    }
+    // Also accept //./PhysicalDriveN (forward slashes)
+    if (sscanf(deviceStr, "//./physicaldrive%d", &deviceId) == 1) {
+        return deviceId;
+    }
+    
+    return -1;
+}
+
+namespace {
+    // Get device number from volume handle
+    ULONG getDeviceNumberFromHandle(HANDLE volume) {
+        STORAGE_DEVICE_NUMBER storageDeviceNumber;
+        DWORD bytesReturned;
+        
+        if (!DeviceIoControl(volume, IOCTL_STORAGE_GET_DEVICE_NUMBER,
+                            NULL, 0,
+                            &storageDeviceNumber, sizeof(storageDeviceNumber),
+                            &bytesReturned, NULL)) {
+            return ULONG_MAX;
+        }
+        return storageDeviceNumber.DeviceNumber;
+    }
+    
+    // Lock a volume for exclusive access
+    bool lockVolume(HANDLE volume) {
+        DWORD bytesReturned;
+        for (int tries = 0; tries < 20; tries++) {
+            if (DeviceIoControl(volume, FSCTL_LOCK_VOLUME,
+                              NULL, 0, NULL, 0,
+                              &bytesReturned, NULL)) {
+                return true;
+            }
+            Sleep(500);
+        }
+        return false;
+    }
+    
+    // Unlock a volume
+    bool unlockVolume(HANDLE volume) {
+        DWORD bytesReturned;
+        return DeviceIoControl(volume, FSCTL_UNLOCK_VOLUME,
+                              NULL, 0, NULL, 0,
+                              &bytesReturned, NULL) != FALSE;
+    }
+    
+    // Dismount a volume (flush and invalidate)
+    bool dismountVolume(HANDLE volume) {
+        DWORD bytesReturned;
+        return DeviceIoControl(volume, FSCTL_DISMOUNT_VOLUME,
+                              NULL, 0, NULL, 0,
+                              &bytesReturned, NULL) != FALSE;
+    }
+    
+    // Check if volume is mounted
+    bool isVolumeMounted(HANDLE volume) {
+        DWORD bytesReturned;
+        return DeviceIoControl(volume, FSCTL_IS_VOLUME_MOUNTED,
+                              NULL, 0, NULL, 0,
+                              &bytesReturned, NULL) != FALSE;
+    }
+    
+    // Eject media from volume (card, not reader!)
+    bool ejectMedia(HANDLE volume) {
+        DWORD bytesReturned;
+        
+        // First, allow media removal
+        PREVENT_MEDIA_REMOVAL buffer;
+        buffer.PreventMediaRemoval = FALSE;
+        DeviceIoControl(volume, IOCTL_STORAGE_MEDIA_REMOVAL,
+                       &buffer, sizeof(buffer),
+                       NULL, 0, &bytesReturned, NULL);
+        
+        // Then eject the media - this ejects the CARD, not the card reader!
+        // This is the key fix: IOCTL_STORAGE_EJECT_MEDIA ejects the removable media
+        // (the SD card) while leaving the card reader attached to the system.
+        for (int tries = 0; tries < 5; tries++) {
+            if (tries > 0) {
+                Sleep(500);
+            }
+            if (DeviceIoControl(volume, IOCTL_STORAGE_EJECT_MEDIA,
+                               NULL, 0, NULL, 0,
+                               &bytesReturned, NULL)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Process a single drive letter: unmount/eject if it belongs to our device
+    PlatformQuirks::DiskResult processDriveLetter(TCHAR driveLetter, ULONG targetDeviceNumber, bool doEject) {
+        // Open volume handle
+        TCHAR volumePath[8];
+        swprintf_s(volumePath, 8, L"\\\\.\\%c:", driveLetter);
+        
+        HANDLE volume = CreateFileW(volumePath,
+                                    GENERIC_READ | GENERIC_WRITE,
+                                    FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                    NULL, OPEN_EXISTING, 0, NULL);
+        
+        if (volume == INVALID_HANDLE_VALUE) {
+            // Can't open - might not exist or no permissions
+            return PlatformQuirks::DiskResult::Success;  // Skip this letter
+        }
+        
+        // Check if this volume belongs to our target device
+        ULONG volumeDeviceNumber = getDeviceNumberFromHandle(volume);
+        if (volumeDeviceNumber != targetDeviceNumber) {
+            CloseHandle(volume);
+            return PlatformQuirks::DiskResult::Success;  // Not our device
+        }
+        
+        qDebug() << "processDriveLetter:" << QString(QChar(driveLetter)) << "belongs to device" << targetDeviceNumber;
+        
+        // Check if mounted
+        if (!isVolumeMounted(volume)) {
+            qDebug() << "processDriveLetter:" << QString(QChar(driveLetter)) << "not mounted";
+            CloseHandle(volume);
+            return PlatformQuirks::DiskResult::Success;
+        }
+        
+        // Lock the volume
+        if (!lockVolume(volume)) {
+            qDebug() << "processDriveLetter: couldn't lock" << QString(QChar(driveLetter));
+            CloseHandle(volume);
+            return PlatformQuirks::DiskResult::Busy;
+        }
+        
+        // Dismount the volume
+        if (!dismountVolume(volume)) {
+            qDebug() << "processDriveLetter: couldn't dismount" << QString(QChar(driveLetter));
+            unlockVolume(volume);
+            CloseHandle(volume);
+            return PlatformQuirks::DiskResult::Error;
+        }
+        
+        // If ejecting, eject the media
+        if (doEject) {
+            if (!ejectMedia(volume)) {
+                qDebug() << "processDriveLetter: couldn't eject media from" << QString(QChar(driveLetter));
+                // Not fatal - volume is still dismounted
+            }
+        }
+        
+        unlockVolume(volume);
+        CloseHandle(volume);
+        
+        qDebug() << "processDriveLetter: successfully processed" << QString(QChar(driveLetter));
+        return PlatformQuirks::DiskResult::Success;
+    }
+}
+
+DiskResult unmountDisk(const QString& device) {
+    int deviceNumber = parseDeviceNumberImpl(device);
+    if (deviceNumber < 0) {
+        qDebug() << "unmountDisk: invalid device path" << device;
+        return DiskResult::InvalidDrive;
+    }
+    
+    qDebug() << "unmountDisk: processing device" << deviceNumber;
+    
+    // Get all logical drives
+    DWORD drivesMask = GetLogicalDrives();
+    if (drivesMask == 0) {
+        qDebug() << "unmountDisk: couldn't get logical drives";
+        return DiskResult::Error;
+    }
+    
+    // Process each drive letter
+    TCHAR driveLetter = L'A';
+    DiskResult result = DiskResult::Success;
+    
+    while (drivesMask) {
+        if (drivesMask & 1) {
+            DiskResult letterResult = processDriveLetter(driveLetter, deviceNumber, false);
+            if (letterResult != DiskResult::Success && result == DiskResult::Success) {
+                result = letterResult;  // Remember first error
+            }
+        }
+        driveLetter++;
+        drivesMask >>= 1;
+    }
+    
+    return result;
+}
+
+DiskResult refreshDiskView(const QString& device) {
+    auto result = DiskpartUtil::rescanDisk(device.toUtf8());
+    if (result.success) {
+        return DiskResult::Success;
+    }
+    // rescanDisk returns success for paths it doesn't recognise as physical
+    // drives, so a failure here is a genuine IOCTL error.
+    qDebug() << "refreshDiskView: rescan failed for" << device << "-" << result.errorMessage;
+    return DiskResult::Error;
+}
+
+DiskResult ejectDisk(const QString& device) {
+    int deviceNumber = parseDeviceNumberImpl(device);
+    if (deviceNumber < 0) {
+        qDebug() << "ejectDisk: invalid device path" << device;
+        return DiskResult::InvalidDrive;
+    }
+
+    qDebug() << "ejectDisk: ejecting device" << deviceNumber;
+    
+    // Get all logical drives
+    DWORD drivesMask = GetLogicalDrives();
+    if (drivesMask == 0) {
+        qDebug() << "ejectDisk: couldn't get logical drives";
+        return DiskResult::Error;
+    }
+    
+    // Process each drive letter with eject
+    TCHAR driveLetter = L'A';
+    DiskResult result = DiskResult::Success;
+    bool ejectedAny = false;
+    
+    while (drivesMask) {
+        if (drivesMask & 1) {
+            DiskResult letterResult = processDriveLetter(driveLetter, deviceNumber, true);
+            if (letterResult == DiskResult::Success) {
+                ejectedAny = true;
+            } else if (result == DiskResult::Success) {
+                result = letterResult;  // Remember first error
+            }
+        }
+        driveLetter++;
+        drivesMask >>= 1;
+    }
+    
+    // If we didn't find any volumes but the device exists, try direct eject on the physical drive
+    if (!ejectedAny) {
+        QString physicalPath = QString("\\\\.\\PhysicalDrive%1").arg(deviceNumber);
+        HANDLE physicalDrive = CreateFileW(
+            reinterpret_cast<LPCWSTR>(physicalPath.utf16()),
+            GENERIC_READ | GENERIC_WRITE,
+            FILE_SHARE_READ | FILE_SHARE_WRITE,
+            NULL, OPEN_EXISTING, 0, NULL);
+        
+        if (physicalDrive != INVALID_HANDLE_VALUE) {
+            qDebug() << "ejectDisk: attempting direct eject on physical drive";
+            if (ejectMedia(physicalDrive)) {
+                qDebug() << "ejectDisk: direct eject succeeded";
+                result = DiskResult::Success;
+            }
+            CloseHandle(physicalDrive);
+        }
+    }
+    
+    return result;
+}
+
+// Test API for unit testing internal functions
+#ifdef PLATFORMQUIRKS_ENABLE_TEST_API
+namespace TestAPI {
+    int parseDeviceNumber(const QString& device) {
+        return parseDeviceNumberImpl(device);
+    }
+}
+#endif
+
+qreal detectTextScaleFactor()
+{
+    // Windows "Make text bigger" accessibility setting affects the system font
+    // size. Detect this by comparing to the default 9pt (Segoe UI).
+    QFont systemFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+    qreal systemPointSize = systemFont.pointSizeF();
+    if (systemPointSize > 0) {
+        const qreal baseline = 9.0;  // Windows default: 9pt Segoe UI
+        qreal factor = systemPointSize / baseline;
+        if (factor >= 0.5 && factor <= 3.0 && qAbs(factor - 1.0) > 0.05) {
+            qDebug() << "Text scale factor from system font:" << factor
+                     << "(system font:" << systemFont.family() << systemPointSize << "pt)";
+            return factor;
+        }
+    }
+    return 1.0;
+}
+
+qreal fontDpiCorrection()
+{
+    return 72.0 / 96.0;
+}
+
+void logFontEngine()
+{
+    const QByteArray platform = qgetenv("QT_QPA_PLATFORM");
+    qDebug() << "Font engine:" << windowsFontEngineFromPlatformArgs(platform)
+             << "(QT_QPA_PLATFORM =" << platform << ")";
 }
 
 } // namespace PlatformQuirks

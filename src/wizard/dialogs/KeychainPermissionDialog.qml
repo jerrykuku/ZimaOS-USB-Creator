@@ -6,7 +6,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import "../../qmlcomponents"
 import RpiImager
@@ -31,7 +30,7 @@ BaseDialog {
     Component.onCompleted: {
         registerFocusGroup("content", function(){ 
             // Only include text elements when screen reader is active (otherwise they're not focusable)
-            if (root.imageWriter && root.imageWriter.isScreenReaderActive()) {
+            if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
                 return [titleText, descriptionText, subText]
             }
             return []
@@ -42,47 +41,32 @@ BaseDialog {
     }
 
     // Dialog content goes directly into the BaseDialog's contentLayout
-    Text {
+    FocusableHeading {
         id: titleText
         text: qsTr("Keychain Access")
-        font.pixelSize: Style.fontSizeHeading
+        font.pointSize: Style.fontSizeHeading
         font.family: Style.fontFamilyBold
         font.bold: true
         color: Style.formLabelColor
         Layout.fillWidth: true
-        Accessible.role: Accessible.Heading
-        Accessible.name: text
-        Accessible.focusable: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (root.imageWriter && root.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
     }
 
-    Text {
+    FocusableText {
         id: descriptionText
         text: qsTr("Would you like to prefill the Wi‑Fi password from the system keychain?")
         wrapMode: Text.WordWrap
         color: Style.textDescriptionColor
-        font.pixelSize: Style.fontSizeDescription
+        font.pointSize: Style.fontSizeDescription
         Layout.fillWidth: true
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
-        Accessible.focusable: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (root.imageWriter && root.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
     }
 
-    Text {
+    FocusableText {
         id: subText
         text: qsTr("This will require administrator authentication on macOS.")
         wrapMode: Text.WordWrap
         color: Style.textMetadataColor
-        font.pixelSize: Style.fontSizeSmall
+        font.pointSize: Style.fontSizeSmall
         Layout.fillWidth: true
-        Accessible.role: Accessible.StaticText
-        Accessible.name: text
-        Accessible.focusable: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (root.imageWriter && root.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
     }
 
     RowLayout {

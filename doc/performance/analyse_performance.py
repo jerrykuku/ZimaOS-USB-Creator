@@ -29,6 +29,123 @@ except ImportError:
     HAS_MATPLOTLIB = False
 
 
+# =============================================================================
+# CONSTANTS
+# =============================================================================
+
+# Width of one bucket in the C++-side phase histogram. Must match
+# HISTOGRAM_WINDOW_MS in src/performancestats.cpp.
+HISTOGRAM_WINDOW_MS = 1000
+
+# Phases we report on, in the order they happen during an imaging cycle.
+PHASE_ORDER = ['download', 'write', 'verify']
+
+# Solid colour per phase (used for both phase bars and throughput lines).
+PHASE_COLOURS = {
+    'download': '#2196F3',
+    'write':    '#4CAF50',
+    'verify':   '#FF9800',
+}
+
+# Network/cache event types — used to filter the network chart and to draw
+# them in the timeline's "network" colour family.
+NETWORK_EVENT_TYPES = {
+    'osListFetch', 'osListParse', 'sublistFetch', 'networkLatency',
+    'cacheLookup', 'cacheVerification', 'cacheWrite', 'cacheFlush',
+}
+
+# Light/saturated colour palette used for the timeline Gantt and as the
+# baseline for any chart that paints solid bars per event type.
+TIMELINE_EVENT_COLOURS = {
+    # Network & OS list (blue)
+    'osListFetch': '#2196F3', 'osListParse': '#2196F3',
+    'sublistFetch': '#2196F3', 'networkLatency': '#2196F3',
+    'networkRetry': '#D32F2F', 'networkConnectionStats': '#2196F3',
+    # Drive operations (purple)
+    'driveListPoll': '#9C27B0', 'driveOpen': '#9C27B0',
+    'driveUnmount': '#9C27B0', 'driveUnmountVolumes': '#9C27B0',
+    'driveDiskClean': '#9C27B0', 'driveRescan': '#9C27B0',
+    'driveFormat': '#9C27B0',
+    # Recovery events (orange/red for warnings)
+    'queueDepthReduction': '#FF9800', 'syncFallbackActivated': '#FF5722',
+    'drainAndHotSwap': '#FF9800', 'watchdogRecovery': '#F44336',
+    'progressStall': '#FFC107', 'deviceIOTimeout': '#D32F2F',
+    # Cache operations (cyan)
+    'cacheLookup': '#00BCD4', 'cacheVerification': '#00BCD4',
+    'cacheWrite': '#00BCD4', 'cacheFlush': '#00BCD4',
+    # Memory management (grey, with starvation in red)
+    'memoryAllocation': '#607D8B', 'bufferResize': '#607D8B',
+    'pageCacheFlush': '#607D8B', 'ringBufferStarvation': '#D32F2F',
+    'writeRingBufferStats': '#8BC34A',
+    # Image processing (brown)
+    'imageDecompressInit': '#795548', 'imageExtraction': '#795548',
+    'hashComputation': '#795548',
+    # Customisation (pink)
+    'customisation': '#E91E63', 'cloudInitGeneration': '#E91E63',
+    'firstRunGeneration': '#E91E63', 'secureBootSetup': '#E91E63',
+    # Finalisation (deep orange)
+    'partitionTableWrite': '#FF5722', 'fatPartitionSetup': '#FF5722',
+    'finalSync': '#FF5722', 'deviceClose': '#FF5722',
+    # Rpiboot / Fastboot (teal)
+    'rpibootFirmwareSetup': '#009688', 'rpibootProtocol': '#009688',
+    'rpibootFastbootWait': '#009688', 'fastbootDeviceOpen': '#009688',
+    # Phases (used for legend swatches)
+    'download': '#2196F3', 'write': '#4CAF50', 'verify': '#FF9800',
+}
+
+# Darker variant used as alpha-blended overlays on the throughput chart
+# (the lighter timeline shades wash out at 0.3 alpha).
+THROUGHPUT_EVENT_COLOURS = {
+    # Network (blue)
+    'osListFetch': '#1565C0', 'osListParse': '#1565C0',
+    'sublistFetch': '#1565C0', 'networkLatency': '#1565C0',
+    'networkRetry': '#D32F2F', 'networkConnectionStats': '#1565C0',
+    # Drive (purple)
+    'driveListPoll': '#7B1FA2', 'driveOpen': '#7B1FA2',
+    'driveUnmount': '#7B1FA2', 'driveUnmountVolumes': '#7B1FA2',
+    'driveDiskClean': '#7B1FA2', 'driveRescan': '#7B1FA2',
+    'driveFormat': '#7B1FA2',
+    # Recovery
+    'queueDepthReduction': '#FF9800', 'syncFallbackActivated': '#FF5722',
+    'drainAndHotSwap': '#FF9800', 'watchdogRecovery': '#F44336',
+    'progressStall': '#FFC107', 'deviceIOTimeout': '#D32F2F',
+    # Cache (cyan)
+    'cacheLookup': '#00838F', 'cacheVerification': '#00838F',
+    'cacheWrite': '#00838F', 'cacheFlush': '#00838F',
+    # Memory
+    'memoryAllocation': '#455A64', 'bufferResize': '#455A64',
+    'pageCacheFlush': '#455A64', 'ringBufferStarvation': '#D32F2F',
+    'writeRingBufferStats': '#8BC34A',
+    # Image processing (brown)
+    'imageDecompressInit': '#5D4037', 'imageExtraction': '#5D4037',
+    'hashComputation': '#5D4037',
+    # Customisation (pink)
+    'customisation': '#C2185B', 'cloudInitGeneration': '#C2185B',
+    'firstRunGeneration': '#C2185B', 'secureBootSetup': '#C2185B',
+    # Finalisation (deep orange)
+    'partitionTableWrite': '#E64A19', 'fatPartitionSetup': '#E64A19',
+    'finalSync': '#E64A19', 'deviceClose': '#E64A19',
+    # Rpiboot / Fastboot (teal)
+    'rpibootFirmwareSetup': '#00796B', 'rpibootProtocol': '#00796B',
+    'rpibootFastbootWait': '#00796B', 'fastbootDeviceOpen': '#00796B',
+}
+
+# Deliberate blue-gradient palette for the network-only chart (encodes the
+# fetch ordering: list → sublist → individual asset).
+NETWORK_COLOURS = {
+    'osListFetch': '#2196F3', 'osListParse': '#1976D2',
+    'sublistFetch': '#1565C0', 'networkLatency': '#0D47A1',
+    'cacheLookup': '#00BCD4', 'cacheVerification': '#00ACC1',
+    'cacheWrite': '#0097A7', 'cacheFlush': '#00838F',
+}
+
+# Cycle-boundary marker style, shared across all charts.
+CYCLE_MARKER_COLOUR = '#FF5722'
+
+# Failure colour used to override an event's normal colour.
+FAILURE_COLOUR = '#F44336'
+
+
 def format_bytes(num_bytes: int) -> str:
     """Format bytes as human-readable string."""
     for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
@@ -58,6 +175,16 @@ def format_throughput(kbps: int) -> str:
         return f"{kbps / 1024:.1f} MB/s"
     else:
         return f"{kbps / (1024 * 1024):.2f} GB/s"
+
+
+def _emit_figure(fig, output_path: Path = None, label: str = 'Graph') -> None:
+    """Save the figure to disk (and close it) or show it interactively."""
+    if output_path:
+        fig.savefig(output_path, dpi=150, bbox_inches='tight')
+        print(f"[{label} saved to {output_path}]")
+        plt.close(fig)
+    else:
+        plt.show()
 
 
 # =============================================================================
@@ -719,8 +846,11 @@ def print_cycles(cycles: list) -> None:
             'driveOpen', 'driveUnmount', 'cacheLookup', 'directIOAttempt',
             'pipelineDecompressionTime', 'pipelineWriteWaitTime', 'finalSync', 'deviceClose',
             # Recovery events
-            'queueDepthReduction', 'syncFallbackActivated', 'drainAndHotSwap', 
-            'watchdogRecovery', 'progressStall', 'deviceIOTimeout'
+            'queueDepthReduction', 'syncFallbackActivated', 'drainAndHotSwap',
+            'watchdogRecovery', 'progressStall', 'deviceIOTimeout',
+            # Rpiboot / Fastboot
+            'rpibootFirmwareSetup', 'rpibootProtocol', 'rpibootFastbootWait',
+            'fastbootDeviceOpen',
         }
         key_events = [e for e in cycle.events if e.get('type') in key_event_types]
         if key_events:
@@ -1405,82 +1535,56 @@ def print_analysis(analysis: dict) -> None:
         print("\n[OK] No significant issues detected")
 
 
-def plot_network(data: dict, output_path: Path = None) -> None:
-    """Plot network operations with their throughput as a bar chart over time."""
+def _build_network_figure(data: dict):
+    """Build the network/cache chart. Returns a Figure or None if there's nothing to draw."""
     if not HAS_MATPLOTLIB:
-        return
-    
+        return None
+
     events = data.get('events', [])
-    
-    # Filter to network-related events with bytes transferred
-    network_types = {'osListFetch', 'osListParse', 'sublistFetch', 'networkLatency',
-                    'cacheLookup', 'cacheVerification', 'cacheWrite', 'cacheFlush'}
-    
-    network_events = [e for e in events 
-                     if e.get('type') in network_types or e.get('bytesTransferred', 0) > 0]
-    
+    network_events = [e for e in events
+                      if e.get('type') in NETWORK_EVENT_TYPES or e.get('bytesTransferred', 0) > 0]
     if not network_events:
-        return
-    
+        return None
+
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8))
-    
-    # Colours by event type
-    colours = {
-        'osListFetch': '#2196F3', 'osListParse': '#1976D2', 
-        'sublistFetch': '#1565C0', 'networkLatency': '#0D47A1',
-        'cacheLookup': '#00BCD4', 'cacheVerification': '#00ACC1',
-        'cacheWrite': '#0097A7', 'cacheFlush': '#00838F',
-    }
-    
-    # Top plot: Timeline of network operations
+
+    # Top: timeline of network operations, one row per event type.
     y_positions = {}
-    current_y = 0
     for event in network_events:
         event_type = event.get('type', 'unknown')
         if event_type not in y_positions:
-            y_positions[event_type] = current_y
-            current_y += 1
-    
+            y_positions[event_type] = len(y_positions)
+
     for event in network_events:
         event_type = event.get('type', 'unknown')
         start_s = event.get('startMs', 0) / 1000
-        duration_s = max(event.get('durationMs', 0) / 1000, 0.05)  # Min visible width
-        y = y_positions[event_type]
-        colour = colours.get(event_type, '#666')
-        success = event.get('success', True)
-        
-        ax1.barh(y, duration_s, left=start_s, height=0.6,
-                color=colour if success else '#F44336', alpha=0.8,
-                edgecolor='white', linewidth=0.5)
-    
+        duration_s = max(event.get('durationMs', 0) / 1000, 0.05)  # min visible width
+        colour = NETWORK_COLOURS.get(event_type, '#666')
+        if not event.get('success', True):
+            colour = FAILURE_COLOUR
+        ax1.barh(y_positions[event_type], duration_s, left=start_s, height=0.6,
+                 color=colour, alpha=0.8, edgecolor='white', linewidth=0.5)
+
     ax1.set_yticks(list(y_positions.values()))
     ax1.set_yticklabels(list(y_positions.keys()))
     ax1.set_xlabel('Time (seconds)')
     ax1.set_title('Network & Cache Operations Timeline')
     ax1.grid(True, axis='x', alpha=0.3)
     ax1.invert_yaxis()
-    
-    # Bottom plot: Throughput bar chart for events with bytes transferred
+
+    # Bottom: throughput bar chart for events that actually transferred bytes.
     transfer_events = [e for e in network_events if e.get('bytesTransferred', 0) > 0]
-    
     if transfer_events:
-        labels = []
-        throughputs = []
-        bar_colours = []
-        
-        for i, event in enumerate(transfer_events):
+        labels, throughputs, bar_colours = [], [], []
+        for event in transfer_events:
             event_type = event.get('type', 'unknown')
             bytes_transferred = event.get('bytesTransferred', 0)
             duration_ms = event.get('durationMs', 1)
-            
-            # Calculate throughput in MB/s
-            throughput_mbps = (bytes_transferred / (1024 * 1024)) / (duration_ms / 1000) if duration_ms > 0 else 0
-            
-            label = f"{event_type}\n({format_bytes(bytes_transferred)})"
-            labels.append(label)
-            throughputs.append(throughput_mbps)
-            bar_colours.append(colours.get(event_type, '#666'))
-        
+            mbps = (bytes_transferred / (1024 * 1024)) / (duration_ms / 1000) if duration_ms > 0 else 0
+            labels.append(f"{event_type}\n({format_bytes(bytes_transferred)})")
+            throughputs.append(mbps)
+            bar_colours.append(NETWORK_COLOURS.get(event_type, '#666'))
+
         x_pos = range(len(labels))
         bars = ax2.bar(x_pos, throughputs, color=bar_colours, alpha=0.8, edgecolor='white')
         ax2.set_xticks(x_pos)
@@ -1488,331 +1592,278 @@ def plot_network(data: dict, output_path: Path = None) -> None:
         ax2.set_ylabel('Throughput (MB/s)')
         ax2.set_title('Network & Cache Throughput by Operation')
         ax2.grid(True, axis='y', alpha=0.3)
-        
-        # Add value labels on bars
         for bar, tp in zip(bars, throughputs):
             if tp > 0:
-                ax2.annotate(f'{tp:.1f}', xy=(bar.get_x() + bar.get_width()/2, bar.get_height()),
-                           ha='center', va='bottom', fontsize=8)
+                ax2.annotate(f'{tp:.1f}',
+                             xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
+                             ha='center', va='bottom', fontsize=8)
     else:
         ax2.text(0.5, 0.5, 'No transfer data available\n(bytesTransferred not recorded)',
-                ha='center', va='center', transform=ax2.transAxes, fontsize=12, color='#666')
+                 ha='center', va='center', transform=ax2.transAxes, fontsize=12, color='#666')
         ax2.set_axis_off()
-    
+
     plt.tight_layout()
-    
-    if output_path:
-        plt.savefig(output_path, dpi=150, bbox_inches='tight')
-        print(f"[Network graph saved to {output_path}]")
-    else:
-        plt.show()
+    return fig
 
 
-def plot_timeline(data: dict, output_path: Path = None, cycles: list = None) -> None:
-    """Plot a timeline/Gantt chart showing the sequence of all operations."""
-    if not HAS_MATPLOTLIB:
+def plot_network(data: dict, output_path: Path = None) -> None:
+    """Render the network chart to a file or display it."""
+    fig = _build_network_figure(data)
+    if fig is None:
         return
-    
+    _emit_figure(fig, output_path, label='Network graph')
+
+
+def _phase_bars(summary: dict, histograms: dict) -> dict:
+    """Compute (start_ms, duration_ms) per phase for the timeline Gantt.
+
+    Start comes from the histogram (first window). Duration is taken from
+    summary.phases.<phase>.durationMs so the bar matches the text output;
+    the histogram span is only used as a fallback for older traces that
+    lack durationMs.
+    """
+    phase_times = {}
+    phases = summary.get('phases', {})
+    for phase_name in PHASE_ORDER:
+        slices = histograms.get(phase_name)
+        if not slices:
+            continue
+        start_ms = slices[0][0]
+        summary_duration = phases.get(phase_name, {}).get('durationMs', 0)
+        if summary_duration > 0:
+            duration_ms = summary_duration
+        else:
+            duration_ms = (slices[-1][0] + HISTOGRAM_WINDOW_MS) - start_ms
+        phase_times[phase_name] = (start_ms, duration_ms)
+    return phase_times
+
+
+def _total_duration_ms(summary: dict, events: list, histograms: dict) -> int:
+    """Best-effort total session duration, falling back to event/histogram extents."""
+    total = summary.get('durationMs', 0)
+    if total > 0:
+        return total
+    for event in events:
+        total = max(total, event.get('startMs', 0) + event.get('durationMs', 0))
+    for slices in histograms.values():
+        if slices:
+            total = max(total, slices[-1][0] + HISTOGRAM_WINDOW_MS)
+    return total
+
+
+def _build_timeline_figure(data: dict, cycles: list = None):
+    """Build the operation-timeline Gantt. Returns a Figure or None."""
+    if not HAS_MATPLOTLIB:
+        return None
+
     events = data.get('events', [])
     histograms = data.get('histograms', {})
     summary = data.get('summary', {})
     cycles = cycles or []
-    
+
     if not events and not histograms:
-        return
-    
+        return None
+
     fig, ax = plt.subplots(figsize=(14, 8))
-    
-    # Colour scheme by category
-    category_colours = {
-        # Network & OS list
-        'osListFetch': '#2196F3', 'osListParse': '#2196F3', 
-        'sublistFetch': '#2196F3', 'networkLatency': '#2196F3',
-        # Drive operations
-        'driveListPoll': '#9C27B0', 'driveOpen': '#9C27B0', 
-        'driveUnmount': '#9C27B0', 'driveUnmountVolumes': '#9C27B0',
-        'driveDiskClean': '#9C27B0', 'driveRescan': '#9C27B0',
-        'driveFormat': '#9C27B0',
-        # Recovery events (orange/red for warnings)
-        'queueDepthReduction': '#FF9800', 'syncFallbackActivated': '#FF5722',
-        'drainAndHotSwap': '#FF9800', 'watchdogRecovery': '#F44336',
-        'progressStall': '#FFC107', 'deviceIOTimeout': '#D32F2F',
-        # Cache operations
-        'cacheLookup': '#00BCD4', 'cacheVerification': '#00BCD4',
-        'cacheWrite': '#00BCD4', 'cacheFlush': '#00BCD4',
-        # Memory management
-        'memoryAllocation': '#607D8B', 'bufferResize': '#607D8B',
-        'pageCacheFlush': '#607D8B', 'ringBufferStarvation': '#D32F2F',
-        'writeRingBufferStats': '#8BC34A',  # Light green for write buffer stats
-        # Image processing
-        'imageDecompressInit': '#795548', 'imageExtraction': '#795548',
-        'hashComputation': '#795548',
-        # Customisation
-        'customisation': '#E91E63', 'cloudInitGeneration': '#E91E63',
-        'firstRunGeneration': '#E91E63', 'secureBootSetup': '#E91E63',
-        # Finalisation
-        'partitionTableWrite': '#FF5722', 'fatPartitionSetup': '#FF5722',
-        'finalSync': '#FF5722', 'deviceClose': '#FF5722',
-        # Phases
-        'download': '#2196F3', 'write': '#4CAF50', 'verify': '#FF9800',
-    }
-    
-    y_labels = []
-    y_positions = []
-    current_y = 0
-    
-    # Calculate total duration
-    total_duration_ms = summary.get('durationMs', 0)
-    if total_duration_ms == 0:
-        # Estimate from events and histograms
-        for event in events:
-            end_time = event.get('startMs', 0) + event.get('durationMs', 0)
-            total_duration_ms = max(total_duration_ms, end_time)
-        for phase, slices in histograms.items():
-            if slices:
-                total_duration_ms = max(total_duration_ms, slices[-1][0] + 1000)
-    
+
+    total_duration_ms = _total_duration_ms(summary, events, histograms)
     total_duration_s = total_duration_ms / 1000
-    
-    # Add phase bars (download, write, verify)
-    phases = summary.get('phases', {})
-    phase_order = ['download', 'write', 'verify']
-    
-    # Estimate phase start times from histograms
-    phase_times = {}
-    for phase_name in phase_order:
-        if phase_name in histograms and histograms[phase_name]:
-            slices = histograms[phase_name]
-            start_ms = slices[0][0]
-            end_ms = slices[-1][0] + 1000  # Add window duration
-            phase_times[phase_name] = (start_ms, end_ms - start_ms)
-    
-    for phase_name in phase_order:
-        if phase_name in phase_times:
-            start_ms, duration_ms = phase_times[phase_name]
-            colour = category_colours.get(phase_name, '#666')
-            ax.barh(current_y, duration_ms / 1000, left=start_ms / 1000, 
-                   height=0.6, color=colour, alpha=0.7, edgecolor='white')
-            y_labels.append(f"[{phase_name.upper()}]")
-            y_positions.append(current_y)
-            current_y += 1
-    
-    # Add a separator
+
+    y_labels: list = []
+    y_positions: list = []
+    current_y = 0
+
+    # Phase bars at the top of the chart.
+    phase_times = _phase_bars(summary, histograms)
+    for phase_name in PHASE_ORDER:
+        if phase_name not in phase_times:
+            continue
+        start_ms, duration_ms = phase_times[phase_name]
+        ax.barh(current_y, duration_ms / 1000, left=start_ms / 1000,
+                height=0.6, color=PHASE_COLOURS[phase_name], alpha=0.7, edgecolor='white')
+        y_labels.append(f"[{phase_name.upper()}]")
+        y_positions.append(current_y)
+        current_y += 1
+
     if phase_times:
-        current_y += 0.5
-    
-    # Group events by type for cleaner display
-    event_rows = {}  # type -> list of (start, duration)
+        current_y += 0.5  # visual separator between phase bars and event rows
+
+    # Group events by type so each row in the chart is one event type.
+    event_rows: dict = {}
     for event in events:
         event_type = event.get('type', 'unknown')
-        start_ms = event.get('startMs', 0)
-        duration_ms = event.get('durationMs', 0)
-        
-        if event_type not in event_rows:
-            event_rows[event_type] = []
-        event_rows[event_type].append((start_ms, duration_ms, event.get('success', True)))
-    
-    # Sort event types by first occurrence
-    sorted_types = sorted(event_rows.keys(), 
-                         key=lambda t: min(e[0] for e in event_rows[t]))
-    
+        event_rows.setdefault(event_type, []).append((
+            event.get('startMs', 0),
+            event.get('durationMs', 0),
+            event.get('success', True),
+        ))
+
+    sorted_types = sorted(event_rows.keys(), key=lambda t: min(e[0] for e in event_rows[t]))
+    min_visible_ms = total_duration_ms * 0.005
+
     for event_type in sorted_types:
-        occurrences = event_rows[event_type]
-        colour = category_colours.get(event_type, '#666')
-        
-        for start_ms, duration_ms, success in occurrences:
-            bar_colour = colour if success else '#F44336'
-            # Minimum visible width for very short events
-            visible_duration = max(duration_ms, total_duration_ms * 0.005)
+        base_colour = TIMELINE_EVENT_COLOURS.get(event_type, '#666')
+        for start_ms, duration_ms, success in event_rows[event_type]:
+            colour = base_colour if success else FAILURE_COLOUR
+            visible_duration = max(duration_ms, min_visible_ms)
             ax.barh(current_y, visible_duration / 1000, left=start_ms / 1000,
-                   height=0.5, color=bar_colour, alpha=0.8, edgecolor='white', linewidth=0.5)
-        
+                    height=0.5, color=colour, alpha=0.8, edgecolor='white', linewidth=0.5)
         y_labels.append(event_type)
         y_positions.append(current_y)
         current_y += 1
-    
-    # Configure axes
+
     ax.set_yticks(y_positions)
     ax.set_yticklabels(y_labels)
     ax.set_xlabel('Time (seconds)')
     ax.set_title('Operation Timeline')
-    ax.set_xlim(0, total_duration_s * 1.02)  # Small margin
+    ax.set_xlim(0, total_duration_s * 1.02)
     ax.grid(True, axis='x', alpha=0.3)
-    ax.invert_yaxis()  # Top to bottom
-    
-    # Add cycle boundary markers
-    if cycles and len(cycles) > 1:
+    ax.invert_yaxis()
+
+    multi_cycle = len(cycles) > 1
+    if multi_cycle:
         for cycle in cycles:
             if cycle.start_ms > 0:
-                ax.axvline(x=cycle.start_ms / 1000, color='#FF5722', linestyle='--', 
-                          linewidth=2, alpha=0.7, zorder=10)
+                ax.axvline(x=cycle.start_ms / 1000, color=CYCLE_MARKER_COLOUR,
+                           linestyle='--', linewidth=2, alpha=0.7, zorder=10)
                 ax.annotate(f'Cycle {cycle.id}', xy=(cycle.start_ms / 1000, 0),
-                           xytext=(5, 5), textcoords='offset points',
-                           fontsize=9, fontweight='bold', color='#FF5722')
-    
-    # Add legend for categories
+                            xytext=(5, 5), textcoords='offset points',
+                            fontsize=9, fontweight='bold', color=CYCLE_MARKER_COLOUR)
+
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor='#2196F3', label='Network/Download'),
-        Patch(facecolor='#4CAF50', label='Write'),
-        Patch(facecolor='#FF9800', label='Verify'),
+        Patch(facecolor=PHASE_COLOURS['download'], label='Network/Download'),
+        Patch(facecolor=PHASE_COLOURS['write'], label='Write'),
+        Patch(facecolor=PHASE_COLOURS['verify'], label='Verify'),
         Patch(facecolor='#9C27B0', label='Drive ops'),
         Patch(facecolor='#00BCD4', label='Cache'),
         Patch(facecolor='#E91E63', label='Customisation'),
-        Patch(facecolor='#FF5722', label='Finalisation'),
-        Patch(facecolor='#F44336', label='Failed'),
+        Patch(facecolor=CYCLE_MARKER_COLOUR, label='Finalisation'),
+        Patch(facecolor=FAILURE_COLOUR, label='Failed'),
     ]
-    if cycles and len(cycles) > 1:
-        legend_elements.append(Patch(facecolor='#FF5722', label='Cycle boundary', alpha=0.5))
+    if multi_cycle:
+        legend_elements.append(
+            Patch(facecolor=CYCLE_MARKER_COLOUR, label='Cycle boundary', alpha=0.5))
     ax.legend(handles=legend_elements, loc='upper right', fontsize=8)
-    
+
     plt.tight_layout()
-    
-    if output_path:
-        plt.savefig(output_path, dpi=150, bbox_inches='tight')
-        print(f"[Timeline saved to {output_path}]")
-    else:
-        plt.show()
+    return fig
 
 
-def plot_throughput(data: dict, analysis: dict, output_path: Path = None, cycles: list = None) -> None:
-    """Plot throughput over time for each phase, with event markers overlaid."""
-    if not HAS_MATPLOTLIB:
-        print("\n[Visualisation unavailable - install matplotlib: pip install matplotlib numpy]")
+def plot_timeline(data: dict, output_path: Path = None, cycles: list = None) -> None:
+    """Render the operation timeline to a file or display it."""
+    fig = _build_timeline_figure(data, cycles)
+    if fig is None:
         return
-    
+    _emit_figure(fig, output_path, label='Timeline')
+
+
+def _build_throughput_figure(data: dict, analysis: dict, cycles: list = None):
+    """Build the per-phase throughput chart with concurrent events overlaid.
+
+    Returns a Figure or None if there's nothing to draw.
+    """
+    if not HAS_MATPLOTLIB:
+        return None
+
     histograms = data.get('histograms', {})
     events = data.get('events', [])
     cycles = cycles or []
-    
+
     if not histograms:
-        print("\n[No histogram data to plot]")
-        return
-    
-    # Count phases with data
-    phases_with_data = [p for p in ['download', 'write', 'verify'] if p in histograms and histograms[p]]
+        return None
+
+    phases_with_data = [p for p in PHASE_ORDER if histograms.get(p)]
     if not phases_with_data:
-        return
-    
-    # Event colours by category
-    event_colours = {
-        # Network (blue)
-        'osListFetch': '#1565C0', 'osListParse': '#1565C0', 
-        'sublistFetch': '#1565C0', 'networkLatency': '#1565C0',
-        'networkRetry': '#D32F2F', 'networkConnectionStats': '#1565C0',
-        # Drive (purple)
-        'driveListPoll': '#7B1FA2', 'driveOpen': '#7B1FA2', 
-        'driveUnmount': '#7B1FA2', 'driveUnmountVolumes': '#7B1FA2',
-        'driveDiskClean': '#7B1FA2', 'driveRescan': '#7B1FA2',
-        'driveFormat': '#7B1FA2',
-        # Recovery events (orange/red for warnings)
-        'queueDepthReduction': '#FF9800', 'syncFallbackActivated': '#FF5722',
-        'drainAndHotSwap': '#FF9800', 'watchdogRecovery': '#F44336',
-        'progressStall': '#FFC107', 'deviceIOTimeout': '#D32F2F',
-        # Cache (cyan)
-        'cacheLookup': '#00838F', 'cacheVerification': '#00838F',
-        'cacheWrite': '#00838F', 'cacheFlush': '#00838F',
-        # Memory (grey) - ringBufferStarvation in RED to highlight issues
-        'memoryAllocation': '#455A64', 'bufferResize': '#455A64',
-        'pageCacheFlush': '#455A64', 'ringBufferStarvation': '#D32F2F',
-        'writeRingBufferStats': '#8BC34A',  # Light green for write buffer stats
-        # Image processing (brown)
-        'imageDecompressInit': '#5D4037', 'imageExtraction': '#5D4037',
-        'hashComputation': '#5D4037',
-        # Customisation (pink)
-        'customisation': '#C2185B', 'cloudInitGeneration': '#C2185B',
-        'firstRunGeneration': '#C2185B', 'secureBootSetup': '#C2185B',
-        # Finalisation (deep orange)
-        'partitionTableWrite': '#E64A19', 'fatPartitionSetup': '#E64A19',
-        'finalSync': '#E64A19', 'deviceClose': '#E64A19',
-    }
-    
-    fig, axes = plt.subplots(len(phases_with_data), 1, figsize=(14, 5 * len(phases_with_data)))
+        return None
+
+    fig, axes = plt.subplots(len(phases_with_data), 1,
+                             figsize=(14, 5 * len(phases_with_data)))
     if len(phases_with_data) == 1:
         axes = [axes]
-    
-    phase_colours = {'download': '#2196F3', 'write': '#4CAF50', 'verify': '#FF9800'}
-    
+
     for ax, phase_name in zip(axes, phases_with_data):
         samples = analysis.get(phase_name, {}).get('throughput_samples', [])
         if not samples:
             continue
-        
-        timestamps = [s['timestamp'] / 1000 for s in samples]  # Convert to seconds
-        avg_throughput = [s['avg'] / 1024 for s in samples]    # Convert to MB/s
-        min_throughput = [s['min'] / 1024 for s in samples]
-        max_throughput = [s['max'] / 1024 for s in samples]
-        
+
+        # Convert to seconds and MB/s up front.
+        timestamps = [s['timestamp'] / 1000 for s in samples]
+        avg_tp = [s['avg'] / 1024 for s in samples]
+        min_tp = [s['min'] / 1024 for s in samples]
+        max_tp = [s['max'] / 1024 for s in samples]
+
         phase_start = min(timestamps)
         phase_end = max(timestamps)
-        max_tp = max(max_throughput) if max_throughput else 100
-        
-        # Plot average with min/max range
-        ax.fill_between(timestamps, min_throughput, max_throughput, 
-                       alpha=0.3, color=phase_colours.get(phase_name, '#666'))
-        ax.plot(timestamps, avg_throughput, 
-               color=phase_colours.get(phase_name, '#666'), linewidth=1.5, label='Throughput')
-        
-        # Overlay events that occurred during this phase
-        event_labels_added = set()
+        ymax = max(max_tp) if max_tp else 100
+
+        phase_colour = PHASE_COLOURS.get(phase_name, '#666')
+        ax.fill_between(timestamps, min_tp, max_tp, alpha=0.3, color=phase_colour)
+        ax.plot(timestamps, avg_tp, color=phase_colour, linewidth=1.5, label='Throughput')
+
+        # Overlay each event type as an alpha-blended span; label only once.
+        labelled = set()
         for event in events:
-            event_start_s = event.get('startMs', 0) / 1000
-            event_duration_s = event.get('durationMs', 0) / 1000
-            event_end_s = event_start_s + event_duration_s
+            event_start = event.get('startMs', 0) / 1000
+            event_end = event_start + event.get('durationMs', 0) / 1000
+            if event_end < phase_start or event_start > phase_end:
+                continue
             event_type = event.get('type', 'unknown')
-            
-            # Check if event overlaps with this phase
-            if event_end_s >= phase_start and event_start_s <= phase_end:
-                colour = event_colours.get(event_type, '#666')
-                
-                # Draw event as a vertical span
-                ax.axvspan(event_start_s, event_end_s, 
-                          alpha=0.3, color=colour, zorder=1)
-                
-                # Add label at top (only once per event type)
-                if event_type not in event_labels_added:
-                    # Position label at the event's midpoint
-                    label_x = (event_start_s + event_end_s) / 2
-                    ax.annotate(event_type, xy=(label_x, max_tp * 0.95),
-                               fontsize=7, ha='center', va='top',
-                               color=colour, rotation=90,
-                               bbox=dict(boxstyle='round,pad=0.2', facecolor='white', 
-                                        edgecolor=colour, alpha=0.8))
-                    event_labels_added.add(event_type)
-        
-        # Mark stalls
+            colour = THROUGHPUT_EVENT_COLOURS.get(event_type, '#666')
+            ax.axvspan(event_start, event_end, alpha=0.3, color=colour, zorder=1)
+            if event_type not in labelled:
+                ax.annotate(event_type,
+                            xy=((event_start + event_end) / 2, ymax * 0.95),
+                            fontsize=7, ha='center', va='top',
+                            color=colour, rotation=90,
+                            bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                                      edgecolor=colour, alpha=0.8))
+                labelled.add(event_type)
+
+        # Mark per-phase stalls from the histogram analysis.
         stalls = analysis.get(phase_name, {}).get('stalls', [])
         if stalls:
             stall_times = [s['timestamp'] / 1000 for s in stalls]
             stall_values = [s['throughput'] / 1024 for s in stalls]
-            ax.scatter(stall_times, stall_values, color='red', marker='v', 
-                      s=50, zorder=5, label='Stalls')
-        
-        # Add cycle boundary markers
-        if cycles and len(cycles) > 1:
+            ax.scatter(stall_times, stall_values, color='red', marker='v',
+                       s=50, zorder=5, label='Stalls')
+
+        # Cycle boundary markers (only meaningful when there is more than one).
+        if len(cycles) > 1:
             for cycle in cycles:
-                if cycle.start_ms > 0:
-                    cycle_start_s = cycle.start_ms / 1000
-                    if phase_start <= cycle_start_s <= phase_end:
-                        ax.axvline(x=cycle_start_s, color='#FF5722', linestyle='--', 
-                                  linewidth=2, alpha=0.7, zorder=10)
-                        ax.annotate(f'Cycle {cycle.id}', xy=(cycle_start_s, max_tp * 0.9),
-                                   fontsize=8, fontweight='bold', color='#FF5722')
-        
+                if cycle.start_ms <= 0:
+                    continue
+                cycle_start = cycle.start_ms / 1000
+                if phase_start <= cycle_start <= phase_end:
+                    ax.axvline(x=cycle_start, color=CYCLE_MARKER_COLOUR,
+                               linestyle='--', linewidth=2, alpha=0.7, zorder=10)
+                    ax.annotate(f'Cycle {cycle.id}',
+                                xy=(cycle_start, ymax * 0.9),
+                                fontsize=8, fontweight='bold', color=CYCLE_MARKER_COLOUR)
+
         ax.set_xlabel('Time (seconds)')
         ax.set_ylabel('Throughput (MB/s)')
         ax.set_title(f'{phase_name.title()} Phase Throughput (with concurrent events)')
         ax.grid(True, alpha=0.3)
-        ax.set_ylim(bottom=0, top=max_tp * 1.1)
+        ax.set_ylim(bottom=0, top=ymax * 1.1)
         ax.legend(loc='upper right')
-    
+
     plt.tight_layout()
-    
-    if output_path:
-        plt.savefig(output_path, dpi=150, bbox_inches='tight')
-        print(f"[Throughput graph saved to {output_path}]")
-    else:
-        plt.show()
+    return fig
+
+
+def plot_throughput(data: dict, analysis: dict, output_path: Path = None, cycles: list = None) -> None:
+    """Render the per-phase throughput chart to a file or display it."""
+    if not HAS_MATPLOTLIB:
+        print("\n[Visualisation unavailable - install matplotlib: pip install matplotlib numpy]")
+        return
+    if not data.get('histograms'):
+        print("\n[No histogram data to plot]")
+        return
+    fig = _build_throughput_figure(data, analysis, cycles)
+    if fig is None:
+        return
+    _emit_figure(fig, output_path, label='Throughput graph')
 
 
 def figure_to_base64(fig) -> str:
@@ -1825,320 +1876,19 @@ def figure_to_base64(fig) -> str:
     return img_base64
 
 
-def create_timeline_figure(data: dict):
-    """Create timeline figure and return it (for HTML embedding)."""
-    if not HAS_MATPLOTLIB:
-        return None
-    
-    events = data.get('events', [])
-    histograms = data.get('histograms', {})
-    summary = data.get('summary', {})
-    
-    if not events and not histograms:
-        return None
-    
-    fig, ax = plt.subplots(figsize=(14, 8))
-    
-    # Colour scheme by category
-    category_colours = {
-        'osListFetch': '#2196F3', 'osListParse': '#2196F3', 
-        'sublistFetch': '#2196F3', 'networkLatency': '#2196F3',
-        'networkRetry': '#D32F2F', 'networkConnectionStats': '#2196F3',
-        'driveListPoll': '#9C27B0', 'driveOpen': '#9C27B0', 
-        'driveUnmount': '#9C27B0', 'driveFormat': '#9C27B0',
-        'driveUnmountVolumes': '#9C27B0', 'driveDiskClean': '#9C27B0',
-        'driveRescan': '#9C27B0',
-        'cacheLookup': '#00BCD4', 'cacheVerification': '#00BCD4',
-        'cacheWrite': '#00BCD4', 'cacheFlush': '#00BCD4',
-        'memoryAllocation': '#607D8B', 'bufferResize': '#607D8B',
-        'pageCacheFlush': '#607D8B', 'ringBufferStarvation': '#D32F2F',
-        'writeRingBufferStats': '#8BC34A',  # Light green for write buffer stats
-        'imageDecompressInit': '#795548', 'imageExtraction': '#795548',
-        'hashComputation': '#795548',
-        'customisation': '#E91E63', 'cloudInitGeneration': '#E91E63',
-        'firstRunGeneration': '#E91E63', 'secureBootSetup': '#E91E63',
-        'partitionTableWrite': '#FF5722', 'fatPartitionSetup': '#FF5722',
-        'finalSync': '#FF5722', 'deviceClose': '#FF5722',
-        'download': '#2196F3', 'write': '#4CAF50', 'verify': '#FF9800',
-    }
-    
-    y_labels = []
-    y_positions = []
-    current_y = 0
-    
-    total_duration_ms = summary.get('durationMs', 0)
-    if total_duration_ms == 0:
-        for event in events:
-            end_time = event.get('startMs', 0) + event.get('durationMs', 0)
-            total_duration_ms = max(total_duration_ms, end_time)
-        for phase, slices in histograms.items():
-            if slices:
-                total_duration_ms = max(total_duration_ms, slices[-1][0] + 1000)
-    
-    total_duration_s = total_duration_ms / 1000
-    
-    phases = summary.get('phases', {})
-    phase_order = ['download', 'write', 'verify']
-    
-    phase_times = {}
-    for phase_name in phase_order:
-        if phase_name in histograms and histograms[phase_name]:
-            slices = histograms[phase_name]
-            start_ms = slices[0][0]
-            end_ms = slices[-1][0] + 1000
-            phase_times[phase_name] = (start_ms, end_ms - start_ms)
-    
-    for phase_name in phase_order:
-        if phase_name in phase_times:
-            start_ms, duration_ms = phase_times[phase_name]
-            colour = category_colours.get(phase_name, '#666')
-            ax.barh(current_y, duration_ms / 1000, left=start_ms / 1000, 
-                   height=0.6, color=colour, alpha=0.7, edgecolor='white')
-            y_labels.append(f"[{phase_name.upper()}]")
-            y_positions.append(current_y)
-            current_y += 1
-    
-    if phase_times:
-        current_y += 0.5
-    
-    event_rows = {}
-    for event in events:
-        event_type = event.get('type', 'unknown')
-        start_ms = event.get('startMs', 0)
-        duration_ms = event.get('durationMs', 0)
-        if event_type not in event_rows:
-            event_rows[event_type] = []
-        event_rows[event_type].append((start_ms, duration_ms, event.get('success', True)))
-    
-    sorted_types = sorted(event_rows.keys(), 
-                         key=lambda t: min(e[0] for e in event_rows[t]))
-    
-    for event_type in sorted_types:
-        occurrences = event_rows[event_type]
-        colour = category_colours.get(event_type, '#666')
-        
-        for start_ms, duration_ms, success in occurrences:
-            bar_colour = colour if success else '#F44336'
-            visible_duration = max(duration_ms, total_duration_ms * 0.005)
-            ax.barh(current_y, visible_duration / 1000, left=start_ms / 1000,
-                   height=0.5, color=bar_colour, alpha=0.8, edgecolor='white', linewidth=0.5)
-        
-        y_labels.append(event_type)
-        y_positions.append(current_y)
-        current_y += 1
-    
-    ax.set_yticks(y_positions)
-    ax.set_yticklabels(y_labels)
-    ax.set_xlabel('Time (seconds)')
-    ax.set_title('Operation Timeline')
-    ax.set_xlim(0, total_duration_s * 1.02)
-    ax.grid(True, axis='x', alpha=0.3)
-    ax.invert_yaxis()
-    
-    from matplotlib.patches import Patch
-    legend_elements = [
-        Patch(facecolor='#2196F3', label='Network/Download'),
-        Patch(facecolor='#4CAF50', label='Write'),
-        Patch(facecolor='#FF9800', label='Verify'),
-        Patch(facecolor='#9C27B0', label='Drive ops'),
-        Patch(facecolor='#00BCD4', label='Cache'),
-        Patch(facecolor='#E91E63', label='Customisation'),
-        Patch(facecolor='#FF5722', label='Finalisation'),
-        Patch(facecolor='#F44336', label='Failed'),
-    ]
-    ax.legend(handles=legend_elements, loc='upper right', fontsize=8)
-    
-    plt.tight_layout()
-    return fig
+def create_timeline_figure(data: dict, cycles: list = None):
+    """HTML-report wrapper: build the timeline figure for embedding."""
+    return _build_timeline_figure(data, cycles)
 
 
-def create_throughput_figure(data: dict, analysis: dict):
-    """Create throughput figure and return it (for HTML embedding)."""
-    if not HAS_MATPLOTLIB:
-        return None
-    
-    histograms = data.get('histograms', {})
-    events = data.get('events', [])
-    
-    if not histograms:
-        return None
-    
-    phases_with_data = [p for p in ['download', 'write', 'verify'] if p in histograms and histograms[p]]
-    if not phases_with_data:
-        return None
-    
-    event_colours = {
-        'osListFetch': '#1565C0', 'osListParse': '#1565C0', 
-        'sublistFetch': '#1565C0', 'networkLatency': '#1565C0',
-        'driveListPoll': '#7B1FA2', 'driveOpen': '#7B1FA2', 
-        'driveUnmount': '#7B1FA2', 'driveUnmountVolumes': '#7B1FA2',
-        'driveDiskClean': '#7B1FA2', 'driveRescan': '#7B1FA2',
-        'driveFormat': '#7B1FA2',
-        'cacheLookup': '#00838F', 'cacheVerification': '#00838F',
-        'cacheWrite': '#00838F', 'cacheFlush': '#00838F',
-        'memoryAllocation': '#455A64', 'bufferResize': '#455A64',
-        'pageCacheFlush': '#455A64',
-        'imageDecompressInit': '#5D4037', 'imageExtraction': '#5D4037',
-        'hashComputation': '#5D4037',
-        'customisation': '#C2185B', 'cloudInitGeneration': '#C2185B',
-        'firstRunGeneration': '#C2185B', 'secureBootSetup': '#C2185B',
-        'partitionTableWrite': '#E64A19', 'fatPartitionSetup': '#E64A19',
-        'finalSync': '#E64A19', 'deviceClose': '#E64A19',
-    }
-    
-    fig, axes = plt.subplots(len(phases_with_data), 1, figsize=(14, 5 * len(phases_with_data)))
-    if len(phases_with_data) == 1:
-        axes = [axes]
-    
-    phase_colours = {'download': '#2196F3', 'write': '#4CAF50', 'verify': '#FF9800'}
-    
-    for ax, phase_name in zip(axes, phases_with_data):
-        samples = analysis.get(phase_name, {}).get('throughput_samples', [])
-        if not samples:
-            continue
-        
-        timestamps = [s['timestamp'] / 1000 for s in samples]
-        avg_throughput = [s['avg'] / 1024 for s in samples]
-        min_throughput = [s['min'] / 1024 for s in samples]
-        max_throughput = [s['max'] / 1024 for s in samples]
-        
-        phase_start = min(timestamps)
-        phase_end = max(timestamps)
-        max_tp = max(max_throughput) if max_throughput else 100
-        
-        ax.fill_between(timestamps, min_throughput, max_throughput, 
-                       alpha=0.3, color=phase_colours.get(phase_name, '#666'))
-        ax.plot(timestamps, avg_throughput, 
-               color=phase_colours.get(phase_name, '#666'), linewidth=1.5, label='Throughput')
-        
-        event_labels_added = set()
-        for event in events:
-            event_start_s = event.get('startMs', 0) / 1000
-            event_duration_s = event.get('durationMs', 0) / 1000
-            event_end_s = event_start_s + event_duration_s
-            event_type = event.get('type', 'unknown')
-            
-            if event_end_s >= phase_start and event_start_s <= phase_end:
-                colour = event_colours.get(event_type, '#666')
-                ax.axvspan(event_start_s, event_end_s, alpha=0.3, color=colour, zorder=1)
-                
-                if event_type not in event_labels_added:
-                    label_x = (event_start_s + event_end_s) / 2
-                    ax.annotate(event_type, xy=(label_x, max_tp * 0.95),
-                               fontsize=7, ha='center', va='top',
-                               color=colour, rotation=90,
-                               bbox=dict(boxstyle='round,pad=0.2', facecolor='white', 
-                                        edgecolor=colour, alpha=0.8))
-                    event_labels_added.add(event_type)
-        
-        stalls = analysis.get(phase_name, {}).get('stalls', [])
-        if stalls:
-            stall_times = [s['timestamp'] / 1000 for s in stalls]
-            stall_values = [s['throughput'] / 1024 for s in stalls]
-            ax.scatter(stall_times, stall_values, color='red', marker='v', 
-                      s=50, zorder=5, label='Stalls')
-        
-        ax.set_xlabel('Time (seconds)')
-        ax.set_ylabel('Throughput (MB/s)')
-        ax.set_title(f'{phase_name.title()} Phase Throughput (with concurrent events)')
-        ax.grid(True, alpha=0.3)
-        ax.set_ylim(bottom=0, top=max_tp * 1.1)
-        ax.legend(loc='upper right')
-    
-    plt.tight_layout()
-    return fig
+def create_throughput_figure(data: dict, analysis: dict, cycles: list = None):
+    """HTML-report wrapper: build the throughput figure for embedding."""
+    return _build_throughput_figure(data, analysis, cycles)
 
 
 def create_network_figure(data: dict):
-    """Create network figure and return it (for HTML embedding)."""
-    if not HAS_MATPLOTLIB:
-        return None
-    
-    events = data.get('events', [])
-    
-    network_types = {'osListFetch', 'osListParse', 'sublistFetch', 'networkLatency',
-                    'cacheLookup', 'cacheVerification', 'cacheWrite', 'cacheFlush'}
-    
-    network_events = [e for e in events 
-                     if e.get('type') in network_types or e.get('bytesTransferred', 0) > 0]
-    
-    if not network_events:
-        return None
-    
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 8))
-    
-    colours = {
-        'osListFetch': '#2196F3', 'osListParse': '#1976D2', 
-        'sublistFetch': '#1565C0', 'networkLatency': '#0D47A1',
-        'cacheLookup': '#00BCD4', 'cacheVerification': '#00ACC1',
-        'cacheWrite': '#0097A7', 'cacheFlush': '#00838F',
-    }
-    
-    y_positions = {}
-    current_y = 0
-    for event in network_events:
-        event_type = event.get('type', 'unknown')
-        if event_type not in y_positions:
-            y_positions[event_type] = current_y
-            current_y += 1
-    
-    for event in network_events:
-        event_type = event.get('type', 'unknown')
-        start_s = event.get('startMs', 0) / 1000
-        duration_s = max(event.get('durationMs', 0) / 1000, 0.05)
-        y = y_positions[event_type]
-        colour = colours.get(event_type, '#666')
-        success = event.get('success', True)
-        
-        ax1.barh(y, duration_s, left=start_s, height=0.6,
-                color=colour if success else '#F44336', alpha=0.8,
-                edgecolor='white', linewidth=0.5)
-    
-    ax1.set_yticks(list(y_positions.values()))
-    ax1.set_yticklabels(list(y_positions.keys()))
-    ax1.set_xlabel('Time (seconds)')
-    ax1.set_title('Network & Cache Operations Timeline')
-    ax1.grid(True, axis='x', alpha=0.3)
-    ax1.invert_yaxis()
-    
-    transfer_events = [e for e in network_events if e.get('bytesTransferred', 0) > 0]
-    
-    if transfer_events:
-        labels = []
-        throughputs = []
-        bar_colours = []
-        
-        for i, event in enumerate(transfer_events):
-            event_type = event.get('type', 'unknown')
-            bytes_transferred = event.get('bytesTransferred', 0)
-            duration_ms = event.get('durationMs', 1)
-            
-            throughput_mbps = (bytes_transferred / (1024 * 1024)) / (duration_ms / 1000) if duration_ms > 0 else 0
-            
-            label = f"{event_type}\n({format_bytes(bytes_transferred)})"
-            labels.append(label)
-            throughputs.append(throughput_mbps)
-            bar_colours.append(colours.get(event_type, '#666'))
-        
-        x_pos = range(len(labels))
-        bars = ax2.bar(x_pos, throughputs, color=bar_colours, alpha=0.8, edgecolor='white')
-        ax2.set_xticks(x_pos)
-        ax2.set_xticklabels(labels, fontsize=8)
-        ax2.set_ylabel('Throughput (MB/s)')
-        ax2.set_title('Network & Cache Throughput by Operation')
-        ax2.grid(True, axis='y', alpha=0.3)
-        
-        for bar, tp in zip(bars, throughputs):
-            if tp > 0:
-                ax2.annotate(f'{tp:.1f}', xy=(bar.get_x() + bar.get_width()/2, bar.get_height()),
-                           ha='center', va='bottom', fontsize=8)
-    else:
-        ax2.text(0.5, 0.5, 'No transfer data available\n(bytesTransferred not recorded)',
-                ha='center', va='center', transform=ax2.transAxes, fontsize=12, color='#666')
-        ax2.set_axis_off()
-    
-    plt.tight_layout()
-    return fig
+    """HTML-report wrapper: build the network figure for embedding."""
+    return _build_network_figure(data)
 
 
 def generate_html_report(data: dict, analysis: dict, output_path: Path, cycles: list = None) -> None:
@@ -2151,14 +1901,14 @@ def generate_html_report(data: dict, analysis: dict, output_path: Path, cycles: 
     # Generate graphs as base64-encoded images
     graphs = {}
     if HAS_MATPLOTLIB:
-        fig = create_timeline_figure(data)
+        fig = create_timeline_figure(data, cycles)
         if fig:
             graphs['timeline'] = figure_to_base64(fig)
-        
-        fig = create_throughput_figure(data, analysis)
+
+        fig = create_throughput_figure(data, analysis, cycles)
         if fig:
             graphs['throughput'] = figure_to_base64(fig)
-        
+
         fig = create_network_figure(data)
         if fig:
             graphs['network'] = figure_to_base64(fig)
@@ -2637,25 +2387,38 @@ def generate_html_report(data: dict, analysis: dict, output_path: Path, cycles: 
     print(f"[HTML report saved to {output_path}]")
 
 
+def _parse_args(argv: list = None):
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog='analyse_performance.py',
+        description='Analyse performance data captured by Raspberry Pi Imager.',
+        epilog=(
+            'Output files:\n'
+            '  --html         <input>.html              Complete report with embedded graphs\n'
+            '  --save-graphs  <input>-timeline.png      Operation sequence timeline\n'
+            '                 <input>-throughput.png    Throughput over time\n'
+            '                 <input>-network.png       Network & cache operations'
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument('json_path', type=Path, help='performance-data.json file to analyse')
+    parser.add_argument('--save-graphs', '--save-graph', dest='save_graphs',
+                        action='store_true', help='save graphs as PNG files')
+    parser.add_argument('--html', dest='generate_html', action='store_true',
+                        help='generate self-contained HTML report (recommended)')
+    parser.add_argument('--no-cycles', dest='skip_cycles', action='store_true',
+                        help='skip cycle detection (legacy mode)')
+    return parser.parse_args(argv)
+
+
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python analyse_performance.py <performance-data.json> [options]")
-        print("\nOptions:")
-        print("  --save-graphs   Save graphs as PNG files")
-        print("  --html          Generate self-contained HTML report (recommended)")
-        print("  --no-cycles     Skip cycle detection (legacy mode)")
-        print("\nOutput files:")
-        print("  --html          <input>.html              Complete report with embedded graphs")
-        print("  --save-graphs   <input>-timeline.png      Operation sequence timeline")
-        print("                  <input>-throughput.png    Throughput over time")
-        print("                  <input>-network.png       Network & cache operations")
-        sys.exit(1)
-    
-    json_path = Path(sys.argv[1])
-    save_graphs = '--save-graphs' in sys.argv or '--save-graph' in sys.argv
-    generate_html = '--html' in sys.argv
-    skip_cycles = '--no-cycles' in sys.argv
-    
+    args = _parse_args()
+    json_path = args.json_path
+    save_graphs = args.save_graphs
+    generate_html = args.generate_html
+    skip_cycles = args.skip_cycles
+
     if not json_path.exists():
         print(f"Error: File not found: {json_path}")
         sys.exit(1)

@@ -3,8 +3,9 @@
  * Copyright (C) 2020 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import "../qmlcomponents"
@@ -48,7 +49,7 @@ WizardStepBase {
     }
 
     Connections {
-        target: imageWriter
+        target: ImageWriterSingleton
         function onOsListPrepared() {
             // If model was loaded but has no items (we were offline), force reload
             if (root.modelLoaded && root.hwModel && root.hwModel.rowCount() === 0) {
@@ -250,6 +251,7 @@ WizardStepBase {
             required property string name
             required property string description
             required property string icon
+            required property bool isUsbBootConnected
             required property QtObject model
 
             width: hwlist.width
@@ -259,6 +261,7 @@ WizardStepBase {
             // Accessibility properties
             Accessible.role: Accessible.ListItem
             Accessible.name: hwitem.name + ". " + hwitem.description
+                          + (hwitem.isUsbBootConnected ? ". " + qsTr("Connected via USB") : "")
             Accessible.focusable: true
             Accessible.ignored: false
 
@@ -333,7 +336,7 @@ WizardStepBase {
 
                         Text {
                             text: hwitem.name
-                            font.pixelSize: Style.fontSizeFormLabel
+                            font.pointSize: Style.fontSizeFormLabel
                             font.family: Style.fontFamilyBold
                             font.bold: true
                             color: Style.formLabelColor
@@ -343,11 +346,21 @@ WizardStepBase {
 
                         Text {
                             text: hwitem.description
-                            font.pixelSize: Style.fontSizeDescription
+                            font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
                             color: Style.textDescriptionColor
                             Layout.fillWidth: true
                             wrapMode: Text.WordWrap
+                            Accessible.ignored: true
+                        }
+
+                        Text {
+                            text: qsTr("Connected via USB")
+                            font.pointSize: Style.fontSizeDescription
+                            font.family: Style.fontFamily
+                            color: Style.formControlActiveColor
+                            Layout.fillWidth: true
+                            visible: hwitem.isUsbBootConnected
                             Accessible.ignored: true
                         }
                     }

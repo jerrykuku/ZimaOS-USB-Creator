@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright (C) 2025 Raspberry Pi Ltd
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -33,7 +35,7 @@ BaseDialog {
     Component.onCompleted: {
         registerFocusGroup("warning", function(){ 
             // Only include warning text when screen reader is active (otherwise it's not focusable)
-            return (root.imageWriter && root.imageWriter.isScreenReaderActive()) ? [warningText] : []
+            return (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) ? [warningText] : []
         }, 0)
         registerFocusGroup("buttons", function(){ 
             return [keepFilterButton, showSystemButton] 
@@ -41,24 +43,20 @@ BaseDialog {
     }
 
     // Dialog content
-    Text {
+    FocusableText {
         id: warningText
         textFormat: Text.StyledText
         text: qsTr("By disabling system drive filtering, <b>system drives will be shown</b> in the list.")
               + "<br><br>"
               + root.systemDriveText
               + "<br><br>" + root.riskText + "<br><br>" + root.proceedText
-        font.pixelSize: Style.fontSizeDescription
+        font.pointSize: Style.fontSizeDescription
         font.family: Style.fontFamily
         color: Style.textDescriptionColor
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
-        Accessible.role: Accessible.StaticText
         Accessible.name: text.replace(/<[^>]+>/g, '')  // Strip HTML tags for accessibility
         Accessible.ignored: false
-        Accessible.focusable: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (root.imageWriter && root.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
     }
 
     RowLayout {

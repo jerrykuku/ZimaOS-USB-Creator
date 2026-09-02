@@ -3,6 +3,8 @@
  * Copyright (C) 2025 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -15,9 +17,7 @@ import RpiImager
 Dialog {
     id: root
     
-    // imageWriter property - child dialogs will provide the actual value
     // We declare it here so bindings work, but children override it
-    property var imageWriter
     
     // Standard dialog properties
     modal: true
@@ -56,7 +56,7 @@ Dialog {
         color: Qt.rgba(0, 0, 0, 0.3)
         Behavior on opacity {
             NumberAnimation {
-                duration: 150
+                duration: PlatformHelper.prefersReducedMotion ? 0 : 150
             }
         }
     }
@@ -67,7 +67,7 @@ Dialog {
     // Set the dialog background directly
     background: Rectangle {
         color: Style.titleBackgroundColor
-        radius: (root.imageWriter && root.imageWriter.isEmbeddedMode()) ? Style.sectionBorderRadiusEmbedded : Style.sectionBorderRadius
+        radius: Style.cornerRadius(Style.sectionBorderRadius)
         border.color: Style.popupBorderColor
         border.width: Style.sectionBorderWidth
         antialiasing: true  // Smooth edges at non-integer scale factors
@@ -94,22 +94,36 @@ Dialog {
         property var _focusGroups: []
         property var _focusableItems: []
         property var initialFocusItem: null
-        
+
+        // Coalesce bursts of focus-order rebuilds (e.g. the registerFocusGroup calls
+        // during construction) into one. Use for fire-and-forget triggers; call
+        // rebuildFocusOrder() directly where the result is read synchronously.
+        property bool _focusRebuildPending: false
+        function requestFocusRebuild() {
+            if (_focusRebuildPending) return
+            _focusRebuildPending = true
+            Qt.callLater(_flushFocusRebuild)
+        }
+        function _flushFocusRebuild() {
+            if (_focusRebuildPending) rebuildFocusOrder()
+        }
+
         function registerFocusGroup(name, getItemsFn, order) {
             if (order === undefined) order = 0
             // Replace if exists
             for (var i = 0; i < _focusGroups.length; i++) {
                 if (_focusGroups[i].name === name) {
                     _focusGroups[i] = { name: name, getItemsFn: getItemsFn, order: order, enabled: true }
-                    rebuildFocusOrder()
+                    requestFocusRebuild()
                     return
                 }
             }
             _focusGroups.push({ name: name, getItemsFn: getItemsFn, order: order, enabled: true })
-            rebuildFocusOrder()
+            requestFocusRebuild()
         }
         
         function rebuildFocusOrder() {
+            _focusRebuildPending = false   // a synchronous rebuild supersedes any pending debounced one
             // Compose enabled groups by order
             _focusGroups.sort(function(a,b){ return a.order - b.order })
             var items = []
@@ -155,8 +169,6 @@ Dialog {
             anchors.margins: Style.cardPadding
             spacing: Style.spacingMedium
             
-            // Make imageWriter available to all children via parent lookup
-            property var imageWriter: root.imageWriter
         }
     }
     
@@ -168,21 +180,39 @@ Dialog {
     function rebuildFocusOrder() {
         dialogFocusScope.rebuildFocusOrder()
     }
-    
+
+    // Debounced rebuild for fire-and-forget triggers (see dialogFocusScope).
+    function requestFocusRebuild() {
+        dialogFocusScope.requestFocusRebuild()
+    }
+
+    // Rebuild the Tab order when the screen reader is toggled at runtime.
+    Connections {
+        target: ImageWriterSingleton
+        function onScreenReaderActiveChanged() { root.requestFocusRebuild() }
+    }
+
     // Default escape handler - child dialogs can override
     function escapePressed() {
         root.close()
     }
-    
-    onOpened: {
-        // Now that dialog is visible, rebuild focus order
-        dialogFocusScope.rebuildFocusOrder()
-        
+
+    // Move active focus to the dialog's first focusable item. Child dialogs whose
+    // focusable content appears asynchronously (e.g. buttons revealed only after a
+    // countdown) should call this after rebuildFocusOrder() so the keyboard has a
+    // landing point - KeyNavigation.tab only works once something holds focus.
+    function focusInitialItem() {
         // Ensure the FocusScope gets focus first
         dialogFocusScope.forceActiveFocus()
         // Then focus the initial item
         if (dialogFocusScope.initialFocusItem) {
             dialogFocusScope.initialFocusItem.forceActiveFocus()
         }
+    }
+
+    onOpened: {
+        // Now that dialog is visible, rebuild focus order
+        dialogFocusScope.rebuildFocusOrder()
+        focusInitialItem()
     }
 }

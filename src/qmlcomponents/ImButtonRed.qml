@@ -3,6 +3,8 @@
  * Copyright (C) 2022 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 
@@ -27,18 +29,6 @@ Button {
     // Allow instances to provide a custom accessibility description
     property string accessibleDescription: ""
     
-    // Access imageWriter from parent context
-    property var imageWriter: {
-        var item = parent;
-        while (item) {
-            if (item.imageWriter !== undefined) {
-                return item.imageWriter;
-            }
-            item = item.parent;
-        }
-        return null;
-    }
-
     background: Rectangle {
         color: control.enabled
                ? (control.activeFocus
@@ -67,23 +57,11 @@ Button {
     }
 
     activeFocusOnTab: true
+    focusPolicy: Qt.TabFocus
     
     // Accessibility properties
     Accessible.role: Accessible.Button
-    Accessible.name: {
-        // Combine text with description in name since VoiceOver reads name more reliably
-        var name = text
-        var desc = accessibleDescription
-        if (!enabled && desc !== "") {
-            return name + ", " + desc + " (disabled)"
-        } else if (!enabled) {
-            return name + " (disabled)"
-        } else if (desc !== "") {
-            return name + ", " + desc
-        } else {
-            return name
-        }
-    }
+    Accessible.name: CommonStrings.controlAccessibleName(text, accessibleDescription, enabled)
     Accessible.description: ""
     Accessible.onPressAction: clicked()
     

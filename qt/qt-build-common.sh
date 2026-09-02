@@ -17,7 +17,7 @@ QT_BUILD_COMMON_LOADED=1
 # =============================================================================
 
 # Qt Version Configuration
-QT_VERSION_DEFAULT="6.9.3"    # Default version for all platforms
+QT_VERSION_DEFAULT="6.11.1"    # Default version for all platforms
 
 # Build Configuration Defaults
 PREFIX_DEFAULT="/opt/Qt"       # Base installation prefix (version will be appended)
@@ -87,6 +87,7 @@ init_common_variables() {
     
     # Export for use in subprocesses
     export QT_VERSION QT_MAJOR_VERSION PREFIX CORES BUILD_TYPE BASE_DIR
+    export CMAKE_BUILD_PARALLEL_LEVEL="${CMAKE_BUILD_PARALLEL_LEVEL:-$CORES}"
 }
 
 # Function to parse common command line arguments
@@ -237,11 +238,21 @@ download_qt_source() {
             download_url="https://download.qt.io/official_releases/qt/${QT_VERSION%.*}/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.tar.xz"
             
             if command -v curl >/dev/null 2>&1; then
-                curl -L -o "qt-everywhere-src-$QT_VERSION.tar.xz" "$download_url"
+                curl -fL -o "qt-everywhere-src-$QT_VERSION.tar.xz" "$download_url"
             elif command -v wget >/dev/null 2>&1; then
-                wget "$download_url"
+                wget -O "qt-everywhere-src-$QT_VERSION.tar.xz" "$download_url"
             else
                 echo "Error: Neither wget nor curl found. Please install one of them."
+                cd "$_orig_dir" || return 1
+                return 1
+            fi
+
+            archive="qt-everywhere-src-$QT_VERSION.tar.xz"
+            if ! xz -t "$archive" 2>/dev/null; then
+                echo "Error: Download of Qt $QT_VERSION failed (not a valid .tar.xz archive)."
+                echo "URL: $download_url"
+                echo "Check that the version exists at https://download.qt.io/official_releases/qt/"
+                rm -f "$archive"
                 cd "$_orig_dir" || return 1
                 return 1
             fi
@@ -254,6 +265,49 @@ download_qt_source() {
     fi
     
     cd "$_orig_dir" || return 1
+    
+    apply_qt_patches
+}
+
+# Apply distro patches to extracted Qt sources (idempotent).
+apply_qt_patches() {
+    _src="$DOWNLOAD_DIR/qt-everywhere-src-$QT_VERSION"
+    _patch_dir="$BASE_DIR/patches"
+    _target="$_src/qtbase/src/corelib/kernel/qtestsupport_core.cpp"
+
+    if [ ! -d "$_src" ]; then
+        return 0
+    fi
+
+    # 32-bit hosts: std::atomic<std::chrono::milliseconds> is not always lock-free.
+    case "$ARCH" in
+        arm|armv6l|armv7l|armhf)
+            if [ -f "$_target" ] && ! grep -q '__SIZEOF_POINTER__ >= 8' "$_target"; then
+                echo "Applying Qt arm32 patch: qtestsupport chrono atomic static_assert"
+                if [ -f "$_patch_dir/qt6-qtestsupport-chrono-atomic-32bit.patch" ]; then
+                    (cd "$_src" && patch -p1 -N -i "$_patch_dir/qt6-qtestsupport-chrono-atomic-32bit.patch") || true
+                else
+                    sed -i '/static_assert(std::atomic<std::chrono::milliseconds>::is_always_lock_free);/i\
+#if __SIZEOF_POINTER__ >= 8' "$_target"
+                    sed -i '/static_assert(std::atomic<std::chrono::milliseconds>::is_always_lock_free);/a\
+#endif' "$_target"
+                fi
+            fi
+            ;;
+    esac
+
+    if [ -d "$_patch_dir" ]; then
+        for _patch in "$_patch_dir"/*.patch; do
+            [ -f "$_patch" ] || continue
+            case "$(basename "$_patch")" in
+                qt6-qtestsupport-chrono-atomic-32bit.patch)
+                    continue
+                    ;;
+            esac
+            echo "Applying Qt patch: $(basename "$_patch")"
+            (cd "$_src" && patch -p1 -N -i "$_patch") || true
+        done
+    fi
 }
 
 # Function to clean build directory if requested
@@ -298,14 +352,20 @@ get_build_type_opts() {
 # build_examples: ON or OFF (default: OFF)
 get_cmake_opts() {
     build_examples="${1:-OFF}"
-    echo "-- -DQT_BUILD_TESTS=OFF -DQT_BUILD_EXAMPLES=$build_examples"
+    _link_extra=""
+    case "$ARCH" in
+        arm|armv6l|armv7l|armhf)
+            _link_extra="-DCMAKE_EXE_LINKER_FLAGS=-latomic -DCMAKE_SHARED_LINKER_FLAGS=-latomic"
+            ;;
+    esac
+    echo "-- -DQT_BUILD_TESTS=OFF -DQT_BUILD_EXAMPLES=$build_examples -DCMAKE_BUILD_PARALLEL_LEVEL=$CORES $_link_extra"
 }
 
 # Function to get common module skip options
 # Usage: get_common_skip_opts
 # Returns options to skip modules not needed on any platform
 get_common_skip_opts() {
-    echo "-skip qt3d -skip qtandroidextras -skip qtwinextras"
+    echo ""
 }
 
 # =============================================================================
@@ -436,13 +496,9 @@ EOF
 
     # Add macOS-specific settings
     if [ "$IS_MACOS" -eq 1 ]; then
-        # Use the same deployment target as setup_macos_flags
-        _macos_major=$(sw_vers -productVersion | cut -d. -f1)
-        if [ "$_macos_major" -ge 11 ]; then
-            _deploy_target="11.0"
-        else
-            _deploy_target="10.15"
-        fi
+        # Qt 6.11 requires macOS 13.0 as its minimum deployment target.
+        # Keep this in sync with setup_macos_flags and src/CMakeLists.txt.
+        _deploy_target="13.0"
         cat >> "$toolchain_file" << EOF
 
 # macOS specific settings
@@ -476,6 +532,7 @@ run_qt_configure() {
     config_opts="$1"
     
     echo "Configuring Qt with options: $config_opts"
+    echo "Note: configure is single-threaded; compile will use $CORES jobs (CMAKE_BUILD_PARALLEL_LEVEL=$CORES)"
     
     if [ "$VERBOSE_BUILD" -eq 1 ]; then
         eval "\"$DOWNLOAD_DIR/qt-everywhere-src-$QT_VERSION/configure\" $config_opts -verbose"
@@ -705,17 +762,14 @@ setup_macos_flags() {
     fi
     
     MACOS_VERSION=$(sw_vers -productVersion)
-    MACOS_MAJOR=$(echo "$MACOS_VERSION" | cut -d. -f1)
-    
+
     echo "Detected macOS $MACOS_VERSION"
-    
+
+    # Qt 6.11 requires macOS 13.0 as its minimum deployment target.
+    # Keep this in sync with the toolchain file above and src/CMakeLists.txt.
     if [ "$UNIVERSAL_BUILD" -eq 1 ]; then
         echo "  Optimizing for Universal Binary (Intel + Apple Silicon)"
-        if [ "$MACOS_MAJOR" -ge 11 ]; then
-            MAC_CFLAGS="-mmacos-version-min=11.0"
-        else
-            MAC_CFLAGS="-mmacos-version-min=10.15"
-        fi
+        MAC_CFLAGS="-mmacos-version-min=13.0"
         MAC_CFLAGS_X86_64="-march=x86-64-v2 -mtune=intel"
         MAC_CFLAGS_ARM64="-march=armv8.4-a+crypto -mtune=apple-a14"
         echo "  Intel optimizations: $MAC_CFLAGS_X86_64"
@@ -728,12 +782,8 @@ setup_macos_flags() {
             echo "  Optimizing for Intel x86_64"
             MAC_CFLAGS="-march=x86-64-v2 -mtune=intel"
         fi
-        
-        if [ "$MACOS_MAJOR" -ge 11 ]; then
-            MAC_CFLAGS="$MAC_CFLAGS -mmacos-version-min=11.0"
-        else
-            MAC_CFLAGS="$MAC_CFLAGS -mmacos-version-min=10.15"
-        fi
+
+        MAC_CFLAGS="$MAC_CFLAGS -mmacos-version-min=13.0"
     fi
     
     export MAC_CFLAGS MAC_CFLAGS_X86_64 MAC_CFLAGS_ARM64
@@ -820,8 +870,8 @@ get_icu_version_for_qt() {
     qt_ver="${1:-$QT_VERSION}"
     
     case "$qt_ver" in
-        6.9.3)
-            echo "76.1"
+        6.9.3|6.11.0|6.11.1)
+            echo "73.2"
             ;;
         *)
             echo "Unknown Qt version $qt_ver" >&2

@@ -17,7 +17,16 @@ DeviceWrapper::DeviceWrapper(rpi_imager::FileOperations *file_ops, QObject *pare
 
 DeviceWrapper::~DeviceWrapper()
 {
-    sync();
+    /* sync() throws on a write or flush failure, and a destructor is implicitly
+       noexcept — letting that escape calls std::terminate(). A card reader that
+       disappeared mid-write is exactly the case that makes the final flush fail,
+       so kill the process there and the user loses the error dialog too. Callers
+       that need to know a flush failed call sync() explicitly. */
+    try {
+        sync();
+    } catch (const std::exception &err) {
+        qDebug() << "DeviceWrapper: sync() failed during destruction:" << err.what();
+    }
 }
 
 void DeviceWrapper::_seekToBlock(quint64 blockNr)
@@ -59,12 +68,32 @@ void DeviceWrapper::sync()
 
         if (block->dirty)
         {
+            /* Force every preceding filesystem write to physical media BEFORE the
+             * MBR/partition table becomes visible. On USB card readers the bridge
+             * or card write-cache can reorder writes, so without this flush the MBR
+             * (block 0) can reach the media ahead of the FAT blocks written above.
+             * Windows then sees a partition whose filesystem is still incomplete and
+             * pops "You need to format the disk in drive X:" mid-write — especially
+             * when Explorer is already watching the drive. Flushing here guarantees
+             * the partition only appears once its contents are durably on media.
+             * (This is why the bug reproduces on real card readers but never on a
+             * virtual disk, which has no reordering write-cache.) A device that does
+             * not support flush returns success from Flush(), so this is a no-op there.
+             * Crash-safe: unlike disabling AutoMount, this touches no global OS state. */
+            auto flushResult = _file_ops->Flush();
+            if (flushResult != rpi_imager::FileError::kSuccess) {
+                throw std::runtime_error("Error flushing filesystem to device before writing MBR");
+            }
+
             _seekToBlock(0);
             auto result = _file_ops->WriteSequential(reinterpret_cast<const std::uint8_t*>(block->block), 4096);
             if (result != rpi_imager::FileError::kSuccess) {
                 throw std::runtime_error("Error writing MBR to device");
             }
             block->dirty = false;
+
+            /* And flush the MBR itself so the now-complete partition is durable. */
+            _file_ops->Flush();
         }
     }
 
@@ -169,9 +198,25 @@ DeviceWrapperFatPartition *DeviceWrapper::fatPartition(int nr)
         if (nr > gpt.NumberOfPartitionEntries)
             throw std::runtime_error("Partition does not exist");
 
-        pread((char *) &gptpart, sizeof(gptpart), gpt.PartitionEntryLBA*512 + gpt.SizeOfPartitionEntry*(nr-1));
+        /* Overflow-safe offset calculation for GPT partition entry */
+        quint64 entryLBA = gpt.PartitionEntryLBA;
+        quint64 entrySize = gpt.SizeOfPartitionEntry;
+        quint64 entryIndex = static_cast<quint64>(nr - 1);
+        if (entryLBA > UINT64_MAX / 512)
+            throw std::runtime_error("GPT partition entry LBA overflow");
+        quint64 baseOffset = entryLBA * 512;
+        if (entrySize && entryIndex > (UINT64_MAX - baseOffset) / entrySize)
+            throw std::runtime_error("GPT partition entry offset overflow");
+        pread((char *) &gptpart, sizeof(gptpart), baseOffset + entrySize * entryIndex);
 
-        return new DeviceWrapperFatPartition(this, gptpart.StartingLBA*512, (gptpart.EndingLBA-gptpart.StartingLBA+1)*512, this);
+        /* Overflow-safe size calculation for GPT partition */
+        if (gptpart.EndingLBA < gptpart.StartingLBA)
+            throw std::runtime_error("GPT partition ending LBA before starting LBA");
+        quint64 sectorCount = gptpart.EndingLBA - gptpart.StartingLBA + 1;
+        if (gptpart.StartingLBA > UINT64_MAX / 512 || sectorCount > UINT64_MAX / 512)
+            throw std::runtime_error("GPT partition offset/size overflow");
+
+        return new DeviceWrapperFatPartition(this, gptpart.StartingLBA * 512, sectorCount * 512, this);
     }
 
     /* MBR table handling */
@@ -184,6 +229,10 @@ DeviceWrapperFatPartition *DeviceWrapper::fatPartition(int nr)
     if (!mbr.part[nr-1].starting_sector || !mbr.part[nr-1].nr_of_sectors)
         throw std::runtime_error("Partition does not exist");
 
-    return new DeviceWrapperFatPartition(this, mbr.part[nr-1].starting_sector*512, mbr.part[nr-1].nr_of_sectors*512, this);
+    /* Overflow-safe offset/size for MBR partition (uint32_t * 512) */
+    quint64 mbrStart = static_cast<quint64>(mbr.part[nr-1].starting_sector) * 512;
+    quint64 mbrSize  = static_cast<quint64>(mbr.part[nr-1].nr_of_sectors) * 512;
+
+    return new DeviceWrapperFatPartition(this, mbrStart, mbrSize, this);
 }
 

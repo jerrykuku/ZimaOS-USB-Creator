@@ -32,7 +32,12 @@ using rpi_imager::TimeoutDefaults::kAsyncFirstCompletionTimeoutMs;
 #include <liburing.h>
 #endif
 
+#include <fstream>
+
 namespace rpi_imager {
+
+// Forward declaration — defined at bottom of file, called from OpenDevice()
+FileOperations::DeviceIOLimits QueryPlatformDeviceIOLimits(const std::string& path);
 
 // Use the common logging function from file_operations.cpp
 static void Log(const std::string& msg) {
@@ -113,11 +118,11 @@ void LinuxFileOperations::ProcessCompletions(bool wait) {
     if (ring_ == nullptr || pending_writes_.load() == 0) {
         return;
     }
-    
+
     struct io_uring_cqe* cqe;
     int ret;
     bool processed_at_least_one = false;
-    
+
     if (wait && !cancelled_.load()) {
         // Use timeout-based wait so we can check for cancellation
         // Also add overall timeout to prevent infinite waiting if device stops responding
@@ -154,6 +159,7 @@ void LinuxFileOperations::ProcessCompletions(bool wait) {
         
         AsyncWriteCallback callback = nullptr;
         std::size_t expected_size = 0;
+        bool found_in_map = false;
         std::chrono::steady_clock::time_point submit_time;
         {
             std::lock_guard<std::mutex> lock(pending_mutex_);
@@ -163,31 +169,42 @@ void LinuxFileOperations::ProcessCompletions(bool wait) {
                 expected_size = it->second.size;
                 submit_time = it->second.submit_time;
                 pending_callbacks_.erase(it);
+                found_in_map = true;
             }
         }
-        
+
+        // Orphaned completion: entry was already consumed (e.g. by sync fallback
+        // clearing the map, or a duplicate CQE). Just consume and move on.
+        if (!found_in_map) {
+            Log("io_uring: completion for unknown write_id " + std::to_string(write_id) +
+                " (result=" + std::to_string(result) + ") - ignoring orphaned completion");
+            io_uring_cqe_seen(ring_, cqe);
+            ret = io_uring_peek_cqe(ring_, &cqe);
+            continue;
+        }
+
         // Record write latency (submit to completion) - uses base class's thread-safe stats
         auto completionTime = std::chrono::steady_clock::now();
         auto latency = std::chrono::duration_cast<std::chrono::milliseconds>(completionTime - submit_time).count();
         write_latency_stats_.recordCompletion(submit_time);
-        
+
         // Adaptive recovery: if individual write latency is very high, reduce queue depth
         // This helps the system recover when conditions change (memory pressure, slow device)
         constexpr int kMinQueueDepthForReduction = kMinAsyncQueueDepth * 2;  // Trigger reduction above 2x minimum
-        
+
         int currentPending = pending_writes_.load();
-        
+
         // Only reduce if we've drained to the current depth (reached equilibrium)
         // This prevents rapid successive reductions before the system can stabilize
-        if (latency > kHighLatencyThresholdMs && 
-            async_queue_depth_ >= kMinQueueDepthForReduction && 
+        if (latency > kHighLatencyThresholdMs &&
+            async_queue_depth_ >= kMinQueueDepthForReduction &&
             currentPending <= async_queue_depth_ &&  // Must be at equilibrium first
             !sync_fallback_mode_) {
           int newDepth = async_queue_depth_ / 2;
           Log("High write latency detected (" + std::to_string(latency) + "ms) - reducing queue depth to " + std::to_string(newDepth));
           ReduceQueueDepthForRecovery(newDepth);
         }
-        
+
         FileError error = FileError::kSuccess;
         if (result < 0) {
             if (result == -ECANCELED) {
@@ -210,11 +227,11 @@ void LinuxFileOperations::ProcessCompletions(bool wait) {
             oss << "io_uring short write: expected " << expected_size << ", got " << result;
             Log(oss.str());
         }
-        
+
         if (callback) {
             callback(error, error == FileError::kSuccess ? expected_size : 0);
         }
-        
+
         pending_writes_.fetch_sub(1);
         io_uring_cqe_seen(ring_, cqe);
         processed_at_least_one = true;
@@ -237,22 +254,52 @@ FileError LinuxFileOperations::OpenDevice(const std::string& path) {
   // Reset direct I/O tracking for new device
   direct_io_attempted_ = false;
   
-  // Use O_DIRECT for block devices to bypass the page cache
-  int flags = O_RDWR;
   bool isBlockDevice = IsBlockDevicePath(path);
-  
-  if (isBlockDevice) {
-    flags |= O_DIRECT;
-    using_direct_io_ = true;
-    direct_io_attempted_ = true;
-  }
-  
-  FileError result = OpenInternal(path.c_str(), flags);
-  
-  // If O_DIRECT fails, fall back to regular I/O
-  if (result != FileError::kSuccess && isBlockDevice && using_direct_io_) {
-    using_direct_io_ = false;
-    result = OpenInternal(path.c_str(), O_RDWR);
+
+  // One open attempt at a given set of extra flags: try O_DIRECT first (block
+  // devices) to bypass the page cache, falling back to buffered I/O if O_DIRECT
+  // is rejected. extraFlags (e.g. O_EXCL) are preserved across that fallback.
+  auto tryOpenWithFlags = [&](int extraFlags) -> FileError {
+    int flags = O_RDWR | extraFlags;
+    // Track the O_DIRECT attempt locally: OpenInternal() starts with Close(),
+    // and Close() resets using_direct_io_, so the member is always false by the
+    // time the call returns. Branching on it here would make the buffered
+    // fallback below unreachable, and would also leave using_direct_io_ false
+    // after a *successful* O_DIRECT open.
+    const bool triedDirectIo = isBlockDevice;
+    if (triedDirectIo) {
+      flags |= O_DIRECT;
+      direct_io_attempted_ = true;
+    }
+
+    FileError r = OpenInternal(path.c_str(), flags);
+
+    // If O_DIRECT fails, fall back to regular (buffered) I/O, keeping extraFlags.
+    if (r != FileError::kSuccess && triedDirectIo) {
+      r = OpenInternal(path.c_str(), O_RDWR | extraFlags);
+      using_direct_io_ = false;
+    } else {
+      using_direct_io_ = (r == FileError::kSuccess && triedDirectIo);
+    }
+    return r;
+  };
+
+  // Prefer EXCLUSIVE access for block devices (O_EXCL). On Linux, holding a
+  // block device open with O_EXCL stops the kernel from mounting any of its
+  // partitions (mount() returns EBUSY), so udisks/udev cannot auto-mount the
+  // partition we are in the middle of writing. This is the Linux equivalent of
+  // the exclusive share mode used on Windows. The disk is unmounted before we
+  // get here, so O_EXCL should succeed; if it doesn't (something still holds the
+  // device), fall back to a shared open so the write still proceeds.
+  FileError result = tryOpenWithFlags(isBlockDevice ? O_EXCL : 0);
+  opened_exclusive_ = (result == FileError::kSuccess && isBlockDevice);
+  if (result != FileError::kSuccess && isBlockDevice) {
+    int err = last_error_code_;
+    if (err == EBUSY || err == EACCES || err == EPERM) {
+      Log("Exclusive (O_EXCL) open failed with errno " + std::to_string(err) +
+          " - retrying without O_EXCL");
+      result = tryOpenWithFlags(0);
+    }
   }
   
   // Reset async state for new file
@@ -260,7 +307,17 @@ FileError LinuxFileOperations::OpenDevice(const std::string& path) {
   first_async_error_ = FileError::kSuccess;
   cancelled_.store(false);
   write_latency_stats_.reset();
-  
+
+  if (result == FileError::kSuccess) {
+    device_io_limits_ = QueryPlatformDeviceIOLimits(current_path_);
+    if (device_io_limits_.max_transfer_bytes > 0 || device_io_limits_.suggested_queue_depth > 0) {
+      std::ostringstream oss;
+      oss << "Device I/O limits: max_transfer=" << device_io_limits_.max_transfer_bytes
+          << " bytes, suggested_queue_depth=" << device_io_limits_.suggested_queue_depth;
+      Log(oss.str());
+    }
+  }
+
   return result;
 }
 
@@ -289,13 +346,14 @@ FileError LinuxFileOperations::WriteAtOffset(
     return FileError::kOpenError;
   }
 
-  if (lseek(fd_, static_cast<off_t>(offset), SEEK_SET) == -1) {
-    return FileError::kSeekError;
-  }
-
+  // Random-access write: pwrite() so this leaves both the fd position and the
+  // sequential cursor (async_write_offset_) alone. Seeking here would move
+  // f_pos out from under ReadSequential() while leaving the cursor behind, so
+  // the two would disagree about where "here" is.
   std::size_t bytes_written = 0;
   while (bytes_written < size) {
-    ssize_t result = write(fd_, data + bytes_written, size - bytes_written);
+    ssize_t result = pwrite(fd_, data + bytes_written, size - bytes_written,
+                            static_cast<off_t>(offset + bytes_written));
     if (result <= 0) {
       return FileError::kWriteError;
     }
@@ -369,17 +427,33 @@ FileError LinuxFileOperations::SetDirectIOEnabled(bool enabled) {
   close(fd_);
   fd_ = -1;
   
-  int flags = O_RDWR;
+  // Preserve exclusive access (O_EXCL) across the reopen if the device was
+  // originally opened exclusively — otherwise toggling direct I/O would drop the
+  // lock and let udisks mount the partition mid-write. See OpenDevice().
+  int exclFlag = opened_exclusive_ ? O_EXCL : 0;
+  int flags = O_RDWR | exclFlag;
   if (enabled && IsBlockDevicePath(savedPath)) {
     flags |= O_DIRECT;
   }
-  
+
   FileError result = OpenInternal(savedPath.c_str(), flags);
   if (result != FileError::kSuccess) {
     if (enabled) {
-      result = OpenInternal(savedPath.c_str(), O_RDWR);
+      result = OpenInternal(savedPath.c_str(), O_RDWR | exclFlag);
       using_direct_io_ = false;
       Log("Failed to enable O_DIRECT, reopened without it");
+    }
+    if (result != FileError::kSuccess && exclFlag != 0) {
+      // The handle was closed above, so anything racing us can claim the device
+      // in that window and every exclusive reopen then fails — which aborts a
+      // write that was already in flight. OpenDevice() degrades to a shared open
+      // in the same situation; do the same here rather than lose the write.
+      result = OpenInternal(savedPath.c_str(), O_RDWR);
+      if (result == FileError::kSuccess) {
+        opened_exclusive_ = false;
+        using_direct_io_ = false;
+        Log("Exclusive reopen failed; continuing with a shared handle");
+      }
     }
     if (result != FileError::kSuccess) {
       return result;
@@ -418,9 +492,20 @@ FileError LinuxFileOperations::WriteSequential(const std::uint8_t* data, std::si
     return FileError::kOpenError;
   }
 
+  // Write at our own logical cursor (async_write_offset_, also maintained by
+  // Seek()) rather than the file descriptor's position. io_uring submits
+  // offset-based writes, which never advance f_pos, so once a single async write
+  // has been issued the fd position is stale -- it still points just past the
+  // deferred first block. Using write() here would send everything after a
+  // mid-write switch to sync mode (sync_fallback_mode_, set by
+  // DrainAndSwitchToSync()/AttemptSyncFallback()) back to that stale position,
+  // overwriting the start of the device while reporting success, and the
+  // corruption would only surface as a post-write verification hash mismatch.
+  // Same approach as MacOSFileOperations::WriteSequential(). See #1598.
   std::size_t bytes_written = 0;
   while (bytes_written < size) {
-    ssize_t result = write(fd_, data + bytes_written, size - bytes_written);
+    ssize_t result = pwrite(fd_, data + bytes_written, size - bytes_written,
+                            static_cast<off_t>(async_write_offset_ + bytes_written));
     if (result <= 0) {
       if (result == 0 || errno != EINTR) {
         last_error_code_ = errno;
@@ -432,12 +517,18 @@ FileError LinuxFileOperations::WriteSequential(const std::uint8_t* data, std::si
   }
 
   last_error_code_ = 0;
-  
-  // Update async_write_offset_ so Tell() returns correct position
-  // This is needed because Seek() sets async_write_offset_, and Tell()
-  // uses it if > 0. Without this update, Tell() would return a stale value.
+
+  // Advance the logical cursor so Tell() and the next write are correct.
   async_write_offset_ += size;
-  
+
+  // Keep f_pos in step: ReadSequential() is still position-based, so a
+  // write-then-read caller that does not Seek() in between must not see a
+  // position frozen by the pwrite() above.
+  if (lseek(fd_, static_cast<off_t>(async_write_offset_), SEEK_SET) == -1) {
+    last_error_code_ = errno;
+    return FileError::kSeekError;
+  }
+
   return FileError::kSuccess;
 }
 
@@ -666,11 +757,19 @@ FileError LinuxFileOperations::AsyncWriteSequential(const std::uint8_t* data, st
 }
 
 void LinuxFileOperations::PollAsyncCompletions() {
-#ifdef HAVE_LIBURING
-  if (io_uring_available_ && ring_ != nullptr && pending_writes_.load() > 0) {
-    ProcessCompletions(false);  // Non-blocking poll
-  }
-#endif
+  // Intentionally a no-op on Linux.
+  //
+  // Unlike Windows IOCP, io_uring's CQ is not thread-safe for multiple
+  // consumers. The extract thread is the sole CQ consumer — it polls via
+  // ProcessCompletions() inside AsyncWriteSequential() and
+  // WaitForPendingWrites(). External callers (watchdog timer, download
+  // thread's _updateBottleneckState) must not touch the CQ directly, as
+  // concurrent peek/cqe_seen calls cause double-processing or skipped
+  // completions.
+  //
+  // This is safe because the extract thread's blocking wait uses 100ms
+  // timeouts with cancellation checks, so completions are always drained
+  // promptly without external prodding.
 }
 
 void LinuxFileOperations::CancelAsyncIO() {
@@ -695,9 +794,12 @@ void LinuxFileOperations::CancelAsyncIO() {
     }
   }
   io_uring_submit(ring_);
-  
-  // Process completions (cancelled ops will return -ECANCELED)
-  ProcessCompletions(false);
+
+  // Note: we do NOT call ProcessCompletions here. CancelAsyncIO may be
+  // called from any thread (e.g. main thread via cancelDownload), but the
+  // extract thread is the sole CQ consumer. The cancelled_ flag will cause
+  // the extract thread to exit its write loop, and WaitForPendingWrites
+  // will drain the -ECANCELED completions.
 #endif
 }
 
@@ -895,13 +997,16 @@ bool LinuxFileOperations::DrainAndSwitchToSync(int stallTimeoutSeconds) {
   auto lastProgressTime = startTime;
   int lastPending = pending;
   
+  // Wait for the extract thread to drain pending writes.
+  // We do NOT call ProcessCompletions here — the extract thread is the sole
+  // CQ consumer (io_uring is not thread-safe for multiple consumers).
+  // Once sync_fallback_mode_ is set above, the extract thread will stop
+  // submitting new writes and drain the remaining ones via its own
+  // ProcessCompletions calls in AsyncWriteSequential/WaitForPendingWrites.
   while (pending_writes_.load() > 0) {
-    // Actively poll for completions
-    ProcessCompletions(false);
-    
     int currentPending = pending_writes_.load();
     auto now = std::chrono::steady_clock::now();
-    
+
     if (currentPending < lastPending) {
       // Progress! Reset the stall timer
       Log("DrainAndSwitchToSync: Draining... " + std::to_string(currentPending) + " remaining");
@@ -913,14 +1018,14 @@ bool LinuxFileOperations::DrainAndSwitchToSync(int stallTimeoutSeconds) {
       if (stallDuration.count() >= stallTimeoutSeconds) {
         int remaining = pending_writes_.load();
         auto totalElapsed = std::chrono::duration_cast<std::chrono::seconds>(now - startTime);
-        Log("DrainAndSwitchToSync: Stalled - no completions for " + 
-            std::to_string(stallTimeoutSeconds) + "s, " + std::to_string(remaining) + 
+        Log("DrainAndSwitchToSync: Stalled - no completions for " +
+            std::to_string(stallTimeoutSeconds) + "s, " + std::to_string(remaining) +
             " writes still pending after " + std::to_string(totalElapsed.count()) + "s total");
         return false;
       }
     }
-    
-    // Brief sleep to avoid spinning
+
+    // Brief sleep to avoid spinning — the extract thread is doing the actual draining
     usleep(100000);  // 100ms
   }
   
@@ -956,6 +1061,39 @@ void LinuxFileOperations::ReduceQueueDepthForRecovery(int newDepth) {
 #else
   (void)newDepth;
 #endif
+}
+
+// Query device I/O limits from sysfs without requiring an open file descriptor.
+// Returns zero-initialized struct if the device path isn't a block device or sysfs is unavailable.
+FileOperations::DeviceIOLimits QueryPlatformDeviceIOLimits(const std::string& path) {
+  FileOperations::DeviceIOLimits limits;
+
+  // Extract device name from path (e.g. "/dev/sda" -> "sda")
+  if (path.find("/dev/") != 0)
+    return limits;
+  std::string devname = path.substr(5);
+  if (devname.empty())
+    return limits;
+
+  std::string queueDir = "/sys/block/" + devname + "/queue/";
+
+  // Read nr_requests — block layer scheduler queue depth
+  {
+    std::ifstream f(queueDir + "nr_requests");
+    int val = 0;
+    if (f >> val && val > 0)
+      limits.suggested_queue_depth = val;
+  }
+
+  // Read max_sectors_kb — maximum single I/O request size the block layer will accept
+  {
+    std::ifstream f(queueDir + "max_sectors_kb");
+    int val = 0;
+    if (f >> val && val > 0)
+      limits.max_transfer_bytes = static_cast<size_t>(val) * 1024;
+  }
+
+  return limits;
 }
 
 // Platform-specific factory function implementation

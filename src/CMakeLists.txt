@@ -8,6 +8,11 @@ cmake_minimum_required(VERSION 3.22)
 OPTION (ENABLE_CHECK_VERSION "Check for version updates" ON)
 OPTION (BUILD_EMBEDDED "Build for Embedded Imager" OFF)
 OPTION (BUILD_CLI_ONLY "Build CLI-only version without GUI components" OFF)
+# Test-only hooks, for src/test/embedded_scaling to drive and photograph the UI.
+# They give anything that can set the process environment a screen capture
+# written to a path of its choosing, in a binary the embedded image runs as
+# root, so they are compiled out unless a test build asks for them.
+OPTION (ENABLE_TEST_HOOKS "Build test-only UI hooks (screenshot capture). Never enable for a release build." OFF)
 
 # We use FetchContent_Populate() instead of FetchContent_MakeAvailable() to allow EXCLUDE_FROM_ALL
 # This prevents the dependencies from being built by default, which is our desired behavior
@@ -28,49 +33,34 @@ set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64" CACHE STRING "Which macOS architectur
 
 project(zimaos-usb-creator LANGUAGES CXX C)
 
-# Get version from git tag
 find_package(Git QUIET)
-if(GIT_FOUND)
-    execute_process(
-        COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE GIT_DESCRIBE
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-        ERROR_QUIET
-    )
-endif()
 
-# Use git-derived version as the canonical version string
-if(GIT_DESCRIBE)
-    set(IMAGER_VERSION_STR "${GIT_DESCRIBE}")
-    message(STATUS "Version from git: ${IMAGER_VERSION_STR}")
-    
-    # Extract numeric version components from git tag for Windows metadata
-    # Expected format: v2.0.0 or v2.0.0-rc4-60-geac7c2f0
-    string(REGEX MATCH "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+)" VERSION_MATCH "${GIT_DESCRIBE}")
-    if(VERSION_MATCH)
-        set(IMAGER_VERSION_MAJOR ${CMAKE_MATCH_1})
-        set(IMAGER_VERSION_MINOR ${CMAKE_MATCH_2})
-        set(IMAGER_VERSION_PATCH ${CMAKE_MATCH_3})
-    else()
-        # Fallback if tag doesn't match expected format
-        set(IMAGER_VERSION_MAJOR 0)
-        set(IMAGER_VERSION_MINOR 0)
-        set(IMAGER_VERSION_PATCH 0)
-        message(WARNING "Could not parse version from git tag: ${GIT_DESCRIBE}")
-    endif()
-else()
-    # Fallback when git is not available or no tags exist
-    set(IMAGER_VERSION_MAJOR 0)
-    set(IMAGER_VERSION_MINOR 0)
-    set(IMAGER_VERSION_PATCH 0)
-    set(IMAGER_VERSION_STR "0.0.0-unknown")
-    message(WARNING "Git not found or no tags available, using fallback version: ${IMAGER_VERSION_STR}")
-endif()
+# Build-time version: re-runs `git describe` on every build so that dirty
+# state and new commits are detected without needing to re-configure.
+# Generates:
+#   imager_version.h          — C++ header with #define IMAGER_VERSION_STR
+#   imager_version_vars.cmake — CMake include file for build-time template substitution
+set(IMAGER_VERSION_VARS "${CMAKE_CURRENT_BINARY_DIR}/imager_version_vars.cmake")
+add_custom_target(generate_version ALL
+    COMMAND ${CMAKE_COMMAND}
+        -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+        -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
+        -DOUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateVersion.cmake
+    BYPRODUCTS
+        ${CMAKE_CURRENT_BINARY_DIR}/imager_version.h
+        ${CMAKE_CURRENT_BINARY_DIR}/imager_version_vars.cmake
+    COMMENT "Checking build-time version via git describe"
+    VERBATIM
+)
 
-# Version variables for template substitution (Windows .rc, .manifest, etc.)
-# Note: IMAGER_VERSION_STR is used in C++ code, so it needs to be a compile definition
-add_definitions(-DIMAGER_VERSION_STR="${IMAGER_VERSION_STR}")
+# Path to the generic build-time template substitution script
+set(CONFIGURE_VERSIONED_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigureVersionedFile.cmake")
+
+# Make the generated header includable; C++ code uses:
+#   #include "imager_version.h"
+# instead of relying on a -D compile definition.
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -171,6 +161,7 @@ set(BUILD_STATIC_LIBS ON)
 set(BUILD_SHARED_LIBS OFF)
 
 include(FetchContent)
+include(dependencies/fetch-vendor.cmake)
 
 # Bundled liblzma
 include(dependencies/xz.cmake)
@@ -206,6 +197,9 @@ else()
     include(dependencies/curl.cmake)
 endif()
 
+
+# Bundled libusb (for rpiboot Compute Module support)
+include(dependencies/libusb.cmake)
 
 # Add dependencies
 if (APPLE)
@@ -257,7 +251,14 @@ if(BUILD_CLI_ONLY)
     # CLI builds need imagewriter but not the GUI components
     set(SOURCES ${SOURCES_BASE} "imagewriter.cpp" "hwlistmodel.cpp" "oslistmodel.cpp")
 else()
-    set(SOURCES ${SOURCES_BASE} "networkaccessmanagerfactory.cpp" "qml.qrc" "nativefiledialog.cpp" "iconimageprovider.cpp" "iconmultifetcher.cpp")
+    set(SOURCES ${SOURCES_BASE} "qml.qrc" "nativefiledialog.cpp" "iconimageprovider.cpp" "iconmultifetcher.cpp")
+endif()
+
+if(ENABLE_TEST_HOOKS)
+    add_definitions(-DIMAGER_ENABLE_TEST_HOOKS=1)
+    message(WARNING
+        "ENABLE_TEST_HOOKS is ON: this binary will honour RPI_IMAGER_SCREENSHOT and "
+        "write a capture of its window to a caller-chosen path. Do not ship this build.")
 endif()
 
 if(BUILD_EMBEDDED)
@@ -266,6 +267,27 @@ if(BUILD_EMBEDDED)
 else()
     set(SOURCES ${SOURCES} "device_info.cpp")
 endif()
+
+# rpiboot and fastboot sources (Compute Module imaging)
+set(SOURCES ${SOURCES}
+    "rpiboot/libusb_transport.cpp"
+    "rpiboot/bootcode_loader.cpp"
+    "rpiboot/file_server.cpp"
+    "rpiboot/bootfiles.cpp"
+    "rpiboot/rpiboot_protocol.cpp"
+    "rpiboot/firmware_manager.cpp"
+    "rpiboot/rpiboot_scanner.cpp"
+    "rpiboot/secure_boot_provisioner.cpp"
+    "rpiboot/bootloader_image.cpp"
+    "rpibootthread.cpp"
+    "fastboot/fastboot_protocol.cpp"
+    "fastboot/bmap.cpp"
+    "fastboot/sparse_encoder.cpp"
+    "fastboot/pieeprom.cpp"
+    "fastboot/eeprom_signer.cpp"
+    "fastbootflashthread.cpp"
+    "connect_device_registrar.cpp"
+)
 
 # Find Qt components - different requirements for CLI-only vs GUI builds
 if(BUILD_CLI_ONLY)
@@ -283,7 +305,7 @@ endif()
 if (Qt6_FOUND)
     set(QT Qt6)
     if (APPLE)
-        set(CMAKE_OSX_DEPLOYMENT_TARGET "12" CACHE STRING "" FORCE)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET "13" CACHE STRING "" FORCE)
     endif()
 else()
     message(FATAL_ERROR "Missing suitable Qt library (must be at least version 6.9)" )
@@ -359,23 +381,6 @@ if(GENERATE_COUNTRIES_FROM_REGDB)
     list(APPEND SOURCES "${GENERATED_COUNTRIES_QRC}")
 endif()
 
-option(GENERATE_CAPITAL_CITIES "Generate capital cities list from REST Countries API" ON)
-
-if(GENERATE_CAPITAL_CITIES)
-    set(REST_COUNTRIES_URL "https://restcountries.com/v3.1/all?fields=name,capital,cca2,timezones")
-
-    # The generator script handles fallback internally - it downloads from API
-    # and falls back to the source file if the download fails (offline builds)
-    add_generated_resource_with_fallback(GENERATED_CAPITAL_CITIES_QRC GENERATE_CAPITAL_CITIES_TGT capital-cities
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateCapitalCities.cmake
-        capital-cities_generated.txt capital-cities.txt
-        ${CMAKE_CURRENT_SOURCE_DIR}/capital-cities.txt
-        EXTRA_CMAKE_ARGS 
-            -DAPI_URL=${REST_COUNTRIES_URL}
-            -DKEYMAP_FILE=${CMAKE_CURRENT_SOURCE_DIR}/keymap-layouts.txt
-    )
-    list(APPEND SOURCES "${GENERATED_CAPITAL_CITIES_QRC}")
-endif()
 # Create the application target before tools reference it
 if (WIN32)
     # Adding WIN32 prevents a console window being opened on Windows
@@ -390,6 +395,9 @@ if (WIN32)
 else()
     add_executable(${PROJECT_NAME} ${SOURCES} ${DEPENDENCIES})
 endif()
+
+# Ensure version header is generated before compiling
+add_dependencies(${PROJECT_NAME} generate_version)
 
 # Set output name based on build type
 if(BUILD_CLI_ONLY)
@@ -452,16 +460,17 @@ if(NOT BUILD_CLI_ONLY)
         wizard/dialogs/UpdateAvailableDialog.qml
         wizard/dialogs/AppOptionsDialog.qml
         wizard/dialogs/DebugOptionsDialog.qml
+        wizard/dialogs/ConfirmOtpProgramDialog.qml
         wizard/LanguageSelectionStep.qml
         qmlcomponents/BaseDialog.qml
         qmlcomponents/ImButton.qml
         qmlcomponents/ImButtonRed.qml
         qmlcomponents/ImCheckBox.qml
-        qmlcomponents/ImCloseButton.qml
         qmlcomponents/ImComboBox.qml
+        qmlcomponents/FocusableText.qml
+        qmlcomponents/FocusableHeading.qml
         qmlcomponents/ImFileDialog.qml
         qmlcomponents/ImSaveFileDialog.qml
-        qmlcomponents/ImPopup.qml
         qmlcomponents/ImRadioButton.qml
         qmlcomponents/ImOptionPill.qml
         qmlcomponents/ImOptionButton.qml
@@ -488,6 +497,7 @@ if(NOT BUILD_CLI_ONLY)
         wizard/DoneStep.qml
         wizard/components/WizardSectionContainer.qml
         wizard/components/WizardFormLabel.qml
+        wizard/components/WizardFormGrid.qml
         wizard/components/WizardDescriptionText.qml
         wizard/components/SshKeyManager.qml
     )
@@ -508,16 +518,19 @@ endif()
 
 # Only create QML module for GUI builds
 if(NOT BUILD_CLI_ONLY)
+    # CACHEGEN is left enabled (the default): qmlcachegen compiles our QML to
+    # bytecode at build time and embeds it in the binary, so the engine skips
+    # the per-launch lex/parse/compile step. This uses the FOSS qmlcachegen
+    # (the C++-emitting qmlsc is not required and is not shipped with the
+    # open-source Qt we build against).
     qt_add_qml_module(${PROJECT_NAME}
         URI RpiImager
         VERSION 1.0
         QML_FILES ${IMAGER_QML_FILES}
         SOURCES ${IMAGER_QML_CPP_TYPES}
-        NO_CACHEGEN
         OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/RpiImager
         DEPENDENCIES QtQuick
         NO_PLUGIN
-        QML_FILES
     )
 endif()
 
@@ -530,10 +543,13 @@ else()
     include(linux/PlatformPackaging.cmake)
 endif()
 
-add_dependencies(${PROJECT_NAME} zlibstatic yescrypt)
-include_directories(${CURL_INCLUDE_DIR} ${LibArchive_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${LIBDRM_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR} ${YESCRYPT_INCLUDE_DIR})
+add_dependencies(${PROJECT_NAME} zlibstatic yescrypt usb-1.0-static)
+include_directories(${CURL_INCLUDE_DIR} ${LibArchive_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${LIBDRM_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR} ${YESCRYPT_INCLUDE_DIR} ${LIBUSB_INCLUDE_DIR})
 
 # Link different Qt components based on build type
+# rpiboot link libraries (libusb)
+set(RPIBOOT_LIBS ${LIBUSB_LIBRARIES})
+
 if(BUILD_CLI_ONLY)
     # CLI-only build: link Core, Network and essential libraries
     target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${EXTRALIBS})

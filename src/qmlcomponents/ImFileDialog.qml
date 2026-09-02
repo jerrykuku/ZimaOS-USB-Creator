@@ -3,6 +3,8 @@
  * Copyright (C) 2025 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtCore
 import QtQuick
 import QtQuick.Controls
@@ -28,6 +30,7 @@ BaseDialog {
     // Use Dialog's built-in accepted/rejected signals; do not redeclare to avoid overrides
 
     property string _currentFilename: suggestedFilename
+    property string _pathFieldFile: ""
     
     function open() {
         // For save dialogs, initialize filename from suggestion
@@ -69,6 +72,15 @@ BaseDialog {
         }
         if (out.length === 0) out = ["*"]
         return out
+    }
+
+    function _looksLikeFilePath(path) {
+        var s = String(path || "").trim()
+        if (!s || s.endsWith("/"))
+            return false
+        var lastSlash = s.lastIndexOf("/")
+        var basename = (lastSlash >= 0) ? s.substring(lastSlash + 1) : s
+        return basename.indexOf(".") > 0
     }
 
     // Normalize a typed path to a file URL
@@ -180,6 +192,7 @@ BaseDialog {
         pathField.text = dialog._toDisplayPath(dialog.currentFolder)
         // Reset selection when navigating
         dialog.selectedFile = ""
+        dialog._pathFieldFile = ""
     }
 
     // Override escape handler to call rejected signal
@@ -281,18 +294,30 @@ BaseDialog {
         Text {
             id: titleText
             text: dialog.dialogTitle
-            font.pixelSize: Style.fontSizeHeading
+            font.pointSize: Style.fontSizeHeading
             font.family: Style.fontFamilyBold
             font.bold: true
             color: Style.formLabelColor
         }
         
-        TextField {
+        // ImTextField rather than a bare TextField so that a path pasted with a
+        // trailing newline is scrubbed on the way in (see issues #1627, #1687);
+        // it also supplies the font, focus and accessibility defaults this field
+        // previously set by hand.
+        ImTextField {
             id: pathField
             Layout.fillWidth: true
             text: dialog._toDisplayPath(dialog.currentFolder)
-            placeholderText: qsTr("Enter path or URL…")
-            activeFocusOnTab: true
+            placeholderText: dialog.isSaveDialog
+                ? qsTr("Enter path or URL\u2026")
+                : qsTr("Enter folder or file path\u2026")
+            trimWhitespace: true
+            onTextChanged: {
+                if (!dialog.isSaveDialog) {
+                    dialog._pathFieldFile = dialog._looksLikeFilePath(pathField.value)
+                        ? dialog._toFileUrl(pathField.value) : ""
+                }
+            }
             onAccepted: {
                 var newUrl = dialog._tofileUrl(text)
                 if (newUrl && newUrl.length > 0) {
@@ -311,17 +336,18 @@ BaseDialog {
         
         Text {
             text: qsTr("File name:")
-            font.pixelSize: Style.fontSizeFormLabel
+            font.pointSize: Style.fontSizeFormLabel
             font.family: Style.fontFamily
             color: Style.formLabelColor
         }
         
-        TextField {
+        ImTextField {
             id: filenameField
             Layout.fillWidth: true
             text: dialog._currentFilename
             placeholderText: qsTr("Enter filename…")
             activeFocusOnTab: dialog.isSaveDialog
+            trimWhitespace: true
             onTextChanged: {
                 dialog._currentFilename = text
             }
@@ -351,7 +377,7 @@ BaseDialog {
             padding: 8
             background: Rectangle {
                 color: Style.mainBackgroundColor
-                radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.sectionBorderRadiusEmbedded : Style.sectionBorderRadius
+                radius: Style.cornerRadius(Style.sectionBorderRadius)
                 border.color: Style.popupBorderColor
                 border.width: Style.sectionBorderWidth
                 antialiasing: true
@@ -368,12 +394,13 @@ BaseDialog {
                     Layout.preferredHeight: contentHeight
                     clip: true
                     activeFocusOnTab: true
+                    focusPolicy: Qt.TabFocus
                     model: placesModel
                     currentIndex: -1  // No item selected by default
                     highlightFollowsCurrentItem: true
                     highlight: Rectangle {
                         color: placesList.activeFocus ? Style.listViewHighlightColor : Qt.rgba(0, 0, 0, 0.05)
-                        radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.listItemBorderRadiusEmbedded : Style.listItemBorderRadius
+                        radius: Style.cornerRadius(Style.listItemBorderRadius)
                         antialiasing: true
                         visible: placesList.currentIndex >= 0
                     }
@@ -397,12 +424,12 @@ BaseDialog {
                             color: {
                                 if (ListView.isCurrentItem && placesList.activeFocus)
                                     return Style.listViewHighlightColor
-                                else if (hovered)
+                                else if (leftPane.hovered)
                                     return Style.listViewHoverRowBackgroundColor
                                 else
                                     return "transparent"
                             }
-                            radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.listItemBorderRadiusEmbedded : Style.listItemBorderRadius
+                            radius: Style.cornerRadius(Style.listItemBorderRadius)
                             antialiasing: true
                         }
                         onClicked: {
@@ -434,7 +461,7 @@ BaseDialog {
 
                 Text { 
                     text: qsTr("Folders")
-                    font.pixelSize: Style.fontSizeDescription
+                    font.pointSize: Style.fontSizeDescription
                     color: Style.textDescriptionColor
                     Layout.fillWidth: true
                     Layout.topMargin: 8
@@ -447,13 +474,14 @@ BaseDialog {
                     Layout.fillHeight: true
                     clip: true
                     activeFocusOnTab: true
+                    focusPolicy: Qt.TabFocus
                     model: dirsOnlyModel
                     spacing: 2
                     currentIndex: -1  // No item selected by default
                     highlightFollowsCurrentItem: true
                     highlight: Rectangle {
                         color: subfoldersList.activeFocus ? Style.listViewHighlightColor : Qt.rgba(0, 0, 0, 0.05)
-                        radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.listItemBorderRadiusEmbedded : Style.listItemBorderRadius
+                        radius: Style.cornerRadius(Style.listItemBorderRadius)
                         antialiasing: true
                         visible: subfoldersList.currentIndex >= 0
                     }
@@ -486,12 +514,12 @@ BaseDialog {
                             color: {
                                 if (ListView.isCurrentItem && subfoldersList.activeFocus)
                                     return Style.listViewHighlightColor
-                                else if (hovered)
+                                else if (leftPane.hovered)
                                     return Style.listViewHoverRowBackgroundColor
                                 else
                                     return "transparent"
                             }
-                            radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.listItemBorderRadiusEmbedded : Style.listItemBorderRadius
+                            radius: Style.cornerRadius(Style.listItemBorderRadius)
                             antialiasing: true
                         }
                         onClicked: {
@@ -531,7 +559,7 @@ BaseDialog {
             padding: 8
             background: Rectangle {
                 color: Style.mainBackgroundColor
-                radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.sectionBorderRadiusEmbedded : Style.sectionBorderRadius
+                radius: Style.cornerRadius(Style.sectionBorderRadius)
                 border.color: Style.popupBorderColor
                 border.width: Style.sectionBorderWidth
                 antialiasing: true
@@ -605,7 +633,7 @@ BaseDialog {
                         // Custom styling to make it look like a navigation item
                         background: Rectangle {
                             color: upEntry.hovered ? Qt.rgba(0, 0, 0, 0.1) : Qt.rgba(0, 0, 0, 0.03)
-                            radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.listItemBorderRadiusEmbedded : Style.listItemBorderRadius
+                            radius: Style.cornerRadius(Style.listItemBorderRadius)
                             border.width: upEntry.activeFocus ? 2 : 1
                             border.color: upEntry.activeFocus ? Style.focusOutlineColor : Qt.rgba(0, 0, 0, 0.1)
                             antialiasing: true
@@ -613,7 +641,7 @@ BaseDialog {
                         
                         contentItem: Text {
                             text: upEntry.text
-                            font.pixelSize: Style.fontSizeDescription
+                            font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
                             font.italic: true
                             color: Style.textDescriptionColor
@@ -637,7 +665,7 @@ BaseDialog {
                         
                         highlight: Rectangle {
                             color: filesList.activeFocus ? Style.listViewHighlightColor : Qt.rgba(0, 0, 0, 0.05)
-                            radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.listItemBorderRadiusEmbedded : Style.listItemBorderRadius
+                            radius: Style.cornerRadius(Style.listItemBorderRadius)
                             antialiasing: true
                             visible: filesList.currentIndex >= 0
                         }
@@ -688,7 +716,7 @@ BaseDialog {
                                     else
                                         return "transparent"
                                 }
-                                radius: (dialog.imageWriter && dialog.imageWriter.isEmbeddedMode()) ? Style.listItemBorderRadiusEmbedded : Style.listItemBorderRadius
+                                radius: Style.cornerRadius(Style.listItemBorderRadius)
                                 antialiasing: true
                             }
                             onClicked: {
@@ -715,7 +743,7 @@ BaseDialog {
                             anchors.centerIn: parent
                             visible: !dialog.isSaveDialog && filesOnlyModel.count === 0
                             text: qsTr("No files in this folder")
-                            font.pixelSize: Style.fontSizeDescription
+                            font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
                             font.italic: true
                             color: Style.textDescriptionColor
@@ -727,7 +755,7 @@ BaseDialog {
                         width: fileColumn.width
                         visible: dialog.isSaveDialog
                         text: qsTr("Navigate to a folder using the panel on the left,\nor type a path in the address bar above.")
-                        font.pixelSize: Style.fontSizeDescription
+                        font.pointSize: Style.fontSizeDescription
                         font.family: Style.fontFamily
                         font.italic: true
                         color: Style.textDescriptionColor
@@ -755,9 +783,9 @@ BaseDialog {
         ImButton {
             id: openButton
             text: dialog.isSaveDialog ? qsTr("Save") : qsTr("Open")
-            enabled: dialog.isSaveDialog 
-                ? String(dialog._currentFilename).trim().length > 0 
-                : String(dialog.selectedFile).length > 0
+            enabled: dialog.isSaveDialog
+                ? String(dialog._currentFilename).trim().length > 0
+                : (String(dialog.selectedFile).length > 0 || String(dialog._pathFieldFile).length > 0)
             activeFocusOnTab: true
             onClicked: {
                 if (dialog.isSaveDialog) {
@@ -769,6 +797,4 @@ BaseDialog {
         }
     }
 }
-
-
 

@@ -17,13 +17,14 @@ CHUNK_SIZE = 1024 * 1024 # read files in 1MB chunks
 
 # Valid OS capabilities (see doc/json-schema/os-list-schema.json)
 VALID_OS_CAPABILITIES = {
-    "i2c":         "Enable I2C interface option",
-    "onewire":     "Enable 1-Wire interface option",
-    "rpi_connect": "Enable Raspberry Pi Connect setup",
-    "secure_boot": "Enable secure boot signing",
-    "serial":      "Enable serial interface option",
-    "spi":         "Enable SPI interface option",
-    "usb_otg":     "Enable USB Gadget mode option",
+    "i2c":               "Enable I2C interface option",
+    "onewire":           "Enable 1-Wire interface option",
+    "passwordless_sudo": "Enable passwordless sudo option in user setup",
+    "rpi_connect":       "Enable Raspberry Pi Connect setup",
+    "secure_boot":       "Enable secure boot signing",
+    "serial":            "Enable serial interface option",
+    "spi":               "Enable SPI interface option",
+    "usb_otg":           "Enable USB Gadget mode option",
 }
 
 # Valid device (hardware) capabilities
@@ -194,6 +195,14 @@ if __name__ == "__main__":
                             print(f"Found {display_filename} ({os_entry['name']})")
                         # point at our local file instead of the online URL
                         os_entry["url"] = pathlib.Path(abs_local_image_filename).as_uri()
+                        # Auto-detect bmap sidecar file (e.g., image.img.xz.bmap or image.img.bmap)
+                        for bmap_suffix in [abs_local_image_filename + ".bmap",
+                                            os.path.splitext(abs_local_image_filename)[0] + ".bmap"]:
+                            if os.path.exists(bmap_suffix):
+                                os_entry["bmap_url"] = pathlib.Path(bmap_suffix).as_uri()
+                                if args.dry_run:
+                                    print(f"  Found bmap sidecar: {bmap_suffix[abs_search_dir_len:]}")
+                                break
                         local_os_entries[name] = os_entry
                         if "devices" in os_entry:
                             for tag in os_entry["devices"]:

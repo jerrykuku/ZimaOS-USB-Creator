@@ -56,12 +56,10 @@ qtpositioning
 # Development and documentation
 qtdoc
 qtlanguageserver
+qtcanvaspainter
 
 # Misc specialized
 qtlottie
 qtremoteobjects
 qt5compat
 qtscxml
-
-# Database (optional - comment out if you need SQL features)
-qtbase-sql

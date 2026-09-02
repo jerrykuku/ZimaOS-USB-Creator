@@ -1,10 +1,13 @@
 #!/usr/bin/make -f
-# See debhelper(7) (uncomment to enable)
-# output every command that modifies files on the build system.
 export DH_VERBOSE = 1
+export SOURCE_DATE_EPOCH := $(shell dpkg-parsechangelog -STimestamp 2>/dev/null)
 
-# Get the list of packages that should be built based on build profiles
 PACKAGES := $(shell dh_listpackages)
+
+VERSION_DIR := $(CURDIR)/debian/tmp/version
+CONFIGURE_VERSIONED := $(CURDIR)/src/cmake/ConfigureVersionedFile.cmake
+GENERATE_VERSION := $(CURDIR)/src/cmake/GenerateVersion.cmake
+STAGE_APPIMAGES := $(CURDIR)/debian/stage-appimages.sh
 
 %:
 	dh $@

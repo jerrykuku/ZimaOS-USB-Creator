@@ -32,6 +32,7 @@
 #include "device_info.h"
 #include "imageadvancedoptions.h"
 #include "performancestats.h"
+#include "rpiboot/rpiboot_types.h"
 
 class QQmlApplicationEngine;
 class DownloadThread;
@@ -41,13 +42,15 @@ class WriteProgressWatchdog;
 #ifndef CLI_ONLY_BUILD
 class NativeFileDialog;
 #endif
+class RpibootThread;
+class FastbootFlashThread;
 
 class ImageWriter : public QObject
 {
     Q_OBJECT
 #ifndef CLI_ONLY_BUILD
-    QML_ELEMENT
-    QML_UNCREATABLE("Created by C++")
+    QML_NAMED_ELEMENT(ImageWriterSingleton)
+    QML_SINGLETON
 #endif
 public:
     enum class WriteState {
@@ -56,24 +59,56 @@ public:
         Writing,
         Verifying,
         Finalizing,
+        Cancelling,
         Succeeded,
         Failed,
         Cancelled
     };
     Q_ENUM(WriteState)
 
-    explicit ImageWriter(QObject *parent = nullptr);
+    // Progress of the post-write eject, which runs in the background after
+    // success() so the done screen can show a live status instead of the
+    // write blocking on a slow flush. EjectIdle also covers writes where no
+    // eject was requested (auto-eject disabled, fastboot flash).
+    enum class EjectState {
+        EjectIdle,
+        EjectInProgress,
+        EjectSucceeded,
+        EjectFailed
+    };
+    Q_ENUM(EjectState)
+
+    // NB: the parent argument is deliberately mandatory (no `= nullptr`).
+    // ImageWriter is a QML_SINGLETON whose instance is supplied by main() via
+    // setQmlInstance()/create(). Qt's qmlRegisterTypesAndRevisions only honours a
+    // create() factory when the type is NOT default-constructible (see
+    // singletonConstructionMode() in qqmlprivate.h) — a default-constructible
+    // singleton is silently `new`-constructed by the engine instead, handing QML a
+    // *second* ImageWriter that never receives the OS list. Keeping this parameter
+    // mandatory forces create() to be used so QML shares the app-owned instance.
+    explicit ImageWriter(QObject *parent);
     virtual ~ImageWriter();
     void setEngine(QQmlApplicationEngine *engine);
 
+#ifndef CLI_ONLY_BUILD
+    // QML singleton factory: returns the single app-owned instance, which main()
+    // supplies via setQmlInstance() before the engine loads. Registered declaratively
+    // as the "ImageWriterSingleton" QML singleton, so it is visible to qmllint/qmlsc
+    // (unlike a runtime qmlRegisterSingletonInstance, which also disturbs the module).
+    static ImageWriter *create(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static void setQmlInstance(ImageWriter *instance) { s_qmlInstance = instance; }
+#endif
+
     Q_PROPERTY(WriteState writeState READ writeState NOTIFY writeStateChanged)
+    Q_PROPERTY(EjectState ejectState READ ejectState NOTIFY ejectStateChanged)
     Q_PROPERTY(bool isOsListUnavailable READ isOsListUnavailable NOTIFY osListUnavailableChanged)
+    Q_PROPERTY(bool screenReaderActive READ isScreenReaderActive NOTIFY screenReaderActiveChanged)
 
     /* Returns true if the extract size is reliably known (false for gz files which can't store sizes >4GB) */
     Q_INVOKABLE bool isExtractSizeKnown() const { return _extractSizeKnown; }
 
     /* Set URL to download from, and if known download length and uncompressed length */
-    Q_INVOKABLE void setSrc(const QUrl &url, quint64 downloadLen = 0, quint64 extrLen = 0, QByteArray expectedHash = "", bool multifilesinzip = false, QString parentcategory = "", QString osname = "", QByteArray initFormat = "", QString releaseDate = "");
+    Q_INVOKABLE void setSrc(const QUrl &url, quint64 downloadLen = 0, quint64 extrLen = 0, QByteArray expectedHash = "", bool multifilesinzip = false, QString parentcategory = "", QString osname = "", QByteArray initFormat = "", QString releaseDate = "", QString bmapUrl = "");
 
     /* Set device to write to */
     Q_INVOKABLE void setDst(const QString &device, quint64 deviceSize = 0);
@@ -103,6 +138,11 @@ public:
 
     /* Cancel write */
     Q_INVOKABLE void cancelWrite();
+
+    /* Manually eject the written drive (retry after a failed background
+       eject, or first eject when auto-eject is disabled). Runs on a
+       background thread; progress is reported via ejectState. */
+    Q_INVOKABLE void ejectDrive();
 
     /* Skip cache verification and proceed with download */
     Q_INVOKABLE void skipCacheVerification();
@@ -257,6 +297,22 @@ public:
     Q_INVOKABLE QString getStringSetting(const QString &key);
     Q_INVOKABLE void setSetting(const QString &key, const QVariant &value);
     Q_INVOKABLE QString getRsaKeyFingerprint(const QString &keyPath);
+
+    // Raspberry Pi Connect organisation registration.
+    //
+    // The API key IS persisted (QSettings) so users don't have to
+    // re-enter it every session, but it is write-only from QML —
+    // once saved, the value is never handed back to the UI.  QML
+    // uses hasConnectOrgRegistration() to decide whether to render
+    // a "key already set" placeholder, and clearConnectOrgRegistration()
+    // to remove it.  The description prefix is not secret and is
+    // returned through getConnectOrgDescription() for edit-in-place.
+    Q_INVOKABLE void setConnectOrgRegistration(const QString &apiKey,
+                                                 const QString &descriptionPrefix);
+    Q_INVOKABLE void setConnectOrgDescription(const QString &descriptionPrefix);
+    Q_INVOKABLE void clearConnectOrgRegistration();
+    Q_INVOKABLE bool hasConnectOrgRegistration() const;
+    Q_INVOKABLE QString getConnectOrgDescription() const;
     
     // Debug options (secret menu: Cmd+Option+S on macOS, Ctrl+Alt+S on others)
     Q_INVOKABLE bool getDebugDirectIO() const;
@@ -273,7 +329,17 @@ public:
     Q_INVOKABLE void setDebugIPv4Only(bool enabled);
     Q_INVOKABLE bool getDebugSkipEndOfDevice() const;
     Q_INVOKABLE void setDebugSkipEndOfDevice(bool enabled);
-    
+    Q_INVOKABLE bool getDebugIgnoreDeviceLimits() const;
+    Q_INVOKABLE void setDebugIgnoreDeviceLimits(bool enabled);
+    Q_INVOKABLE bool getDebugRpiboot() const;
+    Q_INVOKABLE void setDebugRpiboot(bool enabled);
+    Q_INVOKABLE QString getDebugCustomFastbootGadget() const;
+    Q_INVOKABLE void setDebugCustomFastbootGadget(const QString &path);
+    Q_INVOKABLE bool getDebugForceSecureBoot() const;
+    Q_INVOKABLE void setDebugForceSecureBoot(bool enabled);
+    Q_INVOKABLE bool getDebugSignFastbootGadget() const;
+    Q_INVOKABLE void setDebugSignFastbootGadget(bool enabled);
+
     // Customisation API
     Q_INVOKABLE void applyCustomisationFromSettings(const QVariantMap &settings);  // Main entry: generates scripts from settings
     Q_INVOKABLE void setImageCustomisation(const QByteArray &config, const QByteArray &cmdline, const QByteArray &firstrun, const QByteArray &cloudinit, const QByteArray &cloudinitNetwork, const ImageOptions::AdvancedOptions opts = {}, const QByteArray &initFormat = {});  // Advanced: bypass generator with pre-made scripts
@@ -283,11 +349,32 @@ public:
     Q_INVOKABLE QVariantMap getSavedCustomisationSettings();
     Q_INVOKABLE void setPersistedCustomisationSetting(const QString &key, const QVariant &value);
     Q_INVOKABLE void removePersistedCustomisationSetting(const QString &key);
+    Q_INVOKABLE void clearSavedCustomisationSettings();
     Q_INVOKABLE bool imageSupportsCustomization();
     Q_INVOKABLE bool imageSupportsCcRpi();
+    // Whether the selected OS can apply the GPIO/hardware interface toggles
+    // (I2C/SPI/1-Wire/serial/USB gadget). cloud-init needs the cc_raspberry_pi
+    // module; rpi-preseed configures them natively via raspi-config.
+    Q_INVOKABLE bool imageSupportsInterfaceCustomisation();
 
-    Q_INVOKABLE QString crypt(const QByteArray &password);
-    Q_INVOKABLE QString pbkdf2(const QByteArray &psk, const QByteArray &ssid);
+    // Derive account/Wi-Fi credentials from plaintext for the UI. Hashing is
+    // delegated to CustomisationGenerator (the single home for credential
+    // derivation); the UI hands over plaintext, gets back only the hashed/derived
+    // form, and never retains the plaintext in long-lived state. This keeps the
+    // plaintext's RAM lifetime bounded to the input field (needed for the
+    // show-password toggle) and guarantees only hashes reach disk or the
+    // generator. Both return an empty string for empty input.
+    Q_INVOKABLE QString hashUserPassword(const QString &plaintext);
+    Q_INVOKABLE QString deriveWifiPsk(const QString &ssid, const QString &plaintext);
+    Q_INVOKABLE QString wifiSsidOctetsBase64(const QString &ssid) const;
+
+    // Whether a stored account-password hash can authenticate on the currently
+    // selected OS. The crypt string is self-describing, so we never store the
+    // algorithm separately: a yescrypt hash ("$y$") only works on images that
+    // support it (release date >= 2023-01-01), while sha256crypt works
+    // everywhere. The UI uses this to invalidate a restored/stale hash and force
+    // re-entry when the user targets an older OS. Empty input is "compatible".
+    Q_INVOKABLE bool savedUserPasswordUsableWithCurrentOs(const QString &cryptHash) const;
 
     Q_INVOKABLE QStringList getTranslations();
     Q_INVOKABLE QString getCurrentLanguage();
@@ -316,6 +403,11 @@ public:
     Q_INVOKABLE QString getRuntimeConnectToken() const;
     Q_INVOKABLE bool verifyAuthKey(const QString &token, bool strict = false) const;
     Q_INVOKABLE void clearConnectToken();
+    // Clear the runtime Connect token only if it was minted by
+    // requestOrgAuthKey().  Used by the wizard to drop a stale
+    // org-minted key when the user changes storage / OS without
+    // clobbering a per-user token the user typed in themselves.
+    Q_INVOKABLE void discardOrgMintedConnectToken();
     
     /* Override OS list refresh schedule (in minutes); pass negative to clear override */
     Q_INVOKABLE void setOsListRefreshOverride(int intervalMinutes, int jitterMinutes);
@@ -331,6 +423,33 @@ public:
 
     /* Check if audio notification (beep) is available on this system */
     Q_INVOKABLE bool isBeepAvailable();
+
+    /* Set an rpiboot device as the write target.
+       `storageTarget` is the block-device name (e.g. "mmcblk0", "nvme0n1")
+       to flash to once the device has been bootstrapped into fastboot
+       mode.  Pass an empty string only when the storage choice is not yet
+       known --- the rpiboot-then-flash path will then fall back to the
+       eMMC (the only universally-present CM storage) and log a warning. */
+    Q_INVOKABLE void setRpibootDevice(const QString &deviceId,
+                                       const QString &storageTarget = QString());
+    /* Returns true if the current target is an rpiboot device */
+    Q_INVOKABLE bool isRpibootDevice() const;
+
+    /* Set a fastboot storage device as the write target */
+    Q_INVOKABLE void setFastbootDevice(const QString &device, quint64 size);
+    /* Returns true if the current target is a fastboot storage device */
+    Q_INVOKABLE bool isFastbootDevice() const;
+
+    // Mint a single-use Raspberry Pi Connect auth key for the
+    // currently configured organisation API key.  Used when the
+    // target is not a fastboot device — the returned secret is
+    // written into the OS image's customisation as if the user had
+    // pasted a per-user token.  Returns a map with:
+    //   ok      bool    — true on success
+    //   secret  string  — "rpoak_..." on success
+    //   error   string  — server message on failure (401 / 422 / other)
+    Q_INVOKABLE QVariantMap requestOrgAuthKey(const QString &description,
+                                               int ttlDays = 1);
 
     /* Performance data export - opens native save dialog and writes performance data to file.
        If native dialogs aren't available, emits performanceSaveDialogNeeded for QML fallback. */
@@ -376,16 +495,19 @@ signals:
     void keychainPermissionRequested();
     void keychainPermissionResponseReceived();
     void writeStateChanged();
+    void ejectStateChanged();
     void connectTokenReceived(const QString &token);
     void connectTokenConflictDetected(const QString &token);
     void connectTokenCleared();
     void repositoryUrlReceived(const QString &url);
     void customRepoChanged();
+    void customRepoHostChanged();  // Emitted when displayed repo host changes (e.g., after redirect)
     void cacheStatusChanged();
     void osListUnavailableChanged();
     void permissionWarning(QVariant msg);
     void locationPermissionGranted();
     void performanceSaveDialogNeeded(const QString &suggestedFilename, const QString &initialDir);
+    void screenReaderActiveChanged();
 
 protected slots:
     void startProgressPolling();
@@ -395,11 +517,13 @@ protected slots:
     
     void onSuccess();
     void onError(QString msg);
+    void onEjectStarted();
+    void onEjectFinished(bool succeeded);
     void onFileSelected(QString filename);
     void onCancelled();
     void onFinalizing();
     void onPreparationStatusUpdate(QString msg);
-    void onOsListFetchComplete(const QByteArray &data, const QUrl &url);
+    void onOsListFetchComplete(const QByteArray &data, const QUrl &url, const QUrl &effectiveUrl);
     void onOsListFetchError(const QString &errorMessage, const QUrl &url);
     void onNetworkConnectionStats(const QString &statsMetadata, const QUrl &url);
     void onSTPdetected();
@@ -407,10 +531,22 @@ protected slots:
     void onCacheVerificationComplete(bool isValid);
     void onSelectedDeviceRemoved(const QString &device);
     void onOsListRefreshTimeout();
+    void onRpibootFastbootReady(const QString &fastbootId);
+    void onRpibootError(const QString &msg);
+    void onRpibootDeviceDetected(const QString &deviceId,
+                                  uint8_t busNumber, uint8_t deviceAddress,
+                                  const QList<uint8_t> &portPath, uint16_t productId);
+    void onBootstrapComplete(const QString &portPathKey, const QString &fastbootId);
+    void onBootstrapError(const QString &portPathKey, const QString &msg);
 
 private:
+#ifndef CLI_ONLY_BUILD
+    static ImageWriter *s_qmlInstance;   // app-owned instance returned by create()
+#endif
     void setWriteState(WriteState state);
     WriteState writeState() const { return _writeState; }
+    void setEjectState(EjectState state);
+    EjectState ejectState() const { return _ejectState; }
     // Cache management
     CacheManager* _cacheManager;
     bool _waitingForCacheVerification;
@@ -434,19 +570,23 @@ private:
 
 protected:
     QUrl _src, _repo;
-    QString _dst, _parentCategory, _osName, _osReleaseDate, _currentLang, _currentLangcode, _currentKeyboard;
+    QString _dst, _parentCategory, _osName, _osReleaseDate, _currentLang, _currentLangcode, _currentKeyboard, _bmapUrl;
     QByteArray _expectedHash, _cmdline, _config, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat;
     ImageOptions::AdvancedOptions _advancedOptions;
     quint64 _downloadLen, _extrLen, _devLen, _dlnow, _verifynow;
     DriveListModel _drivelist;
     bool _selectedDeviceValid;
     WriteState _writeState;
+    EjectState _ejectState = EjectState::EjectIdle;
+    QThread *_manualEjectThread = nullptr;
     bool _cancelledDueToDeviceRemoval;
     HWListModel _hwlist;
     OSListModel _oslist;
     QQmlApplicationEngine *_engine;
     QTimer _networkchecktimer;
     QTimer _osListRefreshTimer;
+    QTimer _screenReaderPollTimer;
+    bool _screenReaderActiveCached = false;
     SuspendInhibitor *_suspendInhibitor;
     DownloadThread *_thread;
     bool _verifyEnabled, _multipleFilesInZip, _online, _extractSizeKnown;
@@ -457,6 +597,11 @@ protected:
     int _refreshJitterOverrideMinutes;
     // Session-only storage for Raspberry Pi Connect token
     QString _piConnectToken;
+    // True when the current _piConnectToken was minted by us via
+    // requestOrgAuthKey() (rather than typed/pasted by the user).
+    // Lets the wizard drop only its own minted keys on storage / OS
+    // changes without clobbering a user-supplied token.
+    bool _piConnectTokenIsOrgMinted = false;
     // CLI flag to force enable secure boot regardless of OS capabilities
     static bool _forceSecureBootEnabled;
 #ifndef CLI_ONLY_BUILD
@@ -478,16 +623,39 @@ protected:
     int _debugAsyncQueueDepth;
     bool _debugIPv4Only;
     bool _debugSkipEndOfDevice;
+    bool _debugIgnoreDeviceLimits;
+    bool _debugRpiboot;
+    QString _debugCustomFastbootGadget;
+    bool _debugForceSecureBoot;
+    bool _debugSignFastbootGadget;
+
+    QString _rpibootDeviceId;
+    QString _rpibootStorageTarget;  // block device on the CM to flash after bootstrap (e.g. "mmcblk0", "nvme0n1")
+    bool _isRpibootDevice = false;
+    RpibootThread *_rpibootThread = nullptr;
+    FastbootFlashThread *_fastbootFlashThread = nullptr;
+    rpiboot::SideloadMode _rpibootSideloadMode = rpiboot::SideloadMode::Fastboot;
+
+    // Fastboot storage device selection (pre-bootstrapped)
+    bool _isFastbootDevice = false;
+    QString _fastbootId;
+    QString _fastbootBlockDevice;
+
+    // Auto-bootstrap tracking
+    QSet<QString> _bootstrappingDevices;           // port path keys in progress
+    QMap<QString, RpibootThread*> _activeBootstrapThreads;
 
     void _parseCompressedFile();
     void _parseXZFile();
     void _parseGzFile();
+    void _parseZstdFile();
     QString _pubKeyFileName();
     QString _privKeyFileName();
     QString _sshKeyDir();
     QString _sshKeyGen();
     void _applySystemdCustomisationFromSettings(const QVariantMap &s);
     void _applyCloudInitCustomisationFromSettings(const QVariantMap &s);
+    void _applyRpiPreseedCustomisationFromSettings(const QVariantMap &s);
     void _continueStartWriteAfterCacheVerification(bool cacheIsValid);
     void scheduleOsListRefresh();
     void _handleMemoryAllocationFailure(const char* what);

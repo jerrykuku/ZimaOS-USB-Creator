@@ -3,9 +3,10 @@
  * Copyright (C) 2025 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Window
-import QtQuick.Controls
 import QtQuick.Layouts
 import "../qmlcomponents"
 
@@ -14,30 +15,12 @@ import RpiImager
 FocusScope {
     id: root
     
-    // Access imageWriter from parent context if not explicitly provided
-    property var imageWriter: {
-        var item = parent;
-        while (item) {
-            if (item.imageWriter !== undefined) {
-                return item.imageWriter;
-            }
-            item = item.parent;
-        }
-        return null;
-    }
-    
-    // Access networkInfoText from parent context (WizardContainer)
-    property string networkInfoText: {
-        var item = parent;
-        while (item) {
-            if (item.networkInfoText !== undefined) {
-                return item.networkInfoText;
-            }
-            item = item.parent;
-        }
-        return "";
-    }
-    
+    // Wizard container that owns shared wizard state (provided by WizardContainer)
+    required property var wizardContainer
+
+    // Network status banner text (embedded mode), owned by WizardContainer
+    readonly property string networkInfoText: wizardContainer ? wizardContainer.networkInfoText : ""
+
     property string title: ""
     property string subtitle: ""
     property bool showBackButton: true
@@ -65,7 +48,7 @@ FocusScope {
     onAppOptionsButtonChanged: {
         // Rebuild navigation when App Options button is connected
         if (appOptionsButton) {
-            Qt.callLater(rebuildFocusOrder)
+            requestFocusRebuild()
         }
     }
 
@@ -73,7 +56,21 @@ FocusScope {
     property var _focusGroups: []
     // Flattened focus items after composition
     property var _focusableItems: []
-    
+
+    // Coalesce bursts of focus-order rebuilds (e.g. the many registerFocusGroup
+    // calls during construction) into a single rebuild at end of the event loop.
+    // Use for fire-and-forget triggers; call rebuildFocusOrder() directly where the
+    // result (initialFocusItem / _focusableItems) is read synchronously.
+    property bool _focusRebuildPending: false
+    function requestFocusRebuild() {
+        if (_focusRebuildPending) return
+        _focusRebuildPending = true
+        Qt.callLater(_flushFocusRebuild)
+    }
+    function _flushFocusRebuild() {
+        if (_focusRebuildPending) rebuildFocusOrder()
+    }
+
     signal nextClicked()
     signal backClicked()
     signal skipClicked()
@@ -105,15 +102,15 @@ FocusScope {
                 Accessible.role: Accessible.Heading
                 Accessible.name: root.title
                 Accessible.ignored: false
-                Accessible.focusable: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
-                focusPolicy: (root.imageWriter && root.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-                activeFocusOnTab: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
+                Accessible.focusable: ImageWriterSingleton ? ImageWriterSingleton.screenReaderActive : false
+                focusPolicy: (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) ? Qt.TabFocus : Qt.NoFocus
+                activeFocusOnTab: ImageWriterSingleton ? ImageWriterSingleton.screenReaderActive : false
             }
             
             MarqueeText {
                 id: subtitleText
                 text: root.subtitle
-                font.pixelSize: Style.fontSizeSubtitle
+                font.pointSize: Style.fontSizeSubtitle
                 font.family: Style.fontFamily
                 color: Style.textDescriptionColor
                 Layout.fillWidth: true
@@ -121,9 +118,9 @@ FocusScope {
                 Accessible.role: Accessible.StaticText
                 Accessible.name: root.subtitle
                 Accessible.ignored: false
-                Accessible.focusable: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
-                focusPolicy: (root.imageWriter && root.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-                activeFocusOnTab: root.imageWriter ? root.imageWriter.isScreenReaderActive() : false
+                Accessible.focusable: ImageWriterSingleton ? ImageWriterSingleton.screenReaderActive : false
+                focusPolicy: (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) ? Qt.TabFocus : Qt.NoFocus
+                activeFocusOnTab: ImageWriterSingleton ? ImageWriterSingleton.screenReaderActive : false
             }
         }
         
@@ -145,10 +142,10 @@ FocusScope {
             Text {
                 id: networkInfoLabel
                 text: root.networkInfoText
-                font.pixelSize: Style.fontSizeCaption
+                font.pointSize: Style.fontSizeCaption
                 font.family: Style.fontFamily
                 color: Style.textDescriptionColor
-                visible: root.imageWriter && root.imageWriter.isEmbeddedMode() && root.networkInfoText.length > 0
+                visible: ImageWriterSingleton && ImageWriterSingleton.isEmbeddedMode() && root.networkInfoText.length > 0
                 Layout.alignment: Qt.AlignVCenter
                 elide: Text.ElideRight
                 Layout.maximumWidth: parent.width * 0.4  // Don't let it take up too much space
@@ -158,7 +155,7 @@ FocusScope {
             RowLayout {
                 id: customButtonArea
                 Layout.fillWidth: true
-                spacing: Style.spacingMedium
+                spacing: Style.spacingSmall
                 visible: children.length > 0
             }
             
@@ -169,8 +166,14 @@ FocusScope {
                 visible: customButtonArea.children.length === 0 && root.showSkipButton
                 enabled: root.skipButtonEnabled
                 accessibleDescription: root.skipButtonAccessibleDescription
+                // Without fillWidth a layout pins the button at its preferred width,
+                // which makes these hints inert and pushes the row's minimum past
+                // the window in wordy translations. Cap growth at the natural width
+                // rounded up, so a fractional content width can't cost the label an
+                // ellipsis it doesn't need.
+                Layout.fillWidth: true
                 Layout.minimumWidth: Style.buttonWidthSkip
-                Layout.maximumWidth: Style.buttonWidthSkip * 1.5  // Allow some growth but cap it
+                Layout.maximumWidth: Math.ceil(implicitWidth)
                 Layout.preferredHeight: Style.buttonHeightStandard
                 Layout.maximumHeight: Style.buttonHeightStandard
                 onClicked: root.skipClicked()
@@ -190,8 +193,9 @@ FocusScope {
                 visible: customButtonArea.children.length === 0 && root.showBackButton
                 enabled: root.backButtonEnabled
                 accessibleDescription: root.backButtonAccessibleDescription
+                Layout.fillWidth: true
                 Layout.minimumWidth: Style.buttonWidthMinimum
-                Layout.maximumWidth: Style.buttonWidthMinimum * 1.5  // Allow some growth but cap it
+                Layout.maximumWidth: Math.ceil(implicitWidth)
                 Layout.preferredHeight: Style.buttonHeightStandard
                 Layout.maximumHeight: Style.buttonHeightStandard
                 onClicked: root.backClicked()
@@ -206,8 +210,9 @@ FocusScope {
                 visible: customButtonArea.children.length === 0 && root.showNextButton
                 enabled: root.nextButtonEnabled
                 accessibleDescription: root.nextButtonAccessibleDescription
+                Layout.fillWidth: true
                 Layout.minimumWidth: Style.buttonWidthMinimum
-                Layout.maximumWidth: Style.buttonWidthMinimum * 1.5  // Allow some growth but cap it
+                Layout.maximumWidth: Math.ceil(implicitWidth)
                 Layout.preferredHeight: Style.buttonHeightStandard
                 Layout.maximumHeight: Style.buttonHeightStandard
                 onClicked: root.nextClicked()
@@ -218,12 +223,19 @@ FocusScope {
         }
     }
 
+    // Rebuild the Tab order when the screen reader is toggled at runtime: focus
+    // groups include/exclude header and label items based on screenReaderActive.
+    Connections {
+        target: ImageWriterSingleton
+        function onScreenReaderActiveChanged() { root.requestFocusRebuild() }
+    }
+
     Component.onCompleted: {
         // Automatically register header elements (title, subtitle) as first focus group
-        registerFocusGroup("_wizard_header", function(){ 
+        registerFocusGroup("_wizard_header", function(){
             var items = []
             // Only include title/subtitle in focus order when screen reader is active
-            if (root.imageWriter && root.imageWriter.isScreenReaderActive()) {
+            if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
                 if (titleText.visible) items.push(titleText)
                 if (subtitleText.visible) items.push(subtitleText)
             }
@@ -234,7 +246,7 @@ FocusScope {
         
         // Set initial focus based on screen reader state
         var firstFocusTarget = null
-        if (root.imageWriter && root.imageWriter.isScreenReaderActive()) {
+        if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
             // Screen reader active: start at title for full context
             firstFocusTarget = (titleText.visible ? titleText : initialFocusItem)
         } else {
@@ -251,7 +263,7 @@ FocusScope {
         if (visible) {
             // Set initial focus based on screen reader state
             var firstFocusTarget = null
-            if (root.imageWriter && root.imageWriter.isScreenReaderActive()) {
+            if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
                 // Screen reader active: start at title for full context
                 firstFocusTarget = (titleText.visible ? titleText : initialFocusItem)
             } else {
@@ -272,12 +284,12 @@ FocusScope {
         for (var i = 0; i < _focusGroups.length; i++) {
             if (_focusGroups[i].name === name) {
                 _focusGroups[i] = { name: name, getItemsFn: getItemsFn, order: order, enabled: true }
-                rebuildFocusOrder()
+                requestFocusRebuild()
                 return
             }
         }
         _focusGroups.push({ name: name, getItemsFn: getItemsFn, order: order, enabled: true })
-        rebuildFocusOrder()
+        requestFocusRebuild()
     }
 
     function setFocusGroupEnabled(name, enabled) {
@@ -294,6 +306,7 @@ FocusScope {
     // With simplified navigation and no tabbing requirement, this is no longer needed.
 
     function rebuildFocusOrder() {
+        _focusRebuildPending = false   // a synchronous rebuild supersedes any pending debounced one
         // Compose enabled groups by order
         _focusGroups.sort(function(a,b){ return a.order - b.order })
         var items = []

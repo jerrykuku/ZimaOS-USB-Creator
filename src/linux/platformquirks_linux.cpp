@@ -1,6 +1,14 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  * Copyright (C) 2025 Raspberry Pi Ltd
+ *
+ * Linux platform-specific implementation.
+ *
+ * Design notes:
+ * - Uses modern Linux APIs: poll() instead of select(), eventfd() for signaling
+ * - All fds created with CLOEXEC to prevent leaks to child processes
+ * - Thread-safe: uses reentrant functions (getpwuid_r) and proper synchronization
+ * - Netlink for network monitoring (no polling, kernel pushes events)
  */
 
 #include "../platformquirks.h"
@@ -11,76 +19,115 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include <sys/mount.h>
+#include <sys/eventfd.h>  // eventfd for modern thread signaling
+#include <sys/utsname.h>   // uname() for kernel version logging
+#include <poll.h>          // poll() instead of select()
+#include <signal.h>        // Signal masking for worker thread
 #include <net/if.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
+#include <mntent.h>
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
+#include <cmath>
 #include <fcntl.h>
 #include <pthread.h>
 #include <atomic>
+#include <mutex>
 #include <net/if_arp.h>
 #include <QDebug>
 #include <QProcess>
+#include <QProcessEnvironment>
 #include <QFile>
+#include <QSaveFile>
 #include <QStandardPaths>
 #include <QDir>
 #include <QFileInfo>
+#include <QSize>
 #include <QCryptographicHash>
+#include <QUrl>
+#include <filesystem>
+#include <QUuid>
 #include <vector>
+#include <string>
+
+#ifdef QT_DBUS_LIB
+// xdg-desktop-portal OpenURI is only used by builds that link Qt DBus (the GUI
+// app). QT_DBUS_LIB is defined automatically by Qt when the DBus module is
+// linked, so the CLI build and the DBus-free PAL unit test exclude this cleanly.
+#include <QVariant>
+#include <QMap>
+#include <QDBusConnection>
+#include <QDBusMessage>
+#endif
 
 namespace {
     // Network monitoring state
     int g_netlinkSocket = -1;
     pthread_t g_monitorThread;
     std::atomic<bool> g_monitorRunning{false};
-    int g_stopPipe[2] = {-1, -1};  // Pipe to signal thread to stop
+    int g_stopEventFd = -1;  // eventfd for signaling thread to stop (more efficient than pipe)
     PlatformQuirks::NetworkStatusCallback g_networkCallback = nullptr;
     pthread_mutex_t g_callbackMutex = PTHREAD_MUTEX_INITIALIZER;
     
+    // Cached network connectivity state (updated by netlink monitor)
+    std::atomic<bool> g_cachedNetworkConnectivity{false};
+    std::atomic<bool> g_networkConnectivityCacheValid{false};
+    
     void* netlinkMonitorThread(void* arg) {
         (void)arg;
+        
+        // Block all signals in this thread - let the main thread handle them
+        // This prevents EINTR interruptions and signal handler races
+        sigset_t allSignals;
+        sigfillset(&allSignals);
+        pthread_sigmask(SIG_BLOCK, &allSignals, nullptr);
         
         char buf[4096];
         struct iovec iov = { buf, sizeof(buf) };
         struct sockaddr_nl sa;
         struct msghdr msg = { &sa, sizeof(sa), &iov, 1, nullptr, 0, 0 };
         
-        fd_set readfds;
-        int maxfd = (g_netlinkSocket > g_stopPipe[0]) ? g_netlinkSocket : g_stopPipe[0];
+        // Use poll() instead of select() - no fd number limitations
+        struct pollfd fds[2];
+        fds[0].fd = g_netlinkSocket;
+        fds[0].events = POLLIN;
+        fds[1].fd = g_stopEventFd;
+        fds[1].events = POLLIN;
         
-        while (g_monitorRunning.load()) {
-            FD_ZERO(&readfds);
-            FD_SET(g_netlinkSocket, &readfds);
-            FD_SET(g_stopPipe[0], &readfds);
-            
+        while (g_monitorRunning.load(std::memory_order_acquire)) {
             // Wait for events with 1 second timeout
-            struct timeval tv = { 1, 0 };
-            int ret = select(maxfd + 1, &readfds, nullptr, nullptr, &tv);
+            int ret = poll(fds, 2, 1000);
             
             if (ret < 0) {
                 if (errno == EINTR) continue;
+                int savedErrno = errno;
+                fprintf(stderr, "netlinkMonitorThread: poll() failed: %s\n", strerror(savedErrno));
                 break;
             }
             
-            // Check if we should stop
-            if (FD_ISSET(g_stopPipe[0], &readfds)) {
+            // Check if we should stop (eventfd signaled)
+            if (fds[1].revents & POLLIN) {
                 break;
             }
             
-            if (ret == 0) continue;  // Timeout
+            if (ret == 0) continue;  // Timeout, check g_monitorRunning again
             
-            if (FD_ISSET(g_netlinkSocket, &readfds)) {
-                ssize_t len = recvmsg(g_netlinkSocket, &msg, 0);
+            // Check for netlink events
+            if (fds[0].revents & POLLIN) {
+                ssize_t len = recvmsg(g_netlinkSocket, &msg, MSG_DONTWAIT);
                 if (len < 0) {
-                    if (errno == EINTR) continue;
+                    if (errno == EINTR || errno == EAGAIN) continue;
+                    int savedErrno = errno;
+                    fprintf(stderr, "netlinkMonitorThread: recvmsg() failed: %s\n", strerror(savedErrno));
                     break;
                 }
                 
                 // Parse netlink messages
-                for (struct nlmsghdr* nh = (struct nlmsghdr*)buf;
-                     NLMSG_OK(nh, len);
+                for (struct nlmsghdr* nh = reinterpret_cast<struct nlmsghdr*>(buf);
+                     NLMSG_OK(nh, static_cast<size_t>(len));
                      nh = NLMSG_NEXT(nh, len)) {
                     
                     if (nh->nlmsg_type == NLMSG_DONE) break;
@@ -93,7 +140,7 @@ namespace {
                             continue;  // Malformed message, skip
                         }
                         
-                        struct ifinfomsg* ifi = (struct ifinfomsg*)NLMSG_DATA(nh);
+                        struct ifinfomsg* ifi = reinterpret_cast<struct ifinfomsg*>(NLMSG_DATA(nh));
                         
                         // Skip loopback interface
                         if (ifi->ifi_type == ARPHRD_LOOPBACK) continue;
@@ -103,7 +150,11 @@ namespace {
                                 ifi->ifi_index, linkUp);
                         
                         // Check overall connectivity and invoke callback under mutex
+                        // Invalidate cache INSIDE the mutex to prevent race where another
+                        // thread could re-populate cache with stale data between invalidation
+                        // and our re-check
                         pthread_mutex_lock(&g_callbackMutex);
+                        g_networkConnectivityCacheValid.store(false, std::memory_order_relaxed);
                         if (g_networkCallback) {
                             bool isAvailable = PlatformQuirks::hasNetworkConnectivity();
                             g_networkCallback(isAvailable);
@@ -112,15 +163,50 @@ namespace {
                     }
                 }
             }
+            
+            // Handle error conditions on fds
+            if (fds[0].revents & (POLLERR | POLLHUP | POLLNVAL)) {
+                fprintf(stderr, "netlinkMonitorThread: netlink socket error (revents=0x%x)\n", 
+                        fds[0].revents);
+                break;
+            }
         }
         
         return nullptr;
+    }
+
+    // Grant root access to the user's X11 display via xhost.
+    // Must be run as the original (non-root) user who owns the display session,
+    // since root doesn't yet have permission to connect.
+    // Uses +SI:localuser:root (server-interpreted, narrowly scoped to root only).
+    void grantRootDisplayAccess(uid_t uid, gid_t gid) {
+        pid_t pid = fork();
+        if (pid < 0) return;
+
+        if (pid == 0) {
+            // POSIX: only async-signal-safe functions between fork() and exec()
+            if (setgid(gid) != 0) _exit(1);
+            if (setuid(uid) != 0) _exit(1);
+            execlp("xhost", "xhost", "+SI:localuser:root", nullptr);
+            _exit(127);
+        }
+
+        int status;
+        waitpid(pid, &status, 0);
     }
 }
 
 namespace PlatformQuirks {
 
 void applyQuirks() {
+    // Log system information for remote debugging
+    // This helps diagnose distro-specific issues from user reports
+    struct utsname sysInfo;
+    if (uname(&sysInfo) == 0) {
+        std::fprintf(stderr, "Platform: %s %s (%s)\n", 
+                     sysInfo.sysname, sysInfo.release, sysInfo.machine);
+    }
+    
     // When running as root via sudo or pkexec, ensure cache and settings directories
     // are tied to the original user, not root
     if (::geteuid() == 0) {
@@ -140,29 +226,58 @@ void applyQuirks() {
         
         if (originalUidStr) {
             // We're running under sudo or pkexec - get the original user's information
-            uid_t originalUid = static_cast<uid_t>(::atoi(originalUidStr));
-            struct passwd* pw = ::getpwuid(originalUid);
+            // Security: Use strtoul with validation instead of atoi to prevent integer overflow
+            // An attacker could set SUDO_UID to a value that overflows uid_t
+            char* endptr = nullptr;
+            errno = 0;
+            unsigned long parsedUid = std::strtoul(originalUidStr, &endptr, 10);
             
-            if (pw && pw->pw_dir) {
+            // Validate the conversion:
+            // 1. Check for conversion errors (errno set, or no digits consumed)
+            // 2. Check for trailing garbage (endptr should point to '\0')
+            // 3. Check for overflow (parsedUid > maximum uid_t value)
+            if (errno != 0 || endptr == originalUidStr || *endptr != '\0' ||
+                parsedUid > static_cast<unsigned long>(static_cast<uid_t>(-1))) {
+                std::fprintf(stderr, "WARNING: Invalid UID value in environment: %s\n", originalUidStr);
+                return;  // Don't proceed with invalid UID
+            }
+            
+            uid_t originalUid = static_cast<uid_t>(parsedUid);
+            
+            // Use getpwuid_r for thread safety - getpwuid returns static buffer
+            // that could be overwritten by another thread
+            struct passwd pwBuf;
+            struct passwd* pwResult = nullptr;
+            char pwStrBuf[4096];  // Buffer for string fields (name, dir, shell, etc.)
+            
+            int pwErr = getpwuid_r(originalUid, &pwBuf, pwStrBuf, sizeof(pwStrBuf), &pwResult);
+            if (pwErr != 0 || pwResult == nullptr) {
+                std::fprintf(stderr, "WARNING: Could not retrieve user info for UID %lu: %s\n",
+                             parsedUid, pwErr != 0 ? strerror(pwErr) : "user not found");
+                return;
+            }
+            
+            // Use pwResult (== &pwBuf) for the retrieved data
+            if (pwResult->pw_dir) {
                 // Use C-style strings since this happens before Qt is fully initialized
                 char xdgCacheHome[512];
                 char xdgConfigHome[512];
                 char xdgDataHome[512];
                 char xdgRuntimeDir[512];
                 
-                std::snprintf(xdgCacheHome, sizeof(xdgCacheHome), "%s/.cache", pw->pw_dir);
-                std::snprintf(xdgConfigHome, sizeof(xdgConfigHome), "%s/.config", pw->pw_dir);
-                std::snprintf(xdgDataHome, sizeof(xdgDataHome), "%s/.local/share", pw->pw_dir);
+                std::snprintf(xdgCacheHome, sizeof(xdgCacheHome), "%s/.cache", pwResult->pw_dir);
+                std::snprintf(xdgConfigHome, sizeof(xdgConfigHome), "%s/.config", pwResult->pw_dir);
+                std::snprintf(xdgDataHome, sizeof(xdgDataHome), "%s/.local/share", pwResult->pw_dir);
                 std::snprintf(xdgRuntimeDir, sizeof(xdgRuntimeDir), "/run/user/%s", originalUidStr);
                 
                 std::fprintf(stderr, "Running as root via %s\n", elevationMethod);
-                std::fprintf(stderr, "Original user: %s\n", pw->pw_name);
+                std::fprintf(stderr, "Original user: %s\n", pwResult->pw_name);
                 std::fprintf(stderr, "Original UID: %s\n", originalUidStr);
-                std::fprintf(stderr, "Original home directory: %s\n", pw->pw_dir);
+                std::fprintf(stderr, "Original home directory: %s\n", pwResult->pw_dir);
                 
                 // Override HOME to point to the original user's home directory
                 // This ensures QStandardPaths and QSettings use the correct user's directories
-                ::setenv("HOME", pw->pw_dir, 1);
+                ::setenv("HOME", pwResult->pw_dir, 1);
                 
                 // Set XDG environment variables to ensure proper directory usage
                 // Qt respects XDG Base Directory specification on Linux
@@ -200,14 +315,22 @@ void applyQuirks() {
                         std::fprintf(stderr, "Detected X11 display socket, set DISPLAY to: :0\n");
                     }
                     
-                    // Check for Wayland socket in the user's XDG_RUNTIME_DIR
-                    char waylandSocketPath[512];
-                    std::snprintf(waylandSocketPath, sizeof(waylandSocketPath), 
-                                 "%s/wayland-0", xdgRuntimeDir);
-                    if (access(waylandSocketPath, F_OK) == 0) {
-                        ::setenv("WAYLAND_DISPLAY", "wayland-0", 1);
-                        std::fprintf(stderr, "Detected Wayland socket, set WAYLAND_DISPLAY to: wayland-0\n");
-                    }
+                    // Scan XDG_RUNTIME_DIR for a Wayland compositor socket
+                    // Sway, nested compositors, and multi-seat setups may use
+                    // wayland-1 or higher, not just wayland-0
+                    namespace fs = std::filesystem;
+                    try {
+                        for (const auto& entry : fs::directory_iterator(xdgRuntimeDir)) {
+                            auto name = entry.path().filename().string();
+                            if (name.starts_with("wayland-") && !name.ends_with(".lock") &&
+                                entry.is_socket()) {
+                                ::setenv("WAYLAND_DISPLAY", name.c_str(), 1);
+                                std::fprintf(stderr, "Detected Wayland socket, set WAYLAND_DISPLAY to: %s\n",
+                                            name.c_str());
+                                break;
+                            }
+                        }
+                    } catch (const fs::filesystem_error&) {}
                 } else {
                     // Display variables already set, just log them
                     if (currentDisplay) {
@@ -223,7 +346,7 @@ void applyQuirks() {
                     // Common location is ~/.Xauthority
                     char xauthorityPath[512];
                     std::snprintf(xauthorityPath, sizeof(xauthorityPath), 
-                                 "%s/.Xauthority", pw->pw_dir);
+                                 "%s/.Xauthority", pwResult->pw_dir);
                     if (access(xauthorityPath, R_OK) == 0) {
                         ::setenv("XAUTHORITY", xauthorityPath, 1);
                         std::fprintf(stderr, "Set XAUTHORITY to: %s\n", xauthorityPath);
@@ -234,7 +357,14 @@ void applyQuirks() {
                     std::fprintf(stderr, "XAUTHORITY already set to: %s\n", currentXauthority);
                 }
                 
-                std::fprintf(stderr, "Set HOME to: %s\n", pw->pw_dir);
+                // If an X11 display is available, grant root access via xhost.
+                // This runs as the original user (who owns the display session)
+                // and must happen after DISPLAY and XAUTHORITY are configured.
+                if (::getenv("DISPLAY")) {
+                    grantRootDisplayAccess(originalUid, pwResult->pw_gid);
+                }
+                
+                std::fprintf(stderr, "Set HOME to: %s\n", pwResult->pw_dir);
                 std::fprintf(stderr, "Set XDG_CACHE_HOME to: %s\n", xdgCacheHome);
                 std::fprintf(stderr, "Set XDG_CONFIG_HOME to: %s\n", xdgConfigHome);
                 std::fprintf(stderr, "Set XDG_DATA_HOME to: %s\n", xdgDataHome);
@@ -248,44 +378,109 @@ void applyQuirks() {
 }
 
 namespace {
-    // Sound files in order of preference (Freedesktop sound theme)
+    // Sound files in order of preference (various distro locations)
     static const char* const SOUND_FILES[] = {
-        "/usr/share/sounds/freedesktop/stereo/complete.oga",  // Completion notification
-        "/usr/share/sounds/freedesktop/stereo/bell.oga",      // Bell/alert
+        "/usr/share/sounds/freedesktop/stereo/complete.oga",       // Freedesktop (RPi OS, Debian, Fedora)
+        "/usr/share/sounds/freedesktop/stereo/bell.oga",           // Freedesktop fallback
+        "/usr/share/sounds/Yaru/stereo/complete.oga",              // Ubuntu Yaru theme
+        "/usr/share/sounds/ocean/stereo/completion.oga",           // KDE Ocean theme
+        "/usr/share/sounds/gnome/default/alerts/glass.ogg",        // GNOME legacy
         nullptr
     };
     
-    // Find the first available sound file
+    // Find the first available sound file (cached, thread-safe)
+    // Falls back to extracting a bundled chime from Qt resources if no system sound exists.
     static const char* findSoundFile() {
-        for (int i = 0; SOUND_FILES[i] != nullptr; i++) {
-            if (access(SOUND_FILES[i], R_OK) == 0) {
-                return SOUND_FILES[i];
+        static const char* cachedSoundFile = nullptr;
+        static std::once_flag soundFileOnce;
+
+        std::call_once(soundFileOnce, []() {
+            // 1. Try system sound files
+            for (int i = 0; SOUND_FILES[i] != nullptr; i++) {
+                if (access(SOUND_FILES[i], R_OK) == 0) {
+                    cachedSoundFile = SOUND_FILES[i];
+                    return;
+                }
             }
-        }
-        return nullptr;
+
+            // 2. Extract bundled fallback chime to a temp file.
+            //    Use a random UUID in filename to avoid symlink attacks
+            //    (rpi-imager runs as root via pkexec, so temp file security matters).
+            QFile bundled(":/sounds/chime.wav");
+            if (bundled.exists()) {
+                static QString tempPath = QDir::tempPath()
+                    + QString("/rpi-imager-chime-%1.wav").arg(
+                        QUuid::createUuid().toString(QUuid::WithoutBraces));
+
+                // Remove any pre-existing file or symlink at this path
+                QFile::remove(tempPath);
+
+                if (bundled.copy(tempPath)) {
+                    QFile::setPermissions(tempPath,
+                        QFileDevice::ReadOwner | QFileDevice::WriteOwner);
+                    // static storage ensures pathBytes outlives the lambda so constData() remains valid
+                    static QByteArray pathBytes = tempPath.toLocal8Bit();
+                    cachedSoundFile = pathBytes.constData();
+                    qDebug() << "Using bundled fallback chime:" << tempPath;
+
+                    // Clean up temp file on application exit
+                    std::atexit([]() { QFile::remove(tempPath); });
+                }
+            }
+        });
+        return cachedSoundFile;
     }
     
-    static bool commandExists(const char* cmd) {
-        return !QStandardPaths::findExecutable(QString::fromLatin1(cmd)).isEmpty();
+    // Command availability cache to avoid repeated PATH searches
+    enum class AudioCommand {
+        CanberraGtkPlay,
+        PwPlay,
+        Aplay,
+        Pactl,
+        Beep,
+        COUNT
+    };
+    
+    // Thread-safe command availability cache using std::call_once per command
+    static std::once_flag commandOnceFlags[static_cast<int>(AudioCommand::COUNT)];
+    static bool commandExistsResult[static_cast<int>(AudioCommand::COUNT)] = {false};
+    
+    static bool commandExists(AudioCommand cmd) {
+        int idx = static_cast<int>(cmd);
+        std::call_once(commandOnceFlags[idx], [idx, cmd]() {
+            const char* cmdName = nullptr;
+            switch (cmd) {
+                case AudioCommand::CanberraGtkPlay: cmdName = "canberra-gtk-play"; break;
+                case AudioCommand::PwPlay: cmdName = "pw-play"; break;
+                case AudioCommand::Aplay: cmdName = "aplay"; break;
+                case AudioCommand::Pactl: cmdName = "pactl"; break;
+                case AudioCommand::Beep: cmdName = "beep"; break;
+                default: return;
+            }
+            commandExistsResult[idx] = !QStandardPaths::findExecutable(QString::fromLatin1(cmdName)).isEmpty();
+        });
+        return commandExistsResult[idx];
     }
 }
 
 bool isBeepAvailable() {
     // canberra-gtk-play uses the system sound theme - no file needed
-    if (commandExists("canberra-gtk-play")) {
+    if (commandExists(AudioCommand::CanberraGtkPlay)) {
         return true;
     }
     
     // Other mechanisms need a sound file
     const char* soundFile = findSoundFile();
     if (soundFile) {
-        if (commandExists("pw-play") || commandExists("aplay") || commandExists("pactl")) {
+        if (commandExists(AudioCommand::PwPlay) || 
+            commandExists(AudioCommand::Aplay) || 
+            commandExists(AudioCommand::Pactl)) {
             return true;
         }
     }
     
     // PC speaker beep - no dependencies
-    if (commandExists("beep")) {
+    if (commandExists(AudioCommand::Beep)) {
         return true;
     }
     
@@ -295,32 +490,32 @@ bool isBeepAvailable() {
 
 void beep() {
     // 1. canberra-gtk-play (XDG Sound Theme - best option, uses system theme)
-    if (commandExists("canberra-gtk-play")) {
+    if (commandExists(AudioCommand::CanberraGtkPlay)) {
         if (QProcess::execute("canberra-gtk-play", {"--id=complete"}) == 0) {
             return;
         }
     }
     
-    // Find a sound file for the remaining mechanisms
+    // Find a sound file for the remaining mechanisms (result is cached)
     const char* soundFile = findSoundFile();
     
     if (soundFile) {
         // 2. pw-play (PipeWire - default on modern distros including Raspberry Pi OS)
-        if (commandExists("pw-play")) {
+        if (commandExists(AudioCommand::PwPlay)) {
             if (QProcess::execute("pw-play", {soundFile}) == 0) {
                 return;
             }
         }
         
         // 3. aplay (ALSA - widely available, but only supports WAV)
-        if (commandExists("aplay")) {
+        if (commandExists(AudioCommand::Aplay)) {
             if (QProcess::execute("aplay", {"-q", soundFile}) == 0) {
                 return;
             }
         }
         
         // 4. pactl (PulseAudio - legacy systems)
-        if (commandExists("pactl")) {
+        if (commandExists(AudioCommand::Pactl)) {
             if (QProcess::execute("pactl", {"upload-sample", soundFile, "imager-beep"}) == 0) {
                 QProcess::execute("pactl", {"play-sample", "imager-beep"});
                 return;
@@ -329,7 +524,7 @@ void beep() {
     }
     
     // 5. PC speaker beep command
-    if (commandExists("beep")) {
+    if (commandExists(AudioCommand::Beep)) {
         if (QProcess::execute("beep", {}) == 0) {
             return;
         }
@@ -341,15 +536,52 @@ void beep() {
     qDebug() << "Beep requested but no suitable audio mechanism found on this Linux system";
 }
 
+// Helper to validate network interface names for safe path construction
+// Linux interface names can contain: letters, digits, hyphens, underscores, and dots
+// but must not start with a dot or contain path traversal sequences
+static bool isValidInterfaceName(const QString& name) {
+    if (name.isEmpty() || name.length() > 15) {  // IFNAMSIZ is 16 including null
+        return false;
+    }
+    // Must not start with dot (hidden files, path traversal)
+    if (name.startsWith('.')) {
+        return false;
+    }
+    // Check each character is allowed
+    for (const QChar& c : name) {
+        char ch = c.toLatin1();
+        bool isAlnum = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || 
+                       (ch >= '0' && ch <= '9');
+        bool isAllowedSpecial = (ch == '-' || ch == '_' || ch == '.');
+        if (!isAlnum && !isAllowedSpecial) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool hasNetworkConnectivity() {
+    // Return cached value if valid (invalidated by netlink monitor on changes)
+    if (g_networkConnectivityCacheValid.load(std::memory_order_relaxed)) {
+        return g_cachedNetworkConnectivity.load(std::memory_order_relaxed);
+    }
+    
     // Check multiple indicators of network connectivity on Linux
     
     // Method 1: Check if any network interface (other than loopback) is up
+    // This is fast (sysfs read) and avoids spawning processes
     QDir sysNet("/sys/class/net");
     if (sysNet.exists()) {
         QStringList interfaces = sysNet.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         for (const QString &iface : interfaces) {
             if (iface == "lo") continue; // Skip loopback
+            
+            // Security: Validate interface name to prevent path traversal attacks
+            // A malicious interface name like "../../../etc/passwd" could read arbitrary files
+            if (!isValidInterfaceName(iface)) {
+                qWarning() << "Skipping invalid interface name:" << iface;
+                continue;
+            }
             
             // Check if interface is up
             QFile operstate(QString("/sys/class/net/%1/operstate").arg(iface));
@@ -357,7 +589,9 @@ bool hasNetworkConnectivity() {
                 QString state = QString::fromLatin1(operstate.readAll()).trimmed();
                 operstate.close();
                 if (state == "up") {
-                    // Interface is up - likely have connectivity
+                    // Interface is up - cache and return
+                    g_cachedNetworkConnectivity.store(true, std::memory_order_relaxed);
+                    g_networkConnectivityCacheValid.store(true, std::memory_order_relaxed);
                     return true;
                 }
             }
@@ -365,16 +599,30 @@ bool hasNetworkConnectivity() {
     }
     
     // Method 2: Check NetworkManager (if available)
-    QProcess nmcli;
-    nmcli.start("nmcli", QStringList() << "networking" << "connectivity" << "check");
-    if (nmcli.waitForFinished(1000)) {
-        QString output = QString::fromLatin1(nmcli.readAllStandardOutput()).trimmed();
-        if (output == "full" || output == "limited") {
-            return true;
+    // Only spawn nmcli if sysfs check didn't find connectivity
+    // This is expensive (process spawn) so we do it last
+    static std::once_flag nmcliOnce;
+    static bool nmcliAvailable = false;
+    std::call_once(nmcliOnce, []() {
+        nmcliAvailable = !QStandardPaths::findExecutable("nmcli").isEmpty();
+    });
+    
+    if (nmcliAvailable) {
+        QProcess nmcli;
+        nmcli.start("nmcli", QStringList() << "networking" << "connectivity" << "check");
+        if (nmcli.waitForFinished(1000)) {
+            QString output = QString::fromLatin1(nmcli.readAllStandardOutput()).trimmed();
+            if (output == "full" || output == "limited") {
+                g_cachedNetworkConnectivity.store(true, std::memory_order_relaxed);
+                g_networkConnectivityCacheValid.store(true, std::memory_order_relaxed);
+                return true;
+            }
         }
     }
     
-    // If we can't determine connectivity, assume offline for safety
+    // No connectivity found - cache the result
+    g_cachedNetworkConnectivity.store(false, std::memory_order_relaxed);
+    g_networkConnectivityCacheValid.store(true, std::memory_order_relaxed);
     return false;
 }
 
@@ -424,75 +672,86 @@ void startNetworkMonitoring(NetworkStatusCallback callback) {
     pthread_mutex_unlock(&g_callbackMutex);
     
     // Create netlink socket for routing/link messages
-    g_netlinkSocket = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+    // Use SOCK_CLOEXEC to prevent fd leak to child processes after fork/exec
+    g_netlinkSocket = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC, NETLINK_ROUTE);
     if (g_netlinkSocket < 0) {
-        fprintf(stderr, "Failed to create netlink socket: %s\n", strerror(errno));
+        int savedErrno = errno;
+        fprintf(stderr, "Failed to create netlink socket: %s (errno %d)\n", strerror(savedErrno), savedErrno);
         return;
     }
     
     // Bind to multicast group for link changes
-    struct sockaddr_nl addr;
-    memset(&addr, 0, sizeof(addr));
+    struct sockaddr_nl addr = {};
     addr.nl_family = AF_NETLINK;
     addr.nl_groups = RTMGRP_LINK;  // Subscribe to link up/down events
     
-    if (bind(g_netlinkSocket, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
-        fprintf(stderr, "Failed to bind netlink socket: %s\n", strerror(errno));
+    if (bind(g_netlinkSocket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) < 0) {
+        int savedErrno = errno;
+        fprintf(stderr, "Failed to bind netlink socket: %s (errno %d)\n", strerror(savedErrno), savedErrno);
         close(g_netlinkSocket);
         g_netlinkSocket = -1;
         return;
     }
     
-    // Create pipe to signal thread to stop
-    if (pipe(g_stopPipe) < 0) {
-        fprintf(stderr, "Failed to create stop pipe: %s\n", strerror(errno));
+    // Create eventfd to signal thread to stop
+    // eventfd is more efficient than pipe (single fd, 8-byte counter, lighter weight)
+    // EFD_CLOEXEC prevents fd leak to child processes
+    g_stopEventFd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
+    if (g_stopEventFd < 0) {
+        int savedErrno = errno;
+        fprintf(stderr, "Failed to create stop eventfd: %s (errno %d)\n", strerror(savedErrno), savedErrno);
         close(g_netlinkSocket);
         g_netlinkSocket = -1;
         return;
     }
     
     // Start monitoring thread
-    g_monitorRunning.store(true);
-    if (pthread_create(&g_monitorThread, nullptr, netlinkMonitorThread, nullptr) != 0) {
-        fprintf(stderr, "Failed to create monitor thread: %s\n", strerror(errno));
+    g_monitorRunning.store(true, std::memory_order_release);
+    
+    // Create thread with explicit attributes for better control
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    
+    int err = pthread_create(&g_monitorThread, &attr, netlinkMonitorThread, nullptr);
+    pthread_attr_destroy(&attr);
+    
+    if (err != 0) {
+        fprintf(stderr, "Failed to create monitor thread: %s (errno %d)\n", strerror(err), err);
         close(g_netlinkSocket);
         g_netlinkSocket = -1;
-        close(g_stopPipe[0]);
-        close(g_stopPipe[1]);
-        g_stopPipe[0] = g_stopPipe[1] = -1;
-        g_monitorRunning.store(false);
+        close(g_stopEventFd);
+        g_stopEventFd = -1;
+        g_monitorRunning.store(false, std::memory_order_release);
         return;
     }
     
-    fprintf(stderr, "Network monitoring started (netlink)\n");
+    fprintf(stderr, "Network monitoring started (netlink + poll)\n");
 }
 
 void stopNetworkMonitoring() {
-    if (g_monitorRunning.load()) {
-        g_monitorRunning.store(false);
+    if (g_monitorRunning.load(std::memory_order_acquire)) {
+        g_monitorRunning.store(false, std::memory_order_release);
         
-        // Signal thread to stop
-        if (g_stopPipe[1] >= 0) {
-            char c = 'x';
-            ssize_t unused = write(g_stopPipe[1], &c, 1);
-            (void)unused;
+        // Signal thread to stop via eventfd
+        // Write any non-zero value to wake up poll()
+        if (g_stopEventFd >= 0) {
+            uint64_t val = 1;
+            ssize_t written = write(g_stopEventFd, &val, sizeof(val));
+            (void)written;  // Ignore errors - thread will exit on timeout anyway
         }
         
         // Wait for thread to finish
         pthread_join(g_monitorThread, nullptr);
         
-        // Clean up
+        // Clean up file descriptors
         if (g_netlinkSocket >= 0) {
             close(g_netlinkSocket);
             g_netlinkSocket = -1;
         }
-        if (g_stopPipe[0] >= 0) {
-            close(g_stopPipe[0]);
-            g_stopPipe[0] = -1;
-        }
-        if (g_stopPipe[1] >= 0) {
-            close(g_stopPipe[1]);
-            g_stopPipe[1] = -1;
+        if (g_stopEventFd >= 0) {
+            close(g_stopEventFd);
+            g_stopEventFd = -1;
         }
         
         fprintf(stderr, "Network monitoring stopped\n");
@@ -520,8 +779,28 @@ void attachConsole() {
 }
 
 const char* getBundlePath() {
-    // APPIMAGE is set by the AppImage runtime before our code runs
-    return ::getenv("APPIMAGE");
+    // Prefer $APPIMAGE (set by AppImage runtime) so that pkexec re-launches
+    // the AppImage wrapper rather than the unpacked binary inside it.
+    const char* appimage = ::getenv("APPIMAGE");
+    if (appimage)
+        return appimage;
+
+    // Fallback: resolve our own executable path. This covers native (non-AppImage)
+    // installs so that self-elevation via tryElevate() works for any packaging.
+    // Not cached: /proc/self/exe can change to "(deleted)" after a package upgrade,
+    // and we'd rather return null than a stale path.
+    static thread_local char resolved[PATH_MAX];
+    ssize_t len = ::readlink("/proc/self/exe", resolved, sizeof(resolved) - 1);
+    if (len <= 0)
+        return nullptr;
+    resolved[len] = '\0';
+
+    // After a package upgrade, the kernel appends " (deleted)" to the target.
+    // Treat that as unavailable rather than passing a bogus path to pkexec.
+    if (strstr(resolved, " (deleted)"))
+        return nullptr;
+
+    return resolved;
 }
 
 bool isElevatableBundle() {
@@ -549,41 +828,75 @@ static bool generatePolkitPolicyFilename(const char* appImagePath, char* buffer,
     return written > 0 && static_cast<size_t>(written) < bufferSize;
 }
 
-// Internal helper to check if policy exists for a specific path
-static bool hasPolkitPolicyForPath(const char* appImagePath) {
-    if (!appImagePath) {
+// Internal helper to XML-escape a string for safe embedding in XML content
+static QString xmlEscape(const QString& input) {
+    QString result;
+    result.reserve(input.size() + 16);  // Reserve a bit extra for escapes
+    
+    for (const QChar& c : input) {
+        uint16_t codepoint = c.unicode();
+        switch (codepoint) {
+            case '&':  result += QStringLiteral("&amp;");  break;
+            case '<':  result += QStringLiteral("&lt;");   break;
+            case '>':  result += QStringLiteral("&gt;");   break;
+            case '"':  result += QStringLiteral("&quot;"); break;
+            case '\'': result += QStringLiteral("&apos;"); break;
+            default:
+                // Also escape control characters (except tab, newline, carriage return)
+                if (codepoint < 0x20 && c != '\t' && c != '\n' && c != '\r') {
+                    result += QString("&#x%1;").arg(codepoint, 0, 16);
+                } else {
+                    result += c;
+                }
+                break;
+        }
+    }
+    return result;
+}
+
+// Polkit action directories in order of preference:
+// - /etc/polkit-1/actions/ is the local override location (writable on immutable distros)
+// - /usr/share/polkit-1/actions/ is the vendor location (read-only on immutable distros)
+static const char* const POLKIT_ACTIONS_DIRS[] = {
+    "/etc/polkit-1/actions",
+    "/usr/share/polkit-1/actions",
+    nullptr
+};
+
+// Internal helper to check if a polkit policy exists that authorizes pkexec
+// to run the given binary path. Scans all .policy files in the standard polkit
+// action directories for a matching exec.path annotation.
+static bool hasPolkitPolicyForPath(const char* binaryPath) {
+    if (!binaryPath) {
         return false;
     }
-    
-    char policyFilename[256];
-    if (!generatePolkitPolicyFilename(appImagePath, policyFilename, sizeof(policyFilename))) {
-        return false;
+
+    // Build the search string: the exec.path annotation matching our binary
+    QString escapedPath = xmlEscape(QString::fromUtf8(binaryPath));
+    QByteArray searchString = QString("org.freedesktop.policykit.exec.path\">%1</annotate>")
+        .arg(escapedPath).toUtf8();
+
+    for (int i = 0; POLKIT_ACTIONS_DIRS[i]; i++) {
+        QDir dir(POLKIT_ACTIONS_DIRS[i]);
+        if (!dir.exists())
+            continue;
+
+        const QStringList policyFiles = dir.entryList(
+            QStringList() << QStringLiteral("*.policy"), QDir::Files);
+        for (const QString& filename : policyFiles) {
+            QFile policyFile(dir.filePath(filename));
+            if (!policyFile.open(QIODevice::ReadOnly))
+                continue;
+
+            QByteArray content = policyFile.readAll();
+            policyFile.close();
+
+            if (content.contains(searchString))
+                return true;
+        }
     }
-    
-    char policyPath[512];
-    std::snprintf(policyPath, sizeof(policyPath), 
-        "/usr/share/polkit-1/actions/%s", policyFilename);
-    
-    // Check if file exists
-    if (access(policyPath, F_OK) != 0) {
-        return false;
-    }
-    
-    // Verify the policy file contains the correct path
-    // (in case the AppImage was moved but hash collision occurred)
-    QFile policyFile(policyPath);
-    if (!policyFile.open(QIODevice::ReadOnly)) {
-        return false;
-    }
-    
-    QByteArray content = policyFile.readAll();
-    policyFile.close();
-    
-    // Check if the policy contains the exact AppImage path
-    QString searchPath = QString("org.freedesktop.policykit.exec.path\">%1</annotate>")
-        .arg(QString::fromUtf8(appImagePath));
-    
-    return content.contains(searchPath.toUtf8());
+
+    return false;
 }
 
 bool hasElevationPolicyInstalled() {
@@ -592,6 +905,61 @@ bool hasElevationPolicyInstalled() {
         return false;
     }
     return hasPolkitPolicyForPath(bundlePath);
+}
+
+// Internal helper to remove stale polkit policy files left behind when the
+// AppImage was moved, renamed, or deleted. Called during policy installation
+// (which runs as root) so we have write access to the polkit directories.
+// Only touches files matching our naming convention (com.raspberrypi.rpi-imager.appimage-*.policy).
+static void cleanupStalePolkitPolicies(const char* currentPath) {
+    const QByteArray execPathTag("org.freedesktop.policykit.exec.path\">");
+    const QByteArray closeTag("</annotate>");
+
+    for (int i = 0; POLKIT_ACTIONS_DIRS[i]; i++) {
+        QDir dir(POLKIT_ACTIONS_DIRS[i]);
+        if (!dir.exists())
+            continue;
+
+        const QStringList policyFiles = dir.entryList(
+            QStringList() << QStringLiteral("com.raspberrypi.rpi-imager.appimage-*.policy"),
+            QDir::Files);
+
+        for (const QString& filename : policyFiles) {
+            QString fullPath = dir.filePath(filename);
+            QFile file(fullPath);
+            if (!file.open(QIODevice::ReadOnly))
+                continue;
+
+            QByteArray content = file.readAll();
+            file.close();
+
+            // Extract the exec.path value from the policy XML
+            int tagStart = content.indexOf(execPathTag);
+            if (tagStart < 0)
+                continue;
+            tagStart += execPathTag.size();
+            int tagEnd = content.indexOf(closeTag, tagStart);
+            if (tagEnd < 0)
+                continue;
+
+            QByteArray referencedPath = content.mid(tagStart, tagEnd - tagStart).trimmed();
+            if (referencedPath.isEmpty())
+                continue;
+
+            // Keep the policy if it references the current AppImage path
+            if (currentPath && referencedPath == currentPath)
+                continue;
+
+            // Remove if the referenced binary no longer exists
+            struct stat st;
+            if (stat(referencedPath.constData(), &st) != 0) {
+                if (QFile::remove(fullPath)) {
+                    std::fprintf(stderr, "Removed stale polkit policy: %s (target %s no longer exists)\n",
+                                 qPrintable(fullPath), referencedPath.constData());
+                }
+            }
+        }
+    }
 }
 
 // Internal helper to install polkit policy for a specific path
@@ -606,21 +974,64 @@ static bool installPolkitPolicyForPath(const char* appImagePath) {
         return false;
     }
     
+    // Security: Validate the path doesn't contain suspicious characters
+    // that could be used for XML injection attacks
+    QString pathStr = QString::fromUtf8(appImagePath);
+    
+    // Reject paths with null bytes (could truncate strings in C code)
+    if (pathStr.contains(QChar('\0'))) {
+        // Log the path length and first portion for debugging (don't log full path - could be malicious)
+        std::fprintf(stderr, "Security: Rejecting AppImage path with embedded null byte (length=%d, prefix=%.50s...)\n",
+                     static_cast<int>(strlen(appImagePath)), appImagePath);
+        return false;
+    }
+
+    // Clean up stale policy files from previous AppImage locations before installing the new one
+    cleanupStalePolkitPolicies(appImagePath);
+
     char policyFilename[256];
     if (!generatePolkitPolicyFilename(appImagePath, policyFilename, sizeof(policyFilename))) {
         return false;
     }
     
+    // Find a writable polkit actions directory
+    // Prefer /etc/ (local overrides) over /usr/share/ (vendor, read-only on immutable distros)
+    const char* targetDir = nullptr;
+    for (int i = 0; POLKIT_ACTIONS_DIRS[i]; i++) {
+        struct stat dirSt;
+        if (stat(POLKIT_ACTIONS_DIRS[i], &dirSt) == 0 && S_ISDIR(dirSt.st_mode)) {
+            targetDir = POLKIT_ACTIONS_DIRS[i];
+            break;
+        }
+    }
+
+    // If no directory exists, try to create the preferred one (with parent)
+    if (!targetDir) {
+        if (mkdir("/etc/polkit-1", 0755) != 0 && errno != EEXIST) {
+            std::fprintf(stderr, "Failed to create /etc/polkit-1: %s\n", strerror(errno));
+            return false;
+        }
+        if (mkdir("/etc/polkit-1/actions", 0755) == 0 || errno == EEXIST) {
+            targetDir = "/etc/polkit-1/actions";
+        } else {
+            std::fprintf(stderr, "Failed to create /etc/polkit-1/actions: %s\n", strerror(errno));
+            return false;
+        }
+    }
+
     char policyPath[512];
-    std::snprintf(policyPath, sizeof(policyPath), 
-        "/usr/share/polkit-1/actions/%s", policyFilename);
-    
+    std::snprintf(policyPath, sizeof(policyPath), "%s/%s", targetDir, policyFilename);
+
     // Generate unique action ID based on path hash
     QByteArray pathBytes(appImagePath);
     QByteArray hash = QCryptographicHash::hash(pathBytes, QCryptographicHash::Md5).toHex();
     QString actionId = QString("com.raspberrypi.rpi-imager.appimage.%1").arg(QString::fromUtf8(hash.left(12)));
     
-    // Create policy XML
+    // Security: XML-escape the AppImage path to prevent XML injection attacks
+    // An attacker-controlled path like "</annotate><evil>..." could break the XML
+    QString escapedPath = xmlEscape(pathStr);
+    
+    // Create policy XML with escaped path
     QString policyContent = QString(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<!DOCTYPE policyconfig PUBLIC\n"
@@ -642,21 +1053,47 @@ static bool installPolkitPolicyForPath(const char* appImagePath) {
         "    <annotate key=\"org.freedesktop.policykit.exec.allow_gui\">true</annotate>\n"
         "  </action>\n"
         "</policyconfig>\n"
-    ).arg(actionId, QString::fromUtf8(appImagePath));
+    ).arg(actionId, escapedPath);
     
     // Write policy file
-    int fd = open(policyPath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    // O_CLOEXEC prevents fd leak to child processes after fork/exec
+    int fd = open(policyPath, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
     if (fd < 0) {
+        int savedErrno = errno;
+        std::fprintf(stderr, "Failed to create policy file %s: %s\n", policyPath, strerror(savedErrno));
         return false;
     }
     
     QByteArray contentBytes = policyContent.toUtf8();
-    ssize_t written = write(fd, contentBytes.constData(), contentBytes.size());
-    close(fd);
+    ssize_t written = write(fd, contentBytes.constData(), static_cast<size_t>(contentBytes.size()));
     
-    if (written != contentBytes.size()) {
+    if (written < 0 || static_cast<size_t>(written) != static_cast<size_t>(contentBytes.size())) {
+        int savedErrno = errno;
+        std::fprintf(stderr, "Failed to write policy file: %s\n", strerror(savedErrno));
+        close(fd);
         unlink(policyPath);
         return false;
+    }
+    
+    // fsync to ensure data is flushed to disk before close
+    // This prevents data loss if system crashes immediately after
+    // Also sync the parent directory to ensure the directory entry is persisted
+    if (fsync(fd) != 0) {
+        int savedErrno = errno;
+        std::fprintf(stderr, "Failed to fsync policy file: %s\n", strerror(savedErrno));
+        close(fd);
+        unlink(policyPath);
+        return false;
+    }
+    
+    close(fd);
+    
+    // fsync parent directory to ensure the directory entry is persisted
+    // This is often overlooked but necessary for full durability
+    int dirFd = open(targetDir, O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    if (dirFd >= 0) {
+        fsync(dirFd);
+        close(dirFd);
     }
     
     return true;
@@ -673,72 +1110,277 @@ bool launchDetached(const QString& program, const QStringList& arguments) {
     //
     // Note: We do NOT call setsid() because that would create a new session
     // and break D-Bus/display connections needed for GUI applications.
-    
-    pid_t pid = fork();
-    
-    if (pid < 0) {
-        qWarning() << "launchDetached: fork failed:" << strerror(errno);
+    //
+    // A close-on-exec status pipe lets the parent learn whether the
+    // grandchild's execv() actually succeeded. The parent waits on the first
+    // child, which exits the moment it has forked the grandchild — long before
+    // exec runs — so without this pipe a missing or unrunnable program would
+    // still look like success, and callers (e.g. ImageWriter::openUrl) would
+    // never reach their fallback paths. On a successful exec the write end is
+    // closed automatically (FD_CLOEXEC) and the parent's read returns EOF; on
+    // failure the grandchild writes errno before exiting.
+
+    int statusPipe[2];
+    if (pipe(statusPipe) != 0) {
+        qWarning() << "launchDetached: pipe failed:" << strerror(errno);
         return false;
     }
-    
+    fcntl(statusPipe[0], F_SETFD, FD_CLOEXEC);
+    fcntl(statusPipe[1], F_SETFD, FD_CLOEXEC);
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        qWarning() << "launchDetached: fork failed:" << strerror(errno);
+        close(statusPipe[0]);
+        close(statusPipe[1]);
+        return false;
+    }
+
     if (pid == 0) {
-        // First child - fork again to fully detach
+        // First child - only the grandchild writes to the pipe, so drop the
+        // read end here, then fork again to fully detach.
+        close(statusPipe[0]);
+
         pid_t pid2 = fork();
-        
+
         if (pid2 < 0) {
             _exit(1);
         }
-        
+
         if (pid2 > 0) {
-            // First child exits, orphaning the grandchild (adopted by init)
+            // First child exits, orphaning the grandchild (adopted by init).
+            // Its copy of the write end closes here; only the grandchild's copy
+            // remains, so the parent's read reflects the grandchild's fate.
             _exit(0);
         }
-        
+
         // Grandchild - build argv and exec
-        
+
         // Clear AppImage environment before running external tools
         clearAppImageEnvironment();
-        
+
         QByteArray programBytes = program.toUtf8();
         std::vector<QByteArray> argBytes;
         std::vector<char*> argv;
-        
+
         argv.push_back(programBytes.data());
         for (const QString& arg : arguments) {
             argBytes.push_back(arg.toUtf8());
             argv.push_back(argBytes.back().data());
         }
         argv.push_back(nullptr);
-        
-        execvp(programBytes.constData(), argv.data());
+
+        // Resolve to absolute path to prevent PATH hijack under elevated privileges.
+        QByteArray resolvedProgram = programBytes;
+        if (!programBytes.startsWith('/')) {
+            static const char *searchDirs[] = {"/usr/bin/", "/bin/", "/usr/sbin/", "/sbin/", nullptr};
+            for (const char **dir = searchDirs; *dir; ++dir) {
+                QByteArray candidate = QByteArray(*dir) + programBytes;
+                if (access(candidate.constData(), X_OK) == 0) {
+                    resolvedProgram = candidate;
+                    break;
+                }
+            }
+        }
+        execv(resolvedProgram.constData(), argv.data());
+
+        // exec failed - report errno to the parent so the status pipe carries a
+        // payload instead of closing cleanly (which would read as success).
+        const int execErrno = errno;
+        ssize_t w;
+        do {
+            w = write(statusPipe[1], &execErrno, sizeof(execErrno));
+        } while (w < 0 && errno == EINTR);
         _exit(127);  // exec failed
     }
-    
-    // Parent - wait for first child to exit
+
+    // Parent - close the write end so the grandchild is the only writer, then
+    // wait for the first child (which exits as soon as it has forked).
+    close(statusPipe[1]);
+
     int status;
-    waitpid(pid, &status, 0);
-    
-    return WIFEXITED(status) && WEXITSTATUS(status) == 0;
+    pid_t waited;
+    do {
+        waited = waitpid(pid, &status, 0);
+    } while (waited < 0 && errno == EINTR);
+    const bool firstChildOk = (waited == pid) && WIFEXITED(status) && WEXITSTATUS(status) == 0;
+
+    // Read the exec result: EOF (n == 0) means execv() succeeded and closed the
+    // write end via FD_CLOEXEC; a payload means it failed and wrote errno.
+    bool execOk = false;
+    if (firstChildOk) {
+        int execErrno = 0;
+        ssize_t n;
+        do {
+            n = read(statusPipe[0], &execErrno, sizeof(execErrno));
+        } while (n < 0 && errno == EINTR);
+
+        if (n == 0) {
+            execOk = true;  // EOF: exec succeeded
+        } else if (n > 0) {
+            qWarning() << "launchDetached: exec of" << program
+                       << "failed:" << strerror(execErrno);
+        } else {
+            qWarning() << "launchDetached: status pipe read failed:" << strerror(errno);
+        }
+    }
+
+    close(statusPipe[0]);
+    return execOk;
+}
+
+#ifdef QT_DBUS_LIB
+// Open an http(s) URL via the xdg-desktop-portal OpenURI interface. Routes
+// through the desktop environment's own URL handler, which is more robust than
+// xdg-open's MIME lookups and is the only path that works from inside a
+// Flatpak/Snap-confined browser environment. Returns true if the portal
+// accepted the request.
+static bool openUriViaPortal(const QString& uri) {
+    QDBusConnection bus = QDBusConnection::sessionBus();
+    if (!bus.isConnected()) {
+        return false;
+    }
+
+    QDBusMessage msg = QDBusMessage::createMethodCall(
+        QStringLiteral("org.freedesktop.portal.Desktop"),
+        QStringLiteral("/org/freedesktop/portal/desktop"),
+        QStringLiteral("org.freedesktop.portal.OpenURI"),
+        QStringLiteral("OpenURI"));
+    // OpenURI(parent_window: s, uri: s, options: a{sv}) -> handle: o
+    msg << QString() << uri << QVariantMap();
+
+    // Bounded timeout: if the portal is present but unresponsive, fall back to
+    // xdg-open rather than blocking the GUI thread for the default 25s.
+    QDBusMessage reply = bus.call(msg, QDBus::Block, 2000);
+    if (reply.type() == QDBusMessage::ErrorMessage) {
+        qWarning() << "OpenURI portal unavailable:" << reply.errorMessage();
+        return false;
+    }
+    qDebug() << "Opened URL via xdg-desktop-portal:" << uri;
+    return true;
+}
+#endif // QT_DBUS_LIB
+
+// Run xdg-open as the original (non-root) user when the GUI is itself elevated,
+// so it can reach that user's desktop session. Returns true if a launcher
+// process started.
+static bool openUrlAsOriginalUser(const QString& url) {
+    uid_t targetUid = 0;
+    QString targetUsername;
+
+    // Recover the invoking user from the elevation wrapper's environment.
+    const char* pkexecUid = ::getenv("PKEXEC_UID");
+    const char* sudoUid = ::getenv("SUDO_UID");
+    if (pkexecUid) {
+        targetUid = static_cast<uid_t>(::atoi(pkexecUid));
+    } else if (sudoUid) {
+        targetUid = static_cast<uid_t>(::atoi(sudoUid));
+    } else if (::getuid() != ::geteuid()) {
+        targetUid = ::getuid();
+    }
+
+    if (targetUid != 0) {
+        struct passwd* pw = ::getpwuid(targetUid);
+        if (pw && pw->pw_name) {
+            targetUsername = QString::fromUtf8(pw->pw_name);
+        }
+    }
+
+    if (targetUsername.isEmpty()) {
+        qWarning() << "Could not determine original user for xdg-open";
+        return false;
+    }
+
+    // Carry the env vars xdg-open needs to reach the user's desktop session.
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    const QString dbusSessionAddress = env.value(QStringLiteral("DBUS_SESSION_BUS_ADDRESS"));
+    const QString xdgRuntimeDir = env.value(QStringLiteral("XDG_RUNTIME_DIR"));
+    const QString display = env.value(QStringLiteral("DISPLAY"));
+    const QString waylandDisplay = env.value(QStringLiteral("WAYLAND_DISPLAY"));
+    const QString xauthority = env.value(QStringLiteral("XAUTHORITY"));
+
+    // runuser -u <user> -- env VAR=value ... xdg-open <url>
+    // runuser preserves more than `pkexec --user` and needs no auth when root.
+    QStringList envArgs;
+    envArgs << QStringLiteral("env");
+    if (!dbusSessionAddress.isEmpty())
+        envArgs << QStringLiteral("DBUS_SESSION_BUS_ADDRESS=%1").arg(dbusSessionAddress);
+    if (!xdgRuntimeDir.isEmpty())
+        envArgs << QStringLiteral("XDG_RUNTIME_DIR=%1").arg(xdgRuntimeDir);
+    if (!display.isEmpty())
+        envArgs << QStringLiteral("DISPLAY=%1").arg(display);
+    if (!waylandDisplay.isEmpty())
+        envArgs << QStringLiteral("WAYLAND_DISPLAY=%1").arg(waylandDisplay);
+    if (!xauthority.isEmpty())
+        envArgs << QStringLiteral("XAUTHORITY=%1").arg(xauthority);
+    envArgs << QStringLiteral("xdg-open") << url;
+
+    QStringList runuserArgs;
+    runuserArgs << QStringLiteral("-u") << targetUsername << QStringLiteral("--") << envArgs;
+
+    if (launchDetached(QStringLiteral("runuser"), runuserArgs)) {
+        qDebug() << "Started runuser xdg-open";
+        return true;
+    }
+
+    qWarning() << "Failed to start runuser xdg-open, falling back to pkexec";
+    QStringList pkexecArgs;
+    pkexecArgs << QStringLiteral("--user") << targetUsername
+               << QStringLiteral("xdg-open") << url;
+    if (launchDetached(QStringLiteral("pkexec"), pkexecArgs)) {
+        qDebug() << "Started pkexec xdg-open";
+        return true;
+    }
+
+    qWarning() << "Failed to start pkexec xdg-open process";
+    return false;
+}
+
+bool openUrlExternally(const QUrl& url) {
+    const QString urlStr = url.toString();
+
+    // When elevated, xdg-open must run as the original user to reach their
+    // desktop session; the portal isn't reachable on root's session bus.
+    if (::geteuid() == 0) {
+        return openUrlAsOriginalUser(urlStr);
+    }
+
+    // Prefer the desktop portal, then fall back to xdg-open.
+#ifdef QT_DBUS_LIB
+    if (openUriViaPortal(urlStr)) {
+        return true;
+    }
+#endif
+    if (launchDetached(QStringLiteral("xdg-open"), QStringList() << urlStr)) {
+        qDebug() << "Started xdg-open";
+        return true;
+    }
+    qWarning() << "Failed to start xdg-open process";
+    return false;
 }
 
 bool tryElevate(int argc, char** argv) {
-    // Only attempt elevation if running from AppImage, not root, and have policy
-    const char* appImagePath = getBundlePath();
-    if (!appImagePath || ::geteuid() == 0) {
+    // Only attempt elevation if not already root, have a bundle path, and have a polkit policy
+    const char* bundlePath = getBundlePath();
+    if (!bundlePath || ::geteuid() == 0) {
         return false;
     }
-    
-    if (access("/usr/bin/pkexec", X_OK) != 0 || !hasPolkitPolicyForPath(appImagePath)) {
+
+    if (access("/usr/bin/pkexec", X_OK) != 0 || !hasPolkitPolicyForPath(bundlePath)) {
         return false;
     }
-    
-    // Build argument list: pkexec --disable-internal-agent /path/to/appimage [args...]
+
+    // --disable-internal-agent prevents pkexec from spawning its own polkit agent.
+    // We rely on the desktop environment's agent (e.g., gnome-shell, kde-polkit)
+    // to show the auth dialog. Without this flag, pkexec's built-in text-mode agent
+    // can interfere with the GUI agent, causing duplicate prompts or hangs.
     char** newArgv = new char*[argc + 3];
     int newArgc = 0;
-    
+
     newArgv[newArgc++] = strdup("/usr/bin/pkexec");
     newArgv[newArgc++] = strdup("--disable-internal-agent");
-    newArgv[newArgc++] = strdup(appImagePath);
+    newArgv[newArgc++] = strdup(bundlePath);
     
     for (int i = 1; i < argc; i++) {
         newArgv[newArgc++] = strdup(argv[i]);
@@ -827,7 +1469,7 @@ void execElevated(const QStringList& extraArgs) {
     
     fflush(stdout);
     fflush(stderr);
-    execvp("pkexec", argv.data());
+    execv("/usr/bin/pkexec", argv.data());
     
     // Only reached if exec failed
     qWarning() << "Failed to exec pkexec:" << strerror(errno);
@@ -837,6 +1479,74 @@ bool isScrollInverted(bool qtInvertedFlag) {
     // On Linux, Qt's inverted flag behavior varies by desktop environment.
     // Most modern DEs (GNOME, KDE) correctly report it, so we pass through.
     return qtInvertedFlag;
+}
+
+bool prefersReducedMotion() {
+    // Use absolute paths for external commands — this function may run in an
+    // elevated (root) context after pkexec.  Relative names would search PATH,
+    // which could be user-controlled.
+
+    // GNOME: org.gnome.desktop.interface enable-animations
+    // This is the standard accessibility setting on GNOME-based desktops.
+    {
+        const QString bin = QStringLiteral("/usr/bin/gsettings");
+        if (QFileInfo::exists(bin)) {
+            QProcess gsettings;
+            gsettings.start(bin, {"get", "org.gnome.desktop.interface", "enable-animations"});
+            if (gsettings.waitForFinished(500)) {
+                QString value = gsettings.readAllStandardOutput().trimmed();
+                if (value == "false") {
+                    return true;
+                }
+            }
+        }
+    }
+
+    // KDE Plasma 5.67+: AnimationDurationFactor=0 disables animations
+    // Prefer kreadconfig6 (Plasma 6), fallback to kreadconfig5 (Plasma 5).
+    {
+        QString bin = QStringLiteral("/usr/bin/kreadconfig6");
+        if(!QFileInfo::exists(bin)) {
+            bin = QStringLiteral("/usr/bin/kreadconfig5");
+        }
+        if (QFileInfo::exists(bin)) {
+            QProcess kreadconfig;
+            kreadconfig.start(bin, {"--group", "KDE", "--key", "AnimationDurationFactor"});
+            if (kreadconfig.waitForFinished(500)) {
+                QString value = kreadconfig.readAllStandardOutput().trimmed();
+                bool ok = false;
+                double factor = value.toDouble(&ok);
+                if (ok && factor == 0.0) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    // Fallback: GTK3 settings file — works on Raspberry Pi OS, XFCE, MATE,
+    // LXDE, LXQt, and any other GTK-based desktop without GSettings.
+    // Users can set gtk-enable-animations=0 in ~/.config/gtk-3.0/settings.ini
+    {
+        QString gtkSettingsPath = QDir::homePath() + "/.config/gtk-3.0/settings.ini";
+        QFile gtkSettings(gtkSettingsPath);
+        if (gtkSettings.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            while (!gtkSettings.atEnd()) {
+                QString line = gtkSettings.readLine().trimmed();
+                if (line.startsWith("gtk-enable-animations")) {
+                    int eq = line.indexOf('=');
+                    if (eq >= 0) {
+                        QString value = line.mid(eq + 1).trimmed();
+                        if (value == "0" || value == "false") {
+                            return true;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 QString getWriteDevicePath(const QString& devicePath) {
@@ -850,8 +1560,162 @@ QString getEjectDevicePath(const QString& devicePath) {
     return devicePath;
 }
 
+DiskResult unmountDisk(const QString& device) {
+    QByteArray deviceBytes = device.toUtf8();
+    const char* devicePath = deviceBytes.constData();
+    
+    // Verify device exists and is not a directory
+    struct stat stats;
+    if (stat(devicePath, &stats) != 0) {
+        int savedErrno = errno;
+        qWarning() << "unmountDisk: stat failed for" << device << "-" << strerror(savedErrno);
+        return DiskResult::InvalidDrive;
+    }
+    if (S_ISDIR(stats.st_mode)) {
+        qWarning() << "unmountDisk: path is a directory, not a device:" << device;
+        return DiskResult::InvalidDrive;
+    }
+    
+    // Find all mount points for this device and its partitions
+    std::vector<std::string> mountDirs;
+    
+    FILE* procMounts = setmntent("/proc/mounts", "r");
+    if (!procMounts) {
+        int savedErrno = errno;
+        qWarning() << "unmountDisk: couldn't read /proc/mounts -" << strerror(savedErrno);
+        return DiskResult::Error;
+    }
+    
+    struct mntent* mnt;
+    struct mntent data;
+    char mntBuf[4096 + 1024];  // Buffer for getmntent_r
+    
+    while ((mnt = getmntent_r(procMounts, &data, mntBuf, sizeof(mntBuf)))) {
+        // Check if this mount is on the device or any of its partitions
+        // Match exact device path or device path followed by a partition number (digit)
+        // This prevents matching /dev/sda when we have /dev/sda_backup or similar
+        size_t devicePathLen = strlen(devicePath);
+        if (strncmp(mnt->mnt_fsname, devicePath, devicePathLen) == 0) {
+            char nextChar = mnt->mnt_fsname[devicePathLen];
+            // Accept exact match, partition number (digit), or 'p' followed by digit (nvme style)
+            if (nextChar == '\0' || 
+                (nextChar >= '0' && nextChar <= '9') ||
+                (nextChar == 'p' && mnt->mnt_fsname[devicePathLen + 1] >= '0' && 
+                 mnt->mnt_fsname[devicePathLen + 1] <= '9')) {
+                qDebug() << "unmountDisk: found mount" << mnt->mnt_dir << "for" << mnt->mnt_fsname;
+                mountDirs.push_back(mnt->mnt_dir);
+            }
+        }
+    }
+    endmntent(procMounts);
+    
+    if (mountDirs.empty()) {
+        qDebug() << "unmountDisk: no mounts found for" << device;
+        return DiskResult::Success;  // Nothing to unmount
+    }
+    
+    // Unmount each mount point
+    // Strategy:
+    // 1. Try normal unmount first (no flags) - cleanest, ensures all data flushed
+    // 2. MNT_EXPIRE (mark for expiry, second call unmounts if idle)
+    // 3. MNT_DETACH (lazy unmount) - WARNING: can leave fs in inconsistent state
+    //    if there are open files, use only after user has been warned
+    // 4. MNT_FORCE - for truly stuck filesystems (usually network mounts)
+    //
+    // Note: We prefer MNT_DETACH over MNT_FORCE because MNT_FORCE can corrupt
+    // data on some filesystem types, while MNT_DETACH is safer (waits for
+    // open files to close before actual unmount).
+    
+    size_t unmountCount = 0;
+    std::vector<std::string> failedMounts;
+    
+    for (const std::string& mountDir : mountDirs) {
+        const char* mountPath = mountDir.c_str();
+        bool unmounted = false;
+        
+        // First attempt: normal unmount (cleanest, waits for all I/O)
+        if (umount(mountPath) == 0) {
+            qDebug() << "unmountDisk: unmounted" << mountPath << "(normal)";
+            unmounted = true;
+        }
+        // Second attempt: MNT_EXPIRE (mark for expiry)
+        else if (umount2(mountPath, MNT_EXPIRE) == 0) {
+            qDebug() << "unmountDisk: unmounted" << mountPath << "(MNT_EXPIRE first call)";
+            unmounted = true;
+        }
+        // Third attempt: MNT_EXPIRE again (actually unmounts if still idle)
+        else if (umount2(mountPath, MNT_EXPIRE) == 0) {
+            qDebug() << "unmountDisk: unmounted" << mountPath << "(MNT_EXPIRE second call)";
+            unmounted = true;
+        }
+        // Fourth attempt: MNT_DETACH (lazy unmount)
+        // This makes the mount point unavailable immediately but actual unmount
+        // happens when all open file handles are closed. Safe for our use case
+        // since we're about to overwrite the device anyway.
+        else if (umount2(mountPath, MNT_DETACH) == 0) {
+            qDebug() << "unmountDisk: unmounted" << mountPath << "(MNT_DETACH/lazy)";
+            unmounted = true;
+        }
+        // Last resort: MNT_FORCE (can cause data loss on some filesystems!)
+        else if (umount2(mountPath, MNT_FORCE) == 0) {
+            qWarning() << "unmountDisk: force-unmounted" << mountPath << "(MNT_FORCE - may cause data loss)";
+            unmounted = true;
+        }
+        
+        if (unmounted) {
+            unmountCount++;
+        } else {
+            int savedErrno = errno;
+            qWarning() << "unmountDisk: failed to unmount" << mountPath << ":" << strerror(savedErrno);
+            failedMounts.push_back(mountDir);
+        }
+    }
+    
+    if (unmountCount == mountDirs.size()) {
+        return DiskResult::Success;
+    } else if (unmountCount == 0) {
+        // All mounts failed - likely a permissions or busy issue
+        qWarning() << "unmountDisk: all" << mountDirs.size() << "mounts failed for" << device;
+        return DiskResult::Busy;
+    } else {
+        // Partial success - some mounts succeeded, some failed
+        // This is still a failure but we should log what succeeded for debugging
+        qWarning() << "unmountDisk: partial failure -" << unmountCount << "of" 
+                   << mountDirs.size() << "mounts succeeded for" << device;
+        qWarning() << "unmountDisk: failed mounts:" << failedMounts.size();
+        for (const auto& failed : failedMounts) {
+            qWarning() << "  -" << QString::fromStdString(failed);
+        }
+        return DiskResult::Busy;
+    }
+}
+
+DiskResult ejectDisk(const QString& device) {
+    // On Linux, ejecting is essentially the same as unmounting.
+    // The kernel handles making the device safe to remove.
+    // For true hardware eject (e.g., CD drives), we would use CDROMEJECT ioctl,
+    // but for SD cards and USB drives, unmounting is sufficient.
+    return unmountDisk(device);
+}
+
+DiskResult refreshDiskView(const QString& device) {
+    // The kernel re-reads the partition table when the exclusive device handle
+    // is closed (BLKRRPART is also available, but unnecessary in the normal
+    // flow), and udev handles drive-name reassignment without our help.
+    Q_UNUSED(device);
+    return DiskResult::Success;
+}
+
 const char* findCACertBundle()
 {
+    // Cache the result - this is called on every curl handle setup
+    static const char* cachedPath = nullptr;
+    static bool cacheInitialized = false;
+    
+    if (cacheInitialized) {
+        return cachedPath;
+    }
+    
     // Common CA certificate bundle paths across Linux distributions.
     // AppImages and other portable distributions bundle libcurl with a
     // hardcoded CA certificate path from the build system. When run on a
@@ -876,11 +1740,13 @@ const char* findCACertBundle()
     {
         if (access(caPaths[i], R_OK) == 0)
         {
-            return caPaths[i];
+            cachedPath = caPaths[i];
+            break;
         }
     }
-
-    return nullptr;  // Not found, curl will use its compiled-in default
+    
+    cacheInitialized = true;
+    return cachedPath;  // May be nullptr if not found, curl will use its compiled-in default
 }
 
 void clearAppImageEnvironment() {
@@ -894,6 +1760,382 @@ void clearAppImageEnvironment() {
     // our bundled libraries.
     unsetenv("LD_LIBRARY_PATH");
     unsetenv("LD_PRELOAD");
+}
+
+bool registerUriScheme() {
+    // $APPIMAGE (set by the AppImage runtime) or the resolved /proc/self/exe.
+    // %u makes the OS pass the rpi-imager:// callback URL as an argument.
+    const char* bundle = getBundlePath();
+    if (!bundle || bundle[0] == '\0') {
+        qWarning() << "registerUriScheme: could not resolve executable path";
+        return false;
+    }
+    const QString execPath = QString::fromUtf8(bundle);
+
+    // NoDisplay keeps this out of the application menu — it exists purely as a
+    // scheme handler, not a second launcher entry alongside the packaged one.
+    const QString desktopContents = QStringLiteral(
+        "[Desktop Entry]\n"
+        "Type=Application\n"
+        "Name=Raspberry Pi Imager\n"
+        "Exec=%1 %u\n"
+        "Icon=rpi-imager\n"
+        "Terminal=false\n"
+        "NoDisplay=true\n"
+        "MimeType=x-scheme-handler/rpi-imager;\n").arg(execPath);
+    const QByteArray desktopBytes = desktopContents.toUtf8();
+
+    const QString appsDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
+                            + QStringLiteral("/applications");
+    const QString desktopName = QStringLiteral("com.raspberrypi.rpi-imager-uri-handler.desktop");
+    const QString desktopPath = appsDir + QLatin1Char('/') + desktopName;
+
+    // Idempotent: if the entry already matches, assume registration is current
+    // and skip the desktop-database tools so steady-state startup stays cheap.
+    {
+        QFile existing(desktopPath);
+        if (existing.open(QIODevice::ReadOnly) && existing.readAll() == desktopBytes) {
+            return true;
+        }
+    }
+
+    if (!QDir().mkpath(appsDir)) {
+        qWarning() << "registerUriScheme: cannot create" << appsDir;
+        return false;
+    }
+
+    // Atomic write so a crash mid-write can't leave a truncated handler entry.
+    QSaveFile file(desktopPath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qWarning() << "registerUriScheme: cannot write" << desktopPath
+                   << file.errorString();
+        return false;
+    }
+    file.write(desktopBytes);
+    if (!file.commit()) {
+        qWarning() << "registerUriScheme: commit failed for" << desktopPath;
+        return false;
+    }
+
+    // Refresh the desktop database and set ourselves as the default handler.
+    // Best-effort with bounded waits: a missing tool just means we rely on the
+    // MimeType association. Clear the AppImage library overrides for the child
+    // so these system tools load their own libraries (see clearAppImageEnvironment).
+    auto runTool = [](const QString& prog, const QStringList& args) {
+        QProcess p;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.remove(QStringLiteral("LD_LIBRARY_PATH"));
+        env.remove(QStringLiteral("LD_PRELOAD"));
+        p.setProcessEnvironment(env);
+        p.start(prog, args);
+        if (!p.waitForStarted(2000)) {
+            return;  // tool not present on this system
+        }
+        p.waitForFinished(3000);
+    };
+    runTool(QStringLiteral("update-desktop-database"), QStringList() << appsDir);
+    runTool(QStringLiteral("xdg-mime"),
+            QStringList() << QStringLiteral("default") << desktopName
+                          << QStringLiteral("x-scheme-handler/rpi-imager"));
+
+    qDebug() << "Registered rpi-imager:// scheme handler at" << desktopPath;
+    return true;
+}
+
+qreal detectTextScaleFactor()
+{
+    // If QT_SCALE_FACTOR is already set (embedded mode sets it from the display
+    // DPI/resolution in applyEmbeddedDisplayScaling), don't add text scaling on
+    // top — the whole UI is already scaled uniformly by Qt.
+    if (!qgetenv("QT_SCALE_FACTOR").isEmpty()) {
+        return 1.0;
+    }
+
+    // Strategy 1: GSettings text-scaling-factor (GNOME/GTK accessibility scaling)
+    {
+        QProcess gsettings;
+        gsettings.start("gsettings", {"get", "org.gnome.desktop.interface", "text-scaling-factor"});
+        if (gsettings.waitForFinished(500)) {
+            bool ok = false;
+            qreal factor = gsettings.readAllStandardOutput().trimmed().toDouble(&ok);
+            if (ok && factor >= 0.5 && factor <= 3.0 && qAbs(factor - 1.0) > 0.05) {
+                qDebug() << "Text scale factor from GSettings text-scaling-factor:" << factor;
+                return factor;
+            }
+        }
+    }
+
+    // Strategy 2: GSettings font-name — parse size from "FontFamily Size" format
+    // e.g., "PibotoLt 14" → 14pt. Compare to 10pt baseline.
+    {
+        QProcess gsettings;
+        gsettings.start("gsettings", {"get", "org.gnome.desktop.interface", "font-name"});
+        if (gsettings.waitForFinished(500)) {
+            QString output = gsettings.readAllStandardOutput().trimmed();
+            // GSettings returns values in single quotes: 'PibotoLt 14'
+            output.remove('\'');
+            // The font size is the last whitespace-delimited token
+            int lastSpace = output.lastIndexOf(' ');
+            if (lastSpace > 0) {
+                bool ok = false;
+                qreal fontSize = output.mid(lastSpace + 1).toDouble(&ok);
+                if (ok && fontSize > 0) {
+                    const qreal baseline = 10.0;
+                    qreal factor = fontSize / baseline;
+                    if (factor >= 0.5 && factor <= 3.0 && qAbs(factor - 1.0) > 0.05) {
+                        qDebug() << "Text scale factor from GSettings font-name:" << factor
+                                 << "(font:" << output << ")";
+                        return factor;
+                    }
+                }
+            }
+        }
+    }
+
+    // Strategy 3: GDK_DPI_SCALE environment variable
+    {
+        QByteArray gdkDpiScale = qgetenv("GDK_DPI_SCALE");
+        if (!gdkDpiScale.isEmpty()) {
+            bool ok = false;
+            qreal factor = gdkDpiScale.toDouble(&ok);
+            if (ok && factor >= 0.5 && factor <= 3.0) {
+                qDebug() << "Text scale factor from GDK_DPI_SCALE:" << factor;
+                return factor;
+            }
+        }
+    }
+
+    return 1.0;
+}
+
+qreal fontDpiCorrection()
+{
+    return 72.0 / 96.0;
+}
+
+void logFontEngine()
+{
+    qDebug() << "Font engine: freetype (fontconfig)";
+}
+
+namespace {
+
+// Connected display, as read from /sys/class/drm. Physical dimensions are
+// optional (0 = unknown) because many panels report no usable size.
+struct DrmDisplay {
+    int widthPx = 0;
+    int heightPx = 0;
+    int widthMm = 0;
+    int heightMm = 0;
+    bool valid() const { return widthPx > 0 && heightPx > 0; }
+};
+
+// The composition the embedded layout is drawn for. The embedded UI is a fixed
+// composition rather than a reflowing one -- the sidebar is 200 logical px, the
+// content column is capped at Style.sectionMaxWidth, the buttons are 40 tall --
+// so handed more logical pixels it does not grow into them, it draws the same
+// small composition in the middle of a large screen. The scale factor is
+// therefore chosen to hand it a canvas the size of the composition itself.
+//
+// The width is main.qml's desktop window width. The height is not: the window
+// is 450, but the customisation steps expand the sidebar to eleven entries plus
+// a footer, and 480 rows demonstrably clips "Done" off the bottom while 540
+// fits it with headroom (see src/test/embedded_scaling, which renders those
+// steps). 540 also happens to give every 16:9 mode a 960x540 canvas that
+// divides the panel exactly.
+constexpr int kDesignWidthPx = 680;
+constexpr int kDesignHeightPx = 540;
+
+// A panel already within an eighth of the design canvas is left at 1.0. On the
+// smallest screens a fractional ratio is where it shows most, and the few
+// unused pixels cost less than scaling an 800x480 panel by 1.07.
+constexpr qreal kSnapToOneBelow = 1.125;
+
+// Below this the UI would be drawn smaller than the canvas it was designed
+// for, which clips rather than shrinks; above it, a mode is far likelier to be
+// a misreported EDID than a real panel (6.0 still gives 8K a 1280x720 canvas).
+constexpr qreal kMinScale = 1.0;
+constexpr qreal kMaxScale = 6.0;
+
+// How far below the fitted ratio the search for an exactly-tiling factor is
+// allowed to look, and enough slack to keep a ratio like 2160/4.8 -- which
+// lands a whisker above 450 in binary floating point -- from being read as 451
+// logical rows and missing the exact fit entirely.
+constexpr qreal kTilingSearchSlack = 1.05;
+constexpr qreal kFpSlack = 1e-6;
+
+// Largest mode dimension treated as real. DRM's own limit is well inside this,
+// so anything larger is a misreported EDID rather than a panel.
+constexpr int kMaxModeDimension = 32768;
+
+// Derive the physical image size (mm) from a raw EDID block. Prefers the
+// per-millimetre size in the first detailed timing descriptor; falls back to
+// the coarse centimetre-granularity bytes in the basic display parameters.
+// Returns {0, 0} when neither is usable.
+QSize physicalSizeFromEdid(const QByteArray &edid)
+{
+    if (edid.size() < 128)
+        return {};
+    const auto *b = reinterpret_cast<const unsigned char *>(edid.constData());
+
+    // Validate the fixed EDID header before trusting any offsets.
+    static const unsigned char kHeader[8] = {0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00};
+    if (std::memcmp(b, kHeader, sizeof(kHeader)) != 0)
+        return {};
+
+    // First detailed timing descriptor lives at offset 54. It carries the
+    // image size in mm, but only when it is an actual timing descriptor
+    // (non-zero pixel clock) rather than a monitor descriptor.
+    constexpr int kDtd = 54;
+    if (b[kDtd] != 0 || b[kDtd + 1] != 0) {
+        const int hMm = b[kDtd + 12] | ((b[kDtd + 14] & 0xF0) << 4);
+        const int vMm = b[kDtd + 13] | ((b[kDtd + 14] & 0x0F) << 8);
+        if (hMm > 0 && vMm > 0)
+            return QSize(hMm, vMm);
+    }
+
+    // Basic display parameters: max image size in cm (bytes 0x15 / 0x16).
+    const int hCm = b[21];
+    const int vCm = b[22];
+    if (hCm > 0 && vCm > 0)
+        return QSize(hCm * 10, vCm * 10);
+
+    return {};
+}
+
+// Find the first connected DRM connector that advertises a usable mode, and
+// read its native resolution plus best-effort physical size.
+DrmDisplay readConnectedDisplay()
+{
+    DrmDisplay info;
+    const QDir drmDir(QStringLiteral("/sys/class/drm"));
+    const QStringList connectors = drmDir.entryList(
+        QStringList() << QStringLiteral("card*-*"),
+        QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+
+    for (const QString &connector : connectors) {
+        const QString base = drmDir.absoluteFilePath(connector);
+
+        // Skip outputs that aren't connected.
+        QFile statusFile(base + QStringLiteral("/status"));
+        if (!statusFile.open(QIODevice::ReadOnly))
+            continue;
+        if (statusFile.readAll().trimmed() != QByteArray("connected"))
+            continue;
+
+        // Native resolution = first (preferred) line of the modes file.
+        int w = 0, h = 0;
+        QFile modesFile(base + QStringLiteral("/modes"));
+        if (modesFile.open(QIODevice::ReadOnly)) {
+            const QByteArray firstMode = modesFile.readLine().trimmed();
+            const int xPos = firstMode.indexOf('x');
+            if (xPos > 0) {
+                w = firstMode.left(xPos).toInt();
+                h = firstMode.mid(xPos + 1).toInt();
+            }
+        }
+        // A dimension beyond kMaxModeDimension is not a panel the kernel could
+        // have driven, and the scaling arithmetic downstream derives loop
+        // bounds from these numbers, so refuse rather than carry them.
+        if (w <= 0 || h <= 0 || w > kMaxModeDimension || h > kMaxModeDimension)
+            continue;  // connected but advertises no usable mode
+
+        info.widthPx = w;
+        info.heightPx = h;
+
+        // Physical size from EDID (frequently absent on DSI panels).
+        QFile edidFile(base + QStringLiteral("/edid"));
+        if (edidFile.open(QIODevice::ReadOnly)) {
+            const QSize mm = physicalSizeFromEdid(edidFile.readAll());
+            info.widthMm = mm.width();
+            info.heightMm = mm.height();
+        }
+
+        qInfo() << "Embedded scaling: connector" << connector
+                << QStringLiteral("%1x%2 px").arg(w).arg(h)
+                << (info.widthMm > 0
+                        ? QStringLiteral("%1x%2 mm").arg(info.widthMm).arg(info.heightMm)
+                        : QStringLiteral("(no physical size)"));
+        break;
+    }
+    return info;
+}
+
+} // namespace
+
+void applyEmbeddedDisplayScaling()
+{
+    // A manually-set QT_SCALE_FACTOR (environment override, testing, or a site
+    // policy) always wins — never clobber it.
+    if (!qgetenv("QT_SCALE_FACTOR").isEmpty()) {
+        qInfo() << "Embedded scaling: QT_SCALE_FACTOR already set to"
+                << qgetenv("QT_SCALE_FACTOR") << "- leaving untouched";
+        return;
+    }
+
+    const DrmDisplay display = readConnectedDisplay();
+    if (!display.valid()) {
+        qWarning() << "Embedded scaling: no connected display found via DRM;"
+                   << "leaving QT_SCALE_FACTOR unset (Qt defaults to 1.0)";
+        return;
+    }
+
+    // Fit the design canvas to the panel, letting whichever axis runs out
+    // first decide. On a 16:9 panel that is the height, which is why every
+    // 16:9 resolution ends up with the same 800x450-ish canvas and therefore
+    // the same composition, however many pixels the panel actually has.
+    const qreal fit = qMin(static_cast<qreal>(display.widthPx) / kDesignWidthPx,
+                           static_cast<qreal>(display.heightPx) / kDesignHeightPx);
+
+    qreal scale = fit < kSnapToOneBelow ? 1.0 : fit;
+    scale = qBound(kMinScale, scale, kMaxScale);
+
+    // Snap to a factor that divides the panel exactly in both axes, so the
+    // window covers the framebuffer with nothing left over. Under linuxfb the
+    // window *is* the framebuffer, with no compositor to absorb a rounding
+    // error: a factor of 4.75 on a 4K panel leaves it 2 px short across and 1 px
+    // over down, which shows as an unpainted seam along the edge.
+    //
+    // Scanning upward from the smallest usable logical height, the first height
+    // whose matching width is also whole wins. On every common mode that is the
+    // fitted ratio itself -- 2160 / 4.8 is exactly 450 rows. The search gives up
+    // after a few per cent because on an awkward mode such as 1366x768 the next
+    // exactly-tiling factor is 1.0, a third of the way down, and a 1 px seam
+    // costs far less than a third of the UI's size.
+    const qint64 minRows = static_cast<qint64>(std::ceil(display.heightPx / scale - kFpSlack));
+    const qint64 maxRows = static_cast<qint64>(minRows * kTilingSearchSlack);
+    for (qint64 rows = minRows; rows <= maxRows; ++rows) {
+        if ((static_cast<qint64>(display.widthPx) * rows) % display.heightPx == 0) {
+            scale = static_cast<qreal>(display.heightPx) / static_cast<qreal>(rows);
+            break;
+        }
+    }
+
+    // Density deliberately plays no part in the choice. Viewing distance grows
+    // with panel size, so keeping the composition proportional to the panel
+    // holds its apparent size roughly constant, whereas scaling to a fixed
+    // physical size leaves the UI marooned in the corner of anything large.
+    // The panel's reported size is still logged: it is the first thing anyone
+    // wants when diagnosing a display in the field.
+    if (display.widthMm > 0) {
+        const qreal dpi = display.widthPx * 25.4 / display.widthMm;
+        qInfo().nospace() << "Embedded scaling: panel reports " << display.widthMm << "x"
+                          << display.heightMm << " mm (" << qRound(dpi)
+                          << " DPI) — logged for diagnostics, not used for scaling";
+    }
+
+    const qreal logicalWidth = display.widthPx / scale;
+    const qreal logicalHeight = display.heightPx / scale;
+    const bool tiles = qAbs(logicalWidth - qRound(logicalWidth)) < 0.01
+                    && qAbs(logicalHeight - qRound(logicalHeight)) < 0.01;
+
+    qputenv("QT_SCALE_FACTOR", QByteArray::number(scale));
+    qInfo().nospace() << "Embedded scaling: " << display.widthPx << "x" << display.heightPx
+                      << " panel fits the " << kDesignWidthPx << "x" << kDesignHeightPx
+                      << " design canvas " << QString::number(fit, 'f', 2).toUtf8().constData()
+                      << " times over -> QT_SCALE_FACTOR=" << scale
+                      << " (logical canvas " << qRound(logicalWidth) << "x" << qRound(logicalHeight)
+                      << (tiles ? ", tiles exactly)" : ", does not tile exactly)");
 }
 
 } // namespace PlatformQuirks

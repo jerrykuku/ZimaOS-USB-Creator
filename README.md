@@ -30,7 +30,7 @@ Download the latest release for your platform from the Releases page.
 
 ### Building from Source
 
-### Linux
+To build Raspberry Pi Imager from source-code, see our separate instructions in [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 #### Get dependencies
 

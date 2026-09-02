@@ -40,6 +40,21 @@ enum class FileError {
   kTimeout  // Device/OS failed to complete I/O within timeout period
 };
 
+// Coarse classification of the most recent write error, platform-agnostic.
+// Implementations inspect OS-specific state (errno / GetLastError / registry)
+// and fold it into one of these categories so callers can render localized
+// user-facing messages without leaking platform error codes.
+enum class WriteErrorClass {
+  kUnknown,
+  kAccessDenied,                           // generic permission denial
+  kAccessDeniedControlledFolderAccess,     // Windows Defender CFA is blocking writes
+  kDiskFull,
+  kWriteProtected,
+  kMediaError,                             // CRC / sector-not-found / bad media
+  kInvalidParameter,
+  kIoDeviceError,                          // device disconnected or I/O hardware fault
+};
+
 // Thread-safe write latency statistics for async I/O
 // Tracks per-write latencies and wall-clock time from first submit to last complete.
 // All members are thread-safe and can be updated from async completion callbacks.
@@ -272,10 +287,19 @@ class FileOperations {
   virtual void ResetAsyncIOStats() {
     write_latency_stats_.reset();
   }
-  
+
+  // Device I/O limits discovered from the storage hardware.
+  // Used to size write buffers and async queue depth to match device capabilities.
+  // Zero values mean "unknown" — callers should fall back to their own heuristics.
+  struct DeviceIOLimits {
+    size_t max_transfer_bytes = 0;   // Max single I/O request size in bytes (0 = unknown)
+    int suggested_queue_depth = 0;   // Device/bus-informed queue depth limit (0 = unknown)
+  };
+
  protected:
   mutable WriteLatencyStats write_latency_stats_;
   bool sync_fallback_mode_ = false;  // True if async I/O timed out and we fell back to sync
+  DeviceIOLimits device_io_limits_;   // Populated during OpenDevice()
   
  public:
   // File positioning for streaming operations
@@ -296,6 +320,11 @@ class FileOperations {
   // Get the last platform-specific error code (Windows error code, errno on Unix)
   virtual int GetLastErrorCode() const = 0;
 
+  // Classify the last write error into a platform-agnostic category so callers
+  // can render localized user messages. The default maps everything to
+  // kUnknown; platform implementations override to inspect OS state.
+  virtual WriteErrorClass ClassifyLastWriteError() const { return WriteErrorClass::kUnknown; }
+
   // Check if direct I/O (bypassing page cache) is enabled
   virtual bool IsDirectIOEnabled() const = 0;
   
@@ -314,6 +343,14 @@ class FileOperations {
       std::string error_message;   // Human-readable error description
   };
   virtual DirectIOInfo GetDirectIOInfo() const = 0;
+
+  // Get device I/O limits discovered during OpenDevice().
+  const DeviceIOLimits& GetDeviceIOLimits() const { return device_io_limits_; }
+
+  // Query device I/O limits from a device path without requiring an open handle.
+  // On Linux, reads sysfs. On Windows, opens briefly read-only. On macOS, returns defaults
+  // (macOS limits are populated post-open via ioctl in OpenDevice instead).
+  static DeviceIOLimits QueryDeviceIOLimits(const std::string& path);
 
   // Factory method to create platform-specific implementation
   static std::unique_ptr<FileOperations> Create();

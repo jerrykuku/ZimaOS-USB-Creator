@@ -9,7 +9,7 @@ License: Apache-2.0
 Comment: This is a modified version of Raspberry Pi Imager, adapted for ZimaOS.
          Original project: https://github.com/raspberrypi/rpi-imager
 
-Files: src/dependencies/mountutils/* src/dependencies/drivelist/*
+Files: src/dependencies/drivelist/*
 Copyright: 2017 Balena.io 
 License: Apache-2.0
 

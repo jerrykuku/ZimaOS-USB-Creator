@@ -5,8 +5,13 @@
 
 #include "drivelistitem.h"
 
-DriveListItem::DriveListItem(QString device, QString description, quint64 size, bool isUsb, bool isScsi, bool readOnly, bool isSystem, QStringList mountpoints, QStringList childDevices, QObject *parent)
+DriveListItem::DriveListItem(QString device, QString description, quint64 size, bool isUsb, bool isScsi, bool readOnly, bool isSystem, QStringList mountpoints, QStringList childDevices,
+                             bool isRpiboot,
+                             bool isFastbootStorage, QString fastbootBlockDevice, QString fastbootStorageType,
+                             QObject *parent)
     : QObject(parent), _device(device), _description(description), _mountpoints(mountpoints), _childDevices(childDevices), _size(size), _isUsb(isUsb), _isScsi(isScsi), _isReadOnly(readOnly), _isSystem(isSystem)
+      , _isRpiboot(isRpiboot)
+      , _isFastbootStorage(isFastbootStorage), _fastbootBlockDevice(fastbootBlockDevice), _fastbootStorageType(fastbootStorageType)
 {
 
 }

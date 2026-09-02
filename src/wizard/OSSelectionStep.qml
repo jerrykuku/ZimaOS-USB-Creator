@@ -3,10 +3,12 @@
  * Copyright (C) 2020 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
+import QtQuick.Window
 import QtCore
 import "../qmlcomponents"
 
@@ -40,7 +42,7 @@ WizardStepBase {
 
     // Connect to cache status changes
     Connections {
-        target: imageWriter
+        target: ImageWriterSingleton
         function onCacheStatusChanged() {
             // Save scroll position before updating cache status (which causes all delegates to re-evaluate)
             var savedContentY = oslist.contentY;
@@ -125,7 +127,7 @@ WizardStepBase {
     }
 
     Connections {
-        target: imageWriter
+        target: ImageWriterSingleton
         function onOsListPrepared() {
             // If we were showing offline state and now have data, force full reload
             // (softRefresh only updates existing rows, doesn't add new ones)
@@ -203,7 +205,6 @@ WizardStepBase {
     property alias customImageFileDialog: customImageFileDialog
     ImFileDialog {
         id: customImageFileDialog
-        imageWriter: root.imageWriter
         parent: root.wizardContainer && root.wizardContainer.overlayRootRef ? root.wizardContainer.overlayRootRef : (root.Window.window ? root.Window.window.overlayRootItem : null)
         anchors.centerIn: parent
         nameFilters: CommonStrings.imageFiltersList
@@ -430,7 +431,7 @@ WizardStepBase {
 
                     onClicked: {
                         // Trigger the itemSelected signal to handle selection with scroll preservation
-                        if (parentListView) {
+                        if (delegateItem.parentListView) {
                             // Set flag to indicate this is a mouse click
                             parentListView.currentSelectionIsFromMouse = true;
                             parentListView.itemSelected(index, delegateItem);
@@ -485,7 +486,7 @@ WizardStepBase {
 
                         Text {
                             text: delegateItem.name
-                            font.pixelSize: Style.fontSizeFormLabel
+                            font.pointSize: Style.fontSizeFormLabel
                             font.family: Style.fontFamilyBold
                             font.bold: true
                             color: Style.formLabelColor
@@ -495,7 +496,7 @@ WizardStepBase {
 
                         Text {
                             text: delegateItem.description
-                            font.pixelSize: Style.fontSizeDescription
+                            font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
                             color: Style.textDescriptionColor
                             Layout.fillWidth: true
@@ -507,7 +508,7 @@ WizardStepBase {
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                             color: Style.textMetadataColor
-                            font.pixelSize: Style.fontSizeSmall
+                            font.pointSize: Style.fontSizeSmall
                             font.family: Style.fontFamily
                             // Hide for custom until a file is chosen; otherwise show status
                             visible: (typeof (delegateItem.url) === "string" && delegateItem.url !== "internal://custom" && delegateItem.url !== "internal://format") || (typeof (delegateItem.url) === "string" && delegateItem.url === "internal://custom" && root.customSelected)
@@ -521,7 +522,7 @@ WizardStepBase {
 
                         Text {
                             text: delegateItem.release_date !== "" ? qsTr("Released: %1").arg(delegateItem.release_date) : ""
-                            font.pixelSize: Style.fontSizeSmall
+                            font.pointSize: Style.fontSizeSmall
                             font.family: Style.fontFamily
                             color: Style.textMetadataColor
                             Layout.fillWidth: true
@@ -715,6 +716,26 @@ WizardStepBase {
                 } else {
                     root.wizardContainer.ifAndFeaturesAvailable = false;
                 }
+                // Interface/feature settings are capability-dependent and never
+                // persisted, but older versions may have saved them.  Scrub any
+                // stale values from persistent storage and from the runtime map
+                // so they cannot leak into an image that doesn't advertise the
+                // corresponding capability.
+                delete root.wizardContainer.customizationSettings.enableI2C
+                delete root.wizardContainer.customizationSettings.enableSPI
+                delete root.wizardContainer.customizationSettings.enable1Wire
+                delete root.wizardContainer.customizationSettings.enableSerial
+                delete root.wizardContainer.customizationSettings.enableUsbGadget
+                root.wizardContainer.ifI2cEnabled = false
+                root.wizardContainer.ifSpiEnabled = false
+                root.wizardContainer.if1WireEnabled = false
+                root.wizardContainer.ifSerial = "Disabled"
+                root.wizardContainer.featUsbGadgetEnabled = false
+                ImageWriterSingleton.removePersistedCustomisationSetting("enableI2C")
+                ImageWriterSingleton.removePersistedCustomisationSetting("enableSPI")
+                ImageWriterSingleton.removePersistedCustomisationSetting("enable1Wire")
+                ImageWriterSingleton.removePersistedCustomisationSetting("enableSerial")
+                ImageWriterSingleton.removePersistedCustomisationSetting("enableUsbGadget")
 
                 // Clean up incompatible settings from customizationSettings based on OS capabilities
                 if (!root.wizardContainer.piConnectAvailable) {
@@ -849,7 +870,7 @@ WizardStepBase {
                 if ("default_os" in imager) {
                     selectNamedOS(imager["default_os"], root.osmodel);
                 }
-                if (root.imageWriter.isEmbeddedMode()) {
+                if (ImageWriterSingleton.isEmbeddedMode()) {
                     if ("embedded_default_os" in imager) {
                         selectNamedOS(imager["embedded_default_os"], root.osmodel);
                     }

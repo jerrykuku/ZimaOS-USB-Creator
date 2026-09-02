@@ -3,6 +3,8 @@
  * Copyright (C) 2025 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -28,7 +30,7 @@ Item {
     // Single source of truth for label font (used by both label and TextMetrics)
     readonly property font labelFont: Qt.font({
         family: Style.fontFamilyBold,
-        pixelSize: Style.fontSizeFormLabel,
+        pointSize: Style.fontSizeFormLabel,
         bold: true
     })
     
@@ -36,18 +38,6 @@ Item {
     // This is independent of Layout.fillWidth constraints
     readonly property real naturalWidth: labelMetrics.width + sw.implicitWidth + Style.spacingMedium * 2 + Style.cardPadding
 
-    // Access imageWriter from parent context
-    property var imageWriter: {
-        var item = parent;
-        while (item) {
-            if (item.imageWriter !== undefined) {
-                return item.imageWriter;
-            }
-            item = item.parent;
-        }
-        return null;
-    }
-    
     // Measure label text independently for naturalWidth
     TextMetrics {
         id: labelMetrics
@@ -111,8 +101,8 @@ Item {
                 TapHandler {
                     cursorShape: Qt.PointingHandCursor
                     onTapped: {
-                        if (pill.imageWriter) {
-                            pill.imageWriter.openUrl(pill.helpUrl)
+                        if (ImageWriterSingleton) {
+                            ImageWriterSingleton.openUrl(pill.helpUrl)
                         } else {
                             Qt.openUrlExternally(pill.helpUrl)
                         }
@@ -126,30 +116,30 @@ Item {
                 
                 // Keyboard activation
                 Keys.onEnterPressed: {
-                    if (pill.imageWriter) {
-                        pill.imageWriter.openUrl(pill.helpUrl)
+                    if (ImageWriterSingleton) {
+                        ImageWriterSingleton.openUrl(pill.helpUrl)
                     } else {
                         Qt.openUrlExternally(pill.helpUrl)
                     }
                 }
                 Keys.onReturnPressed: {
-                    if (pill.imageWriter) {
-                        pill.imageWriter.openUrl(pill.helpUrl)
+                    if (ImageWriterSingleton) {
+                        ImageWriterSingleton.openUrl(pill.helpUrl)
                     } else {
                         Qt.openUrlExternally(pill.helpUrl)
                     }
                 }
                 Keys.onSpacePressed: {
-                    if (pill.imageWriter) {
-                        pill.imageWriter.openUrl(pill.helpUrl)
+                    if (ImageWriterSingleton) {
+                        ImageWriterSingleton.openUrl(pill.helpUrl)
                     } else {
                         Qt.openUrlExternally(pill.helpUrl)
                     }
                 }
                 
                 Accessible.onPressAction: {
-                    if (pill.imageWriter) {
-                        pill.imageWriter.openUrl(pill.helpUrl)
+                    if (ImageWriterSingleton) {
+                        ImageWriterSingleton.openUrl(pill.helpUrl)
                     } else {
                         Qt.openUrlExternally(pill.helpUrl)
                     }

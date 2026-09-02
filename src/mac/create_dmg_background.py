@@ -41,29 +41,33 @@ def create_dmg_background(output_path="dmg_background.png", version_str="", widt
         
         title_font = None
         instruction_font = None
-        
+        chosen_font_path = None
+
         for font_path in font_paths:
             if os.path.exists(font_path):
                 try:
                     # Use larger fonts scaled for high resolution
                     title_font = ImageFont.truetype(font_path, 32 * scale_factor)
                     instruction_font = ImageFont.truetype(font_path, 18 * scale_factor)
+                    chosen_font_path = font_path
                     print(f"Using font: {font_path}")
                     break
                 except Exception as e:
                     print(f"Failed to load {font_path}: {e}")
                     continue
-        
+
         if not title_font:
             # Fallback to default font with larger sizes
             title_font = ImageFont.load_default()
             instruction_font = ImageFont.load_default()
+            chosen_font_path = None
             print("Using default fonts")
-            
+
     except Exception as e:
         print(f"Warning: Could not load custom font: {e}")
         title_font = ImageFont.load_default()
         instruction_font = ImageFont.load_default()
+        chosen_font_path = None
     
     # Colors inspired by raspberrypi.com design
     raspberry_red = '#C51A4A'      # Official Raspberry Pi red

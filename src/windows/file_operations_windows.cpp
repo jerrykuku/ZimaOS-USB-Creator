@@ -18,6 +18,9 @@ using rpi_imager::TimeoutDefaults::kAsyncFirstCompletionTimeoutMs;
 
 namespace rpi_imager {
 
+// Forward declaration — defined at bottom of file, called from OpenDevice()
+FileOperations::DeviceIOLimits QueryPlatformDeviceIOLimits(const std::string& path);
+
 // Use the common logging function from file_operations.cpp
 // Note: We're inside namespace rpi_imager, so no prefix needed
 static void Log(const std::string& msg) {
@@ -277,76 +280,134 @@ FileError WindowsFileOperations::OpenDevice(const std::string& path) {
   // Note: Requires sector-aligned buffers (already done via qMallocAligned with 4096 alignment)
   //
   // FILE_FLAG_OVERLAPPED is always included to enable async I/O via IOCP
-  DWORD flags = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
-  bool attemptingDirectIO = false;
-  if (isPhysicalDrive) {
-    flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED;
-    attemptingDirectIO = true;
-    Log("Using direct I/O (FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_FLAG_OVERLAPPED) for physical drive");
-  }
-  
-  FileError result = OpenInternal(path, 
-                                  GENERIC_READ | GENERIC_WRITE,
-                                  OPEN_EXISTING,
-                                  flags);
-  if (result != FileError::kSuccess) {
-    // If direct I/O failed, try without it as a fallback
-    if (isPhysicalDrive && attemptingDirectIO) {
-      DWORD directIoError = static_cast<DWORD>(last_error_code_);
-      direct_io_info_.error_code = static_cast<int>(directIoError);
-      
-      std::ostringstream oss;
-      oss << "Direct I/O open failed with error " << directIoError << " (0x" << std::hex << directIoError << ")";
-      Log(oss.str());
-      
-      // Common error codes:
-      // ERROR_INVALID_PARAMETER (87) - alignment/size issues
-      // ERROR_ACCESS_DENIED (5) - permission or volume in use
-      // ERROR_SHARING_VIOLATION (32) - file in use by another process
-      switch (directIoError) {
-        case ERROR_INVALID_PARAMETER:
-          direct_io_info_.error_message = "ERROR_INVALID_PARAMETER: Sector size/alignment issue";
-          Log("  -> ERROR_INVALID_PARAMETER: May be sector size/alignment issue");
-          break;
-        case ERROR_ACCESS_DENIED:
-          direct_io_info_.error_message = "ERROR_ACCESS_DENIED: Volume in use or need admin rights";
-          Log("  -> ERROR_ACCESS_DENIED: Volume may still be in use or need admin rights");
-          break;
-        case ERROR_SHARING_VIOLATION:
-          direct_io_info_.error_message = "ERROR_SHARING_VIOLATION: Another process has device open";
-          Log("  -> ERROR_SHARING_VIOLATION: Another process has the device open");
-          break;
-        default:
-          direct_io_info_.error_message = "Unknown error, fell back to buffered I/O";
-          Log("  -> Falling back to buffered I/O");
-          break;
+  // One open attempt at a given share mode: try direct I/O first (physical
+  // drives), fall back to buffered I/O if the direct-I/O flags are rejected.
+  // Returns the final FileError for this share mode.
+  auto tryOpenAtShareMode = [&](DWORD shareMode) -> FileError {
+    DWORD flags = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
+    bool attemptingDirectIO = false;
+    if (isPhysicalDrive) {
+      flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED;
+      attemptingDirectIO = true;
+      Log("Using direct I/O (FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_FLAG_OVERLAPPED) for physical drive");
+    }
+
+    FileError r = OpenInternal(path,
+                               GENERIC_READ | GENERIC_WRITE,
+                               OPEN_EXISTING,
+                               flags,
+                               shareMode);
+    if (r != FileError::kSuccess) {
+      // If direct I/O failed, try without it as a fallback
+      if (isPhysicalDrive && attemptingDirectIO) {
+        DWORD directIoError = static_cast<DWORD>(last_error_code_);
+        direct_io_info_.error_code = static_cast<int>(directIoError);
+
+        std::ostringstream oss;
+        oss << "Direct I/O open failed with error " << directIoError << " (0x" << std::hex << directIoError << ")";
+        Log(oss.str());
+
+        // Common error codes:
+        // ERROR_INVALID_PARAMETER (87) - alignment/size issues
+        // ERROR_ACCESS_DENIED (5) - permission or volume in use
+        // ERROR_SHARING_VIOLATION (32) - file in use by another process
+        switch (directIoError) {
+          case ERROR_INVALID_PARAMETER:
+            direct_io_info_.error_message = "ERROR_INVALID_PARAMETER: Sector size/alignment issue";
+            Log("  -> ERROR_INVALID_PARAMETER: May be sector size/alignment issue");
+            break;
+          case ERROR_ACCESS_DENIED:
+            direct_io_info_.error_message = "ERROR_ACCESS_DENIED: Volume in use or need admin rights";
+            Log("  -> ERROR_ACCESS_DENIED: Volume may still be in use or need admin rights");
+            break;
+          case ERROR_SHARING_VIOLATION:
+            direct_io_info_.error_message = "ERROR_SHARING_VIOLATION: Another process has device open";
+            Log("  -> ERROR_SHARING_VIOLATION: Another process has the device open");
+            break;
+          default:
+            direct_io_info_.error_message = "Unknown error, fell back to buffered I/O";
+            Log("  -> Falling back to buffered I/O");
+            break;
+        }
+
+        using_direct_io_ = false;
+        r = OpenInternal(path,
+                         GENERIC_READ | GENERIC_WRITE,
+                         OPEN_EXISTING,
+                         FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED,
+                         shareMode);
       }
-      
-      using_direct_io_ = false;
-      result = OpenInternal(path, 
-                           GENERIC_READ | GENERIC_WRITE,
-                           OPEN_EXISTING,
-                           FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED);
+    } else if (isPhysicalDrive) {
+      // Direct I/O succeeded!
+      using_direct_io_ = true;  // Set AFTER OpenInternal (which calls Close() and resets it)
+      direct_io_info_.succeeded = true;
     }
-    
-    if (result != FileError::kSuccess) {
-      std::ostringstream oss;
-      oss << "Failed to open device: " << path << " (error " << last_error_code_ << ")";
-      Log(oss.str());
-      return result;
+    return r;
+  };
+
+  // Prefer EXCLUSIVE write access for physical drives (FILE_SHARE_READ only, no
+  // FILE_SHARE_WRITE). This is what Rufus does (src/drive.c GetHandle): holding
+  // the drive without write-sharing stops the OS volume manager from mounting
+  // the partition we are in the middle of writing. Without it, Windows detects
+  // the freshly-written (but incomplete) filesystem ~1 MB in and pops a
+  // "You need to format the disk in drive X:" prompt. If exclusive access can't
+  // be obtained (something else holds the drive with write access), fall back to
+  // shared write like Rufus does, so the write still proceeds.
+  DWORD preferredShare = isPhysicalDrive ? FILE_SHARE_READ
+                                         : (FILE_SHARE_READ | FILE_SHARE_WRITE);
+  FileError result = tryOpenAtShareMode(preferredShare);
+  if (result != FileError::kSuccess && isPhysicalDrive && preferredShare == FILE_SHARE_READ) {
+    int err = last_error_code_;
+    if (err == ERROR_SHARING_VIOLATION || err == ERROR_ACCESS_DENIED) {
+      // Something is briefly holding the just-cleaned removable disk with write
+      // access — typically Explorer re-scanning it, an AV, or the search indexer.
+      // Do NOT immediately drop to a shared open: a shared open lets the OS mount
+      // the partition we are about to write and pop a "You need to format the disk"
+      // dialog mid-write. Instead retry the EXCLUSIVE open with geometric backoff
+      // (matching Rufus's DRIVE_ACCESS wait loop) so the transient holder has time
+      // to let go. Only fall back to shared if exclusivity genuinely can't be had.
+      constexpr int kExclusiveRetries = 6;
+      int delayMs = 100;  // 100+200+400+800+1600+3200 ≈ 6.3s total worst case
+      for (int attempt = 1; attempt <= kExclusiveRetries && result != FileError::kSuccess; attempt++) {
+        Log("Exclusive open failed (error " + std::to_string(err) + "), retry " +
+            std::to_string(attempt) + "/" + std::to_string(kExclusiveRetries) +
+            " for exclusive access in " + std::to_string(delayMs) + "ms");
+        Sleep(delayMs);
+        delayMs *= 2;
+        result = tryOpenAtShareMode(FILE_SHARE_READ);
+        if (result == FileError::kSuccess)
+          break;
+        err = last_error_code_;
+        if (err != ERROR_SHARING_VIOLATION && err != ERROR_ACCESS_DENIED)
+          break;  // non-transient error — retrying won't help
+      }
+      if (result != FileError::kSuccess) {
+        Log("Could not obtain exclusive access after retries - falling back to shared "
+            "write access (OS may mount partitions mid-write)");
+        result = tryOpenAtShareMode(FILE_SHARE_READ | FILE_SHARE_WRITE);
+      }
     }
-  } else if (isPhysicalDrive) {
-    // Direct I/O succeeded!
-    using_direct_io_ = true;  // Set AFTER OpenInternal (which calls Close() and resets it)
-    direct_io_info_.succeeded = true;
   }
 
-  // Enable extended DASD I/O for raw disk access
-  DWORD bytes_returned;
-  if (!DeviceIoControl(handle_, FSCTL_ALLOW_EXTENDED_DASD_IO, 
-                       nullptr, 0, nullptr, 0, &bytes_returned, nullptr)) {
-    // This may fail on some systems, but we can continue
-    Log("Warning: FSCTL_ALLOW_EXTENDED_DASD_IO failed, continuing anyway");
+  if (result != FileError::kSuccess) {
+    std::ostringstream oss;
+    oss << "Failed to open device: " << path << " (error " << last_error_code_ << ")";
+    Log(oss.str());
+    return result;
+  }
+
+  // Enable extended DASD I/O. This lifts filesystem boundary checks and is only
+  // meaningful for VOLUME handles (\\.\X:). A physical-drive handle already has
+  // unrestricted raw access to every sector, so the IOCTL is not applicable there
+  // and simply returns ERROR_INVALID_FUNCTION — don't issue it (it produced a
+  // spurious "failed" warning on every physical-drive write).
+  if (!isPhysicalDrive) {
+    DWORD bytes_returned;
+    if (!DeviceIoControl(handle_, FSCTL_ALLOW_EXTENDED_DASD_IO,
+                         nullptr, 0, nullptr, 0, &bytes_returned, nullptr)) {
+      // This may fail on some systems, but we can continue
+      Log("Warning: FSCTL_ALLOW_EXTENDED_DASD_IO failed, continuing anyway");
+    }
   }
 
   // Only try to lock volume if this is not a physical drive
@@ -365,6 +426,14 @@ FileError WindowsFileOperations::OpenDevice(const std::string& path) {
   first_async_error_ = FileError::kSuccess;
   cancelled_.store(false);
   
+  device_io_limits_ = QueryPlatformDeviceIOLimits(path);
+  if (device_io_limits_.max_transfer_bytes > 0 || device_io_limits_.suggested_queue_depth > 0) {
+    std::ostringstream oss;
+    oss << "Device I/O limits: max_transfer=" << device_io_limits_.max_transfer_bytes
+        << " bytes, suggested_queue_depth=" << device_io_limits_.suggested_queue_depth;
+    Log(oss.str());
+  }
+
   Log("Successfully opened device: " + path + (using_direct_io_ ? " (direct I/O enabled)" : " (buffered I/O)"));
   return FileError::kSuccess;
 }
@@ -551,21 +620,39 @@ FileError WindowsFileOperations::GetSize(std::uint64_t& size) {
 
   LARGE_INTEGER file_size;
   if (!GetFileSizeEx(handle_, &file_size)) {
-    // For devices, try to get geometry information
-    DISK_GEOMETRY geometry;
     DWORD bytes_returned;
-    
+
+    // For devices, ask for the exact length. IOCTL_DISK_GET_DRIVE_GEOMETRY below
+    // reports a synthetic CHS geometry whose product is rounded down to a whole
+    // cylinder, so it under-reports the device: a 28.7 GB USB stick of 60125184
+    // sectors is reported as 3742 * 255 * 63 = 60115230 sectors, 9954 sectors
+    // (4.86 MiB) short. Anything positioned relative to the end of the device is
+    // then placed inside that gap rather than at the true end.
+    GET_LENGTH_INFORMATION length_info;
+    if (DeviceIoControl(handle_, IOCTL_DISK_GET_LENGTH_INFO,
+                        nullptr, 0, &length_info, sizeof(length_info),
+                        &bytes_returned, nullptr)) {
+      size = static_cast<std::uint64_t>(length_info.Length.QuadPart);
+      return FileError::kSuccess;
+    }
+
+    // Fall back to geometry information
+    DISK_GEOMETRY geometry;
+
     if (DeviceIoControl(handle_, IOCTL_DISK_GET_DRIVE_GEOMETRY,
                         nullptr, 0, &geometry, sizeof(geometry),
                         &bytes_returned, nullptr)) {
-      
+
       size = static_cast<std::uint64_t>(geometry.Cylinders.QuadPart) *
              geometry.TracksPerCylinder *
              geometry.SectorsPerTrack *
              geometry.BytesPerSector;
+      FileOperationsLog("GetSize: IOCTL_DISK_GET_LENGTH_INFO unavailable; using "
+                        "cylinder-rounded geometry size " + std::to_string(size) +
+                        " which may under-report the device");
       return FileError::kSuccess;
     }
-    
+
     return FileError::kSizeError;
   }
 
@@ -646,10 +733,26 @@ FileError WindowsFileOperations::SetDirectIOEnabled(bool enabled) {
     flags = FILE_FLAG_WRITE_THROUGH | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED;
   }
   
-  FileError result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING, flags);
+  // Preserve the share mode the device was originally opened with (physical
+  // drives are held with exclusive write access — see OpenDevice).
+  DWORD shareMode = current_share_mode_;
+  FileError result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING, flags, shareMode);
   if (result != FileError::kSuccess) {
-    result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED);
+    result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, shareMode);
     using_direct_io_ = false;
+    if (result != FileError::kSuccess &&
+        shareMode != (FILE_SHARE_READ | FILE_SHARE_WRITE)) {
+      // The handle is already closed, so another process can claim the drive in
+      // that window and every exclusive reopen then fails, aborting a write that
+      // was already in flight. OpenDevice() degrades to a shared open in the same
+      // situation; do the same here rather than lose the write.
+      result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+                            FILE_SHARE_READ | FILE_SHARE_WRITE);
+      if (result == FileError::kSuccess) {
+        Log("Exclusive reopen failed; continuing with a shared handle");
+      }
+    }
     if (result != FileError::kSuccess) {
       return result;
     }
@@ -673,17 +776,38 @@ FileError WindowsFileOperations::LockVolume() {
     return FileError::kOpenError;
   }
 
-  DWORD bytes_returned;
-  if (!DeviceIoControl(handle_, FSCTL_LOCK_VOLUME,
-                       nullptr, 0, nullptr, 0, &bytes_returned, nullptr)) {
-    // Lock may fail for files (not devices), which is okay
+  // Retry with geometric backoff — the volume may be temporarily held by
+  // Explorer, antivirus, or Windows search indexer after a dismount.
+  constexpr int kMaxRetries = 8;
+  constexpr int kInitialDelayMs = 100;
+  int delayMs = kInitialDelayMs;
+
+  for (int attempt = 0; attempt <= kMaxRetries; attempt++) {
+    DWORD bytes_returned;
+    if (DeviceIoControl(handle_, FSCTL_LOCK_VOLUME,
+                        nullptr, 0, nullptr, 0, &bytes_returned, nullptr)) {
+      if (attempt > 0) {
+        Log("FSCTL_LOCK_VOLUME succeeded on retry " + std::to_string(attempt));
+      }
+      return FileError::kSuccess;
+    }
+
     DWORD error = GetLastError();
-    if (error != ERROR_INVALID_FUNCTION) {
-      return FileError::kLockError;
+    // ERROR_INVALID_FUNCTION means this isn't a volume (e.g. a regular file) — not an error
+    if (error == ERROR_INVALID_FUNCTION) {
+      return FileError::kSuccess;
+    }
+
+    if (attempt < kMaxRetries) {
+      Log("FSCTL_LOCK_VOLUME failed (error " + std::to_string(error) +
+          "), retrying in " + std::to_string(delayMs) + "ms");
+      Sleep(delayMs);
+      delayMs *= 2;
     }
   }
 
-  return FileError::kSuccess;
+  Log("FSCTL_LOCK_VOLUME failed after " + std::to_string(kMaxRetries) + " retries, giving up");
+  return FileError::kLockError;
 }
 
 FileError WindowsFileOperations::UnlockVolume() {
@@ -699,13 +823,13 @@ FileError WindowsFileOperations::UnlockVolume() {
   return FileError::kSuccess;
 }
 
-FileError WindowsFileOperations::OpenInternal(const std::string& path, DWORD access, DWORD creation, DWORD flags) {
+FileError WindowsFileOperations::OpenInternal(const std::string& path, DWORD access, DWORD creation, DWORD flags, DWORD share_mode) {
   // Close any existing handle
   Close();
 
   handle_ = CreateFileA(path.c_str(),
                         access,
-                        FILE_SHARE_READ | FILE_SHARE_WRITE,
+                        share_mode,
                         nullptr,
                         creation,
                         flags,
@@ -717,6 +841,7 @@ FileError WindowsFileOperations::OpenInternal(const std::string& path, DWORD acc
   }
 
   current_path_ = path;
+  current_share_mode_ = share_mode;
   last_error_code_ = 0;
   return FileError::kSuccess;
 }
@@ -1020,6 +1145,47 @@ int WindowsFileOperations::GetHandle() const {
 
 int WindowsFileOperations::GetLastErrorCode() const {
   return last_error_code_;
+}
+
+WriteErrorClass WindowsFileOperations::ClassifyLastWriteError() const {
+  switch (last_error_code_) {
+    case ERROR_ACCESS_DENIED: {
+      // Probe Windows Defender Controlled Folder Access. If enabled, surface
+      // the dedicated category so the UI can point the user at the allow-list.
+      HKEY key;
+      LONG rc = RegOpenKeyExA(
+          HKEY_LOCAL_MACHINE,
+          "SOFTWARE\\Microsoft\\Windows Defender\\Windows Defender Exploit Guard\\Controlled Folder Access",
+          0,
+          KEY_READ | KEY_WOW64_64KEY,
+          &key);
+      if (rc == ERROR_SUCCESS) {
+        DWORD value = 0;
+        DWORD size = sizeof(value);
+        DWORD type = 0;
+        rc = RegQueryValueExA(key, "EnableControlledFolderAccess", nullptr, &type,
+                              reinterpret_cast<LPBYTE>(&value), &size);
+        RegCloseKey(key);
+        if (rc == ERROR_SUCCESS && type == REG_DWORD && value == 1) {
+          return WriteErrorClass::kAccessDeniedControlledFolderAccess;
+        }
+      }
+      return WriteErrorClass::kAccessDenied;
+    }
+    case ERROR_DISK_FULL:
+      return WriteErrorClass::kDiskFull;
+    case ERROR_WRITE_PROTECT:
+      return WriteErrorClass::kWriteProtected;
+    case ERROR_SECTOR_NOT_FOUND:
+    case ERROR_CRC:
+      return WriteErrorClass::kMediaError;
+    case ERROR_INVALID_PARAMETER:
+      return WriteErrorClass::kInvalidParameter;
+    case ERROR_IO_DEVICE:
+      return WriteErrorClass::kIoDeviceError;
+    default:
+      return WriteErrorClass::kUnknown;
+  }
 }
 
 // ============= Async I/O Implementation (using IOCP) =============
@@ -1588,9 +1754,124 @@ void WindowsFileOperations::ReduceQueueDepthForRecovery(int newDepth) {
   // This naturally throttles new writes until pending count drops.
 }
 
+// Query device I/O limits via IOCTL_STORAGE_QUERY_PROPERTY.
+// Opens the device read-only and queries up to two properties:
+//   1. StorageAdapterProperty — MaximumTransferLength, CommandQueueing, BusType
+//   2. StorageDeviceIoCapabilityProperty (Win10 1607+) — exact LunMaxIoCount
+// The IoCapability query gives the real device queue depth when available;
+// BusType + CommandQueueing is the fallback heuristic on older Windows.
+FileOperations::DeviceIOLimits QueryPlatformDeviceIOLimits(const std::string& path) {
+  FileOperations::DeviceIOLimits limits;
+
+  // Check for physical drive paths like \\.\PHYSICALDRIVE0 (case-insensitive)
+  {
+    std::string upper = path;
+    for (char& c : upper) c = static_cast<char>(toupper(static_cast<unsigned char>(c)));
+    if (upper.find("\\\\.\\PHYSICALDRIVE") != 0)
+      return limits;
+  }
+
+  // Open with zero access for property query — IOCTL_STORAGE_QUERY_PROPERTY with
+  // PropertyStandardQuery requires no minimum access rights, so this works even
+  // without elevation (important for pre-open buffer sizing in DownloadExtractThread).
+  HANDLE h = CreateFileA(path.c_str(),
+                         0,
+                         FILE_SHARE_READ | FILE_SHARE_WRITE,
+                         nullptr, OPEN_EXISTING, 0, nullptr);
+  if (h == INVALID_HANDLE_VALUE)
+    return limits;
+
+  STORAGE_PROPERTY_QUERY query = {};
+  DWORD bytesReturned = 0;
+
+  // --- Adapter descriptor: max transfer size + heuristic inputs ---
+  query.PropertyId = StorageAdapterProperty;
+  query.QueryType = PropertyStandardQuery;
+  STORAGE_ADAPTER_DESCRIPTOR adapterDesc = {};
+  bool haveAdapter = DeviceIoControl(h, IOCTL_STORAGE_QUERY_PROPERTY,
+                      &query, sizeof(query),
+                      &adapterDesc, sizeof(adapterDesc),
+                      &bytesReturned, nullptr)
+      && bytesReturned >= offsetof(STORAGE_ADAPTER_DESCRIPTOR, BusMajorVersion);
+
+  if (haveAdapter && adapterDesc.MaximumTransferLength > 0)
+    limits.max_transfer_bytes = static_cast<size_t>(adapterDesc.MaximumTransferLength);
+
+  // --- IoCapability descriptor: exact device queue depth (Win10 1607+) ---
+  // StorageDeviceIoCapabilityProperty = 48.  LunMaxIoCount is the actual max
+  // outstanding I/O the device can service, no heuristic needed.
+  struct IO_CAPABILITY_DESC {
+    DWORD Version;
+    DWORD Size;
+    DWORD LunMaxIoCount;
+    DWORD AdapterMaxIoCount;
+  };
+  query.PropertyId = static_cast<STORAGE_PROPERTY_ID>(48);
+  query.QueryType = PropertyStandardQuery;
+  IO_CAPABILITY_DESC ioCap = {};
+  if (DeviceIoControl(h, IOCTL_STORAGE_QUERY_PROPERTY,
+                      &query, sizeof(query),
+                      &ioCap, sizeof(ioCap),
+                      &bytesReturned, nullptr)
+      && bytesReturned >= sizeof(IO_CAPABILITY_DESC)
+      && ioCap.LunMaxIoCount > 0) {
+    limits.suggested_queue_depth = static_cast<int>(ioCap.LunMaxIoCount);
+  }
+  // --- Fallback: BusType + device descriptor heuristic ---
+  else if (haveAdapter) {
+    // For USB devices, we need the device descriptor to distinguish
+    // NVMe enclosures from card readers / flash sticks — the adapter
+    // descriptor reports the USB host controller, not the device behind it.
+    bool removableMedia = true;  // assume removable (conservative)
+    bool deviceCommandQueueing = false;
+
+    query.PropertyId = StorageDeviceProperty;
+    query.QueryType = PropertyStandardQuery;
+    BYTE devBuf[512] = {};
+    if (DeviceIoControl(h, IOCTL_STORAGE_QUERY_PROPERTY,
+                        &query, sizeof(query),
+                        devBuf, sizeof(devBuf),
+                        &bytesReturned, nullptr)
+        && bytesReturned >= sizeof(STORAGE_DEVICE_DESCRIPTOR)) {
+      auto* devDesc = reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(devBuf);
+      removableMedia = devDesc->RemovableMedia != 0;
+      deviceCommandQueueing = devDesc->CommandQueueing != 0;
+    }
+
+    switch (static_cast<STORAGE_BUS_TYPE>(adapterDesc.BusType)) {
+      case BusTypeUsb:
+        if (adapterDesc.CommandQueueing || deviceCommandQueueing) {
+          // UAS (USB Attached SCSI) — supports command queuing.
+          limits.suggested_queue_depth = 32;
+        } else if (!removableMedia) {
+          // Non-removable USB device (NVMe/SSD enclosure like RTL9210B).
+          // These can handle much more than a card reader even without
+          // advertising UAS, but are still behind USB transport. See #1592.
+          limits.suggested_queue_depth = 32;
+        } else {
+          // Removable USB device (card reader, flash stick) — serial protocol.
+          limits.suggested_queue_depth = 2;
+        }
+        break;
+      case BusTypeAta:
+      case BusTypeSata:
+        limits.suggested_queue_depth = 32;  // SATA NCQ
+        break;
+      case BusTypeNvme:
+        limits.suggested_queue_depth = 256;
+        break;
+      default:
+        break;  // Leave as 0 (unknown) — RAM heuristic applies
+    }
+  }
+
+  CloseHandle(h);
+  return limits;
+}
+
 // Platform-specific factory function implementation
 std::unique_ptr<FileOperations> CreatePlatformFileOperations() {
   return std::make_unique<WindowsFileOperations>();
 }
 
-} // namespace rpi_imager 
+} // namespace rpi_imager

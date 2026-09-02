@@ -63,7 +63,7 @@ if [ "$SKIP_DEPENDENCIES" -eq 0 ]; then
         libxcb-sync-dev libxcb-util-dev libxcb-xfixes0-dev \
         libxcb-xinerama0-dev libxcb-xkb-dev \
         libinput-dev libxkbcommon-dev libxkbcommon-x11-dev \
-        libfontconfig1-dev libfreetype6-dev libicu-dev \
+        libfontconfig1-dev libfreetype6-dev \
         libdrm-dev libegl1-mesa-dev libgbm-dev libgles2-mesa-dev \
         libvulkan-dev \
         libjpeg-dev libpng-dev zlib1g-dev \
@@ -96,8 +96,10 @@ clean_build_directory
 cd "$BUILD_DIR"
 
 # Build config options using helpers
-CONFIG_OPTS="$(get_base_config_opts) -make libs $(get_common_skip_opts)"
+CONFIG_OPTS="$(get_base_config_opts) $(get_common_skip_opts)"
 CONFIG_OPTS="$CONFIG_OPTS $(get_build_type_opts)"
+# rpi-imager is QML-only; Widgets is unused and triggers GCC ICE on aarch64
+CONFIG_OPTS="$CONFIG_OPTS -no-widgets"
 
 # Apply exclusions
 echo "Applying exclusions for desktop build..."

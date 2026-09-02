@@ -473,6 +473,7 @@ QString PerformanceStats::eventTypeName(EventType type)
         
         // Customisation
         case EventType::Customisation: return "customisation";
+        case EventType::CustomisationVerify: return "customisation_verify";
         case EventType::CloudInitGeneration: return "cloudInitGeneration";
         case EventType::FirstRunGeneration: return "firstRunGeneration";
         case EventType::SecureBootSetup: return "secureBootSetup";
@@ -485,7 +486,13 @@ QString PerformanceStats::eventTypeName(EventType type)
         
         // UI operations
         case EventType::FileDialogOpen: return "fileDialogOpen";
-        
+
+        // Rpiboot / Fastboot
+        case EventType::RpibootFirmwareSetup: return "rpibootFirmwareSetup";
+        case EventType::RpibootProtocol: return "rpibootProtocol";
+        case EventType::RpibootFastbootWait: return "rpibootFastbootWait";
+        case EventType::FastbootDeviceOpen: return "fastbootDeviceOpen";
+
         default: return "unknown";
     }
 }

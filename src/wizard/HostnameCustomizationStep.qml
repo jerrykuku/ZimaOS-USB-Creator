@@ -3,8 +3,9 @@
  * Copyright (C) 2020 Raspberry Pi Ltd
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import "../qmlcomponents"
 import "components"
@@ -13,9 +14,6 @@ import RpiImager
 
 WizardStepBase {
     id: root
-    
-    required property ImageWriter imageWriter
-    required property var wizardContainer
     
     title: qsTr("Customisation: Choose hostname")
     showSkipButton: true
@@ -27,7 +25,7 @@ WizardStepBase {
         root.registerFocusGroup("hostname_fields", function(){ 
             // Only include help text when screen reader is active (otherwise it's not focusable)
             var items = []
-            if (root.imageWriter && root.imageWriter.isScreenReaderActive()) {
+            if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
                 items.push(helpText)
             }
             items.push(fieldHostname)
@@ -61,9 +59,10 @@ WizardStepBase {
                     id: fieldHostname
                     Layout.fillWidth: true
                     placeholderText: qsTr("Enter your hostname")
-                    font.pixelSize: Style.fontSizeInput
+                    font.pointSize: Style.fontSizeInput
                     Accessible.description: qsTr("A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.")
-                    
+                    trimWhitespace: true
+
                     validator: RegularExpressionValidator {
                         regularExpression: /^[a-zA-Z0-9][a-zA-Z0-9-]{0,62}$/
                     }
@@ -80,19 +79,19 @@ WizardStepBase {
     
     // Save settings when moving to next step
     onNextClicked: {
-        var hostnameText = fieldHostname.text ? fieldHostname.text.trim() : ""
+        var hostnameText = fieldHostname.value
         
         // Update conserved customization settings (runtime state)
         if (hostnameText.length > 0) {
             wizardContainer.customizationSettings.hostname = hostnameText
             wizardContainer.hostnameConfigured = true
             // Persist for future sessions
-            imageWriter.setPersistedCustomisationSetting("hostname", hostnameText)
+            ImageWriterSingleton.setPersistedCustomisationSetting("hostname", hostnameText)
         } else {
             // Empty -> remove from both runtime and persistent settings
             delete wizardContainer.customizationSettings.hostname
             wizardContainer.hostnameConfigured = false
-            imageWriter.removePersistedCustomisationSetting("hostname")
+            ImageWriterSingleton.removePersistedCustomisationSetting("hostname")
         }
     }
     

@@ -437,12 +437,30 @@
         <translation>进入文件夹 “%1” 时发生错误</translation>
     </message>
     <message>
-        <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
-        <translation>读取存储设备时发生错误。&lt;br&gt;SD 卡可能已损坏。</translation>
+        <source>The write operation has stalled.
+
+No data has been written for 30 seconds. This could be caused by:
+• Storage device disconnected or unresponsive
+• Device has failed or is faulty
+• System resource exhaustion
+
+Please check the storage device and try again.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Verifying write failed. Contents of SD card is different from what was written to it.</source>
-        <translation>写入校验失败。SD 卡内容与写入内容不符。</translation>
+        <source>Failed to acquire write buffer slot</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The download has stalled.
+
+No data received for 30 seconds. This could be caused by:
+• Network connection lost or unstable
+• Remote server became unresponsive
+• Firewall or proxy blocking the connection
+
+Please check your network connection and try again.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -456,32 +474,12 @@
         <translation>无法打开存储设备 “%1”。</translation>
     </message>
     <message>
-        <source>Write error while zero&apos;ing out MBR</source>
-        <translation>清零 MBR 时写入错误</translation>
-    </message>
-    <message>
-        <source>Write error while trying to zero out last part of card.&lt;br&gt;Card could be advertising wrong capacity (possible counterfeit).</source>
-        <translation>在对设备尾部清零时写入错误&lt;br&gt;SD 卡标称的容量错误（可能是扩容卡）。</translation>
-    </message>
-    <message>
         <source>Error downloading: %1</source>
         <translation>下载错误，已下载：%1</translation>
     </message>
     <message>
         <source>Access denied error while writing file to disk.</source>
         <translation>将文件写入磁盘时被拒绝访问。</translation>
-    </message>
-    <message>
-        <source>Error writing to storage (while flushing)</source>
-        <translation>写入存储设备时发生错误</translation>
-    </message>
-    <message>
-        <source>Error writing to storage (while fsync)</source>
-        <translation>在写入存储设备时（fsync）发生错误</translation>
-    </message>
-    <message>
-        <source>Error writing first block (partition table)</source>
-        <translation>在写入第一个区块（分区表）时发生错误</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;SD card may be broken.</source>
@@ -1021,10 +1019,6 @@ or type a path in the address bar above.</source>
 <context>
     <name>ImageWriter</name>
     <message>
-        <source>Input file is not a valid disk image.&lt;br&gt;File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>所选文件是无效的磁盘镜像。&lt;br&gt;文件大小 %1 B 不是 512 B 的整倍数。</translation>
-    </message>
-    <message>
         <source>Select image</source>
         <translation>选择镜像</translation>
     </message>
@@ -1228,9 +1222,6 @@ or type a path in the address bar above.</source>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
         <translation>选择您的键盘布局，以便按键产生正确的字符。系统会根据您选择的城市自动推荐，但如果您使用不同的键盘布局，可以更改。</translation>
     </message>
-</context>
-<context>
-    <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
         <translation>ZimaOS USB Creator 需要访问磁盘以写入镜像。</translation>

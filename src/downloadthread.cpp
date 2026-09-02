@@ -10,8 +10,8 @@
 #include "devicewrapperfatpartition.h"
 #include "systemmemorymanager.h"
 #include "timeout_utils.h"
-#include "dependencies/mountutils/src/mountutils.hpp"
-#include "dependencies/drivelist/src/drivelist.hpp"
+#include "platformquirks.h"
+#include "drivelist/drivelist.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -43,14 +43,9 @@
 
 #include "imageadvancedoptions.h"
 #include "secureboot.h"
-#include "platformquirks.h"
 #include "curlnetworkconfig.h"
+#include "fastboot/sparse_encoder.h"  // isBlockZero()
 #include <QTemporaryDir>
-
-#ifdef Q_OS_LINUX
-#include <sys/ioctl.h>
-#include <linux/fs.h>
-#endif
 
 using namespace std;
 
@@ -100,6 +95,7 @@ DownloadThread::DownloadThread(const QByteArray &url, const QByteArray &localfil
     _debugAsyncQueueDepth = 16; // Default queue depth
     _debugIPv4Only = false;     // Use both IPv4 and IPv6 by default
     _debugSkipEndOfDevice = false; // For counterfeit cards with fake capacity
+    _debugIgnoreDeviceLimits = false; // Ignore device-reported I/O limits
     
     // Initialize bottleneck detection
     _currentBottleneck = BottleneckState::None;
@@ -206,12 +202,12 @@ bool DownloadThread::_openAndPrepareDevice()
         // all child volumes (APFS containers, partitions, etc.)
         QString unmountPath = PlatformQuirks::getEjectDevicePath(_filename);
         qDebug() << "Unmounting:" << unmountPath;
-        MOUNTUTILS_RESULT unmountResult = unmount_disk(unmountPath.toUtf8().constData());
-        bool unmountSuccess = (unmountResult == MOUNTUTILS_SUCCESS);
+        PlatformQuirks::DiskResult unmountResult = PlatformQuirks::unmountDisk(unmountPath);
+        bool unmountSuccess = (unmountResult == PlatformQuirks::DiskResult::Success);
         emit eventDriveUnmount(static_cast<quint32>(unmountTimer.elapsed()), unmountSuccess);
         
         if (!unmountSuccess) {
-            qDebug() << "Unmount failed with result:" << unmountResult;
+            qDebug() << "Unmount failed with result:" << static_cast<int>(unmountResult);
 #ifdef Q_OS_DARWIN
             emit error(tr("Failed to unmount disk '%1'. Please close any applications using the disk and try again.").arg(unmountPath));
 #else
@@ -230,6 +226,12 @@ bool DownloadThread::_openAndPrepareDevice()
 
 #ifdef Q_OS_WIN
     qDebug() << "device" << _filename;
+
+    // Volumes on the target disk are locked+dismounted and held open for the
+    // duration of prepare (unmount -> clean -> open). Holding the lock keeps
+    // Windows from re-mounting them mid-operation without deleting their
+    // drive-letter bindings, so the letters return after the write. See #1665.
+    DiskpartUtil::LockedVolumes lockedVolumes;
 
     std::regex windriveregex("\\\\\\\\.\\\\PHYSICALDRIVE([0-9]+)", std::regex_constants::icase);
     std::cmatch m;
@@ -254,7 +256,7 @@ bool DownloadThread::_openAndPrepareDevice()
 
             // Unmount volumes first (with performance instrumentation)
             emit preparationStatusUpdate(tr("Unmounting volumes..."));
-            auto unmountResult = DiskpartUtil::unmountVolumes(_filename, timingCallback);
+            auto unmountResult = DiskpartUtil::unmountVolumes(_filename, lockedVolumes, timingCallback);
             if (!unmountResult.success)
             {
                 qDebug() << "Warning: Volume unmount had issues:" << unmountResult.errorMessage;
@@ -325,9 +327,53 @@ bool DownloadThread::_openAndPrepareDevice()
 
     // Device path is already platform-optimized by caller (e.g., rdisk on macOS)
     rpi_imager::FileError result = _file->OpenDevice(filename_str);
+
+#ifdef Q_OS_WIN
+    // On Windows, the device may be temporarily held by the OS after volume
+    // dismount/clean operations (especially on Windows 11 25H2+).
+    // Retry with geometric backoff, keeping the user informed.
+    if (result != rpi_imager::FileError::kSuccess)
+    {
+        int lastErr = _file->GetLastErrorCode();
+        // Only retry for transient access errors, not permanent failures
+        if (lastErr == ERROR_ACCESS_DENIED || lastErr == ERROR_SHARING_VIOLATION || lastErr == ERROR_NOT_READY)
+        {
+            constexpr int kMaxRetries = 8;
+            constexpr int kInitialDelayMs = 250;
+            int delayMs = kInitialDelayMs;
+
+            for (int attempt = 1; attempt <= kMaxRetries && !_cancelled; attempt++)
+            {
+                int totalWaitSec = 0;
+                int d = kInitialDelayMs;
+                for (int i = 1; i < attempt; i++) { totalWaitSec += d; d *= 2; }
+                totalWaitSec = (totalWaitSec + delayMs) / 1000;
+
+                emit preparationStatusUpdate(tr("Waiting for drive to become available... (%1s)")
+                    .arg(totalWaitSec));
+                qDebug() << "OpenDevice retry" << attempt << "of" << kMaxRetries
+                         << "after error" << lastErr << "- waiting" << delayMs << "ms";
+
+                QThread::msleep(delayMs);
+                delayMs *= 2;
+
+                result = _file->OpenDevice(filename_str);
+                if (result == rpi_imager::FileError::kSuccess)
+                {
+                    qDebug() << "OpenDevice succeeded on retry" << attempt;
+                    break;
+                }
+                lastErr = _file->GetLastErrorCode();
+                if (lastErr != ERROR_ACCESS_DENIED && lastErr != ERROR_SHARING_VIOLATION && lastErr != ERROR_NOT_READY)
+                    break;  // Non-transient error, stop retrying
+            }
+        }
+    }
+#endif
+
     qint64 authOpenMs = authTimer.elapsed();
     qDebug() << "Device authorization and open took" << authOpenMs << "ms";
-    
+
     if (result != rpi_imager::FileError::kSuccess)
     {
 #ifdef Q_OS_DARWIN
@@ -348,7 +394,21 @@ bool DownloadThread::_openAndPrepareDevice()
     
     // Emit authorization timing event (success case)
     emit eventDriveAuthorization(static_cast<quint32>(authOpenMs), true);
-    
+
+#ifdef Q_OS_WIN
+    // The physical drive is now open and held for the write, which suppresses
+    // partition re-scanning. Release the volume locks we held across prepare:
+    // the disk has been cleaned so there is nothing to re-mount now, and once
+    // the physical-drive handle is closed at the end of the write Windows will
+    // re-scan and reassign drive letters (their Mount Manager bindings were
+    // preserved rather than deleted). See #1665.
+    if (!lockedVolumes.empty())
+    {
+        qDebug() << "Releasing" << lockedVolumes.count() << "held volume lock(s) after opening drive";
+        lockedVolumes.release();
+    }
+#endif
+
     // Apply debug option for direct I/O after opening
     // By default, OpenDevice enables direct I/O for block devices
     // This allows toggling it off via the secret debug menu
@@ -360,6 +420,31 @@ bool DownloadThread::_openAndPrepareDevice()
         _file->SetDirectIOEnabled(true);
     }
     
+    // Cap async queue depth based on device-reported I/O limits.
+    // USB card readers often expose very few request slots (e.g. nr_requests=2).
+    // Without this cap, submitting hundreds of concurrent writes can overwhelm the
+    // device queue and stall async completions entirely. See #1592.
+    {
+        const auto& limits = _file->GetDeviceIOLimits();
+        if (_debugAsyncIO && limits.suggested_queue_depth > 0 && !_debugIgnoreDeviceLimits)
+        {
+            // Use 3x the device's queue depth for write-ahead latency hiding.
+            // Network downloads feed the write queue in bursts (jitter + decompression),
+            // so we need more headroom than pure sequential I/O to prevent device
+            // starvation during pipeline stalls.  See #1592.
+            int deviceCap = qMax(4, limits.suggested_queue_depth * 3);
+            if (deviceCap < _debugAsyncQueueDepth)
+            {
+                qDebug() << "Capping async queue depth from" << _debugAsyncQueueDepth
+                         << "to" << deviceCap
+                         << "(device suggested:" << limits.suggested_queue_depth << ")";
+                _debugAsyncQueueDepth = deviceCap;
+            }
+        }
+        if (limits.max_transfer_bytes > 0)
+            qDebug() << "Device max transfer:" << limits.max_transfer_bytes << "bytes";
+    }
+
     // Configure async I/O if enabled
     if (_debugAsyncIO && _file->IsAsyncIOSupported()) {
         bool asyncConfigured = _file->SetAsyncQueueDepth(_debugAsyncQueueDepth);
@@ -370,8 +455,6 @@ bool DownloadThread::_openAndPrepareDevice()
     }
 
 #ifdef Q_OS_LINUX
-    /* Optional optimizations for Linux */
-
     if (_filename.startsWith("/dev/"))
     {
         QString devname = _filename.mid(5);
@@ -383,62 +466,6 @@ bool DownloadThread::_openAndPrepareDevice()
             qDebug() << "SD card CID:" << cid;
         if (!csd.isEmpty())
             qDebug() << "SD card CSD:" << csd;
-
-        QByteArray discardmax = _fileGetContentsTrimmed("/sys/block/"+devname+"/queue/discard_max_bytes");
-
-        if (_debugSkipEndOfDevice)
-        {
-            qDebug() << "Skipping BLKDISCARD (debug: skip end-of-device operations for counterfeit card support)";
-        }
-        else if (discardmax.isEmpty() || discardmax == "0")
-        {
-            qDebug() << "BLKDISCARD not supported";
-        }
-        else
-        {
-            /* DISCARD/TRIM the SD card */
-            uint64_t devsize, range[2];
-            int fd = _file->GetHandle();
-
-            if (::ioctl(fd, BLKGETSIZE64, &devsize) == -1) {
-                qDebug() << "Error getting device/sector size with BLKGETSIZE64 ioctl():" << strerror(errno);
-            }
-            else
-            {
-                qDebug() << "Try to perform TRIM/DISCARD on device";
-                range[0] = 0;
-                range[1] = devsize;
-                emit preparationStatusUpdate(tr("Discarding existing data on drive..."));
-                _timer.start();
-                
-                // BLKDISCARD can take a long time on large/slow devices, and can hang 
-                // on counterfeit cards. Use timeout to unblock if it hangs.
-                // Note: User-facing warnings are handled by WriteProgressWatchdog
-                int discardResult = -1;
-                auto timeoutResult = runWithTimeout(
-                    [fd, &range]() { return ::ioctl(fd, BLKDISCARD, &range); },
-                    discardResult,
-                    TimeoutConfig(kHardTimeoutSeconds).withCancelFlag(&_cancelled)
-                );
-                
-                switch (timeoutResult) {
-                    case TimeoutResult::Completed:
-                        if (discardResult == -1) {
-                            qDebug() << "BLKDISCARD failed:" << strerror(errno);
-                        } else {
-                            qDebug() << "BLKDISCARD successful in" << _timer.elapsed() / 1000 << "s";
-                        }
-                        break;
-                    case TimeoutResult::TimedOut:
-                        qDebug() << "BLKDISCARD timed out after" << kHardTimeoutSeconds << "s";
-                        // Continue anyway - BLKDISCARD is optional
-                        break;
-                    case TimeoutResult::Cancelled:
-                        qDebug() << "BLKDISCARD cancelled";
-                        return false;
-                }
-            }
-        }
     }
 #endif
 
@@ -589,6 +616,11 @@ void DownloadThread::run()
         return;
     }
 
+    // Give subclasses a chance to adjust buffers now that debug flags and device
+    // limits are known.  Called after _openAndPrepareDevice() but before any
+    // ring-buffer access (which starts when curl_easy_perform delivers data).
+    _onDevicePrepared();
+
     // URL logged only on error
     if (_url.startsWith("file://") && _url.at(7) != '/')
     {
@@ -637,6 +669,8 @@ void DownloadThread::run()
     // Track HTTP/2 failures for graceful fallback
     int http2FailureCount = 0;
     const int MAX_HTTP2_FAILURES = 3;
+    // One-shot flag: retry once with HTTP/1.1 on SSL connect failure (e.g. Schannel+HTTP/2 on Windows)
+    bool http2SslFallback = false;
     
     if (_inputBufferSize)
         curl_easy_setopt(_c, CURLOPT_BUFFERSIZE, _inputBufferSize);
@@ -700,7 +734,8 @@ void DownloadThread::run()
     while (ret == CURLE_PARTIAL_FILE || ret == CURLE_OPERATION_TIMEDOUT
            || (ret == CURLE_HTTP2_STREAM && _lastDlNow != _lastFailureOffset)
            || (ret == CURLE_HTTP2 && _lastDlNow != _lastFailureOffset)
-           || (ret == CURLE_RECV_ERROR && _lastDlNow != _lastFailureOffset) )
+           || (ret == CURLE_RECV_ERROR && _lastDlNow != _lastFailureOffset)
+           || (ret == CURLE_SSL_CONNECT_ERROR && !http2SslFallback) )
     {
         time_t t = time(NULL);
         qDebug() << "HTTP connection lost. Error:" << curl_easy_strerror(ret) << "Time:" << t;
@@ -709,11 +744,19 @@ void DownloadThread::run()
         if (ret == CURLE_HTTP2_STREAM || ret == CURLE_HTTP2) {
             http2FailureCount++;
             qDebug() << "HTTP/2 failure count:" << http2FailureCount << "/" << MAX_HTTP2_FAILURES;
-            
+
             if (http2FailureCount >= MAX_HTTP2_FAILURES) {
                 qDebug() << "Too many HTTP/2 failures, falling back to HTTP/1.1";
                 curl_easy_setopt(_c, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
             }
+        }
+
+        // On SSL connect error (e.g. Schannel + HTTP/2 ALPN incompatibility on Windows),
+        // fall back to HTTP/1.1 and retry once. If it fails again, the loop exits.
+        if (ret == CURLE_SSL_CONNECT_ERROR) {
+            qDebug() << "SSL connect error, retrying with HTTP/1.1";
+            curl_easy_setopt(_c, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            http2SslFallback = true;
         }
 
         /* If last failure happened less than 5 seconds ago, something else may
@@ -832,7 +875,7 @@ size_t DownloadThread::_writeData(const char *buf, size_t len)
 
     if (!_filename.isEmpty())
     {
-        return _writeFile(buf, len);
+        return _writeFileZeroSkip(buf, len);
     }
     else
     {
@@ -912,6 +955,86 @@ void DownloadThread::setCacheFile(const QString &filename, qint64 filesize)
 void DownloadThread::_hashData(const char *buf, size_t len)
 {
     _writehash.addData(buf, len);
+}
+
+/*
+ * Zero-skip wrapper: scans the buffer for 4KB-aligned zero-filled blocks
+ * and seeks past them instead of writing.  Non-zero regions are passed
+ * through to _writeFile().  This avoids transferring and writing GBs of
+ * zeros for typical OS images where most of the disk is empty.
+ *
+ * Only enabled when there is no expected hash for post-write verification.
+ * When verification is active, skipped (non-written) zero regions would
+ * still contain stale data from the previous image, causing a hash mismatch.
+ */
+size_t DownloadThread::_writeFileZeroSkip(const char *buf, size_t len)
+{
+    constexpr size_t BLK = fastboot::SPARSE_BLK_SZ;  // 4096
+
+    // First block hasn't been captured yet — pass through unconditionally
+    if (!_firstBlock)
+        return _writeFile(buf, len);
+
+    // When hash verification is enabled, we must write every byte so the
+    // read-back matches.  Fall through to the normal write path.
+    if (!_expectedHash.isEmpty())
+        return _writeFile(buf, len);
+
+    const auto* p = reinterpret_cast<const uint8_t*>(buf);
+    size_t off = 0;
+    size_t totalProcessed = 0;
+
+    while (off < len) {
+        // Handle any unaligned prefix (< 4096 bytes) — write it directly
+        size_t aligned = off;
+        if (aligned % BLK != 0)
+            aligned = std::min(((off / BLK) + 1) * BLK, len);
+
+        // Scan for zero blocks starting from the aligned position
+        size_t nonZeroStart = off;
+        size_t pos = aligned;
+
+        // Skip the unaligned prefix — we'll write it as part of the non-zero region
+        while (pos + BLK <= len) {
+            if (fastboot::isBlockZero(p + pos)) {
+                // Found a zero block. Write everything before it.
+                if (pos > nonZeroStart) {
+                    size_t writeLen = pos - nonZeroStart;
+                    size_t written = _writeFile(buf + nonZeroStart, writeLen);
+                    if (written != writeLen)
+                        return 0;
+                    totalProcessed += written;
+                }
+
+                // Count consecutive zero blocks
+                size_t zeroStart = pos;
+                while (pos + BLK <= len && fastboot::isBlockZero(p + pos))
+                    pos += BLK;
+
+                // Seek past the zero region
+                size_t zeroLen = pos - zeroStart;
+                if (_file->Seek(_file->Tell() + zeroLen) != rpi_imager::FileError::kSuccess)
+                    return 0;
+                totalProcessed += zeroLen;
+                _bytesWritten += zeroLen;
+                nonZeroStart = pos;
+            } else {
+                pos += BLK;
+            }
+        }
+
+        // Write any remaining data (non-zero tail + possible sub-block tail)
+        size_t remaining = len - nonZeroStart;
+        if (remaining > 0) {
+            size_t written = _writeFile(buf + nonZeroStart, remaining);
+            if (written != remaining)
+                return 0;
+            totalProcessed += written;
+        }
+        break;
+    }
+
+    return totalProcessed;
 }
 
 size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCallback onComplete)
@@ -1363,6 +1486,18 @@ void DownloadThread::_onDownloadSuccess()
 void DownloadThread::_onDownloadError(const QString &msg)
 {
     _cancelled = true;
+
+    // Drop the device handle before asking the OS to refresh its view of the
+    // disk — an open handle can hold off re-enumeration on Windows.
+    // _closeFiles() is idempotent, so double-close from later cleanup is fine.
+    _closeFiles();
+
+    // If we got far enough to wipe and open the target's partition table, the
+    // OS may be holding a stale view of the disk (no drive letter, no visible
+    // partitions) — give it a chance to re-enumerate before we report the
+    // failure. No-op on platforms where the kernel does this automatically.
+    PlatformQuirks::refreshDiskView(_filename);
+
     emit error(msg);
 }
 
@@ -1445,10 +1580,7 @@ void DownloadThread::_onWriteError()
     if (_cancelled)
         return;
 
-#ifdef Q_OS_WIN
-    // TODO: Implement platform-specific error handling in FileOperations
-    // For now, provide generic error message instead of: if (_file.errorCode() == ERROR_ACCESS_DENIED)
-    if (false) // Temporarily disabled
+    switch (_file->ClassifyLastWriteError())
     {
         QString msg = tr("Access denied error while writing file to disk.");
         QSettings registry("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Defender\\Windows Defender Exploit Guard\\Controlled Folder Access",
@@ -1463,31 +1595,8 @@ void DownloadThread::_onWriteError()
         }
         _onDownloadError(msg);
     }
-    else if (_file->GetLastErrorCode() == ERROR_DISK_FULL)
-    {
-        _onDownloadError(tr("Disk is full. Please use a larger storage device."));
-    }
-    else if (_file->GetLastErrorCode() == ERROR_WRITE_PROTECT)
-    {
-        _onDownloadError(tr("The disk is write-protected. Please check if the disk has a physical write-protect switch or is read-only."));
-    }
-    else if (_file->GetLastErrorCode() == ERROR_SECTOR_NOT_FOUND || _file->GetLastErrorCode() == ERROR_CRC)
-    {
-        _onDownloadError(tr("Media error detected. The storage device may be damaged or counterfeit. Please try a different device."));
-    }
-    else if (_file->GetLastErrorCode() == ERROR_INVALID_PARAMETER)
-    {
-        _onDownloadError(tr("Invalid disk parameter. The storage device may not be properly recognized. Please try reconnecting the device."));
-    }
-    else if (_file->GetLastErrorCode() == ERROR_IO_DEVICE)
-    {
-        _onDownloadError(tr("I/O device error. The storage device may have been disconnected or is malfunctioning."));
-    }
-    else
-    {
-        _onDownloadError(tr("Error writing to storage device. Please check if the device is writable, has sufficient space, and is not write-protected."));
-    }
-#endif
+
+    _onDownloadError(tr("Error writing to storage device. Please check if the device is writable, has sufficient space, and is not write-protected."));
 }
 
 void DownloadThread::_closeFiles()
@@ -1661,6 +1770,12 @@ void DownloadThread::_writeComplete()
         }
     }
 
+    // Stop the watchdog before the final sync. No progress indicators can
+    // advance during fdatasync/fsync, but the device is still working — slow
+    // cards can take minutes to flush their internal cache after sustained writes.
+    // Uses BlockingQueuedConnection so the watchdog is stopped before we block.
+    emit finalSyncStarting();
+
     rpi_imager::FileError flushResult = _file->Flush();
     if (flushResult != rpi_imager::FileError::kSuccess)
     {
@@ -1704,6 +1819,23 @@ void DownloadThread::_writeComplete()
     if (_firstBlock)
     {
         qDebug() << "Writing first block (which we skipped at first)";
+
+        // Force all preceding image data (including the filesystem) to physical
+        // media BEFORE writing the partition table. On write-caching USB card
+        // readers the MBR could otherwise reach the media ahead of the filesystem,
+        // making Windows briefly see a partition with an incomplete filesystem and
+        // pop "You need to format the disk in drive X:". Flushing first guarantees
+        // the partition only becomes visible once its contents are durable. (Same
+        // reasoning as DeviceWrapper::sync() for the customised path.)
+        rpi_imager::FileError preMbrFlush = _file->Flush();
+        if (preMbrFlush != rpi_imager::FileError::kSuccess)
+        {
+            qFreeAligned(_firstBlock);
+            _firstBlock = nullptr;
+            DownloadThread::_onDownloadError(_fileErrorToString(preMbrFlush, tr("flushing image before writing partition table")));
+            return;
+        }
+
         _file->Seek(0);
         rpi_imager::FileError writeResult = _file->WriteSequential(reinterpret_cast<const std::uint8_t*>(_firstBlock), _firstBlockSize);
         rpi_imager::FileError flushResult = (writeResult == rpi_imager::FileError::kSuccess) ? _file->Flush() : writeResult;
@@ -1745,6 +1877,26 @@ void DownloadThread::_writeComplete()
 #endif
 
     emit eventFinalSync(static_cast<quint32>(syncTimer.elapsed()), true);
+
+    /* Customisation is written after _verify() and after the MBR, so this is the
+       first point at which all of it is durable and can be read back. Do it
+       before success() -- the entire point is to not show a green card for a
+       device that dropped the settings. */
+    if (!_verifyCustomisation())
+    {
+        _closeFiles();
+        return;
+    }
+
+    /* _verifyCustomisation() returns true when it bailed out early because the
+       write was cancelled, so re-check here: without this a cancelled write
+       reaches success() and the done screen shows a green card. */
+    if (_cancelled)
+    {
+        _closeFiles();
+        return;
+    }
+
     _closeFiles();
 
 #ifdef Q_OS_DARWIN
@@ -1752,20 +1904,206 @@ void DownloadThread::_writeComplete()
     QThread::sleep(1);
 #endif
 
+    // Announce the eject before success() so the done screen never shows a
+    // stale "safe to remove" while the background eject is still running.
+    if (_ejectEnabled)
+        emit ejectStarted();
+
     emit success();
 
     if (_ejectEnabled)
+        _performEject();
+}
+
+void DownloadThread::_performEject()
+{
+    // Give the filesystem a moment to settle before ejecting
+    QThread::msleep(500);
+
+    // Use canonical device path for eject (e.g., /dev/disk on macOS, not rdisk)
+    QString ejectPath = PlatformQuirks::getEjectDevicePath(_filename);
+    PlatformQuirks::DiskResult result = PlatformQuirks::ejectDisk(ejectPath);
+
+    const bool succeeded = (result == PlatformQuirks::DiskResult::Success);
+
+    qDebug() << "Background eject finished for" << ejectPath << "succeeded:" << succeeded;
+    emit ejectFinished(succeeded);
+}
+
+namespace {
+/* Hash through the platform abstraction (CommonCrypto / GnuTLS / CNG) rather
+   than QCryptographicHash, as the rest of the write path does. */
+QByteArray customisationDigest(const QByteArray &contents)
+{
+    AcceleratedCryptographicHash hash(OSLIST_HASH_ALGORITHM);
+    hash.addData(contents);
+    return hash.result();
+}
+} // namespace
+
+/* Re-read the customisation files from the media and compare them against what
+ * we wrote. The whole-image _verify() pass runs *before* customisation, so
+ * without this the customisation writes are the only part of the card nothing
+ * ever checks -- and a card that quietly drops them produces a successful-looking
+ * write that simply won't accept SSH on first boot.
+ *
+ * Correctness depends on defeating three layers of cache:
+ *   1. DeviceWrapper::_blockcache never evicts on sync(), so reading back
+ *      through the same DeviceWrapper would compare our own buffer against
+ *      itself and always pass. We therefore build a *fresh* wrapper here,
+ *      whose cache starts empty.
+ *   2. The OS page cache: bypassed by direct I/O -- O_DIRECT on Linux,
+ *      F_NOCACHE on macOS, FILE_FLAG_NO_BUFFERING on Windows -- which is
+ *      normally already active for block devices but can have fallen back to
+ *      buffered at open time, so we re-assert it below and record whether it
+ *      actually took.
+ *   3. The card's or USB bridge's own write cache we cannot defeat. A device
+ *      that serves writes back out of DRAM it never committed will still pass
+ *      this check -- as it already passes _verify() for the same reason. This
+ *      catches the visible failures (dropped writes, truncation, bad geometry),
+ *      not a determined counterfeit.
+ *
+ * Note the asymmetry that makes this safe to ship: a cache we failed to defeat
+ * can only ever return the data we wrote, so caching can produce a false *pass*
+ * but never a false *failure*. A reported mismatch is therefore always real
+ * evidence of a problem, which is why it is safe to hard-fail on one.
+ */
+bool DownloadThread::_verifyCustomisation()
+{
+    if (_customisationDigests.isEmpty())
+        return true;
+
+    emit preparationStatusUpdate(tr("Verifying OS customisation..."));
+    QElapsedTimer verifyTimer;
+    verifyTimer.start();
+
+    /* DeviceWrapper reads in 4 KiB blocks, one seek + read syscall each, and with
+     * direct I/O none of it is cached. That is nothing for the customisation
+     * files themselves (kilobytes) but boot.img is tens of megabytes, i.e.
+     * thousands of syscalls added to every secure-boot write. So content-check
+     * large files only when the user already opted into the cost of a read-back
+     * by enabling verification; always content-check the small ones, whose whole
+     * purpose is the customisation that would otherwise fail silently. Size is
+     * checked for everything either way, since it needs no file read. */
+    constexpr qint64 kAlwaysVerifyMaxBytes = 1024 * 1024;
+
+    QStringList missing, mismatched, sizeMismatched, notContentChecked;
+
+    /* Make sure we are reading the media and not a cache. Direct I/O is normally
+       already on for block devices, in which case this is a no-op; it can have
+       fallen back to buffered at open time, though, so ask for it explicitly.
+       (SetDirectIOEnabled returns success immediately when already in the
+       requested state, so the common path costs nothing. On Windows a real
+       change reopens the handle -- acceptable here because everything is already
+       flushed and synced, and a lost handle only downgrades this check to
+       "not checked".) */
+    bool cacheBypassed = _file->IsDirectIOEnabled();
+    if (!cacheBypassed)
     {
-        // Use canonical device path for eject (e.g., /dev/disk on macOS, not rdisk)
-        QString ejectPath = PlatformQuirks::getEjectDevicePath(_filename);
-        eject_disk(ejectPath.toLocal8Bit().constData());
+        cacheBypassed = _file->SetDirectIOEnabled(true) == rpi_imager::FileError::kSuccess
+                        && _file->IsDirectIOEnabled();
+        qDebug() << "DownloadThread: direct I/O was off before customisation read-back; now"
+                 << (cacheBypassed ? "enabled" : "still off");
     }
+
+    /* Belt and braces: drop any clean pages the OS may still be holding for this
+       range. Effective on Linux (fadvise DONTNEED); a flush-only no-op on
+       Windows. Everything was synced above, so no dirty pages should remain. */
+    _file->PrepareForSequentialRead(0, _bytesWritten.load());
+
+    try
+    {
+        DeviceWrapper dw(_file.get());
+        DeviceWrapperFatPartition *fat = dw.fatPartition(1);
+        if (!fat)
+            throw std::runtime_error("boot partition not found");
+
+        for (auto it = _customisationDigests.constBegin(); it != _customisationDigests.constEnd(); ++it)
+        {
+            if (_cancelled)
+                return true;
+
+            if (!fat->fileExists(it.key()))
+            {
+                missing << it.key();
+                continue;
+            }
+
+            if (it.value().size > kAlwaysVerifyMaxBytes && !_verifyEnabled)
+            {
+                notContentChecked << it.key();
+                continue;
+            }
+
+            const QByteArray actual = fat->readFile(it.key());
+            if (actual.size() != it.value().size)
+                sizeMismatched << it.key();
+            else if (customisationDigest(actual) != it.value().digest)
+                mismatched << it.key();
+        }
+
+        /* Read-only use never marks a block dirty, so the destructor's sync()
+           is a no-op and cannot write anything back. */
+    }
+    catch (std::runtime_error &err)
+    {
+        /* We could not perform the check at all (unreadable or unexpected
+           partition layout). That is not evidence the customisation is bad, so
+           warn and let the write stand rather than failing a good card. */
+        qDebug() << "DownloadThread: could not verify customisation:" << err.what();
+        emit eventCustomisationVerify(static_cast<quint32>(verifyTimer.elapsed()), false,
+                                      QString("%1 files; not checked: %2")
+                                          .arg(_customisationDigests.size()).arg(err.what()));
+        return true;
+    }
+
+    /* Never report full coverage when some files were only size-checked, and
+       always record whether the read actually bypassed the OS cache -- a pass is
+       only as strong as the cache bypass, whereas a failure is trustworthy
+       either way (see the asymmetry noted above). */
+    const QString coverage = QString("%1 files; content-checked: %2; cache-bypassed: %3")
+        .arg(_customisationDigests.size())
+        .arg(_customisationDigests.size() - notContentChecked.size())
+        .arg(cacheBypassed ? "yes" : "no");
+
+    if (missing.isEmpty() && mismatched.isEmpty() && sizeMismatched.isEmpty())
+    {
+        qDebug() << "DownloadThread: customisation verified;" << coverage
+                 << (notContentChecked.isEmpty() ? "" : "size-only: " + notContentChecked.join(","));
+        emit eventCustomisationVerify(static_cast<quint32>(verifyTimer.elapsed()), true, coverage);
+        return true;
+    }
+
+    QStringList affected = missing + sizeMismatched + mismatched;
+    affected.sort();
+    qDebug() << "DownloadThread: customisation verification FAILED - missing:" << missing
+             << "truncated:" << sizeMismatched << "corrupted:" << mismatched;
+    emit eventCustomisationVerify(static_cast<quint32>(verifyTimer.elapsed()), false,
+                                  QString("%1; missing: %2; truncated: %3; corrupted: %4")
+                                      .arg(coverage, missing.join(","),
+                                           sizeMismatched.join(","), mismatched.join(",")));
+
+    /* Route through _onDownloadError() like every other failure in
+       _writeComplete(): it marks the write cancelled, drops the device handle and
+       refreshes the OS disk view. We have just rewritten the partition table, so
+       on Windows skipping that refresh can leave the drive with no letter. */
+    DownloadThread::_onDownloadError(
+        tr("The OS customisation settings were not stored correctly on the device. "
+           "The following files are missing or damaged: %1.\n\n"
+           "The device accepted the data but did not keep it, which usually means the "
+           "SD card or USB adapter is failing or counterfeit. The image itself was "
+           "written correctly, but the device would not have applied your settings on "
+           "first boot (so you would not have been able to connect to it). Try a "
+           "different card or card reader.").arg(affected.join(", ")));
+    return false;
 }
 
 bool DownloadThread::_verify()
 {
     _lastVerifyNow = 0;
     _verifyTotal = _file->Tell();
+    _verifyThroughputBytes = 0;
+    _verifyThroughputTimer.start();
     
     // Use adaptive buffer size based on file size and system memory for optimal verification performance
     size_t verifyBufferSize = SystemMemoryManager::instance().getAdaptiveVerifyBufferSize(_verifyTotal);
@@ -1807,7 +2145,22 @@ bool DownloadThread::_verify()
 
         _verifyhash.addData(verifyBuf, static_cast<qint64>(lenRead));
         _lastVerifyNow += static_cast<qint64>(lenRead);
-        
+
+        // Calculate and emit verification read throughput periodically
+        {
+            qint64 elapsed = _verifyThroughputTimer.elapsed();
+            if (elapsed >= 500) {
+                qint64 bytesDelta = _lastVerifyNow.load() - _verifyThroughputBytes;
+                quint32 throughputKBps = 0;
+                if (bytesDelta > 0) {
+                    throughputKBps = static_cast<quint32>((bytesDelta * 1000) / (elapsed * 1024));
+                }
+                _verifyThroughputBytes = _lastVerifyNow.load();
+                _verifyThroughputTimer.restart();
+                emit bottleneckStateChanged(BottleneckState::Verifying, throughputKBps);
+            }
+        }
+
         // Allow subclasses to emit progress updates
         _onVerifyProgress();
     }
@@ -2164,6 +2517,18 @@ void DownloadThread::setDebugSkipEndOfDevice(bool enabled)
     qDebug() << "DownloadThread: Skip end-of-device operations" << (enabled ? "enabled (for counterfeit cards)" : "disabled");
 }
 
+void DownloadThread::setDebugIgnoreDeviceLimits(bool enabled)
+{
+    _debugIgnoreDeviceLimits = enabled;
+    qDebug() << "DownloadThread: Ignore device I/O limits" << (enabled ? "enabled" : "disabled");
+}
+
+void DownloadThread::_recordCustomisationWrite(const QString &filename, const QByteArray &contents)
+{
+    _customisationDigests.insert(filename,
+        CustomisationExpectation{ contents.size(), customisationDigest(contents) });
+}
+
 bool DownloadThread::_customizeImage()
 {
     emit preparationStatusUpdate(tr("Customising OS..."));
@@ -2227,6 +2592,7 @@ bool DownloadThread::_customizeImage()
             }
 
             fat->writeFile("config.txt", config);
+            _recordCustomisationWrite("config.txt", config);
         }
 
         // init_format decision is owned by ImageWriter; no auto-detection here
@@ -2237,29 +2603,48 @@ bool DownloadThread::_customizeImage()
             // No need to add them here anymore
             if (_initFormat == "systemd") {
                 fat->writeFile("firstrun.sh", _firstrun);
+                _recordCustomisationWrite("firstrun.sh", _firstrun);
                 _cmdline += " systemd.run=/boot/firstrun.sh systemd.run_success_action=reboot systemd.unit=kernel-command-line.target";
+            } else if (_initFormat == "rpi-preseed") {
+                // rpi-preseed applies /boot/firmware/rpi-preseed.toml on first
+                // boot; its units are gated on the file's presence, so no
+                // cmdline entry is required.
+                fat->writeFile("rpi-preseed.toml", _firstrun);
+                _recordCustomisationWrite("rpi-preseed.toml", _firstrun);
             }
         }
 
         auto initCloud = _initFormat == "cloudinit" || _initFormat == "cloudinit-rpi";
+        auto hasCloudContent = !_cloudinit.isEmpty() || !_cloudinitNetwork.isEmpty();
         qDebug() << "_customizeImage: _initFormat=" << _initFormat << "initCloud=" << initCloud << "_cloudinit.isEmpty()=" << _cloudinit.isEmpty();
-        if (initCloud) {
+        if (initCloud && hasCloudContent) {
             // Write meta-data file for NoCloud datasource
             // cloud-init requires meta-data to be present for proper datasource detection
             // instance-id should be unique per imaging to ensure cloud-init processes user-data
-            QByteArray metadata = "instance-id: rpi-imager-" + 
-                QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + "\n";
+            QByteArray instanceId = "rpi-imager-" + QByteArray::number(QDateTime::currentMSecsSinceEpoch());
+            QByteArray metadata = "instance-id: " + instanceId + "\n";
             fat->writeFile("meta-data", metadata);
+            _recordCustomisationWrite("meta-data", metadata);
+
+            // Expose datasource type and instance-id on kernel cmdline so that
+            // cloud-init's check_instance_id() can validate the cache without
+            // reading from seed_dirs (which are never populated for this
+            // deployment pattern). Without this, the NoCloud datasource cache
+            // is invalidated on every reboot (/run is tmpfs), forcing a full
+            // re-discovery from /boot/firmware on every boot.
+            _cmdline += " ds=nocloud;i=" + instanceId;
 
             if (!_cloudinit.isEmpty())
             {
                 _cloudinit = "#cloud-config\n"+_cloudinit;
                 fat->writeFile("user-data", _cloudinit);
+                _recordCustomisationWrite("user-data", _cloudinit);
             }
 
             if (!_cloudinitNetwork.isEmpty())
             {
                 fat->writeFile("network-config", _cloudinitNetwork);
+                _recordCustomisationWrite("network-config", _cloudinitNetwork);
             }
         }
 
@@ -2270,6 +2655,7 @@ bool DownloadThread::_customizeImage()
             cmdline += _cmdline;
 
             fat->writeFile("cmdline.txt", cmdline);
+            _recordCustomisationWrite("cmdline.txt", cmdline);
         }
         
         // Sync before secure boot processing (writes partition table/MBR)
@@ -2336,10 +2722,11 @@ bool DownloadThread::_createSecureBootFiles(DeviceWrapperFatPartition *fat)
     // Separate customization files from boot files
     // Customization files must remain alongside boot.img and boot.sig
     QStringList customizationFiles = {
-        "firstrun.sh",      // systemd init customization
-        "user-data",        // cloud-init customization
-        "meta-data",        // cloud-init metadata
-        "network-config"    // cloud-init network customization
+        "firstrun.sh",       // systemd init customization
+        "user-data",         // cloud-init customization
+        "meta-data",         // cloud-init metadata
+        "network-config",    // cloud-init network customization
+        "rpi-preseed.toml"   // rpi-preseed customization
     };
     
     QMap<QString, QByteArray> bootFiles;
@@ -2488,9 +2875,16 @@ bool DownloadThread::_createSecureBootFiles(DeviceWrapperFatPartition *fat)
 
     // NOW write boot.img and boot.sig to the cleaned partition
     emit preparationStatusUpdate(tr("Writing signed boot files..."));
+    /* Everything recorded by _customizeImage() has just been deleted from the
+       partition and folded into boot.img (config.txt and cmdline.txt among
+       them), so those expectations no longer describe the on-disk state.
+       Rebuild the set from what actually survives here. */
+    _customisationDigests.clear();
     try {
         fat->writeFile("boot.img", bootImgData);
         fat->writeFile("boot.sig", bootSigData);
+        _recordCustomisationWrite("boot.img", bootImgData);
+        _recordCustomisationWrite("boot.sig", bootSigData);
         qDebug() << "DownloadThread: secure boot files written successfully";
     }
     catch (std::runtime_error &err) {
@@ -2506,6 +2900,12 @@ bool DownloadThread::_createSecureBootFiles(DeviceWrapperFatPartition *fat)
         emit preparationStatusUpdate(tr("Writing customization files..."));
         qDebug() << "DownloadThread: writing" << customFiles.size() << "customization files back";
         for (auto it = customFiles.constBegin(); it != customFiles.constEnd(); ++it) {
+            /* Record the expectation before attempting the write. If the write
+               below fails we deliberately swallow it (a partial secure-boot
+               partition is still worth finishing), but the recorded digest
+               means _verifyCustomisation() will catch it and fail loudly
+               instead of handing back a card that silently won't customise. */
+            _recordCustomisationWrite(it.key(), it.value());
             try {
                 fat->writeFile(it.key(), it.value());
                 qDebug() << "DownloadThread: wrote customization file:" << it.key();

@@ -7,6 +7,7 @@
 #define PLATFORMHELPER_H
 
 #include <QObject>
+#include <QSettings>
 #ifndef CLI_ONLY_BUILD
 #include <QQmlEngine>
 #endif
@@ -56,6 +57,35 @@ public:
      * @return true if scroll direction should be inverted (natural scrolling)
      */
     Q_INVOKABLE bool isScrollInverted(bool qtInvertedFlag) const;
+
+    /**
+     * @brief Get the platform's text scaling factor
+     *
+     * Detects the user's desktop text size preference and returns a multiplier.
+     * Checks QSettings for a user override first, then delegates to
+     * platform-specific detection (GSettings on Linux, system font on Windows).
+     *
+     * @return Scaling multiplier (1.0 = default, 1.5 = 150%, etc.)
+     */
+    Q_PROPERTY(qreal textScaleFactor READ textScaleFactor CONSTANT)
+    qreal textScaleFactor() const;
+
+    Q_PROPERTY(qreal fontDpiCorrection READ fontDpiCorrection CONSTANT)
+    qreal fontDpiCorrection() const;
+
+    /**
+     * @brief Check if the OS accessibility settings prefer reduced motion
+     *
+     * Encapsulates platform-specific reduced motion detection:
+     * - On Windows: Reads "Show animations" from SystemParametersInfo
+     * - On macOS: Reads "Reduce motion" from NSWorkspace accessibility
+     * - On Linux: Reads GSettings enable-animations (GNOME) or
+     *   AnimationDurationFactor (KDE)
+     *
+     * @return true if the user has disabled or reduced OS animations
+     */
+    Q_PROPERTY(bool prefersReducedMotion READ prefersReducedMotion CONSTANT)
+    bool prefersReducedMotion() const;
 };
 
 #endif // PLATFORMHELPER_H

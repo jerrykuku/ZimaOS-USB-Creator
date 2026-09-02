@@ -1,3 +1,285 @@
+rpi-imager (2.0.11.1-1) unstable; urgency=medium
+
+  * Pi Connect:
+    - Fix the Next button never enabling on the Raspberry Pi Connect
+      customisation step once the browser sign-in fills in the token. The
+      sanitised `value` an ImTextField exposes was a binding on `text`, and
+      QML re-evaluates a binding only after every handler for the same change
+      signal has run, so the step's own onTextChanged read the previous
+      (empty) contents and cleared the token it had just been handed.
+  * Build / packaging:
+    - Carry an optional fourth version component through the version parser to
+      the Windows templates, so a hotfix reports its own FILEVERSION,
+      PRODUCTVERSION and assembly manifest version rather than those of the
+      release it fixes. Ordinary three-part tags are unaffected.
+    - Keep the fourth component in the version reported alongside download
+      statistics, so uptake of a hotfix can be told apart from the release it
+      fixes.
+  * Testing:
+    - Update nine cloud-init generator tests that still asserted the
+      unconditional baseline payload (manage_resolv_conf, eth0 DHCP) dropped
+      in 2.0.7; an empty payload is what tells the fastboot and download paths
+      to skip writing the file at all.
+    - Update two FileServer tests to the control-transfer message protocol and
+      the fatal-disconnect handling that came in with CM5 re-provisioning.
+    - Report Catch2 skips to CTest as skipped rather than as failures, and
+      keep the FAT partition test's pre-main diagnostics off stdout, where
+      test discovery had been registering one as a case that could never pass.
+
+ -- Tom Dewey <tom.dewey@raspberrypi.com>  Mon, 17 Aug 2026 11:11:47 +0100
+
+rpi-imager (2.0.11-1) unstable; urgency=medium
+
+  * OS Customisation:
+    - Add the rpi-preseed first-boot customisation format, and list it as a
+      valid init_format in the schema notes.
+    - rpi-preseed: always add the account to the 'sudo' group.
+    - cloud-init: write `sudo: null` when the user declines passwordless sudo.
+      A singular `user:` block is merged over the distro default_user, which
+      raspberry-pi-os populates with passwordless sudo, so omitting the key
+      granted it regardless of the user's choice; `null` suppresses the rules
+      while keeping 'sudo' group membership, so the account is prompted for one.
+    - Centralise credential derivation in CustomisationGenerator and hash
+      credentials in C++ before persisting them.
+    - Verify the device kept the customisation files after writing.
+    - UI: keep customisation steps centre-middle; drop the unused ImageOptions
+      enum; bind SSH key row data; allow query parameters on custom manifest
+      URLs.
+  * Fastboot (Compute Module):
+    - Add an Erase command for 'Format'.
+    - Verify device identity before treating a target as a Pi.
+    - Align stage() tests and docs with the download verb.
+  * Write reliability:
+    - Support multi-frame .img.zst images (use ZSTD_findDecompressedSize).
+    - Linux/Windows: take an exclusive lock on drive open. On Windows, hold
+      volume locks rather than deleting drive letters, only remove removable
+      mountpoints, retry the exclusive open before falling back to shared, and
+      flush the filesystem to media before writing the partition table.
+    - macOS: run DiskArbitration on the main run loop with blocking calls, and
+      move the nested run loop onto worker threads.
+  * Embedded (Raspberry Pi network installer):
+    - Build a dedicated Qt configured -no-opengl -qpa linuxfb -no-dbus
+      -no-feature-icu. The pi-gen-micro netboot image carries no Mesa or X11
+      (far too large for a network-loaded image), no session bus, and none of
+      the languages that need ICU. The package had drifted onto the desktop Qt
+      and so linked libEGL/libGL/libX11 and libQt6DBus -- absent from the image
+      -- and could not load on the target.
+    - Build the application without QtDBus for embedded; its DBus users (portal
+      file dialog, NetworkManager WiFi backend, Pi Connect URI handler) are
+      unusable on a busless image and are compiled out via QT_DBUS_LIB guards.
+    - Assemble the .deb with debhelper so debian/control is the single source of
+      dependencies and metadata and md5sums are generated; trim Depends to the
+      minimal host-provided set (no libegl1/libgl1/libx11-6/libsystemd0, which
+      apt would otherwise pull -- Mesa and X11 included -- into the image).
+    - Bake an $ORIGIN-relative rpath at build time (was a leaked build-host
+      path), dereference the bundled fontconfig config, and drop the stale
+      vendored ICU handling.
+  * Build / packaging:
+    - Rootless multi-arch (amd64/arm64/armhf) release pipeline: every arch,
+      the host included, builds inside its bookworm mmdebstrap chroot; there is
+      no host-native build path (a package built against the host's libraries
+      is not the package it claims to be).
+    - Desktop and CLI AppImages are now self-contained: bundle the transitive
+      library closure of the staged AppDir (via readelf, so it also works for
+      foreign-architecture AppDirs), which was previously taken from the host
+      and left arm64/armhf incompletely bundled. Declare the genuinely
+      host-coupled libraries in debian/control.
+    - Build Qt with -no-feature-icu across desktop/CLI/embedded; drop the
+      JPEG 2000 image plugin; collect the source .buildinfo.
+    - liburing: probe for the 64-bit user_data API (added in 2.2) before
+      enabling io_uring, so an older build environment falls back to
+      synchronous writes instead of failing to link.
+    - Vendor curl/libarchive/libusb/nghttp2/xz as git submodules.
+    - Reproducibility and hygiene: normalise mtimes; generate version files in
+      an explicit build override; prune qmlls and performance profiles from the
+      packaged tree; stop deleting the screenshot; ship the fastboot udev rule
+      inside the .debs; assorted amd64/arm64 packaging fixes.
+
+ -- Tom Dewey <tom.dewey@raspberrypi.com>  Thu, 06 Aug 2026 11:46:27 +0100
+
+rpi-imager (2.0.10) unstable; urgency=medium
+
+  * Pi Connect:
+    - Fix Connect sign-in on more Linux systems (#1564)
+  * Secure Boot / rpiboot:
+    - AB-image support in BootloaderImage with signing and extraction
+      tests
+    - Fetch firmware from rpi-eeprom; fixup reboot expectations
+    - Fix CM5 re-provisioning support
+    - Always validate stale cached firmware assets
+    - PAL-ify RSA key fingerprint; fix rpiboot storage handoff
+    - Push key handling behind the PAL
+  * Fastboot:
+    - Set chosen storage as first boot source via EEPROM
+  * OS Customisation:
+    - Enhance SSID handling with octet support and YAML escaping
+    - Vendor capital cities data; stop fetching from REST Countries API
+    - Wizard: improve nextStep logic for "write another" mode
+  * UI:
+    - QML refactor: ImageWriter singleton, cachegen, lazy-loaded options
+      dialogs
+    - Fix keyboard navigation on write confirmation dialog
+    - Disable 'clear customisation' during active writes
+    - Re-bind RSA key visibility for debug options
+    - Prevent ImageWriter double-construction
+    - FocusableText/Heading components for accessibility
+    - Gate OTP programming visibility
+    - Prevent VoiceOver crash on password fields (#1607)
+  * Write Operations:
+    - Don't emit success() after a failed extraction (#1603)
+    - Set extract length when manifest size is given
+    - Omit percent progress when extract size cannot be determined
+  * Windows:
+    - Reliably flag system drives (#1558)
+    - Force disk status refresh on write errors
+  * macOS:
+    - Require macOS 13 as minimum
+    - Scale release label in create-dmg
+    - Fall back to venv for custom background generation
+    - Coalesce unaligned writes/reads to /dev/rdisk* (fixes .img.zst
+      EINVAL)
+    - Prevent mach-port over-release crash (#1632)
+  * Linux:
+    - Build fixes
+  * Embedded:
+    - Move scaling choices into C++
+    - Deploy vendored tree without AppImage
+    - Drop NetworkAccessManagerFactory and OpenSSL
+    - create-embedded.sh: support custom ICU runtime libraries
+  * Dependencies:
+    - Upgrade curl, libarchive, libusb, nghttp2, and xz
+    - Single source of truth for curl user-agent
+  * Build:
+    - Trim unused Qt build features and configuration options
+  * Documentation:
+    - Update os-list-schema; prune bmap spec document
+    - Update bmap-tools repo URL
+  * Performance:
+    - Refactor analyse_performance script
+
+ -- Tom Dewey <tom.dewey@raspberrypi.com>  Fri, 19 Jun 2026 14:35:14 +0100
+
+rpi-imager (2.0.9) unstable; urgency=medium
+
+  * Pi Connect:
+    - New ConnectDeviceRegistrar over HTTPS with on-device signing
+    - Wizard flow for Pi Connect for Organisations enrolment
+    - Organisation registration and provisioning-token tracking
+    - Register device identity with Connect after fastboot flash
+  * Secure Boot / rpiboot:
+    - Rewrite SecureBootProvisioner for in-place CM5 re-provisioning
+    - Add CM5 re-provisioning pipeline in FirmwareManager
+    - New BootloaderImage TLV editor for pieeprom.bin
+    - Bootfiles repacking via replaceEntry + writeToFile
+    - config-sig generation, RSA public-key extraction and
+      bootcode2712 signing
+    - Debug toggles for force-secure-boot and sign-fastboot-gadget
+  * Fastboot:
+    - Capture INFO/TEXT lines for OEM commands
+    - Chunk file_server bulk transfers
+    - Resolve cache before fastboot flash
+    - Pause drive scan during auto-bootstrap
+    - Track naked rpiboot devices separately in the drive list
+    - Fix command truncation
+    - Normalise custom gadget paths so local files can be used
+  * OS Customisation:
+    - cloud-init: drop enable_ssh in favour of systemctl runcmd
+    - cloud-init: use 'user' (not 'users') for user configuration
+    - Fix serial-if disabled handling
+  * UI:
+    - Reduced motion support for accessibility
+    - Make AppOptionsDialog scrollable; move Telemetry to bottom
+    - Align SecureBoot step container styling
+  * Write Operations:
+    - Remove the 512-byte alignment requirement
+    - Better overflow handling in DeviceWrapper for GPT and MBR
+      partitions and FAT partition long filenames
+    - disk_formatter: handle extremely large sectors_per_fat
+    - downloadextractthread: use shared_ptr for the write ringbuffer
+    - cachemanager: fix TOCTOU on directory existence check
+  * Device I/O:
+    - Read per-device I/O limits to inform write tuning
+  * Windows:
+    - Propagate write error handling through FileOperations
+    - Advertise long path, DPI awareness and UTF-8 codepage
+    - Geometric backoff for volume lock; wait for clean completion
+    - Uninstaller preserves user preferences, removes cache and
+      customisation data
+    - Use secure memory erase for WiFi credentials
+  * macOS:
+    - Use secure memory erase for WiFi credentials
+  * Linux:
+    - Prefer kreadconfig6, fall back to kreadconfig5; pick the right
+      binary via KDE_SESSION_VERSION
+    - SuspendInhibitor and launchDetached use explicit search paths
+    - AppImage: exclude libsystemd, libdbus-1, libcap for Linux
+      Desktop AppImages
+  * Embedded:
+    - Use explicit path for the reboot command
+  * Tests:
+    - Relocate disk_formatter_test, add CMake target, build on
+      non-Windows platforms
+  * Licensing:
+    - Add nghttp2, libusb and yescrypt to the licence manifest
+  * i18n: Updated French, Irish and Turkish translation dictionaries
+
+ -- Tom Dewey <tom.dewey@raspberrypi.com>  Fri, 01 May 2026 16:30:00 +0100
+
+rpi-imager (2.0.8) unstable; urgency=medium
+
+  * Fastboot:
+    - Enumerate storage devices
+    - Add mount, unmount, and custom gadget support
+    - Rename stage to download
+    - Retry on transient USB errors
+  * OS Customisation:
+    - Don't set any groups, leave it to the OS
+    - Use explicit runcmds for passwordless sudo
+    - Require active locale selection; no pre-filled defaults
+  * UI:
+    - Refresh clipboard status as text fields show
+  * SSH:
+    - Add state machine for handling PuTTY's multiline SSH keys
+  * Linux:
+    - Explicitly exclude libsystemd
+  * Write Operations:
+    - Increase watchdog stall timeout to 180s to match the async write timeout
+    - Exclude final data sync from write watchdog to avoid false stalls on slow
+      cards
+  * i18n: Updated French, Slovak translation dictionaries
+  * Documentation:
+    - Add a screenshot of the interface
+
+ -- Tom Dewey <tom.dewey@raspberrypi.com>  Wed, 08 Apr 2026 12:00:00 +0100
+
+rpi-imager (2.0.7) unstable; urgency=medium
+
+  * Write Operations:
+    - Prevent re-entry during write operations and improve thread management
+    - Start progress watchdog only after device authorization to avoid false
+      stall detections during macOS authorization dialogs
+  * Local Files:
+    - Load local manifest files directly without confirmation dialog
+    - Improve URL handling to differentiate local file URLs from remote URLs
+  * Drive Enumeration:
+    - Replace vendored drivelist/mountutils dependencies with new
+      platform-specific implementations for macOS, Linux and Windows
+    - Enhance error handling and show UI banner on enumeration failures
+    - Improve code clarity and signal-slot connection syntax
+  * Networking:
+    - Track effective URL after redirects in CurlFetcher for better
+      transparency and security feedback
+  * macOS:
+    - Simplify network status logging in platform quirks
+    - Update disk unmount and eject operations to handle device paths directly
+  * Tests:
+    - Add unit tests for platform-specific quirks
+    - Update drivelist test API definitions via CMake compile definitions
+  * Build:
+    - Update .gitignore to include clangd cache files
+
+ -- Tom Dewey <tom.dewey@raspberrypi.com>  Fri, 13 Feb 2026 15:25:00 +0000
+
 rpi-imager (2.0.6) unstable; urgency=medium
 
   * UI: Improve ImButton width calculation for better content fitting

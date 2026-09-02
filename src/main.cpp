@@ -25,7 +25,6 @@
 #include <QQmlContext>
 #include <QIcon>
 #include "imagewriter.h"
-#include "networkaccessmanagerfactory.h"
 #include "nativefiledialog.h"
 #include <QQuickWindow>
 #include <QScreen>
@@ -39,7 +38,6 @@
 #include "platformquirks.h"
 #ifdef Q_OS_DARWIN
 #include <CoreFoundation/CoreFoundation.h>
-#include <CoreServices/CoreServices.h>
 #endif
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -48,7 +46,7 @@
 #include <QTcpSocket>
 #endif
 #ifndef CLI_ONLY_BUILD
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && defined(QT_DBUS_LIB)
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusMessage>
@@ -109,6 +107,27 @@ static constexpr quint16 kPort =
     static_cast<quint16>(RPI_IMAGER_CALLBACK_PORT);
 #endif
 
+
+#ifdef IMAGER_ENABLE_TEST_HOOKS
+/*
+ * Find the wizard container in a loaded QML tree, for the screenshot hook's
+ * step jumping. QML ids are not object names, so the container is identified by
+ * the navigation API it carries rather than by name.
+ */
+static QObject *findWizardStepHost(QObject *root)
+{
+    if (!root)
+        return nullptr;
+    const QMetaObject *mo = root->metaObject();
+    if (mo->indexOfProperty("currentStep") >= 0 && mo->indexOfProperty("stepIfAndFeatures") >= 0)
+        return root;
+    for (QObject *child : root->children()) {
+        if (QObject *found = findWizardStepHost(child))
+            return found;
+    }
+    return nullptr;
+}
+#endif // IMAGER_ENABLE_TEST_HOOKS
 
 int main(int argc, char *argv[])
 {
@@ -197,6 +216,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     /** QtQuick on QT5 exhibits spurious disk cache failures that cannot be
      * resolved by a user in a trivial manner (they have to delete the cache manually).
      *
@@ -204,8 +224,13 @@ int main(int argc, char *argv[])
      * between this and a hard-to-detect spurious failure affecting Linux, macOS and Windows,
      * this trade is the one most likely to result in a good experience for the widest group
      * of users.
+     *
+     * On Qt6 the disk cache is reliable, and our QML is compiled ahead of time by
+     * qmlcachegen anyway (see NO_CACHEGEN removal in CMakeLists.txt), so we leave the
+     * cache enabled to keep launches fast.
      */
     qputenv("QML_DISABLE_DISK_CACHE", "true");
+#endif
 
     // Disable virtual keyboard input method to prevent QtVirtualKeyboard dependency
     qputenv("QT_IM_MODULE", "");
@@ -219,8 +244,15 @@ int main(int argc, char *argv[])
     qputenv("QT_QUICK_CONTROLS_MATERIAL_VARIANT", "Dense");
 #endif
 
-    // Note: Scale factor detection is handled by the AppRun script for embedded mode
-    // by reading DRM EDID data and setting QT_SCALE_FACTOR before launching
+    // Embedded builds run under linuxfb/eglfs with no window manager to
+    // negotiate display DPI, so we determine the UI scale ourselves from the
+    // connected display and set QT_SCALE_FACTOR before QGuiApplication reads it
+    // during platform initialisation.
+#ifdef Q_OS_LINUX
+    if (::isEmbeddedMode()) {
+        PlatformQuirks::applyEmbeddedDisplayScaling();
+    }
+#endif
 
     QGuiApplication app(argc, argv);
 
@@ -229,6 +261,10 @@ int main(int argc, char *argv[])
     app.setApplicationName("ZimaOS USB Creator");
     app.setApplicationVersion(ImageWriter::staticVersion());
     app.setWindowIcon(QIcon(":/icons/zimaos.ico"));
+
+    // Log text scaling factor for debugging (all modes)
+    qDebug() << "Text scale factor:" << PlatformQuirks::detectTextScaleFactor();
+    PlatformQuirks::logFontEngine();
 
     // Log display scaling information for debugging (embedded mode only)
     if (::isEmbeddedMode()) {
@@ -273,19 +309,15 @@ int main(int argc, char *argv[])
     CurlNetworkConfig::ensureInitialized();
 
     // Create ImageWriter early to check embedded mode
-    ImageWriter imageWriter;
+    ImageWriter imageWriter(nullptr);
 
-#ifdef Q_OS_DARWIN
-    // Ensure our app is the default handler for rpi-imager:// scheme so Safari recognizes it
+    // Register as the handler for the rpi-imager:// URL scheme so the Raspberry
+    // Pi Connect sign-in callback can route back to us. Platform mechanics live
+    // in the PAL (desktop file on Linux, Launch Services on macOS, installer on
+    // Windows). Skipped in embedded mode, which has no desktop environment.
+    if (!imageWriter.isEmbeddedMode())
     {
-        CFStringRef scheme = CFSTR("rpi-imager");
-        CFBundleRef bundle = CFBundleGetMainBundle();
-        if (bundle) {
-            CFStringRef bundleId = (CFStringRef)CFBundleGetIdentifier(bundle);
-            if (bundleId) {
-                LSSetDefaultHandlerForURLScheme(scheme, bundleId);
-            }
-        }
+        PlatformQuirks::registerUriScheme();
     }
 #endif
 #ifdef Q_OS_WIN
@@ -444,7 +476,12 @@ int main(int argc, char *argv[])
     const QStringList posArgs = parser.positionalArguments();
     if (!posArgs.isEmpty())
     {
-        const QString firstPos = posArgs.first();
+        // The .desktop file uses %u, so file managers may pass file:// URLs instead of plain paths
+        QString firstPos = posArgs.first();
+        const QUrl posUrl(firstPos);
+        if (posUrl.isLocalFile())
+            firstPos = posUrl.toLocalFile();
+
         if (firstPos.startsWith("rpi-imager:", Qt::CaseInsensitive))
         {
             callbackUrl = QUrl(firstPos);
@@ -467,7 +504,7 @@ int main(int argc, char *argv[])
         }
     }
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && defined(QT_DBUS_LIB)
     // Check if another instance is already running via D-Bus
     // If so, send the callback URL to it and exit
     if (!callbackUrl.isEmpty())
@@ -482,11 +519,11 @@ int main(int argc, char *argv[])
             if (reply.isValid() && reply.value().contains("com.raspberrypi.rpi-imager"))
             {
                 // Another instance is running - send callback URL to it via D-Bus
-                QDBusInterface iface("com.raspberrypi.rpi-imager", "/com/raspberrypi/rpi-imager",
+                QDBusInterface iface("com.raspberrypi.rpi-imager", "/com/raspberrypi/rpi_imager",
                                    "com.raspberrypi.rpi-imager", bus);
                 QDBusMessage msg = QDBusMessage::createMethodCall(
                     "com.raspberrypi.rpi-imager",
-                    "/com/raspberrypi/rpi-imager",
+                    "/com/raspberrypi/rpi_imager",
                     "com.raspberrypi.rpi-imager",
                     "HandleUrl");
                 msg << callbackUrl.toString();
@@ -527,14 +564,14 @@ int main(int argc, char *argv[])
         qWarning() << "TCP listen failed:" << server.errorString();
     }
 #endif
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && defined(QT_DBUS_LIB)
     // D-Bus callback service for URI handling
     QDBusConnection bus = QDBusConnection::sessionBus();
     if (bus.isConnected())
     {
         QObject *dbusObject = new QObject(&app);
         UriHandlerAdaptor *adaptor = new UriHandlerAdaptor(&imageWriter, dbusObject);
-        if (bus.registerObject("/com/raspberrypi/rpi-imager", dbusObject))
+        if (bus.registerObject("/com/raspberrypi/rpi_imager", dbusObject))
         {
             if (bus.registerService("com.raspberrypi.rpi-imager"))
             {
@@ -626,7 +663,6 @@ int main(int argc, char *argv[])
         imageWriter.setOsListRefreshOverride(sanitizedInterval, sanitizedJitter);
     }
     imageWriter.setEngine(&engine);
-    engine.setNetworkAccessManagerFactory(&namf);
 
     // Determine if we should show the language selection landing step
     // Consider language undetermined if QLocale::system() is AnyLanguage or C
@@ -653,8 +689,14 @@ int main(int argc, char *argv[])
 
     const bool showLanguageSelection = enableLanguageSelection || !couldDetermineLanguage || imageWriter.isEmbeddedMode() || hasSavedLanguagePreference;
 
+    // Supply the app-owned ImageWriter instance to the declaratively-registered
+    // "ImageWriterSingleton" QML singleton (see ImageWriter::create). Declarative
+    // registration keeps the singleton visible to qmllint/qmlsc and — unlike a runtime
+    // qmlRegisterSingletonInstance into the RpiImager URI — does not disturb the
+    // qt_add_qml_module module's other C++ types (HWListModel, DriveListModel, ...).
+    ImageWriter::setQmlInstance(&imageWriter);
+
     engine.setInitialProperties(QVariantMap{
-        {"imageWriter", QVariant::fromValue(&imageWriter)},
         {"showLanguageSelection", showLanguageSelection}
     });
     const QString qmlSourceDir = qEnvironmentVariable("RPI_IMAGER_QML_SOURCE_DIR");
@@ -709,7 +751,13 @@ int main(int argc, char *argv[])
 
     // If launched via custom URL scheme on Windows/Linux, deliver it now
     if (!callbackUrl.isEmpty()) {
-        imageWriter.handleIncomingUrl(callbackUrl);
+        if (callbackUrl.isLocalFile()) {
+            // Local manifest file opened by double-click: set repo URL directly (like --repo)
+            // so the deferred isOnline() fetch uses the correct URL instead of the default.
+            imageWriter.setCustomOsListUrl(callbackUrl);
+        } else {
+            imageWriter.handleIncomingUrl(callbackUrl);
+        }
     }
     // Forward platform URL open events to QML via ImageWriter (no-ops, kept for future use)
     QObject::connect(&app, &QGuiApplication::applicationStateChanged, &imageWriter, [](Qt::ApplicationState){ /* no-op */ });
@@ -789,6 +837,127 @@ int main(int argc, char *argv[])
             emit imageWriter.permissionWarning(permissionMessage);
         }, Qt::QueuedConnection);
     }
+
+#ifdef IMAGER_ENABLE_TEST_HOOKS
+    // Test-only screenshot hook, compiled in only for -DENABLE_TEST_HOOKS=ON.
+    // When RPI_IMAGER_SCREENSHOT names a file, grab the window once it has
+    // settled and exit. src/test/embedded_scaling uses this to confirm the UI
+    // actually lays out at the scale factor chosen for a display, rather than
+    // only that the right factor was chosen.
+    //
+    // Never built for release: this writes a capture of the window — which on
+    // the customisation steps holds a Wi-Fi key and a user password — to a path
+    // the caller chooses, in a process the embedded image runs as root.
+    if (const QByteArray screenshotPath = qgetenv("RPI_IMAGER_SCREENSHOT"); !screenshotPath.isEmpty())
+    {
+        auto *grabTarget = qobject_cast<QQuickWindow *>(qmlwindow);
+        if (!grabTarget)
+        {
+            qWarning() << "Screenshot requested but the root QML object is not a window";
+        }
+        else
+        {
+            // main.qml leaves the embedded window unsized (width/height -1)
+            // because linuxfb always makes the platform window cover the
+            // framebuffer. Offscreen rendering has no such rule, so hand the
+            // window the screen it is standing in for; without this QML lays
+            // out at 1x1 and the grab says nothing. Qt reports screen geometry
+            // in device-independent pixels, so the grab still comes back at the
+            // panel's full pixel count once the scale factor is applied.
+            if (grabTarget->width() <= 1 || grabTarget->height() <= 1)
+            {
+                const QScreen *hostScreen = grabTarget->screen() ? grabTarget->screen()
+                                                                 : QGuiApplication::primaryScreen();
+                if (hostScreen)
+                    grabTarget->setGeometry(hostScreen->geometry());
+            }
+
+            // The first frame is drawn before fonts, icons and the OS list have
+            // settled, so wait before grabbing. Tune with
+            // RPI_IMAGER_SCREENSHOT_DELAY_MS on a slow or emulated host.
+            const int delayMs = qEnvironmentVariableIsSet("RPI_IMAGER_SCREENSHOT_DELAY_MS")
+                                    ? qEnvironmentVariableIntValue("RPI_IMAGER_SCREENSHOT_DELAY_MS")
+                                    : 3000;
+            // Optionally jump the wizard to a named step first. Embedded mode
+            // always opens on language selection, which holds a single combo
+            // box, so a layout judged only there says little about the
+            // form-heavy pages. RPI_IMAGER_SCREENSHOT_STEP takes either a step
+            // index or a WizardContainer constant's name without its prefix,
+            // e.g. "WifiCustomization" for stepWifiCustomization.
+            const QByteArray stepRequest = qgetenv("RPI_IMAGER_SCREENSHOT_STEP");
+
+            const QString path = QString::fromLocal8Bit(screenshotPath);
+            const auto grabAndQuit = [grabTarget, path]() {
+                const QImage frame = grabTarget->grabWindow();
+                if (frame.isNull() || !frame.save(path))
+                {
+                    qWarning() << "Screenshot: could not write" << path;
+                    QCoreApplication::exit(1);
+                    return;
+                }
+                qInfo().nospace() << "Screenshot: wrote " << path << " at "
+                                  << frame.width() << "x" << frame.height() << " px";
+                QCoreApplication::quit();
+            };
+
+            QTimer::singleShot(delayMs, grabTarget, [grabTarget, stepRequest, grabAndQuit]() {
+                if (stepRequest.isEmpty())
+                {
+                    grabAndQuit();
+                    return;
+                }
+
+                QObject *wizard = findWizardStepHost(grabTarget);
+                if (!wizard)
+                {
+                    qWarning() << "Screenshot: no wizard container found; cannot jump to step"
+                               << stepRequest;
+                    QCoreApplication::exit(1);
+                    return;
+                }
+
+                bool isIndex = false;
+                int step = QString::fromLatin1(stepRequest).toInt(&isIndex);
+                if (!isIndex)
+                {
+                    const QByteArray property = QByteArray("step") + stepRequest;
+                    const QVariant named = wizard->property(property.constData());
+                    if (!named.isValid())
+                    {
+                        qWarning() << "Screenshot: wizard has no step named" << property;
+                        QCoreApplication::exit(1);
+                        return;
+                    }
+                    step = named.toInt();
+                }
+
+                // Steps normally unlock as their prerequisites are met, and a
+                // screenshot run has satisfied none of them. Marking them all
+                // permissible renders the sidebar the way a real run would
+                // rather than greying most of it out.
+                const int totalSteps = wizard->property("totalSteps").toInt();
+                if (totalSteps > 0 && totalSteps < 31)
+                    wizard->setProperty("permissibleStepsBitmap", (1 << totalSteps) - 1);
+
+                // jumpToStep() is what a sidebar click calls: it moves the
+                // stack as well as the highlight. Setting currentStep alone
+                // repaints the sidebar and leaves the page behind.
+                if (!QMetaObject::invokeMethod(wizard, "jumpToStep", Q_ARG(QVariant, step)))
+                {
+                    qWarning() << "Screenshot: wizard refused jumpToStep" << step;
+                    QCoreApplication::exit(1);
+                    return;
+                }
+                qInfo().nospace() << "Screenshot: jumped to wizard step " << step
+                                  << " (" << stepRequest.constData() << ")";
+
+                // Let the step lay out, and its own deferred work settle,
+                // before grabbing.
+                QTimer::singleShot(1000, grabTarget, grabAndQuit);
+            });
+        }
+    }
+#endif // IMAGER_ENABLE_TEST_HOOKS
 
     int rc = app.exec();
 
