@@ -165,8 +165,9 @@ Item {
     // Shared layout tokens for the main application surface.
     readonly property int pageMargin: 8
     readonly property int panelGap: 16
-    readonly property int panelRadius: 8
     readonly property int contentRadius: 14
+    readonly property int panelRadius: contentRadius
+    readonly property int buttonRadius: 8
     readonly property int borderWidth: 1
     readonly property int titleBarHeight: 26
     readonly property int titleBarRadius: 14

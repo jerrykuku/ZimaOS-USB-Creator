@@ -139,6 +139,7 @@ ApplicationWindow {
             color: "#666666"
             font.family: Style.fontFamilyBold
             font.pixelSize: Style.fontSizeSm
+            font.bold: true
             elide: Text.ElideRight
             width: parent.width - 180
             horizontalAlignment: Text.AlignHCenter

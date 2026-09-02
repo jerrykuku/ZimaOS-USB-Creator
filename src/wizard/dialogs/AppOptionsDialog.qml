@@ -16,7 +16,7 @@ BaseDialog {
     id: popup
     
     // Override default height for this more complex dialog
-    height: Math.max(280, contentLayout ? (contentLayout.implicitHeight + Style.cardPadding * 2) : 280)
+    height: Math.max(280, contentLayout ? (contentLayout.implicitHeight + Style.popupMargin * 2) : 280)
     
     // imageWriter is inherited from BaseDialog
     // Optional reference to the wizard container for ephemeral flags
@@ -35,7 +35,7 @@ BaseDialog {
         chkBeep.naturalWidth,
         chkEject.naturalWidth,
         chkDisableWarnings.naturalWidth
-    ) + Style.cardPadding * 4  // Double padding: contentLayout + optionsLayout margins
+    ) + Style.popupMargin * 4  // Dialog and options layout margins
     
     // Register focus groups when component is ready
     Component.onCompleted: {
@@ -79,12 +79,12 @@ BaseDialog {
     // Options section
     Item {
         Layout.fillWidth: true
-        Layout.preferredHeight: optionsLayout.implicitHeight + Style.cardPadding
+        Layout.preferredHeight: optionsLayout.implicitHeight
 
         ColumnLayout {
             id: optionsLayout
             anchors.fill: parent
-            anchors.margins: Style.cardPadding
+            anchors.margins: 0
             spacing: Style.spacingMedium
 
             ImOptionPill {
@@ -199,14 +199,14 @@ BaseDialog {
     Rectangle {
         Layout.fillWidth: true
         // Ensure minimum width accommodates buttons
-        Layout.minimumWidth: cancelButton.implicitWidth + saveButton.implicitWidth + Style.spacingMedium * 2 + Style.cardPadding
-        Layout.preferredHeight: buttonRow.implicitHeight + Style.cardPadding
+        Layout.minimumWidth: cancelButton.implicitWidth + saveButton.implicitWidth + Style.spacingMedium * 2
+        Layout.preferredHeight: buttonRow.implicitHeight
         color: Style.titleBackgroundColor
 
         RowLayout {
             id: buttonRow
             anchors.fill: parent
-            anchors.margins: Style.cardPadding / 2
+            anchors.margins: 0
             spacing: Style.spacingMedium
 
             Item {
@@ -295,7 +295,7 @@ BaseDialog {
             isInitializing = false;
             
             // Pre-compute final height before opening to avoid first-show reflow
-            var desired = contentLayout ? (contentLayout.implicitHeight + Style.cardPadding * 2) : 280;
+            var desired = contentLayout ? (contentLayout.implicitHeight + Style.popupMargin * 2) : 280;
             popup.height = Math.max(280, desired);
         }
     }

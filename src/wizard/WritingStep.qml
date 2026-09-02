@@ -510,7 +510,7 @@ WizardStepBase {
                 // focused blue treatment used by generic action buttons.
                 background: Rectangle {
                     color: Style.buttonBackgroundColor
-                    radius: 8
+                    radius: Style.buttonRadius
                     border.color: Style.popupBorderColor
                     border.width: 1
                     antialiasing: true

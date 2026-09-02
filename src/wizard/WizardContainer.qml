@@ -416,17 +416,6 @@ Item {
             border.width: Style.borderWidth
             radius: Style.panelRadius
 
-            // Soft card shadow matching the settings-style navigation panel.
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: -1
-                anchors.topMargin: 4
-                color: Qt.rgba(0, 0, 0, 0.05)
-                radius: Style.panelRadius
-                z: -1
-            }
-
-
             Flickable {
                 id: sidebarScroll
                 clip: true
@@ -707,7 +696,7 @@ Item {
                     activeFocusOnTab: true
                     background: Rectangle {
                         color: optionsButton.activeFocus ? Style.buttonFocusedBackgroundColor : (optionsButton.hovered ? Style.buttonHoveredBackgroundColor : Style.transparent)
-                        radius: Style.panelRadius
+                        radius: Style.buttonRadius
                         border.color: Style.transparent
                         border.width: 0
                         antialiasing: true

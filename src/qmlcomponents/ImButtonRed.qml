@@ -35,7 +35,7 @@ Button {
                    ? Style.button2HoveredBackgroundColor
                    : (control.hovered ? Style.button2HoveredBackgroundColor : Style.button2BackgroundColor))
                : Style.buttonDisabledBackgroundColor
-        radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : Style.panelRadius
+        radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : Style.buttonRadius
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
     }
