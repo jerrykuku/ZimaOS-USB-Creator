@@ -14,7 +14,7 @@ import RpiImager
 Item {
     id: root
 
-    required property ImageWriter imageWriter
+    required property var imageWriter
     property var optionsPopup: null
     // Show landing language selection step at startup
     property bool showLanguageSelection: false
@@ -139,6 +139,7 @@ Item {
     readonly property int stepDone: 12
 
     signal wizardCompleted
+    signal appOptionsRequested
     signal updatePopupRequested(url updateUrl, string version)
 
     // Focus anchor for global keyboard navigation
@@ -701,6 +702,7 @@ Item {
                     Keys.onEnterPressed: clicked()
                     Keys.onReturnPressed: clicked()
                     onClicked: {
+                        root.appOptionsRequested()
                         if (root.optionsPopup) {
                             if (!root.optionsPopup.wizardContainer) {
                                 root.optionsPopup.wizardContainer = root;

@@ -108,6 +108,7 @@ ApplicationWindow {
         WizardContainer {
             id: wizardContainer
             anchors.fill: parent
+            imageWriter: ImageWriterSingleton
             overlayRootRef: overlayRoot
             // Show Language step if C++ requested it
             showLanguageSelection: window.showLanguageSelection

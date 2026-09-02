@@ -144,10 +144,10 @@ BaseDialog {
                          imageWriter.isSecureBootForcedByCliFlag() ||
                          imageWriter.checkSWCapability("secure_boot")
                 // Disable while write is in progress
-                enabled: imageWriter.writeState === ImageWriter.Idle ||
-                         imageWriter.writeState === ImageWriter.Succeeded ||
-                         imageWriter.writeState === ImageWriter.Failed ||
-                         imageWriter.writeState === ImageWriter.Cancelled
+                enabled: imageWriter.writeState === ImageWriterSingleton.Idle ||
+                         imageWriter.writeState === ImageWriterSingleton.Succeeded ||
+                         imageWriter.writeState === ImageWriterSingleton.Failed ||
+                         imageWriter.writeState === ImageWriterSingleton.Cancelled
                 Component.onCompleted: {
                     focusItem.activeFocusOnTab = true
                 }

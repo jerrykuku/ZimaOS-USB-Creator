@@ -461,6 +461,7 @@ if(NOT BUILD_CLI_ONLY)
         wizard/dialogs/AppOptionsDialog.qml
         wizard/dialogs/DebugOptionsDialog.qml
         wizard/dialogs/ConfirmOtpProgramDialog.qml
+        wizard/dialogs/PasswordlessSudoWarningDialog.qml
         wizard/LanguageSelectionStep.qml
         qmlcomponents/BaseDialog.qml
         qmlcomponents/ImButton.qml

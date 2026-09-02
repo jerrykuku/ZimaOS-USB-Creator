@@ -16,6 +16,9 @@ import RpiImager
  */
 Dialog {
     id: root
+
+    // Application-owned writer instance injected by main.qml where needed.
+    property var imageWriter: ImageWriterSingleton
     
     // We declare it here so bindings work, but children override it
     
