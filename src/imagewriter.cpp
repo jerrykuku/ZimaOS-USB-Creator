@@ -41,6 +41,7 @@
 #include <QProcess>
 #include <QRegularExpression>
 #include <QStandardPaths>
+#include <QCryptographicHash>
 #include <QStorageInfo>
 #include <QTimeZone>
 #include <QNetworkInterface>
@@ -149,6 +150,10 @@ ImageWriter::ImageWriter(QObject *parent)
       _progressWatchdog(nullptr),
       _forceSyncMode(false)
 {
+    // Load the last complete manifest immediately. Network refresh continues
+    // in the background and replaces it when a newer response arrives.
+    loadCachedOsList();
+
     // Initialise CacheManager
     _cacheManager = new CacheManager(this);
     
@@ -2217,6 +2222,7 @@ void ImageWriter::onOsListFetchComplete(const QByteArray &data, const QUrl &url,
 
         // Queue fetches for any subitems_url entries
         queueSublistFetches(response_object["os_list"].toArray(), 1);
+        saveCachedOsList();
         emit osListPrepared();
         
         // Record performance event for OS list fetch
@@ -2427,10 +2433,51 @@ void ImageWriter::beginOSListFetch() {
     fetcher->fetch(topUrl);
 }
 
+QString ImageWriter::osListCachePath() const
+{
+    const QByteArray key = QCryptographicHash::hash(_repo.toString().toUtf8(), QCryptographicHash::Sha256).toHex().left(16);
+    const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    QDir().mkpath(dir);
+    return dir + QDir::separator() + QStringLiteral("manifest-%1.json").arg(QString::fromLatin1(key));
+}
+
+void ImageWriter::loadCachedOsList()
+{
+    QFile file(osListCachePath());
+    if (!file.open(QIODevice::ReadOnly))
+        return;
+    QJsonParseError error;
+    const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
+    if (error.error != QJsonParseError::NoError || !document.isObject() ||
+        !document.object().contains(QStringLiteral("imager")) ||
+        !document.object().contains(QStringLiteral("os_list"))) {
+        qWarning() << "Ignoring invalid cached OS manifest:" << file.fileName();
+        return;
+    }
+    _completeOsList = document;
+    qInfo() << "Loaded cached OS manifest:" << file.fileName();
+}
+
+void ImageWriter::saveCachedOsList() const
+{
+    if (_completeOsList.isEmpty())
+        return;
+    const QString path = osListCachePath();
+    const QString tempPath = path + QStringLiteral(".tmp");
+    QFile file(tempPath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        return;
+    file.write(_completeOsList.toJson(QJsonDocument::Compact));
+    file.close();
+    QFile::remove(path);
+    QFile::rename(tempPath, path);
+}
+
 void ImageWriter::refreshOsListFrom(const QUrl &url) {
     setCustomRepo(url);
     bool wasAvailable = !_completeOsList.isEmpty();
     _completeOsList = QJsonDocument();
+    loadCachedOsList();
     if (wasAvailable) {
         // Notify UI that OS list is now unavailable (cleared for refetch)
         emit osListUnavailableChanged();

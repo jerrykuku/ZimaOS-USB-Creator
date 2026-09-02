@@ -560,6 +560,9 @@ private:
     // refer to an external JSON list, fetch the list and put it in place.
     void fillSubLists(QJsonArray &topLevel);
     void queueSublistFetches(const QJsonArray &list, int depth);
+    void loadCachedOsList();
+    void saveCachedOsList() const;
+    QString osListCachePath() const;
     QHash<QUrl, qint64> _pendingFetchStartTimes;  // Track request start times for performance
     QJsonDocument _completeOsList;
     QJsonArray _deviceFilter, _hwCapabilities, _swCapabilities;
