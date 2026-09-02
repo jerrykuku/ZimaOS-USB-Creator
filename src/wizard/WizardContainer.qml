@@ -16,6 +16,8 @@ Item {
 
     required property var imageWriter
     property var optionsPopup: null
+    // Persisted sidebar width, with the standard width as the initial value.
+    property int sidebarWidthValue: Style.sidebarWidth
     // Show landing language selection step at startup
     property bool showLanguageSelection: false
     // Reference to the full-window overlay root for dialog parenting
