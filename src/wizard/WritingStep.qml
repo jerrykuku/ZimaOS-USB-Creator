@@ -20,13 +20,7 @@ WizardStepBase {
 
     title: qsTr("Write image")
     subtitle: {
-        if (root.isWriting) {
-            return qsTr("Writing in progress — do not disconnect the storage device")
-        } else if (root.isComplete) {
-            return qsTr("Write complete")
-        } else {
-            return qsTr("Review your choices and write the image to the storage device")
-        }
+        return ""
     }
     nextButtonText: {
         if (root.isWriting) {
@@ -92,8 +86,19 @@ WizardStepBase {
     content: [
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Style.cardPadding
+        anchors.margins: Style.stepContentMargins
         spacing: Style.spacingLarge
+
+        FocusableText {
+            id: reviewDescription
+            text: qsTr("Review your choices and write the image to the storage device")
+            visible: !root.isWriting && !root.isComplete
+            font.pointSize: Style.fontSizeSubtitle
+            font.family: Style.fontFamily
+            color: Style.textDescriptionColor
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignTop
+        }
 
         // Top spacer to vertically center progress section when writing/complete
         Item { Layout.fillHeight: true; visible: root.isWriting || root.isComplete }
@@ -297,15 +302,28 @@ WizardStepBase {
             ProgressBar {
                 id: progressBar
                 Layout.fillWidth: true
-                Layout.preferredHeight: Style.spacingLarge
+                Layout.preferredHeight: 10
                 value: 0
                 from: 0
                 to: 100
                 indeterminate: root.isIndeterminateProgress && !root.isVerifying && !root.isFinalising
                                && !PlatformHelper.prefersReducedMotion
 
-                Material.accent: Style.progressBarVerifyForegroundColor
-                Material.background: Style.progressBarBackgroundColor
+                Material.accent: Style.zimaBlue
+                Material.background: Style.progressBarTrackColor
+                background: Rectangle {
+                    implicitHeight: 8
+                    radius: height / 2
+                    color: Style.progressBarTrackColor
+                }
+                contentItem: Item {
+                    Rectangle {
+                        width: progressBar.visualPosition * parent.width
+                        height: parent.height
+                        radius: height / 2
+                        color: Style.zimaBlue
+                    }
+                }
                 visible: root.isWriting
                 Accessible.role: Accessible.ProgressBar
                 Accessible.name: qsTr("Write progress")
@@ -316,11 +334,15 @@ WizardStepBase {
             Text {
                 id: bottleneckText
                 text: {
-                    if (root.bottleneckStatus !== "") {
+                    var status = root.bottleneckStatus
+                    if (status === "Limited by download speed") status = qsTr("Limited by download speed")
+                    else if (status === "Limited by decompression speed") status = qsTr("Limited by decompression speed")
+                    else if (status === "Limited by storage device speed") status = qsTr("Limited by storage device speed")
+                    if (status !== "") {
                         if (root.writeThroughputKBps > 0) {
-                            return root.bottleneckStatus + " (" + Math.round(root.writeThroughputKBps / 1024) + " MB/s)"
+                            return status + " (" + Math.round(root.writeThroughputKBps / 1024) + " MB/s)"
                         }
-                        return root.bottleneckStatus
+                        return status
                     }
                     return ""
                 }
@@ -464,7 +486,7 @@ WizardStepBase {
             font.pointSize: Style.fontSizeFormLabel
             font.family: Style.fontFamily
             color: Style.textMetadataColor
-            horizontalAlignment: Text.AlignRight
+            horizontalAlignment: Text.AlignHCenter
             Layout.fillWidth: true
             Layout.topMargin: Style.spacingSmall
             visible: !confirmDialog.allowAccept
@@ -484,6 +506,15 @@ WizardStepBase {
             ImButton {
                 id: cancelButton
                 text: CommonStrings.cancel
+                // Match the neutral Return button styling instead of the
+                // focused blue treatment used by generic action buttons.
+                background: Rectangle {
+                    color: Style.buttonBackgroundColor
+                    radius: 8
+                    border.color: Style.popupBorderColor
+                    border.width: 1
+                    antialiasing: true
+                }
                 accessibleDescription: qsTr("Cancel and return to the write summary without erasing the storage device")
                 activeFocusOnTab: true
                 onClicked: confirmDialog.close()

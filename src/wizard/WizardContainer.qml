@@ -398,7 +398,11 @@ Item {
     // Main horizontal layout
     RowLayout {
         anchors.fill: parent
-        spacing: 0
+        // The parent content surface supplies the shared 8px outer inset.
+        anchors.leftMargin: 0
+        anchors.rightMargin: 0
+        // Single source of truth for the gap between the sidebar and content.
+        spacing: 16
 
         // Sidebar
         Rectangle {
@@ -409,7 +413,18 @@ Item {
             Layout.fillHeight: true
             color: Style.sidebarBackgroundColour
             border.color: Style.sidebarBorderColour
-            border.width: 0
+            border.width: 1
+            radius: 8
+
+            // Soft card shadow matching the settings-style navigation panel.
+            Rectangle {
+                anchors.fill: parent
+                anchors.margins: -1
+                anchors.topMargin: 4
+                color: Qt.rgba(0, 0, 0, 0.05)
+                radius: 8
+                z: -1
+            }
 
 
             Flickable {
@@ -437,13 +452,14 @@ Item {
                     Text {
                         id: sidebarHeader
                         text: qsTr("Setup steps")
-                        font.pixelSize: Style.fontSizeTitle
+                        font.pixelSize: Style.fontSizeHeading
                         font.family: Style.fontFamily
                         font.bold: true
                         color: Style.sidebarTitleColor
                         Layout.fillWidth: true
                         Layout.bottomMargin: Style.spacingSmall
                         Layout.leftMargin: Style.spacingMedium
+                        transform: Translate { y: 4 }
                         Accessible.role: Accessible.Heading
                         Accessible.name: text
                     }
@@ -481,10 +497,14 @@ Item {
                                 id: headerRect
                                 anchors.left: parent.left
                                 anchors.right: parent.right
+                                anchors.rightMargin: Style.sidebarPadding
                                 anchors.top: parent.top
                                 height: Style.sidebarItemHeight
-                                color: stepItem.index === root.getSidebarIndex(root.currentStep) ? Style.sidebarActiveBackgroundColor : Style.transparent
-                                border.color: stepItem.index === root.getSidebarIndex(root.currentStep) ? Style.sidebarActiveBorderColor : Style.transparent
+                                property bool hovered: false
+                                color: stepItem.index === root.getSidebarIndex(root.currentStep)
+                                       ? Style.sidebarActiveBackgroundColor
+                                       : (hovered ? Style.sidebarHoverBackgroundColor : Style.transparent)
+                                border.color: stepItem.index === root.getSidebarIndex(root.currentStep) ? Style.sidebarBorderColour : Style.transparent
                                 border.width: 1
                                 radius: root.imageWriter.isEmbeddedMode() ? Style.sidebarItemBorderRadiusEmbedded : Style.sidebarItemBorderRadius
                                 antialiasing: true  // Smooth edges at non-integer scale factors
@@ -494,6 +514,8 @@ Item {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     enabled: stepItem.isClickable
+                                    onEntered: headerRect.hovered = true
+                                    onExited: headerRect.hovered = false
                                     z: 2
                                     cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                                     onClicked: {
@@ -503,6 +525,14 @@ Item {
                                             root.jumpToStep(targetStep);
                                         }
                                     }
+                                }
+                                Rectangle {
+                                    visible: headerRect.hovered || stepItem.index === root.getSidebarIndex(root.currentStep)
+                                    anchors.fill: parent
+                                    anchors.topMargin: 8
+                                    color: Qt.rgba(0, 0, 0, 0.08)
+                                    radius: headerRect.radius
+                                    z: -1
                                 }
                                 RowLayout {
                                     anchors.fill: parent
@@ -662,7 +692,7 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.leftMargin: Style.spacingSmall
-                anchors.bottomMargin: Style.spacingSmall
+                anchors.bottomMargin: 0
                 height: Style.buttonHeightStandard
                 z: 2
 
@@ -670,15 +700,16 @@ Item {
                     id: optionsButton
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
-                    width: 40
-                    height: 40
+                    anchors.bottomMargin: 8
+                    width: 32
+                    height: 32
                     padding: 4
                     activeFocusOnTab: true
                     background: Rectangle {
-                        color: optionsButton.enabled ? (optionsButton.activeFocus ? Style.buttonFocusedBackgroundColor : (optionsButton.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor)) : Qt.rgba(0, 0, 0, 0.1)
+                        color: optionsButton.activeFocus ? Style.buttonFocusedBackgroundColor : (optionsButton.hovered ? Style.buttonHoveredBackgroundColor : Style.transparent)
                         radius: 8
-                        border.color: optionsButton.enabled ? Style.popupBorderColor : Qt.rgba(0, 0, 0, 0.2)
-                        border.width: 1
+                        border.color: Style.transparent
+                        border.width: 0
                         antialiasing: true
                         clip: true
                     }
@@ -688,8 +719,8 @@ Item {
                         smooth: true
                         antialiasing: true
                         anchors.centerIn: parent
-                        width: 20
-                        height: 20
+                        width: 16
+                        height: 16
                     }
                     Accessible.role: Accessible.Button
                     Accessible.name: qsTr("App Options")
@@ -718,19 +749,6 @@ Item {
             id: wizardStack
             Layout.fillWidth: true
             Layout.fillHeight: true
-            // add background rectangle to content area to cover scrollbar gaps and provide consistent background
-            Rectangle {
-                anchors.fill: parent
-                color: Style.listViewRowBackgroundColor
-                border.color: Style.popupBorderColor
-                border.width: 1
-                radius: 14
-                anchors.rightMargin: 8
-                anchors.topMargin: 8
-                anchors.bottomMargin: 8
-                anchors.leftMargin: 8
-                
-            }
 
             // Skip device selection if offline (no network = no device list available)
             // Start with language selection if requested, otherwise device selection if online, or OS selection if offline

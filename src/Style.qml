@@ -27,13 +27,15 @@ Item {
     function scaled(base) { return Math.round(base * textScale) }
 
     // === COLORS ===
-    readonly property color mainBackgroundColor: "#FAFAFA"
+    readonly property color mainBackgroundColor: "#F5F5F5"
     readonly property color transparent: "transparent"
     readonly property color zimaBlue: "#0057FF"
 
     readonly property color buttonBackgroundColor: mainBackgroundColor
     readonly property color buttonForegroundColor: zimaBlue
     readonly property color buttonTextColor: "#404040"
+    readonly property color buttonDisabledBackgroundColor: "#E5E5E5"
+    readonly property color buttonDisabledTextColor: "#888888"
     readonly property color buttonFocusedBackgroundColor: "#d1dcfb"
     readonly property color buttonHoveredBackgroundColor: "#f2f2f2"
 
@@ -49,12 +51,13 @@ Item {
 
     readonly property color titleBackgroundColor: "#f5f5f5"
     readonly property color titleSeparatorColor: "#afafaf"
-    readonly property color popupBorderColor: "#dcdcdc"
+    readonly property color popupBorderColor: "#e7e3e4"
 
     readonly property color listViewRowBackgroundColor: "#ffffff"
     readonly property color listViewHoverRowBackgroundColor: titleBackgroundColor
     // Selection highlight color for OS/device lists
     readonly property color listViewHighlightColor: "#f4f8fc"
+    readonly property color listViewSelectedBorderColor: "#7aa7e8"
 
     // Utility translucent colors
     readonly property color translucentWhite10: Qt.rgba(255, 255, 255, 0.1)
@@ -65,14 +68,15 @@ Item {
     // Sidebar colors
     readonly property color sidebarTitleColor: "#171717"
     readonly property color sidebarActiveBackgroundColor: "#F5F5F5"
-    readonly property color sidebarActiveBorderColor: zimaBlue
+    readonly property color sidebarActiveBorderColor: "#D4D4D4"
     readonly property color sidebarTextOnActiveColor: "#FFFFFF"
     readonly property color sidebarTextOnInactiveColor: zimaBlue
-    readonly property color sidebarTextDisabledColor: "#E0E0E0"
+    readonly property color sidebarTextDisabledColor: "#888888"
     // Sidebar controls
     readonly property color sidebarControlBorderColor: "#767676"
-    readonly property color sidebarBackgroundColour: mainBackgroundColor
-    readonly property color sidebarBorderColour: zimaBlue
+    readonly property color sidebarBackgroundColour: "#FFFFFF"
+    readonly property color sidebarBorderColour: "#E7E3E4"
+    readonly property color sidebarHoverBackgroundColor: "#E5E5E5"
 
     // OS metadata
     readonly property color textMetadataColor: "#646464"
@@ -120,7 +124,7 @@ Item {
     readonly property real fontSizeXl: Math.round(24 * fontScale)
 
     // Role tokens mapped to base scale
-    readonly property real fontSizeTitle: fontSizeXl
+    readonly property real fontSizeTitle: fontSizeMd
     readonly property real fontSizeHeading: fontSizeMd
     readonly property real fontSizeLargeHeading: fontSizeMd
     readonly property real fontSizeFormLabel: fontSizeSm
@@ -157,8 +161,9 @@ Item {
     readonly property int listItemBorderRadius: 8
     readonly property int listItemPadding: 12
     readonly property int cardPadding: 16
+    readonly property int popupMargin: 16
     readonly property int scrollBarWidth: 10
-    readonly property int sidebarWidth: 200
+    readonly property int sidebarWidth: 180
     readonly property int sidebarMinWidth: 150
     readonly property int sidebarMaxWidth: 350
     readonly property int sidebarPadding: 8
@@ -171,6 +176,7 @@ Item {
     readonly property int buttonBorderRadiusEmbedded: 8
     // Sidebar item heights
     readonly property int sidebarItemHeight: 40
+    readonly property int contentMaxHeight: 360
     readonly property int sidebarSubItemHeight: sidebarItemHeight - 12
 
     function cornerRadius(normalRadius) { return normalRadius }
@@ -178,8 +184,8 @@ Item {
     // === LAYOUT (scaled by text scale factor) ===
     readonly property int formColumnSpacing: scaled(20)
     readonly property int formRowSpacing: scaled(15)
-    readonly property int stepContentMargins: scaled(24)
-    readonly property int stepContentSpacing: scaled(16)
+    readonly property int stepContentMargins: scaled(8)
+    readonly property int stepContentSpacing: scaled(8)
 
     // Font loaders
     FontLoader { id: robotoRegular; source: "fonts/Roboto-Regular.ttf" }

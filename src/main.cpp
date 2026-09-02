@@ -22,6 +22,7 @@
 #include "iconmultifetcher.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlAbstractUrlInterceptor>
 #include <QQmlContext>
 #include <QIcon>
 #include "imagewriter.h"
@@ -34,6 +35,31 @@
 #include <QFileOpenEvent>
 #include <QtMath>
 #include <QtQuickControls2/QQuickStyle>
+#include <QDir>
+
+// In QML live mode, qt_add_qml_module types would otherwise resolve to the
+// compiled qrc:/qt/qml/RpiImager copies. Rewrite those URLs to the source tree
+// so edits to any QML component take effect on the next launch.
+class LiveQmlUrlInterceptor final : public QQmlAbstractUrlInterceptor {
+public:
+    explicit LiveQmlUrlInterceptor(const QString &sourceDir)
+        : m_sourceDir(sourceDir) {}
+
+    QUrl intercept(const QUrl &url, DataType type) override {
+        Q_UNUSED(type);
+        static const QString prefix = QStringLiteral("/qt/qml/RpiImager/");
+        if (url.scheme() == QLatin1String("qrc") && url.path().startsWith(prefix)) {
+            const QString relative = url.path().mid(prefix.size());
+            const QString localPath = QDir(m_sourceDir).filePath(relative);
+            if (QFileInfo::exists(localPath))
+                return QUrl::fromLocalFile(localPath);
+        }
+        return url;
+    }
+
+private:
+    QString m_sourceDir;
+};
 #endif
 #include "platformquirks.h"
 #ifdef Q_OS_DARWIN
@@ -702,6 +728,7 @@ int main(int argc, char *argv[])
     if (!qmlSourceDir.isEmpty() && QFileInfo::exists(sourceMainQml))
     {
         qDebug() << "Loading QML from development source directory:" << qmlSourceDir;
+        engine.addUrlInterceptor(new LiveQmlUrlInterceptor(qmlSourceDir));
         engine.addImportPath(qmlSourceDir);
         engine.load(QUrl::fromLocalFile(sourceMainQml));
     }

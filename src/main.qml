@@ -19,6 +19,22 @@ import RpiImager
 ApplicationWindow {
     id: window
     visible: true
+    flags: Qt.FramelessWindowHint | Qt.Window
+
+    background: Rectangle {
+        color: Style.transparent
+    }
+    color: Style.transparent
+
+    // Single rounded surface for the title bar and application content.
+    Rectangle {
+        id: windowSurface
+        anchors.fill: parent
+        color: Style.mainBackgroundColor
+        radius: 14
+        clip: true
+        z: 0
+    }
 
     // Whether to show the landing Language Selection step (set from C++)
     property bool showLanguageSelection: false
@@ -39,7 +55,7 @@ ApplicationWindow {
     property bool isOffline: ImageWriterSingleton.isOsListUnavailable
     
     title: {
-        var baseTitle = qsTr("ZimaOS USB Creator %1").arg(ImageWriterSingleton.constantVersion())
+        var baseTitle = qsTr("ZimaOS USB Creator")
         if (isOffline) {
             baseTitle += " — " + qsTr("Offline")
         }
@@ -49,6 +65,85 @@ ApplicationWindow {
         }
 
         return baseTitle
+    }
+
+    // Custom title bar keeps the application chrome consistent across platforms.
+    Rectangle {
+        id: customTitleBar
+        parent: windowSurface
+        anchors.top: windowSurface.top
+        anchors.left: windowSurface.left
+        anchors.right: windowSurface.right
+        height: 26
+        color: Style.mainBackgroundColor
+        radius: 14
+        clip: true
+        z: 2000
+
+        MouseArea {
+            anchors.fill: parent
+            onPressed: window.startSystemMove()
+        }
+
+        Row {
+            anchors.left: parent.left
+            anchors.leftMargin: 12
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
+
+            Repeater {
+                model: ["#ff5f57", "#febc2e", "#28c840"]
+                delegate: Rectangle {
+                    required property string modelData
+                    required property int index
+                    width: 12
+                    height: 12
+                    radius: 6
+                    color: modelData
+                    border.color: Qt.darker(modelData, 1.08)
+                    border.width: 1
+
+                    property bool hovered: false
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: parent.hovered = true
+                        onExited: parent.hovered = false
+                        onClicked: {
+                            if (index === 0)
+                                window.close()
+                            else if (index === 1)
+                                window.showMinimized()
+                            else
+                                window.visibility === Window.Maximized ? window.showNormal() : window.showMaximized()
+                        }
+                    }
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: index === 0 ? "×" : (index === 1 ? "−" : "＋")
+                        visible: parent.hovered
+                        color: "#5a5a5a"
+                        font.pixelSize: 11
+                        font.bold: true
+                    }
+                }
+            }
+        }
+
+
+        Text {
+            anchors.centerIn: parent
+            text: window.title
+            color: "#666666"
+            font.family: Style.fontFamilyBold
+            font.pixelSize: Style.fontSizeSm
+            elide: Text.ElideRight
+            width: parent.width - 180
+            horizontalAlignment: Text.AlignHCenter
+        }
+
     }
 
     Component.onCompleted: {
@@ -102,8 +197,18 @@ ApplicationWindow {
     // Main wizard interface
     Rectangle {
         id: wizardBackground
-        anchors.fill: parent
+        parent: windowSurface
+        anchors.left: windowSurface.left
+        anchors.right: windowSurface.right
+        anchors.bottom: windowSurface.bottom
+        anchors.top: customTitleBar.bottom
+        anchors.leftMargin: 8
+        anchors.rightMargin: 8
+        anchors.bottomMargin: 8
+        anchors.topMargin: 8
         color: Style.mainBackgroundColor
+        radius: 12
+        clip: true
 
         WizardContainer {
             id: wizardContainer

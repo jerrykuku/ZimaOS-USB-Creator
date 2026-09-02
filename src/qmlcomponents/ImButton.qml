@@ -23,16 +23,16 @@ Button {
     rightInset: 0
     topPadding: Style.buttonPadding
     bottomPadding: Style.buttonPadding
-    leftPadding: Style.buttonPadding
-    rightPadding: Style.buttonPadding
+    leftPadding: 12
+    rightPadding: 12
     
     // Allow instances to provide a custom accessibility description
     property string accessibleDescription: ""
     
     background: Rectangle {
-        color: control.enabled ? (control.activeFocus ? Style.buttonFocusedBackgroundColor : (control.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor)) : Qt.rgba(0, 0, 0, 0.1)
+        color: control.enabled ? (control.activeFocus ? Style.buttonFocusedBackgroundColor : (control.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor)) : Style.buttonDisabledBackgroundColor
         radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : 8
-        border.color: control.enabled ? Style.popupBorderColor : Qt.rgba(0, 0, 0, 0.2)
+        border.color: control.enabled ? Style.popupBorderColor : "#D0D0D0"
         border.width: 1
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
@@ -46,7 +46,7 @@ Button {
         font: control.font
         lineHeightMode: Text.FixedHeight
         lineHeight: Style.buttonLineHeight
-        color: control.enabled ? Style.buttonTextColor : Qt.rgba(0, 0, 0, 0.3)
+        color: control.enabled ? Style.buttonTextColor : Style.buttonDisabledTextColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight  // Truncate if layout constrains button below content width

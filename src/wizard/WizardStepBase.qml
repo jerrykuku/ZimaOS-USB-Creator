@@ -78,10 +78,11 @@ FocusScope {
     // Main layout
     ColumnLayout {
         anchors.fill: parent
-        anchors.leftMargin: Style.stepContentMargins
-        anchors.rightMargin: Style.stepContentMargins
+        anchors.leftMargin: 0
+        // The outer window surface already provides the shared 8px inset.
+        anchors.rightMargin: 0
         anchors.topMargin: Style.stepContentMargins
-        anchors.bottomMargin: Style.spacingSmall
+        anchors.bottomMargin: 0
         spacing: Style.stepContentSpacing
         
         // Header section
@@ -124,11 +125,24 @@ FocusScope {
             }
         }
         
-        // Content area (no Flickable to prevent input interception)
-        Item {
-            id: contentArea
+        // Framed, flexible content area. The title and actions remain outside
+        // this frame so they stay visually fixed at the top and bottom.
+        Rectangle {
+            id: contentFrame
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.maximumHeight: Style.contentMaxHeight
+            color: Style.listViewRowBackgroundColor
+            border.color: Style.popupBorderColor
+            border.width: 1
+            radius: 14
+
+            // Content area (no Flickable to prevent input interception)
+            Item {
+                id: contentArea
+                anchors.fill: parent
+                anchors.margins: Style.stepContentMargins
+            }
         }
         
         // Navigation buttons and network info
@@ -136,7 +150,7 @@ FocusScope {
             id: buttonRow
             Layout.fillWidth: true
             spacing: Style.spacingMedium
-            Layout.bottomMargin: Style.spacingSmallPlus
+            Layout.bottomMargin: 0
             
             // Embedded mode network info on the left
             Text {

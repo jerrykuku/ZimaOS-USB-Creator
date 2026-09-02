@@ -322,6 +322,7 @@ WizardStepBase {
                     // Main OS list
                     OSSelectionListView {
                         id: oslist
+                        spacing: Style.stepContentMargins
                         model: root.osmodel
                         delegate: osdelegate
                         accessibleName: {
@@ -390,7 +391,9 @@ WizardStepBase {
             // Let content determine height for balanced vertical padding
             // Grow with wrapped descriptions/status text, while keeping compact
             // rows for short entries.
-            height: Math.max(72, row.implicitHeight + Style.spacingSmallPlus + Style.spacingSmallPlus)
+            // Size each card from its actual content. The small minimum keeps
+            // short entries usable while multi-line metadata grows naturally.
+            height: Math.max(72, row.implicitHeight + Style.stepContentMargins * 2)
 
             // Accessibility properties
             Accessible.role: Accessible.ListItem
@@ -410,9 +413,11 @@ WizardStepBase {
                 radius: 8
                 border.color: (parentListView && parentListView.currentIndex === index) ? Style.zimaBlue : "transparent"
                 border.width: 1
-                anchors.bottomMargin: 4
-                anchors.topMargin: 4
-                anchors.rightMargin: ((parentListView && parentListView.contentHeight > parentListView.height) ? Style.scrollBarWidth + 4 : 0)
+                anchors.bottomMargin: 0
+                anchors.topMargin: 0
+                // Let delegates use the full content width; the ListView clips
+                // and scrolls independently without shrinking each item.
+                anchors.rightMargin: 0
                 Accessible.ignored: true
 
                 MouseArea {
@@ -450,10 +455,10 @@ WizardStepBase {
                 RowLayout {
                     id: row
                     anchors.fill: parent
-                    anchors.leftMargin: Style.listItemPadding
-                    anchors.rightMargin: Style.listItemPadding
-                    anchors.topMargin: Style.spacingSmall
-                    anchors.bottomMargin: Style.spacingMedium
+                    anchors.leftMargin: Style.stepContentMargins
+                    anchors.rightMargin: Style.stepContentMargins
+                    anchors.topMargin: Style.stepContentMargins
+                    anchors.bottomMargin: Style.stepContentMargins
                     spacing: Style.spacingMedium
 
                     // OS Icon
@@ -542,6 +547,7 @@ WizardStepBase {
 
         OSSelectionListView {
             id: sublistview
+            spacing: Style.stepContentMargins
             model: ListModel {
                 id: sublistModel
 

@@ -23,8 +23,8 @@ Button {
     rightInset: 0
     topPadding: Style.buttonPadding
     bottomPadding: Style.buttonPadding
-    leftPadding: Style.buttonPadding
-    rightPadding: Style.buttonPadding
+    leftPadding: 12
+    rightPadding: 12
     
     // Allow instances to provide a custom accessibility description
     property string accessibleDescription: ""
@@ -34,7 +34,7 @@ Button {
                ? (control.activeFocus
                    ? Style.button2HoveredBackgroundColor
                    : (control.hovered ? Style.button2HoveredBackgroundColor : Style.button2BackgroundColor))
-               : Qt.rgba(0, 0, 0, 0.1)
+               : Style.buttonDisabledBackgroundColor
         radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : 8
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
@@ -50,7 +50,7 @@ Button {
         lineHeight: Style.buttonLineHeight
         color: control.enabled
                ? (control.activeFocus || control.hovered ? Style.button2ForegroundColor : Style.button2ForegroundColor)
-               : Qt.rgba(0, 0, 0, 0.3)
+               : Style.buttonDisabledTextColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight  // Truncate if layout constrains button below content width

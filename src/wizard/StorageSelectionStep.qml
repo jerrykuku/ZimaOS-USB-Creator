@@ -291,6 +291,7 @@ WizardStepBase {
                 id: filterSystemDrives
                 checked: true
                 text: qsTr("Exclude system drives")
+                indicatorSize: 16
                 Accessible.description: qsTr("When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.")
 
                 onToggled: {
@@ -476,6 +477,21 @@ WizardStepBase {
                         visible: dstitem.unselectable
                         Accessible.ignored: true
                     }
+                }
+
+                // Keep the pointer affordance consistent across the entire
+                // storage row, including when hovering over text and icons.
+                MouseArea {
+                    anchors.fill: parent
+                    z: 10
+                    hoverEnabled: true
+                    enabled: !dstitem.unselectable
+                    cursorShape: dstitem.unselectable ? Qt.ForbiddenCursor : Qt.PointingHandCursor
+                    onClicked: {
+                        dstlist.currentIndex = dstitem.index
+                        root.selectDstItem(dstitem)
+                    }
+                    onDoubleClicked: dstlist.itemDoubleClicked(dstitem.index, dstitem)
                 }
             }
         }

@@ -297,12 +297,12 @@ WizardStepBase {
             Rectangle {
                 id: hwbgrect
                 anchors.fill: parent
-                anchors.bottomMargin: Style.sectionMargin
-                anchors.topMargin: Style.sectionMargin
+                anchors.bottomMargin: 0
+                anchors.topMargin: 0
 
                 color: (hwlist.currentIndex === hwitem.index) ? Style.listViewHighlightColor : (hwMouseArea.containsMouse ? Style.listViewHoverRowBackgroundColor : Style.listViewRowBackgroundColor)
                 // border color is the same as the highlight color
-                border.color: (hwlist.currentIndex === hwitem.index) ? Style.zimaBlue : "transparent"
+                border.color: (hwlist.currentIndex === hwitem.index) ? Style.listViewSelectedBorderColor : "transparent"
                 border.width: 1
                 radius: Style.listItemBorderRadius
                 antialiasing: true  // Smooth edges at non-integer scale factors
@@ -342,6 +342,7 @@ WizardStepBase {
                         source: hwitem.icon || ""
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
+                        Layout.alignment: Qt.AlignVCenter
                         fillMode: Image.PreserveAspectFit
                         smooth: true
                         mipmap: true
@@ -361,6 +362,7 @@ WizardStepBase {
 
                     ColumnLayout {
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignVCenter
                         spacing: Style.spacingXXSmall
 
                         Text {

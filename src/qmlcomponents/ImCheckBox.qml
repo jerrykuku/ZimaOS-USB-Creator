@@ -20,6 +20,7 @@ CheckBox {
     
     // Export the natural/desired width for dialog sizing calculations
     readonly property real naturalWidth: textMetrics.width + (indicator ? indicator.width : 20) + spacing + leftPadding + rightPadding
+    property int indicatorSize: 20
     
     // Measure text for naturalWidth (control.font is inherited from CheckBox)
     TextMetrics {
@@ -47,11 +48,11 @@ CheckBox {
     Component {
         id: squareIndicatorComponent
         Rectangle {
-            implicitWidth: 20
-            implicitHeight: 20
+            implicitWidth: control.indicatorSize
+            implicitHeight: control.indicatorSize
             x: control.leftPadding
             y: control.height / 2 - height / 2
-            radius: 0  // Square checkbox
+            radius: Math.max(2, Math.round(height * 0.2))
             border.color: control.checked ? Style.formControlActiveColor : "#bdbebf"
             border.width: 2
             color: control.checked ? Style.formControlActiveColor : Style.mainBackgroundColor

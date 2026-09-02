@@ -35,14 +35,14 @@ Dialog {
     // Dynamic width based on content, with min/max bounds
     // Grows to fit content (especially for long translated strings) but stays within window
     readonly property int minDialogWidth: 400
-    readonly property int maxDialogWidth: parent ? Math.max(minDialogWidth, parent.width - Style.cardPadding * 2) : 700
+    readonly property int maxDialogWidth: parent ? Math.max(minDialogWidth, parent.width - Style.popupMargin * 2) : 700
     // Use the largest of: minDialogWidth, explicit implicitWidth, or content-based width
-    readonly property int contentBasedWidth: contentLayout ? (contentLayout.implicitWidth + Style.cardPadding * 2) : minDialogWidth
+    readonly property int contentBasedWidth: contentLayout ? (contentLayout.implicitWidth + Style.popupMargin * 2) : minDialogWidth
     width: Math.min(maxDialogWidth, Math.max(minDialogWidth, implicitWidth, contentBasedWidth))
     
     // Dynamic height based on content (can be overridden)
     // Use content-based height with a small minimum to ensure dialog is never too tiny
-    height: Math.max(100, contentLayout ? (contentLayout.implicitHeight + Style.cardPadding * 2) : 100)
+    height: Math.max(100, contentLayout ? (contentLayout.implicitHeight + Style.popupMargin * 2) : 100)
     
     // Positioning - only set if no anchors are used
     x: anchors.centerIn ? 0 : (parent ? (parent.width - width) / 2 : 0)
@@ -169,7 +169,7 @@ Dialog {
         ColumnLayout {
             id: contentLayout
             anchors.fill: parent
-            anchors.margins: Style.cardPadding
+            anchors.margins: Style.popupMargin
             spacing: Style.spacingMedium
             
         }
