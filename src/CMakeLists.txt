@@ -552,14 +552,14 @@ set(RPIBOOT_LIBS ${LIBUSB_LIBRARIES})
 
 if(BUILD_CLI_ONLY)
     # CLI-only build: link Core, Network and essential libraries
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${EXTRALIBS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${RPIBOOT_LIBS} ${EXTRALIBS})
 else()
     # Regular GUI build: link all GUI components
     # Add DBus on Linux for suspend inhibitor and native file dialogs (portals)
     if(UNIX AND NOT APPLE)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${QT}::DBus ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${EXTRALIBS})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${QT}::DBus ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${RPIBOOT_LIBS} ${EXTRALIBS})
     else()
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${EXTRALIBS})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${RPIBOOT_LIBS} ${EXTRALIBS})
     endif()
 endif()
 

@@ -319,7 +319,6 @@ int main(int argc, char *argv[])
     {
         PlatformQuirks::registerUriScheme();
     }
-#endif
 #ifdef Q_OS_WIN
     /* On Windows, use Microsoft YaHei UI as default font for proper CJK character display */
     {
@@ -359,7 +358,6 @@ int main(int argc, char *argv[])
     // This prevents warnings about unsupported customization on native styles
     QQuickStyle::setStyle("Basic");
 
-    NetworkAccessManagerFactory namf;
     QQmlApplicationEngine engine;
     QString customQm;
     bool enableLanguageSelection = false;

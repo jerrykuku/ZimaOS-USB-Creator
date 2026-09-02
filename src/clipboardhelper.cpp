@@ -50,3 +50,8 @@ bool ClipboardHelper::hasText() const
     }
     return false;
 }
+
+void ClipboardHelper::refresh()
+{
+    emit clipboardChanged();
+}
