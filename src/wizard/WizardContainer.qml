@@ -939,6 +939,7 @@ Item {
     Component {
         id: deviceSelectionStep
         DeviceSelectionStep {
+            imageWriter: root.imageWriter
             wizardContainer: root
             showBackButton: false
             appOptionsButton: optionsButton
@@ -949,6 +950,7 @@ Item {
     Component {
         id: osSelectionStep
         OSSelectionStep {
+            imageWriter: root.imageWriter
             wizardContainer: root
             // Hide back button when offline (device selection was skipped)
             showBackButton: root.hasNetworkConnectivity
