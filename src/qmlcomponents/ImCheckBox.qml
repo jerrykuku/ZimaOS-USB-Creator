@@ -12,7 +12,7 @@ import RpiImager
 
 CheckBox {
     id: control
-    Material.accent: Style.formControlActiveColor
+    Material.accent: Style.colorAccentPrimary
     font.pointSize: Style.fontSizeSm
     font.family: Style.fontFamily
     activeFocusOnTab: true
@@ -53,15 +53,15 @@ CheckBox {
             x: control.leftPadding
             y: control.height / 2 - height / 2
             radius: Math.max(2, Math.round(height * 0.2))
-            border.color: control.checked ? Style.formControlActiveColor : "#bdbebf"
+            border.color: control.checked ? Style.colorAccentPrimary : Style.colorControlBorderInactive
             border.width: 2
-            color: control.checked ? Style.formControlActiveColor : Style.mainBackgroundColor
+            color: control.checked ? Style.colorAccentPrimary : Style.colorSurfacePage
             
             // Checkmark
             Text {
                 anchors.centerIn: parent
                 text: "✓"
-                color: Style.mainBackgroundColor
+                color: Style.colorSurfacePage
                 font.pointSize: Style.fontSizeSm
                 font.bold: true
                 visible: control.checked

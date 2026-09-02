@@ -95,7 +95,7 @@ WizardStepBase {
             visible: !root.isWriting && !root.isComplete
             font.pointSize: Style.fontSizeSubtitle
             font.family: Style.fontFamily
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
         }
@@ -309,7 +309,7 @@ WizardStepBase {
                 indeterminate: root.isIndeterminateProgress && !root.isVerifying && !root.isFinalising
                                && !PlatformHelper.prefersReducedMotion
 
-                Material.accent: Style.zimaBlue
+                Material.accent: Style.colorAccentPrimary
                 Material.background: Style.progressBarTrackColor
                 background: Rectangle {
                     implicitHeight: 8
@@ -321,7 +321,7 @@ WizardStepBase {
                         width: progressBar.visualPosition * parent.width
                         height: parent.height
                         radius: height / 2
-                        color: Style.zimaBlue
+                        color: Style.colorAccentPrimary
                     }
                 }
                 visible: root.isWriting
@@ -360,7 +360,7 @@ WizardStepBase {
                 text: "⚠ " + root.operationWarning
                 font.pointSize: Style.fontSizeSmall
                 font.family: Style.fontFamily
-                color: "#FFA500"  // Orange/amber for warning
+                color: Style.colorAccentWarning  // Orange/amber for warning
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
@@ -485,7 +485,7 @@ WizardStepBase {
             text: qsTr("Please wait... %1").arg(confirmDialog.countdown)
             font.pointSize: Style.fontSizeFormLabel
             font.family: Style.fontFamily
-            color: Style.textMetadataColor
+            color: Style.colorTextSecondary
             horizontalAlignment: Text.AlignHCenter
             Layout.fillWidth: true
             Layout.topMargin: Style.spacingSmall
@@ -510,8 +510,8 @@ WizardStepBase {
                 // focused blue treatment used by generic action buttons.
                 background: Rectangle {
                     color: Style.buttonBackgroundColor
-                    radius: Style.buttonRadius
-                    border.color: Style.popupBorderColor
+                    radius: Style.radiusButton
+                    border.color: Style.colorBorderSubtle
                     border.width: 1
                     antialiasing: true
                 }

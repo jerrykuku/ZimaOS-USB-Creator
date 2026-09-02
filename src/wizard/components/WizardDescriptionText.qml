@@ -14,7 +14,7 @@ FocusableText {
     
     font.pointSize: Style.fontSizeDescription
     font.family: Style.fontFamily
-    color: Style.textDescriptionColor
+    color: Style.colorTextPrimary
     
     // Default layout properties for consistent spacing
     Layout.fillWidth: true

@@ -26,84 +26,104 @@ Item {
     // Scale a base value by the text scaling factor, rounding to nearest int.
     function scaled(base) { return Math.round(base * textScale) }
 
-    // === COLORS ===
-    readonly property color mainBackgroundColor: "#F5F5F5"
+    // === COLOR TOKENS ===
+    // Canonical semantic names. Legacy names below remain as compatibility
+    // aliases while individual pages are migrated.
+    readonly property color colorSurfacePage: "#F5F5F5"
+    readonly property color colorSurfacePanel: "#FFFFFF"
+    readonly property color colorSurfaceMuted: "#F2F2F2"
+    readonly property color colorBorderSubtle: "#E7E3E4"
+    readonly property color colorBorderDefault: "#DCDCDC"
+    readonly property color colorTextPrimary: "#1A1A1A"
+    readonly property color colorTextSecondary: "#646464"
+    readonly property color colorTextDisabled: "#888888"
+    readonly property color colorAccentPrimary: "#0057FF"
+    readonly property color colorAccentPrimaryHover: "#0047DB"
+    readonly property color colorSelectionSurface: "#F4F8FC"
+    readonly property color colorControlBorderInactive: "#BDBEBF"
+    readonly property color colorBorderDisabled: "#D0D0D0"
+    readonly property color colorSurfaceError: "#FFEBEE"
+    readonly property color colorTextErrorStrong: "#C62828"
+    readonly property color colorAccentWarning: "#FFA500"
+    readonly property color colorSurfaceControlInactive: "#E1E2E7"
+    readonly property color colorTextChrome: "#5A5A5A"
+    readonly property color colorTextChromeMuted: "#666666"
+    readonly property color colorChromeClose: "#FF5F57"
+    readonly property color colorChromeMinimize: "#FEBC2E"
+    readonly property color colorChromeMaximize: "#28C840"
+    readonly property color colorSurfaceButtonFocus: "#D1DCFB"
+    readonly property color colorSurfaceButtonHover: colorSurfaceMuted
+    readonly property color colorAccentButtonFocusDanger: "#8F122C"
+    readonly property color colorBorderTitle: "#AFAFAF"
+    readonly property color colorBorderSelection: "#7AA7E8"
+    readonly property color colorTextSidebarTitle: "#171717"
+    readonly property color colorBorderSidebarControl: "#767676"
+    readonly property color colorProgressVerify: "#6CC04A"
+    readonly property color colorSurfaceLanbar: "#FFFFE3"
+    readonly property color colorTextError: "#EF4444"
+    readonly property color colorTextOnAccent: colorSurfacePanel
+    readonly property color colorFocus: "#0078D4"
+
+    // === COMPONENT COLOR TOKENS ===
     readonly property color transparent: "transparent"
-    readonly property color zimaBlue: "#0057FF"
 
-    readonly property color buttonBackgroundColor: mainBackgroundColor
-    readonly property color buttonForegroundColor: zimaBlue
-    readonly property color buttonTextColor: "#404040"
-    readonly property color buttonDisabledBackgroundColor: "#E5E5E5"
-    readonly property color buttonDisabledTextColor: "#888888"
-    readonly property color buttonFocusedBackgroundColor: "#d1dcfb"
-    readonly property color buttonHoveredBackgroundColor: "#f2f2f2"
+    readonly property color buttonBackgroundColor: colorSurfacePage
+    readonly property color buttonForegroundColor: colorAccentPrimary
+    readonly property color buttonTextColor: colorTextSecondary
+    readonly property color buttonDisabledBackgroundColor: colorSurfaceMuted
+    readonly property color buttonDisabledTextColor: colorTextDisabled
+    readonly property color buttonFocusedBackgroundColor: colorSurfaceButtonFocus
+    readonly property color buttonHoveredBackgroundColor: colorSurfaceButtonHover
 
-    readonly property color button2BackgroundColor: zimaBlue
-    readonly property color button2ForegroundColor: mainBackgroundColor
+    readonly property color button2BackgroundColor: colorAccentPrimary
+    readonly property color button2ForegroundColor: colorTextOnAccent
     // Focused: noticeably darker for strong state indication (keyboard focus)
-    readonly property color button2FocusedBackgroundColor: "#8f122c"
+    readonly property color button2FocusedBackgroundColor: colorAccentButtonFocusDanger
     // Hovered: noticeably lighter to differentiate from base (≥4.5:1 contrast vs base)
-    readonly property color button2HoveredBackgroundColor: "#0047db"
+    readonly property color button2HoveredBackgroundColor: colorAccentPrimaryHover
     // Hovered foreground should be Raspberry Red for ≥4.5:1 contrast on the light hover bg
-    readonly property color button2HoveredForegroundColor: zimaBlue
-    readonly property color zimaBlueHighlight: "#0047db"
-
-    readonly property color titleBackgroundColor: "#f5f5f5"
-    readonly property color titleSeparatorColor: "#afafaf"
-    readonly property color popupBorderColor: "#e7e3e4"
-
-    readonly property color listViewRowBackgroundColor: "#ffffff"
-    readonly property color listViewHoverRowBackgroundColor: titleBackgroundColor
+    readonly property color button2HoveredForegroundColor: colorAccentPrimary
+    readonly property color titleSeparatorColor: colorBorderTitle
     // Selection highlight color for OS/device lists
-    readonly property color listViewHighlightColor: "#f4f8fc"
-    readonly property color listViewSelectedBorderColor: "#7aa7e8"
+    readonly property color listViewSelectedBorderColor: colorBorderSelection
 
     // Utility translucent colors
     readonly property color translucentWhite10: Qt.rgba(255, 255, 255, 0.1)
     readonly property color translucentWhite30: Qt.rgba(255, 255, 255, 0.3)
 
-    // descriptions in list views
-    readonly property color textDescriptionColor: "#1a1a1a"
     // Sidebar colors
-    readonly property color sidebarTitleColor: "#171717"
-    readonly property color sidebarActiveBackgroundColor: "#F5F5F5"
-    readonly property color sidebarActiveBorderColor: "#D4D4D4"
-    readonly property color sidebarTextOnActiveColor: "#FFFFFF"
-    readonly property color sidebarTextOnInactiveColor: zimaBlue
-    readonly property color sidebarTextDisabledColor: "#888888"
+    readonly property color sidebarTitleColor: colorTextSidebarTitle
+    readonly property color sidebarActiveBackgroundColor: colorSurfacePage
+    readonly property color sidebarActiveBorderColor: colorBorderDefault
+    readonly property color sidebarTextOnActiveColor: colorSurfacePanel
+    readonly property color sidebarTextOnInactiveColor: colorAccentPrimary
+    readonly property color sidebarTextDisabledColor: colorTextDisabled
     // Sidebar controls
-    readonly property color sidebarControlBorderColor: "#767676"
-    readonly property color sidebarBackgroundColour: "#FFFFFF"
-    readonly property color sidebarBorderColour: "#E7E3E4"
-    readonly property color sidebarHoverBackgroundColor: "#E5E5E5"
-
-    // OS metadata
-    readonly property color textMetadataColor: "#646464"
+    readonly property color sidebarControlBorderColor: colorBorderSidebarControl
+    readonly property color sidebarBackgroundColour: colorSurfacePanel
+    readonly property color sidebarBorderColour: colorBorderSubtle
+    readonly property color sidebarHoverBackgroundColor: colorSurfaceMuted
 
     // for the "device / OS / storage" titles
-    readonly property color subtitleColor: "#ffffff"
+    readonly property color subtitleColor: colorTextOnAccent
 
-    readonly property color progressBarTextColor: "white"
-    readonly property color progressBarVerifyForegroundColor: "#6cc04a"
-    readonly property color progressBarBackgroundColor: zimaBlue
+    readonly property color progressBarTextColor: colorTextOnAccent
+    readonly property color progressBarVerifyForegroundColor: colorProgressVerify
+    readonly property color progressBarBackgroundColor: colorAccentPrimary
     // New: distinct colors for writing vs verification phases
-    readonly property color progressBarWritingForegroundColor: zimaBlue
-    readonly property color progressBarTrackColor: titleBackgroundColor
+    readonly property color progressBarWritingForegroundColor: colorAccentPrimary
+    readonly property color progressBarTrackColor: colorSurfacePage
 
-    readonly property color lanbarBackgroundColor: "#ffffe3"
+    readonly property color lanbarBackgroundColor: colorSurfaceLanbar
 
     /// the check-boxes/radio-buttons have labels that might be disabled
     readonly property color formLabelColor: "black"
-    readonly property color formLabelErrorColor: "#EF4444"
+    readonly property color formLabelErrorColor: colorTextError
     readonly property color formLabelDisabledColor: "grey"
-    // Active color for radio buttons, checkboxes, and switches
-    readonly property color formControlActiveColor: "#0057FF"
-
-    readonly property color embeddedModeInfoTextColor: "#ffffff"
+    readonly property color embeddedModeInfoTextColor: colorTextOnAccent
 
     // Focus/outline
-    readonly property color focusOutlineColor: "#0078d4"
+    readonly property color focusOutlineColor: colorFocus
     readonly property int focusOutlineWidth: 2
     readonly property int focusOutlineRadius: 4
     readonly property int focusOutlineMargin: -4
@@ -135,7 +155,13 @@ Item {
     readonly property real fontSizeSmall: fontSizeXs
     readonly property real fontSizeSidebarItem: fontSizeSm
 
-    // === SPACING ===
+    // === SPACING TOKENS ===
+    readonly property int spacingPageInset: 8
+    readonly property int spacingPanelGap: 16
+    readonly property int spacingContentInset: 8
+    readonly property int spacingCardInset: 12
+    readonly property int spacingPopupInset: 16
+
     readonly property int spacingXXSmall: 2
     readonly property int spacingXSmall: 5
     readonly property int spacingTiny: 8
@@ -161,21 +187,18 @@ Item {
     readonly property int listItemBorderRadius: 8
     readonly property int listItemPadding: 12
     readonly property int cardPadding: 16
-    readonly property int popupMargin: 16
-    // Shared layout tokens for the main application surface.
-    readonly property int pageMargin: 8
-    readonly property int panelGap: 16
-    readonly property int contentRadius: 14
-    readonly property int panelRadius: contentRadius
-    readonly property int buttonRadius: 8
-    readonly property int borderWidth: 1
-    readonly property int titleBarHeight: 26
+    // === GEOMETRY TOKENS ===
+    readonly property int radiusPanel: 14
+    readonly property int radiusCard: 8
+    readonly property int radiusButton: 8
+    readonly property int borderWidthDefault: 1
+    readonly property int titleBarHeight: 36
     readonly property int titleBarRadius: 14
     readonly property int titleBarControlSize: 12
     readonly property int iconButtonSize: 32
     readonly property int iconSmallSize: 16
-    readonly property int contentInset: 8
-    readonly property int cardInset: 12
+    readonly property int contentInset: spacingContentInset
+    readonly property int cardInset: spacingCardInset
     readonly property int scrollBarWidth: 10
     readonly property int sidebarWidth: 180
     readonly property int sidebarMinWidth: 150

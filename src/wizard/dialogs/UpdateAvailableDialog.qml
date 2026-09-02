@@ -57,7 +57,7 @@ BaseDialog {
         wrapMode: Text.WordWrap
         font.pointSize: Style.fontSizeDescription
         font.family: Style.fontFamily
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         Layout.fillWidth: true
     }
 

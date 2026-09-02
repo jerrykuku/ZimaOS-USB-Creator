@@ -113,7 +113,7 @@ FocusScope {
                 text: root.subtitle
                 font.pointSize: Style.fontSizeSubtitle
                 font.family: Style.fontFamily
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
                 visible: root.subtitle && root.subtitle.length > 0
                 Accessible.role: Accessible.StaticText
@@ -131,17 +131,16 @@ FocusScope {
             id: contentFrame
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.maximumHeight: Style.contentMaxHeight
-            color: Style.listViewRowBackgroundColor
-            border.color: Style.popupBorderColor
-            border.width: Style.borderWidth
-            radius: Style.contentRadius
+            color: Style.colorSurfacePanel
+            border.color: Style.colorBorderSubtle
+            border.width: Style.borderWidthDefault
+            radius: Style.radiusPanel
 
             // Content area (no Flickable to prevent input interception)
             Item {
                 id: contentArea
                 anchors.fill: parent
-                anchors.margins: Style.contentInset
+                anchors.margins: Style.spacingContentInset
             }
         }
         
@@ -158,7 +157,7 @@ FocusScope {
                 text: root.networkInfoText
                 font.pointSize: Style.fontSizeCaption
                 font.family: Style.fontFamily
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 visible: ImageWriterSingleton && ImageWriterSingleton.isEmbeddedMode() && root.networkInfoText.length > 0
                 Layout.alignment: Qt.AlignVCenter
                 elide: Text.ElideRight

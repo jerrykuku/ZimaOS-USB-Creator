@@ -141,7 +141,7 @@ WizardStepBase {
                         id: capitalCityInfoIcon
                         text: "ⓘ"
                         font.pointSize: Style.fontSizeFormLabel
-                        color: capitalCityInfoArea.containsMouse ? Style.textDescriptionColor : Style.textMetadataColor
+                        color: capitalCityInfoArea.containsMouse ? Style.colorTextPrimary : Style.colorTextSecondary
                         Layout.alignment: Qt.AlignVCenter
 
                         Accessible.role: Accessible.Button

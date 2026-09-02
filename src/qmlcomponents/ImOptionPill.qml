@@ -86,7 +86,7 @@ Item {
                 text: pill.helpLabel
                 font.family: Style.fontFamily
                 font.pixelSize: Style.fontSizeDescription
-                color: helpText.activeFocus ? Style.zimaBlue : Style.buttonForegroundColor
+                color: helpText.activeFocus ? Style.colorAccentPrimary : Style.buttonForegroundColor
                 font.underline: helpHover.hovered || helpText.activeFocus
                 
                 // Keyboard accessibility
@@ -177,7 +177,7 @@ Item {
                 x: sw.leftPadding
                 y: sw.topPadding + (sw.availableHeight - height) / 2
                 radius: height / 2
-                color: sw.checked ? Style.formControlActiveColor : "#e1e2e7"
+                color: sw.checked ? Style.colorAccentPrimary : Style.colorSurfaceControlInactive
 
                 Rectangle {
                     width: 16
@@ -185,7 +185,7 @@ Item {
                     x: sw.checked ? parent.width - width - 2 : 2
                     y: (parent.height - height) / 2
                     radius: width / 2
-                    color: Style.mainBackgroundColor
+                    color: Style.colorSurfacePage
 
                     Behavior on x {
                         NumberAnimation {

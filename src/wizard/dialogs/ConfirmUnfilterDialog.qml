@@ -52,7 +52,7 @@ BaseDialog {
               + "<br><br>" + root.riskText + "<br><br>" + root.proceedText
         font.pointSize: Style.fontSizeDescription
         font.family: Style.fontFamily
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         wrapMode: Text.WordWrap
         Layout.fillWidth: true
         Accessible.name: text.replace(/<[^>]+>/g, '')  // Strip HTML tags for accessibility

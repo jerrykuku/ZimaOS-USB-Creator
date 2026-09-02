@@ -35,14 +35,14 @@ Dialog {
     // Dynamic width based on content, with min/max bounds
     // Grows to fit content (especially for long translated strings) but stays within window
     readonly property int minDialogWidth: 400
-    readonly property int maxDialogWidth: parent ? Math.max(minDialogWidth, parent.width - Style.popupMargin * 2) : 700
+    readonly property int maxDialogWidth: parent ? Math.max(minDialogWidth, parent.width - Style.spacingPopupInset * 2) : 700
     // Use the largest of: minDialogWidth, explicit implicitWidth, or content-based width
-    readonly property int contentBasedWidth: contentLayout ? (contentLayout.implicitWidth + Style.popupMargin * 2) : minDialogWidth
+    readonly property int contentBasedWidth: contentLayout ? (contentLayout.implicitWidth + Style.spacingPopupInset * 2) : minDialogWidth
     width: Math.min(maxDialogWidth, Math.max(minDialogWidth, implicitWidth, contentBasedWidth))
     
     // Dynamic height based on content (can be overridden)
     // Use content-based height with a small minimum to ensure dialog is never too tiny
-    height: Math.max(100, contentLayout ? (contentLayout.implicitHeight + Style.popupMargin * 2) : 100)
+    height: Math.max(100, contentLayout ? (contentLayout.implicitHeight + Style.spacingPopupInset * 2) : 100)
     
     // Positioning - only set if no anchors are used
     x: anchors.centerIn ? 0 : (parent ? (parent.width - width) / 2 : 0)
@@ -69,9 +69,9 @@ Dialog {
     
     // Set the dialog background directly
     background: Rectangle {
-        color: Style.titleBackgroundColor
+        color: Style.colorSurfacePage
         radius: Style.cornerRadius(Style.sectionBorderRadius)
-        border.color: Style.popupBorderColor
+        border.color: Style.colorBorderSubtle
         border.width: Style.sectionBorderWidth
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
@@ -169,7 +169,7 @@ Dialog {
         ColumnLayout {
             id: contentLayout
             anchors.fill: parent
-            anchors.margins: Style.popupMargin
+            anchors.margins: Style.spacingPopupInset
             spacing: Style.spacingMedium
             
         }

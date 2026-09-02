@@ -251,7 +251,7 @@ WizardStepBase {
                 }
                 font.pointSize: Style.fontSizeDescription
                 font.family: Style.fontFamily
-                color: root.ejectInProgress || root.ejectState === ImageWriterSingleton.EjectFailed ? Style.formLabelColor : Style.textDescriptionColor
+                color: root.ejectInProgress || root.ejectState === ImageWriterSingleton.EjectFailed ? Style.formLabelColor : Style.colorTextPrimary
                 font.bold: root.ejectInProgress || root.ejectState === ImageWriterSingleton.EjectFailed
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter

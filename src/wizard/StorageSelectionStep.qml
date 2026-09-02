@@ -365,10 +365,10 @@ WizardStepBase {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                color: (dstlist.currentIndex === dstitem.index) ? Style.listViewHighlightColor :
-                       (dstMouseArea.containsMouse && !dstitem.unselectable ? Style.listViewHoverRowBackgroundColor : Style.listViewRowBackgroundColor)
+                color: (dstlist.currentIndex === dstitem.index) ? Style.colorSelectionSurface :
+                       (dstMouseArea.containsMouse && !dstitem.unselectable ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
                 radius: Style.listItemBorderRadius
-                border.color: (dstlist.currentIndex === dstitem.index) ? Style.zimaBlue : "transparent"
+                border.color: (dstlist.currentIndex === dstitem.index) ? Style.colorAccentPrimary : "transparent"
                 border.width: 1
                 anchors.bottomMargin: Style.sectionMargin
                 anchors.topMargin: Style.sectionMargin
@@ -451,7 +451,7 @@ WizardStepBase {
                             text: dstitem.isRpiboot ? qsTr("Ready for USB boot") : ImageWriterSingleton.formatSize(parseFloat(dstitem.size))
                             font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
-                            color: dstitem.unselectable ? Style.formLabelDisabledColor : Style.textDescriptionColor
+                            color: dstitem.unselectable ? Style.formLabelDisabledColor : Style.colorTextPrimary
                             Layout.fillWidth: true
                             Accessible.ignored: true
                         }
@@ -461,7 +461,7 @@ WizardStepBase {
                                   qsTr("Mounted as %1").arg(dstitem.mountpoints.join(", ")) : ""
                             font.pointSize: Style.fontSizeSmall
                             font.family: Style.fontFamily
-                            color: dstitem.unselectable ? Style.formLabelDisabledColor : Style.textMetadataColor
+                            color: dstitem.unselectable ? Style.formLabelDisabledColor : Style.colorTextSecondary
                             Layout.fillWidth: true
                             visible: dstitem.mountpoints.length > 0
                             Accessible.ignored: true

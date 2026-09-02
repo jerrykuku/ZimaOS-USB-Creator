@@ -68,7 +68,7 @@ BaseDialog {
         wrapMode: Text.WordWrap
         font.family: Style.fontFamily
         font.pointSize: Style.fontSizeDescription
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         Layout.fillWidth: true
         text: root.riskText + "<br><br>" + root.systemDriveText + "<br><br>" + root.proceedText
         Accessible.name: text.replace(/<[^>]+>/g, '')  // Strip HTML tags for accessibility
@@ -85,7 +85,7 @@ BaseDialog {
             text: qsTr("Size: %1").arg(root.sizeStr)
             font.family: Style.fontFamily
             font.pointSize: Style.fontSizeDescription
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
@@ -93,7 +93,7 @@ BaseDialog {
             text: qsTr("Mounted as: %1").arg(root.mountpoints && root.mountpoints.length > 0 ? root.mountpoints.join(", ") : qsTr("Not mounted"))
             font.family: Style.fontFamily
             font.pointSize: Style.fontSizeDescription
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
@@ -106,7 +106,7 @@ BaseDialog {
         wrapMode: Text.WordWrap
         font.family: Style.fontFamily
         font.pointSize: Style.fontSizeDescription
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         text: qsTr("To continue, type the exact drive name below:")
         Accessible.role: Accessible.StaticText
         Accessible.name: text
@@ -118,7 +118,7 @@ BaseDialog {
         font.family: Style.fontFamily
         font.pointSize: Style.fontSizeSm
         font.bold: true
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         text: root.driveName
         // Make this text focusable when screen reader is active
         Accessible.name: qsTr("Drive name to type: %1").arg(text)

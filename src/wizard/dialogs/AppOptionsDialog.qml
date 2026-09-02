@@ -16,7 +16,7 @@ BaseDialog {
     id: popup
     
     // Override default height for this more complex dialog
-    height: Math.max(280, contentLayout ? (contentLayout.implicitHeight + Style.popupMargin * 2) : 280)
+    height: Math.max(280, contentLayout ? (contentLayout.implicitHeight + Style.spacingPopupInset * 2) : 280)
     
     // imageWriter is inherited from BaseDialog
     // Optional reference to the wizard container for ephemeral flags
@@ -35,7 +35,7 @@ BaseDialog {
         chkBeep.naturalWidth,
         chkEject.naturalWidth,
         chkDisableWarnings.naturalWidth
-    ) + Style.popupMargin * 4  // Dialog and options layout margins
+    ) + Style.spacingPopupInset * 4  // Dialog and options layout margins
     
     // Register focus groups when component is ready
     Component.onCompleted: {
@@ -188,7 +188,7 @@ BaseDialog {
         text: qsTr("Version: %1").arg(imageWriter.constantVersion())
         font.pixelSize: Style.fontSizeCaption
         font.family: Style.fontFamily
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignHCenter
         visible: !imageWriter.hasWindowDecorations()
@@ -201,7 +201,7 @@ BaseDialog {
         // Ensure minimum width accommodates buttons
         Layout.minimumWidth: cancelButton.implicitWidth + saveButton.implicitWidth + Style.spacingMedium * 2
         Layout.preferredHeight: buttonRow.implicitHeight
-        color: Style.titleBackgroundColor
+        color: Style.colorSurfacePage
 
         RowLayout {
             id: buttonRow
@@ -295,7 +295,7 @@ BaseDialog {
             isInitializing = false;
             
             // Pre-compute final height before opening to avoid first-show reflow
-            var desired = contentLayout ? (contentLayout.implicitHeight + Style.popupMargin * 2) : 280;
+            var desired = contentLayout ? (contentLayout.implicitHeight + Style.spacingPopupInset * 2) : 280;
             popup.height = Math.max(280, desired);
         }
     }
@@ -374,7 +374,7 @@ BaseDialog {
             wrapMode: Text.WordWrap
             font.pixelSize: Style.fontSizeDescription
             font.family: Style.fontFamily
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Layout.fillWidth: true
             text: qsTr("If you disable warnings, ZimaOS USB Creator will <b>not show confirmation prompts before writing images</b>. You will still be required to <b>type the exact name</b> when selecting a system drive.")
             Accessible.role: Accessible.StaticText

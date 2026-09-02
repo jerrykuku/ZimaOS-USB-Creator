@@ -57,7 +57,7 @@ BaseDialog {
         id: warningText
         text: qsTr("Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.")
         wrapMode: Text.WordWrap
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         font.pointSize: Style.fontSizeDescription
         Layout.fillWidth: true
     }
@@ -66,7 +66,7 @@ BaseDialog {
         id: detailText
         text: qsTr("Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.")
         wrapMode: Text.WordWrap
-        color: Style.textMetadataColor
+        color: Style.colorTextSecondary
         font.pointSize: Style.fontSizeSmall
         Layout.fillWidth: true
     }

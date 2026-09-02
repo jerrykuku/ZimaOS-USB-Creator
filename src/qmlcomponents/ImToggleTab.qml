@@ -44,7 +44,7 @@ Button {
                         : (control.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor)))
               : Qt.rgba(0, 0, 0, 0.1)
         radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : 8
-        border.color: (control.enabled && !control.active) ? Style.popupBorderColor : "transparent"
+        border.color: (control.enabled && !control.active) ? Style.colorBorderSubtle : "transparent"
         border.width: control.active ? 0 : 1
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
@@ -57,7 +57,7 @@ Button {
         lineHeight: Style.buttonLineHeight
         color: control.enabled
               ? (control.active
-                   ? ((control.activeFocus || control.hovered) ? Style.zimaBlue : Style.button2ForegroundColor)
+                   ? ((control.activeFocus || control.hovered) ? Style.colorAccentPrimary : Style.button2ForegroundColor)
                    : Style.buttonForegroundColor)
               : Qt.rgba(0, 0, 0, 0.3)
         horizontalAlignment: Text.AlignHCenter

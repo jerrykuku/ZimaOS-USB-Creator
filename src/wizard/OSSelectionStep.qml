@@ -249,7 +249,7 @@ WizardStepBase {
                 Layout.fillWidth: true
                 Layout.preferredHeight: visible ? bannerContent.implicitHeight + Style.spacingMedium * 2 : 0
                 visible: root.osListUnavailable
-                color: Style.titleBackgroundColor
+                color: Style.colorSurfacePage
                 radius: Style.listItemBorderRadius
                 anchors.topMargin: Style.sectionMargin
                 anchors.bottomMargin: Style.sectionMargin
@@ -409,9 +409,9 @@ WizardStepBase {
                 anchors.bottom: parent.bottom
                 // Delegate highlighting: Works together with ListView's built-in highlight system
                 // DO NOT disable ListView's highlight - both systems work in harmony
-                color: (parentListView && parentListView.currentIndex === index) ? Style.listViewHighlightColor : (osMouseArea.containsMouse ? Style.listViewHoverRowBackgroundColor : Style.listViewRowBackgroundColor)
+                color: (parentListView && parentListView.currentIndex === index) ? Style.colorSelectionSurface : (osMouseArea.containsMouse ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
                 radius: 8
-                border.color: (parentListView && parentListView.currentIndex === index) ? Style.zimaBlue : "transparent"
+                border.color: (parentListView && parentListView.currentIndex === index) ? Style.colorAccentPrimary : "transparent"
                 border.width: 1
                 anchors.bottomMargin: 0
                 anchors.topMargin: 0
@@ -504,7 +504,7 @@ WizardStepBase {
                             text: delegateItem.description
                             font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
-                            color: Style.textDescriptionColor
+                            color: Style.colorTextPrimary
                             Layout.fillWidth: true
                             wrapMode: Text.WordWrap
                             Accessible.ignored: true
@@ -513,7 +513,7 @@ WizardStepBase {
                         Text {
                             Layout.fillWidth: true
                             elide: Text.ElideRight
-                            color: Style.textMetadataColor
+                            color: Style.colorTextSecondary
                             font.pointSize: Style.fontSizeSmall
                             font.family: Style.fontFamily
                             // Hide for custom until a file is chosen; otherwise show status
@@ -530,7 +530,7 @@ WizardStepBase {
                             text: delegateItem.release_date !== "" ? qsTr("Released: %1").arg(delegateItem.release_date) : ""
                             font.pointSize: Style.fontSizeSmall
                             font.family: Style.fontFamily
-                            color: Style.textMetadataColor
+                            color: Style.colorTextSecondary
                             Layout.fillWidth: true
                             visible: delegateItem.release_date !== ""
                             Accessible.ignored: true

@@ -109,7 +109,7 @@ WizardStepBase {
                     Text {
                         text: "⚠"
                         font.pixelSize: 48
-                        color: Style.textDescriptionColor
+                        color: Style.colorTextPrimary
                         Layout.alignment: Qt.AlignHCenter
                         Accessible.ignored: true
                     }
@@ -132,7 +132,7 @@ WizardStepBase {
                         text: qsTr("The device list could not be downloaded. Please check your internet connection and try again.\n\nYou can still write a local image file by pressing Next and selecting 'Use custom' on the following screen.")
                         font.pixelSize: Style.fontSizeDescription
                         font.family: Style.fontFamily
-                        color: Style.textDescriptionColor
+                        color: Style.colorTextPrimary
                         horizontalAlignment: Text.AlignHCenter
                         Layout.fillWidth: true
                         wrapMode: Text.WordWrap
@@ -177,7 +177,7 @@ WizardStepBase {
                         text: qsTr("Loading device types...")
                         font.pixelSize: Style.fontSizeDescription
                         font.family: Style.fontFamily
-                        color: Style.textDescriptionColor
+                        color: Style.colorTextPrimary
                         Layout.alignment: Qt.AlignHCenter
                     }
                 }
@@ -300,7 +300,7 @@ WizardStepBase {
                 anchors.bottomMargin: 0
                 anchors.topMargin: 0
 
-                color: (hwlist.currentIndex === hwitem.index) ? Style.listViewHighlightColor : (hwMouseArea.containsMouse ? Style.listViewHoverRowBackgroundColor : Style.listViewRowBackgroundColor)
+                color: (hwlist.currentIndex === hwitem.index) ? Style.colorSelectionSurface : (hwMouseArea.containsMouse ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
                 // border color is the same as the highlight color
                 border.color: (hwlist.currentIndex === hwitem.index) ? Style.listViewSelectedBorderColor : "transparent"
                 border.width: 1
@@ -379,7 +379,7 @@ WizardStepBase {
                             text: hwitem.description
                             font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
-                            color: Style.textDescriptionColor
+                            color: Style.colorTextPrimary
                             Layout.fillWidth: true
                             wrapMode: Text.WordWrap
                             Accessible.ignored: true
@@ -389,7 +389,7 @@ WizardStepBase {
                             text: qsTr("Connected via USB")
                             font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
-                            color: Style.formControlActiveColor
+                            color: Style.colorAccentPrimary
                             Layout.fillWidth: true
                             visible: hwitem.isUsbBootConnected
                             Accessible.ignored: true

@@ -55,7 +55,7 @@ BaseDialog {
         id: descriptionText
         text: qsTr("Would you like to prefill the Wi‑Fi password from the system keychain?")
         wrapMode: Text.WordWrap
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         font.pointSize: Style.fontSizeDescription
         Layout.fillWidth: true
     }
@@ -64,7 +64,7 @@ BaseDialog {
         id: subText
         text: qsTr("This will require administrator authentication on macOS.")
         wrapMode: Text.WordWrap
-        color: Style.textMetadataColor
+        color: Style.colorTextSecondary
         font.pointSize: Style.fontSizeSmall
         Layout.fillWidth: true
     }

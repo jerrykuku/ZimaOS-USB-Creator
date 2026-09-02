@@ -19,6 +19,14 @@
 // Hash algorithm used for cache verification (use same as OS list verification)
 #define CACHE_HASH_ALGORITHM OSLIST_HASH_ALGORITHM
 
+namespace {
+QString zimaosCacheDirectory()
+{
+    const QString base = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
+    return QDir(base).filePath(QStringLiteral("ZimaOS/ZimaOS USB Creator"));
+}
+}
+
 CacheManager::CacheManager(QObject *parent)
     : QObject(parent)
     , workerThread_(new QThread())  // Don't parent to avoid Qt's automatic deletion
@@ -370,6 +378,25 @@ void CacheManager::loadCacheSettings()
     QByteArray cacheFileHash = settings_.value("lastCacheFileHash").toByteArray();
     
     settings_.endGroup();
+
+    // Migrate the previous Qt-generated path once, while preserving the
+    // existing cache and its hash metadata.
+    const QString newCacheFile = getDefaultCacheFilePath();
+    if (!lastFileName.isEmpty() && lastFileName != newCacheFile) {
+        if (QFile::exists(lastFileName) && !QFile::exists(newCacheFile)) {
+            QDir().mkpath(QFileInfo(newCacheFile).absolutePath());
+            QFile::rename(lastFileName, newCacheFile);
+        }
+        // Prefer the new location whenever it is available, including when
+        // it was created by a previous run before the settings were updated.
+        if (QFile::exists(newCacheFile)) {
+            lastFileName = newCacheFile;
+            settings_.beginGroup("caching");
+            settings_.setValue("lastFileName", lastFileName);
+            settings_.endGroup();
+            settings_.sync();
+        }
+    }
     
     // Validate cache file exists and is accessible
     if (!lastFileName.isEmpty() && !lastHash.isEmpty()) {
@@ -417,8 +444,7 @@ void CacheManager::saveCacheSettings()
 
 QString CacheManager::getDefaultCacheFilePath() const
 {
-    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + 
-           QDir::separator() + "lastdownload.cache";
+    return QDir(zimaosCacheDirectory()).filePath(QStringLiteral("lastdownload.cache"));
 }
 
 bool CacheManager::isCachingEnabled() const
@@ -539,5 +565,5 @@ bool CacheVerificationWorker::ensureCacheDirectoryExists()
 
 QString CacheVerificationWorker::getCacheDirectory() const
 {
-    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    return zimaosCacheDirectory();
 }

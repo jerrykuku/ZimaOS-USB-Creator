@@ -220,9 +220,9 @@ ComboBox {
         }
         
         background: Rectangle {
-            color: Style.mainBackgroundColor
+            color: Style.colorSurfacePage
             radius: Style.cornerRadius(Style.sectionBorderRadius)
-            border.color: Style.popupBorderColor
+            border.color: Style.colorBorderSubtle
             border.width: Style.sectionBorderWidth
             antialiasing: true
             clip: true
@@ -247,7 +247,7 @@ ComboBox {
                     text: qsTr("Search: \"%1\"").arg(root.searchString)
                     font.pointSize: Style.fontSizeSmall
                     font.italic: true
-                    color: Style.textDescriptionColor
+                    color: Style.colorTextPrimary
                 }
                 
                 Text {
@@ -257,7 +257,7 @@ ComboBox {
                     text: qsTr("%1 of %2").arg(filteredModel.count).arg(root.fullModelData.length)
                     font.pointSize: Math.round(10 * Style.fontScale)
                     font.italic: true
-                    color: Style.textMetadataColor
+                    color: Style.colorTextSecondary
                 }
             }
             
@@ -287,7 +287,7 @@ ComboBox {
                 text: qsTr("No matches")
                 font.pointSize: Style.fontSizeSmall
                 font.italic: true
-                color: Style.textMetadataColor
+                color: Style.colorTextSecondary
             }
             
             delegate: ItemDelegate {
@@ -309,7 +309,7 @@ ComboBox {
                     font: root.font
                     elide: Text.ElideRight
                     verticalAlignment: Text.AlignVCenter
-                    color: root.indicateError ? Style.formLabelErrorColor : Style.textDescriptionColor
+                    color: root.indicateError ? Style.formLabelErrorColor : Style.colorTextPrimary
                 }
                 
                 highlighted: dropdownList.currentIndex === filterDelegate.index
@@ -382,7 +382,7 @@ ComboBox {
             
             // Custom highlight that respects popup border radius
             highlight: Rectangle {
-                color: Style.listViewHighlightColor
+                color: Style.colorSelectionSurface
                 radius: Style.cornerRadius(Style.sectionBorderRadius)
                 border.color: dropdownList.activeFocus ? Style.buttonFocusedBackgroundColor : "transparent"
                 border.width: dropdownList.activeFocus ? 2 : 0

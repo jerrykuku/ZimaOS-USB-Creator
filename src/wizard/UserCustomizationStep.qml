@@ -123,7 +123,7 @@ WizardStepBase {
 
                     text: "ⓘ"
                     font.pointSize: Style.fontSizeFormLabel
-                    color: sudoInfoArea.containsMouse || activeFocus ? Style.textDescriptionColor : Style.textMetadataColor
+                    color: sudoInfoArea.containsMouse || activeFocus ? Style.colorTextPrimary : Style.colorTextSecondary
                     Layout.alignment: Qt.AlignVCenter
 
                     activeFocusOnTab: ImageWriterSingleton ? ImageWriterSingleton.screenReaderActive : false

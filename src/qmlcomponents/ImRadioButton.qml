@@ -12,7 +12,7 @@ import RpiImager
 
 RadioButton {
     id: control
-    Material.accent: Style.formControlActiveColor
+    Material.accent: Style.colorAccentPrimary
     font.pointSize: Style.fontSizeSm
     font.family: Style.fontFamily
     activeFocusOnTab: true
@@ -57,9 +57,9 @@ RadioButton {
             x: control.leftPadding
             y: control.height / 2 - height / 2
             radius: 0  // Square instead of circle
-            border.color: control.checked ? Style.formControlActiveColor : "#bdbebf"
+            border.color: control.checked ? Style.colorAccentPrimary : Style.colorControlBorderInactive
             border.width: 2
-            color: Style.mainBackgroundColor
+            color: Style.colorSurfacePage
             
             Rectangle {
                 width: 10
@@ -67,7 +67,7 @@ RadioButton {
                 x: 5
                 y: 5
                 radius: 0  // Square dot instead of circle
-                color: Style.formControlActiveColor
+                color: Style.colorAccentPrimary
                 visible: control.checked
             }
         }

@@ -89,7 +89,7 @@ WizardStepBase {
                 text: qsTr("Selected: %1").arg(root.rsaKeyPath)
                 font.family: Style.fontFamily
                 font.pointSize: Style.fontSizeCaption
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 elide: Text.ElideMiddle
             }
             
@@ -123,7 +123,7 @@ WizardStepBase {
                 text: qsTr("Your boot partition will be signed using the selected RSA private key.")
                 font.family: Style.fontFamily
                 font.pointSize: Style.fontSizeDescription
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 wrapMode: Text.WordWrap
             }
             
@@ -132,7 +132,7 @@ WizardStepBase {
                 text: qsTr("This will create boot.img and boot.sig files required for Raspberry Pi Secure Boot.")
                 font.family: Style.fontFamily
                 font.pointSize: Style.fontSizeDescription
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 wrapMode: Text.WordWrap
             }
                 
@@ -146,7 +146,7 @@ WizardStepBase {
                         text: qsTr("Public Key Fingerprint: %1").arg(root.getRsaKeyFingerprint() || qsTr("(unavailable)"))
                         font.family: Style.fontFamily
                         font.pointSize: Style.fontSizeCaption
-                        color: Style.textDescriptionColor
+                        color: Style.colorTextPrimary
                         wrapMode: Text.WrapAnywhere
                     }
                 }
@@ -195,7 +195,7 @@ WizardStepBase {
                         wrapMode: Text.WordWrap
                         font.family: Style.fontFamily
                         font.pointSize: Style.fontSizeDescription
-                        color: Style.textDescriptionColor
+                        color: Style.colorTextPrimary
                         text: qsTr("Program the secure boot public key hash into the device's OTP memory. This is a permanent, irreversible operation.")
                     }
 
@@ -219,7 +219,7 @@ WizardStepBase {
                         wrapMode: Text.WordWrap
                         font.family: Style.fontFamily
                         font.pointSize: Style.fontSizeCaption
-                        color: "#C62828"
+                        color: Style.colorTextErrorStrong
                         text: qsTr("WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.")
                     }
                 }

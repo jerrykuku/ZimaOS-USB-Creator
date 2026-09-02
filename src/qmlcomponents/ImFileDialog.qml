@@ -376,9 +376,9 @@ BaseDialog {
             clip: true
             padding: 8
             background: Rectangle {
-                color: Style.mainBackgroundColor
+                color: Style.colorSurfacePage
                 radius: Style.cornerRadius(Style.sectionBorderRadius)
-                border.color: Style.popupBorderColor
+                border.color: Style.colorBorderSubtle
                 border.width: Style.sectionBorderWidth
                 antialiasing: true
                 clip: true
@@ -399,7 +399,7 @@ BaseDialog {
                     currentIndex: -1  // No item selected by default
                     highlightFollowsCurrentItem: true
                     highlight: Rectangle {
-                        color: placesList.activeFocus ? Style.listViewHighlightColor : Qt.rgba(0, 0, 0, 0.05)
+                        color: placesList.activeFocus ? Style.colorSelectionSurface : Qt.rgba(0, 0, 0, 0.05)
                         radius: Style.cornerRadius(Style.listItemBorderRadius)
                         antialiasing: true
                         visible: placesList.currentIndex >= 0
@@ -423,9 +423,9 @@ BaseDialog {
                         background: Rectangle {
                             color: {
                                 if (ListView.isCurrentItem && placesList.activeFocus)
-                                    return Style.listViewHighlightColor
+                                    return Style.colorSelectionSurface
                                 else if (leftPane.hovered)
-                                    return Style.listViewHoverRowBackgroundColor
+                                    return Style.colorSurfaceMuted
                                 else
                                     return "transparent"
                             }
@@ -462,7 +462,7 @@ BaseDialog {
                 Text { 
                     text: qsTr("Folders")
                     font.pointSize: Style.fontSizeDescription
-                    color: Style.textDescriptionColor
+                    color: Style.colorTextPrimary
                     Layout.fillWidth: true
                     Layout.topMargin: 8
                     Layout.bottomMargin: 2
@@ -480,7 +480,7 @@ BaseDialog {
                     currentIndex: -1  // No item selected by default
                     highlightFollowsCurrentItem: true
                     highlight: Rectangle {
-                        color: subfoldersList.activeFocus ? Style.listViewHighlightColor : Qt.rgba(0, 0, 0, 0.05)
+                        color: subfoldersList.activeFocus ? Style.colorSelectionSurface : Qt.rgba(0, 0, 0, 0.05)
                         radius: Style.cornerRadius(Style.listItemBorderRadius)
                         antialiasing: true
                         visible: subfoldersList.currentIndex >= 0
@@ -513,9 +513,9 @@ BaseDialog {
                         background: Rectangle {
                             color: {
                                 if (ListView.isCurrentItem && subfoldersList.activeFocus)
-                                    return Style.listViewHighlightColor
+                                    return Style.colorSelectionSurface
                                 else if (leftPane.hovered)
-                                    return Style.listViewHoverRowBackgroundColor
+                                    return Style.colorSurfaceMuted
                                 else
                                     return "transparent"
                             }
@@ -558,9 +558,9 @@ BaseDialog {
             Layout.fillHeight: true
             padding: 8
             background: Rectangle {
-                color: Style.mainBackgroundColor
+                color: Style.colorSurfacePage
                 radius: Style.cornerRadius(Style.sectionBorderRadius)
-                border.color: Style.popupBorderColor
+                border.color: Style.colorBorderSubtle
                 border.width: Style.sectionBorderWidth
                 antialiasing: true
                 clip: true
@@ -644,7 +644,7 @@ BaseDialog {
                             font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
                             font.italic: true
-                            color: Style.textDescriptionColor
+                            color: Style.colorTextPrimary
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignLeft
                             leftPadding: 4
@@ -664,7 +664,7 @@ BaseDialog {
                         interactive: false
                         
                         highlight: Rectangle {
-                            color: filesList.activeFocus ? Style.listViewHighlightColor : Qt.rgba(0, 0, 0, 0.05)
+                            color: filesList.activeFocus ? Style.colorSelectionSurface : Qt.rgba(0, 0, 0, 0.05)
                             radius: Style.cornerRadius(Style.listItemBorderRadius)
                             antialiasing: true
                             visible: filesList.currentIndex >= 0
@@ -708,11 +708,11 @@ BaseDialog {
                             background: Rectangle {
                                 color: {
                                     if (dialog.selectedFile === fileUrl)
-                                        return Style.listViewHighlightColor
+                                        return Style.colorSelectionSurface
                                     else if (ListView.isCurrentItem && filesList.activeFocus)
-                                        return Style.listViewHighlightColor
+                                        return Style.colorSelectionSurface
                                     else if (hovered)
-                                        return Style.listViewHoverRowBackgroundColor
+                                        return Style.colorSurfaceMuted
                                     else
                                         return "transparent"
                                 }
@@ -746,7 +746,7 @@ BaseDialog {
                             font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
                             font.italic: true
-                            color: Style.textDescriptionColor
+                            color: Style.colorTextPrimary
                         }
                     }
                     
@@ -758,7 +758,7 @@ BaseDialog {
                         font.pointSize: Style.fontSizeDescription
                         font.family: Style.fontFamily
                         font.italic: true
-                        color: Style.textDescriptionColor
+                        color: Style.colorTextPrimary
                         horizontalAlignment: Text.AlignHCenter
                         wrapMode: Text.WordWrap
                         topPadding: 40

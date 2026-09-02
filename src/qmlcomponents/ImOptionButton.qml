@@ -64,7 +64,7 @@ Item {
                 id: label
                 Layout.alignment: Qt.AlignVCenter
                 font: control.labelFont
-                color: optionButton.enabled ? Style.formLabelColor : Style.textDescriptionColor
+                color: optionButton.enabled ? Style.formLabelColor : Style.colorTextPrimary
                 elide: Text.ElideRight
                 
                 // Ignore this for accessibility - the button will handle it
@@ -79,7 +79,7 @@ Item {
                 text: control.helpLabel
                 font.family: Style.fontFamily
                 font.pixelSize: Style.fontSizeDescription
-                color: helpText.activeFocus ? Style.zimaBlue : Style.buttonForegroundColor
+                color: helpText.activeFocus ? Style.colorAccentPrimary : Style.buttonForegroundColor
                 font.underline: helpHover.hovered || helpText.activeFocus
                 
                 // Keyboard accessibility

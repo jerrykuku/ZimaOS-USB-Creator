@@ -90,7 +90,7 @@ BaseDialog {
                 font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
                 Layout.topMargin: Style.spacingSmall
             }
@@ -177,7 +177,7 @@ BaseDialog {
                 text: qsTr("Buffer memory: ~%1-%2 MB (varies by system RAM)").arg(Math.round(asyncQueueDepthSlider.value * 1)).arg(Math.round(asyncQueueDepthSlider.value * 8))
                 font.pointSize: Style.fontSizeSmall
                 font.family: Style.fontFamily
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
             }
 
             ImOptionPill {
@@ -212,7 +212,7 @@ BaseDialog {
                 font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
             }
 
@@ -237,7 +237,7 @@ BaseDialog {
                 font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
             }
 
@@ -262,7 +262,7 @@ BaseDialog {
                 font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
             }
 
@@ -299,7 +299,7 @@ BaseDialog {
                 font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
             }
 
@@ -334,7 +334,7 @@ BaseDialog {
                     font.pointSize: Style.fontSizeDescription
                     font.family: Style.fontFamily
                     font.italic: !gadgetPathText.gadgetPath
-                    color: gadgetPathText.gadgetPath ? Style.formLabelColor : Style.textDescriptionColor
+                    color: gadgetPathText.gadgetPath ? Style.formLabelColor : Style.colorTextPrimary
                     Layout.fillWidth: true
                     elide: Text.ElideMiddle
                     Layout.alignment: Qt.AlignVCenter
@@ -386,7 +386,7 @@ BaseDialog {
                 font.pointSize: Style.fontSizeFormLabel
                 font.family: Style.fontFamilyBold
                 font.bold: true
-                color: Style.textDescriptionColor
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
             }
 
@@ -427,7 +427,7 @@ BaseDialog {
                 Layout.fillWidth: true
                 Layout.preferredHeight: statusColumn.implicitHeight + Style.spacingMedium * 2
                 Layout.bottomMargin: Style.spacingSmall
-                color: Style.titleBackgroundColor
+                color: Style.colorSurfacePage
                 radius: Style.sectionBorderRadius
 
                 ColumnLayout {
@@ -441,7 +441,7 @@ BaseDialog {
                         font.pointSize: Style.fontSizeDescription
                         font.family: Style.fontFamilyBold
                         font.bold: true
-                        color: Style.textDescriptionColor
+                        color: Style.colorTextPrimary
                     }
 
                     Text {
@@ -488,7 +488,7 @@ BaseDialog {
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: buttonRow.implicitHeight + Style.cardPadding
-        color: Style.titleBackgroundColor
+        color: Style.colorSurfacePage
 
         RowLayout {
             id: buttonRow

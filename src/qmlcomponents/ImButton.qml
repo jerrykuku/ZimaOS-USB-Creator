@@ -31,9 +31,9 @@ Button {
     
     background: Rectangle {
         color: control.enabled ? (control.activeFocus ? Style.buttonFocusedBackgroundColor : (control.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor)) : Style.buttonDisabledBackgroundColor
-        radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : Style.buttonRadius
-        border.color: control.enabled ? Style.popupBorderColor : "#D0D0D0"
-        border.width: Style.borderWidth
+        radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : Style.radiusButton
+        border.color: control.enabled ? Style.colorBorderSubtle : Style.colorBorderDisabled
+        border.width: Style.borderWidthDefault
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
     }

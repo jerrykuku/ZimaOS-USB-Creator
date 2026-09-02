@@ -30,8 +30,8 @@ ApplicationWindow {
     Rectangle {
         id: windowSurface
         anchors.fill: parent
-        color: Style.mainBackgroundColor
-        radius: Style.contentRadius
+        color: Style.colorSurfacePage
+        radius: Style.radiusPanel
         clip: true
         z: 0
     }
@@ -75,8 +75,8 @@ ApplicationWindow {
         anchors.left: windowSurface.left
         anchors.right: windowSurface.right
         height: Style.titleBarHeight
-        color: Style.mainBackgroundColor
-        radius: Style.titleBarRadius
+        color: Style.colorSurfacePage
+        radius: Style.radiusPanel
         clip: true
         z: 2000
 
@@ -87,12 +87,12 @@ ApplicationWindow {
 
         Row {
             anchors.left: parent.left
-            anchors.leftMargin: Style.cardInset
+            anchors.leftMargin: Style.spacingCardInset
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.contentInset
+            spacing: Style.spacingContentInset
 
             Repeater {
-                model: ["#ff5f57", "#febc2e", "#28c840"]
+                model: [Style.colorChromeClose, Style.colorChromeMinimize, Style.colorChromeMaximize]
                 delegate: Rectangle {
                     required property string modelData
                     required property int index
@@ -101,7 +101,7 @@ ApplicationWindow {
                     radius: Style.titleBarControlSize / 2
                     color: modelData
                     border.color: Qt.darker(modelData, 1.08)
-                    border.width: Style.borderWidth
+                    border.width: Style.borderWidthDefault
 
                     property bool hovered: false
 
@@ -120,13 +120,42 @@ ApplicationWindow {
                         }
                     }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: index === 0 ? "×" : (index === 1 ? "−" : "＋")
+                    Canvas {
+                        anchors.fill: parent
                         visible: parent.hovered
-                        color: "#5a5a5a"
-                        font.pixelSize: 11
-                        font.bold: true
+                        antialiasing: true
+                        onPaint: {
+                            var context = getContext("2d")
+                            var center = width / 2
+                            context.reset()
+                            context.strokeStyle = Style.colorTextChrome
+                            context.lineWidth = 1.15
+                            context.lineCap = "round"
+                            context.beginPath()
+                            if (index === 0) {
+                                // Close: compact cross centered on the button geometry.
+                                var closeMin = 3.8
+                                var closeMax = width - closeMin
+                                var closeCenter = height / 2
+                                context.moveTo(closeMin, closeCenter - 2.2)
+                                context.lineTo(closeMax, closeCenter + 2.2)
+                                context.moveTo(closeMax, closeCenter - 2.2)
+                                context.lineTo(closeMin, closeCenter + 2.2)
+                            } else if (index === 1) {
+                                // Minimize: centered horizontal stroke.
+                                context.moveTo(3.0, center + 0.5)
+                                context.lineTo(width - 3.0, center + 0.5)
+                            } else {
+                                // Fullscreen: opposing diagonal arrows.
+                                context.moveTo(3.0, 5.0)
+                                context.lineTo(3.0, 3.0)
+                                context.lineTo(5.0, 3.0)
+                                context.moveTo(width - 3.0, height - 5.0)
+                                context.lineTo(width - 3.0, height - 3.0)
+                                context.lineTo(width - 5.0, height - 3.0)
+                            }
+                            context.stroke()
+                        }
                     }
                 }
             }
@@ -136,7 +165,7 @@ ApplicationWindow {
         Text {
             anchors.centerIn: parent
             text: window.title
-            color: "#666666"
+            color: Style.colorTextChromeMuted
             font.family: Style.fontFamilyBold
             font.pixelSize: Style.fontSizeSm
             font.bold: true
@@ -203,12 +232,12 @@ ApplicationWindow {
         anchors.right: windowSurface.right
         anchors.bottom: windowSurface.bottom
         anchors.top: customTitleBar.bottom
-        anchors.leftMargin: Style.pageMargin
-        anchors.rightMargin: Style.pageMargin
-        anchors.bottomMargin: Style.pageMargin
-        anchors.topMargin: Style.pageMargin
-        color: Style.mainBackgroundColor
-        radius: Style.contentRadius
+        anchors.leftMargin: Style.spacingPageInset
+        anchors.rightMargin: Style.spacingPageInset
+        anchors.bottomMargin: Style.spacingPageInset
+        anchors.topMargin: Style.spacingPageInset
+        color: Style.colorSurfacePage
+        radius: Style.radiusPanel
         clip: true
 
         WizardContainer {
@@ -287,7 +316,7 @@ ApplicationWindow {
             wrapMode: Text.WordWrap
             font.pointSize: Style.fontSizeDescription
             font.family: Style.fontFamily
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Layout.fillWidth: true
             Accessible.name: text.replace(/<[^>]+>/g, '')  // Strip HTML tags for accessibility
         }
@@ -350,7 +379,7 @@ ApplicationWindow {
             wrapMode: Text.WordWrap
             font.pointSize: Style.fontSizeDescription
             font.family: Style.fontFamily
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Layout.fillWidth: true
         }
 
@@ -411,7 +440,7 @@ ApplicationWindow {
             text: qsTr("ZimaOS USB Creator is still busy. Are you sure you want to quit?")
             font.pixelSize: Style.fontSizeDescription
             font.family: Style.fontFamily
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
@@ -514,7 +543,7 @@ ApplicationWindow {
             text: permissionWarningDialog.warningMessage
             font.pointSize: Style.fontSizeDescription
             font.family: Style.fontFamily
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Accessible.description: qsTr("Error message explaining why elevated privileges are required")

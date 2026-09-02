@@ -48,7 +48,7 @@ BaseDialog {
     Rectangle {
         Layout.fillWidth: true
         implicitHeight: warningColumn.implicitHeight + Style.spacingMedium * 2
-        color: "#FFEBEE"
+        color: Style.colorSurfaceError
         radius: Style.cornerRadius(Style.sectionBorderRadius)
 
         ColumnLayout {
@@ -63,7 +63,7 @@ BaseDialog {
                 font.family: Style.fontFamily
                 font.pointSize: Style.fontSizeDescription
                 font.bold: true
-                color: "#C62828"
+                color: Style.colorTextErrorStrong
                 text: qsTr("WARNING: OTP Programming is PERMANENT and IRREVERSIBLE")
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
@@ -74,7 +74,7 @@ BaseDialog {
                 wrapMode: Text.WordWrap
                 font.family: Style.fontFamily
                 font.pointSize: Style.fontSizeSmall
-                color: "#C62828"
+                color: Style.colorTextErrorStrong
                 text: qsTr("This operation will permanently program the secure boot public key hash into the device's one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.")
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
@@ -92,7 +92,7 @@ BaseDialog {
             text: qsTr("Device: %1").arg(root.deviceModel)
             font.family: Style.fontFamily
             font.pointSize: Style.fontSizeDescription
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
@@ -101,7 +101,7 @@ BaseDialog {
             text: qsTr("Serial: %1").arg(root.deviceSerial)
             font.family: Style.fontFamily
             font.pointSize: Style.fontSizeDescription
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             visible: root.deviceSerial !== ""
             Accessible.role: Accessible.StaticText
             Accessible.name: text
@@ -112,7 +112,7 @@ BaseDialog {
             font.family: Style.fontFamily
             font.pointSize: Style.fontSizeSm
             font.bold: true
-            color: Style.textDescriptionColor
+            color: Style.colorTextPrimary
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
@@ -137,7 +137,7 @@ BaseDialog {
         wrapMode: Text.WordWrap
         font.family: Style.fontFamily
         font.pointSize: Style.fontSizeDescription
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         text: qsTr("To confirm, type the device serial number below:")
         Accessible.role: Accessible.StaticText
         Accessible.name: text
@@ -147,7 +147,7 @@ BaseDialog {
         font.family: Style.fontFamily
         font.pointSize: Style.fontSizeSm
         font.bold: true
-        color: Style.textDescriptionColor
+        color: Style.colorTextPrimary
         text: root.deviceSerial
         Accessible.role: Accessible.StaticText
         Accessible.name: qsTr("Serial to type: %1").arg(text)

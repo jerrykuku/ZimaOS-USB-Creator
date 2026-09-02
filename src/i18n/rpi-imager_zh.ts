@@ -1106,6 +1106,22 @@ or type a path in the address bar above.</source>
         <source>JSON files (*.json);;All files (*)</source>
         <translation>JSON 文件 (*.json);;所有文件 (*)</translation>
     </message>
+    <message>
+        <source>Limited by download speed</source>
+        <translation>受下载速度限制</translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation>受解压速度限制</translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation>受存储设备速度限制</translation>
+    </message>
+    <message>
+        <source>Verifying written data</source>
+        <translation>正在验证已写入的数据</translation>
+    </message>
 </context>
 <context>
     <name>KeychainPermissionDialog</name>

@@ -402,7 +402,7 @@ Item {
         anchors.leftMargin: 0
         anchors.rightMargin: 0
         // Single source of truth for the gap between the sidebar and content.
-        spacing: Style.panelGap
+        spacing: Style.spacingPanelGap
 
         // Sidebar
         Rectangle {
@@ -413,8 +413,8 @@ Item {
             Layout.fillHeight: true
             color: Style.sidebarBackgroundColour
             border.color: Style.sidebarBorderColour
-            border.width: Style.borderWidth
-            radius: Style.panelRadius
+            border.width: Style.borderWidthDefault
+            radius: Style.radiusPanel
 
             Flickable {
                 id: sidebarScroll
@@ -696,7 +696,7 @@ Item {
                     activeFocusOnTab: true
                     background: Rectangle {
                         color: optionsButton.activeFocus ? Style.buttonFocusedBackgroundColor : (optionsButton.hovered ? Style.buttonHoveredBackgroundColor : Style.transparent)
-                        radius: Style.buttonRadius
+                        radius: Style.radiusButton
                         border.color: Style.transparent
                         border.width: 0
                         antialiasing: true
@@ -1358,8 +1358,8 @@ Item {
             Layout.fillWidth: true
             Layout.topMargin: Style.spacingSmall
             Layout.preferredHeight: repoUrlText.implicitHeight + Style.spacingSmall * 2
-            color: Style.titleBackgroundColor
-            border.color: Style.popupBorderColor
+            color: Style.colorSurfacePage
+            border.color: Style.colorBorderSubtle
             border.width: 1
             radius: Style.listItemBorderRadius
 
