@@ -29,7 +29,6 @@ The following status is intentional:
 | Internal stage | `mac-dev.sh`, `mac-build-ninja.sh`, `mac-build-dmg.sh`, `create-appimage*.sh`, `create-embedded.sh`, and scripts under `debian/` | Called by a public entry or another pipeline stage; do not use as a separate channel. |
 | Auxiliary tool | Qt build scripts, `setup-notarization.sh`, icon and embedded test scripts | Used only when preparing a toolchain, credentials, assets, or tests. |
 | Manual maintenance | `src/mac/check_dependencies.sh`, `src/mac/create_simple_background.sh`, `src/windows/regenerate_icons.sh` | No production pipeline calls these; use only for manual asset/dependency maintenance. |
-| Legacy | `build-ninja.sh`, `mac-build-signed.sh` | Kept temporarily for compatibility; new documentation must not add references to them. |
 
 Legacy scripts are not part of the supported interface. They can be removed in
 a later cleanup once downstream automation has migrated to the three public
@@ -96,8 +95,8 @@ Signed and optionally notarized:
 Use `--arch=universal` only when the Qt installation and dependencies are
 available for both `arm64` and `x86_64`.
 
-The root-level `build-ninja.sh`, `BUILD-NINJA.md`, and their old `rpi-imager`
-target names are legacy documentation and are not part of the macOS channel.
+The root-level `BUILD-NINJA.md` is retained only as a migration note; it is not
+part of the macOS channel.
 
 ## 2. Windows
 
@@ -202,8 +201,8 @@ stages.
 
 ### Signing and tests
 
-- macOS signing/notarization: `mac-build-signed.sh`, `setup-notarization.sh`,
-  and the CMake `dmg` target.
+- macOS signing/notarization: `build-macos.sh release`,
+  `setup-notarization.sh`, and the CMake `dmg` target.
 - Windows signing/installer: CMake options and targets in
   `src/windows/PlatformPackaging.cmake`.
 - CMake tests: configure with `-DBUILD_TESTING=ON`, then build the generated
