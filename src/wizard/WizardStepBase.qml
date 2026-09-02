@@ -16,7 +16,7 @@ FocusScope {
     id: root
     
     // Wizard container that owns shared wizard state (provided by WizardContainer)
-    required property var wizardContainer
+    property var wizardContainer: null
 
     // Network status banner text (embedded mode), owned by WizardContainer
     readonly property string networkInfoText: wizardContainer ? wizardContainer.networkInfoText : ""

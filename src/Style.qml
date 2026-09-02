@@ -159,6 +159,8 @@ Item {
     readonly property int cardPadding: 16
     readonly property int scrollBarWidth: 10
     readonly property int sidebarWidth: 200
+    readonly property int sidebarMinWidth: 150
+    readonly property int sidebarMaxWidth: 350
     readonly property int sidebarPadding: 8
     readonly property int sidebarItemBorderRadius: 8
     readonly property int sectionMargin: 4
@@ -170,6 +172,8 @@ Item {
     // Sidebar item heights
     readonly property int sidebarItemHeight: 40
     readonly property int sidebarSubItemHeight: sidebarItemHeight - 12
+
+    function cornerRadius(normalRadius) { return normalRadius }
 
     // === LAYOUT (scaled by text scale factor) ===
     readonly property int formColumnSpacing: scaled(20)

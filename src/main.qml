@@ -39,7 +39,7 @@ ApplicationWindow {
     property bool isOffline: ImageWriterSingleton.isOsListUnavailable
     
     title: {
-        var baseTitle = qsTr("ZimaOS USB Creator %1").arg(imageWriter.constantVersion())
+        var baseTitle = qsTr("ZimaOS USB Creator %1").arg(ImageWriterSingleton.constantVersion())
         if (isOffline) {
             baseTitle += " — " + qsTr("Offline")
         }
