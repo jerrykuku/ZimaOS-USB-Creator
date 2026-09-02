@@ -695,6 +695,7 @@ int main(int argc, char *argv[])
     ImageWriter::setQmlInstance(&imageWriter);
 
     engine.setInitialProperties(QVariantMap{
+        {"imageWriter", QVariant::fromValue(&imageWriter)},
         {"showLanguageSelection", showLanguageSelection}
     });
     const QString qmlSourceDir = qEnvironmentVariable("RPI_IMAGER_QML_SOURCE_DIR");
