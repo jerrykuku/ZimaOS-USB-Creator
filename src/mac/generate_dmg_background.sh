@@ -95,11 +95,6 @@ try:
     width, height = 600, 400
     
     # Create a simple HTML file that we can screenshot
-    # Include version in title if provided
-    title_text = "Raspberry Pi Imager"
-    if len(sys.argv) > 2 and sys.argv[2]:
-        title_text += f" {sys.argv[2]}"
-    
     html_content = f'''
     <!DOCTYPE html>
     <html>
@@ -124,15 +119,6 @@ try:
                 font-feature-settings: "kern" 1;
                 font-kerning: normal;
             }}
-            .title {{
-                color: #C51A4A;
-                font-size: 32px;
-                font-weight: 600;
-                margin-bottom: 20px;
-                letter-spacing: -0.02em;
-                line-height: 1.2;
-            }}
-
             .circle {{
                 position: absolute;
                 border: 2px solid #ecf0f1;
@@ -160,7 +146,6 @@ try:
         </style>
     </head>
     <body>
-        <div class="title">{title_text}</div>
         <div class="circle app"></div>
         <div class="circle apps"></div>
         <div class="chevron">›</div>
@@ -209,10 +194,8 @@ echo "1. Install Python 3 and Pillow: pip3 install Pillow"
 echo "2. Run: python3 $SCRIPT_DIR/create_dmg_background.py $OUTPUT_PATH"
 echo ""
 echo "Or create a 600x400 PNG image manually with:"
-echo "- Title: 'Raspberry Pi Imager'"
-echo "- Instruction: 'Drag the app to Applications to install'"
 echo "- Visual guides for app and Applications folder positions"
 echo ""
 echo "The DMG will work without a background image, but won't look as polished."
 
-exit 1 
+exit 1

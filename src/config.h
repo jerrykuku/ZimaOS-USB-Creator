@@ -8,16 +8,13 @@
 
 
 /* Repository URL */
-#define OSLIST_URL                        "https://get.casaos.io/zimaos-manifest-example.json"
+#define OSLIST_URL                        "https://get.casaos.io/zimaos-manifest.json"
 
 /* Custom repository manifest file extension (without leading dot) */
-#define MANIFEST_EXTENSION                      "rpi-imager-manifest"
+#define MANIFEST_EXTENSION                      "zimaos-usb-creator-manifest"
 
 /* MIME type for manifest files */
-#define MANIFEST_MIME_TYPE                      "application/vnd.raspberrypi.imager-manifest+json"
-
-/* Time synchronization URL (only used on linuxfb QPA platform, URL must be HTTP) */
-#define TIME_URL                                "http://downloads.raspberrypi.com/"
+#define MANIFEST_MIME_TYPE                      "application/vnd.icewhaletech.zimaos-usb-creator-manifest+json"
 
 /* Hash algorithm for verifying (uncompressed image) checksum */
 #define OSLIST_HASH_ALGORITHM                   QCryptographicHash::Sha256

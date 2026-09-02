@@ -495,7 +495,7 @@ int main(int argc, char *argv[])
         ImageWriter::setForceSecureBootEnabled(true);
     }
 
-    // Accept rpi-imager:// callback URLs or manifest files (.rpi-imager-manifest, .json) as positional argument
+    // Accept rpi-imager:// callback URLs or manifest files (.zimaos-usb-creator-manifest, .json) as positional argument
     // Image files/URLs should be passed via --cli mode, not the desktop GUI
     const QStringList posArgs = parser.positionalArguments();
     if (!posArgs.isEmpty())

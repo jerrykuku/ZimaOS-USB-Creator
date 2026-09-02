@@ -10,6 +10,7 @@ QT_ROOT="${Qt6_ROOT:-/opt/Qt/6.9.3/macos}"
 
 # Default parameters
 CLEAN_BUILD=0
+ARCH="universal"
 SIGNING_IDENTITY=""
 NOTARIZE_PROFILE=""
 SKIP_BUILD=0
@@ -19,6 +20,7 @@ usage() {
     echo ""
     echo "Options:"
     echo "  --clean                        Clean and rebuild"
+    echo "  --arch=ARCH                    macOS architecture (arm64, x86_64, or universal)"
     echo "  --qt-root=PATH                 Specify Qt installation path"
     echo "  --signing-identity=CN          Developer certificate name (for code signing)"
     echo "  --notarize-profile=PROFILE     Keychain profile name (for notarization)"
@@ -58,6 +60,10 @@ for arg in "$@"; do
     case $arg in
         --clean)
             CLEAN_BUILD=1
+            shift
+            ;;
+        --arch=*)
+            ARCH="${arg#*=}"
             shift
             ;;
         --qt-root=*)
@@ -107,6 +113,7 @@ fi
 echo "📋 Build Configuration:"
 echo "  Qt Path: $QT_ROOT"
 echo "  Build Directory: $BUILD_DIR"
+echo "  Architecture: $ARCH"
 if [ -n "$SIGNING_IDENTITY" ]; then
     echo "  Code Signing: ✅ Enabled"
     echo "  Signing Identity: $SIGNING_IDENTITY"
@@ -159,6 +166,7 @@ if [ $SKIP_BUILD -eq 0 ]; then
     # Build command array to properly handle arguments with spaces and special characters
     BUILD_CMD=("$SCRIPT_DIR/mac-build-ninja.sh")
     BUILD_CMD+=("--qt-root=$QT_ROOT")
+    BUILD_CMD+=("--arch=$ARCH")
 
     if [ $CLEAN_BUILD -eq 1 ]; then
         BUILD_CMD+=("--clean")

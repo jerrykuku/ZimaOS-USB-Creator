@@ -9,4 +9,4 @@ Icon=zimaos
 Exec=pkexec --disable-internal-agent /usr/bin/zimaos-usb-creator %u
 Categories=Utility;
 StartupNotify=false
-MimeType=x-scheme-handler/rpi-imager;application/vnd.raspberrypi.imager-manifest+json;
+MimeType=x-scheme-handler/rpi-imager;application/vnd.icewhaletech.zimaos-usb-creator-manifest+json;

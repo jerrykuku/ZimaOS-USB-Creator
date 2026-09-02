@@ -5,7 +5,11 @@ set -e
 # Supports both Linux and macOS platforms
 
 # Parse command line arguments
-ARCH=$(uname -m)  # Default to current architecture
+if [ "$(uname -s)" = "Darwin" ]; then
+    ARCH="universal"
+else
+    ARCH=$(uname -m)
+fi
 CLEAN_BUILD=0     # Don't clean by default for faster rebuilds
 QT_ROOT_ARG=""
 SIGNING_IDENTITY=""
@@ -98,8 +102,14 @@ echo "Platform: $(uname -s)"
 SOURCE_DIR="src/"
 CMAKE_FILE="${SOURCE_DIR}CMakeLists.txt"
 
-# Get version from git tag
-GIT_VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "0.0.0-unknown")
+# Use the nearest release tag for distributable builds. This keeps local
+# uncommitted changes and post-tag commit counts out of the app/DMG version.
+GIT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git describe --tags --always 2>/dev/null || echo "0.0.0-unknown")
+# Normalize repository tag conventions to SemVer for the packaged app. A
+# four-part hotfix tag such as v2.0.11.1 becomes valid build metadata.
+GIT_VERSION=$(printf '%s' "$GIT_VERSION" | sed -E \
+    -e 's/^v([0-9]+\.[0-9]+\.[0-9]+)\.([0-9]+)$/\1+hotfix.\2/' \
+    -e 's/^v([0-9].*)$/\1/')
 
 # Extract numeric version components
 MAJOR=$(echo "$GIT_VERSION" | sed -n 's/^v\{0,1\}\([0-9]\{1,\}\)\.[0-9]\{1,\}\.[0-9]\{1,\}.*/\1/p')
@@ -249,6 +259,23 @@ CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DQt6_ROOT=$QT_DIR"
 # Add macOS-specific build options if on macOS
 if [ "$(uname -s)" = "Darwin" ]; then
     echo "Configuring for macOS build..."
+
+    # Keep the existing universal default on macOS, while allowing smaller
+    # single-architecture bundles for distribution.
+    case "$ARCH" in
+        universal)
+            MACOS_ARCHES="arm64;x86_64"
+            ;;
+        arm64|x86_64)
+            MACOS_ARCHES="$ARCH"
+            ;;
+        *)
+            echo "Unsupported macOS architecture: $ARCH (use arm64, x86_64, or universal)"
+            exit 1
+            ;;
+    esac
+    CMAKE_EXTRA_FLAGS="$CMAKE_EXTRA_FLAGS -DCMAKE_OSX_ARCHITECTURES=$MACOS_ARCHES"
+    echo "macOS architectures: $MACOS_ARCHES"
 
     # Code signing (optional - only if SIGNING_IDENTITY is set)
     if [ -n "$SIGNING_IDENTITY" ]; then

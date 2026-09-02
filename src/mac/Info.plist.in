@@ -79,10 +79,10 @@
       <dict>
         <key>public.filename-extension</key>
         <array>
-          <string>rpi-imager-manifest</string>
+          <string>zimaos-usb-creator-manifest</string>
         </array>
         <key>public.mime-type</key>
-        <string>application/vnd.raspberrypi.imager-manifest+json</string>
+        <string>application/vnd.icewhaletech.zimaos-usb-creator-manifest+json</string>
       </dict>
     </dict>
   </array>

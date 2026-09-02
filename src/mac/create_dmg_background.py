@@ -4,10 +4,8 @@ Script to create a stylized background image for the Raspberry Pi Imager DMG.
 This creates a background that guides users to drag the app to Applications.
 """
 
-import os
 import sys
-from PIL import Image, ImageDraw, ImageFont
-import subprocess
+from PIL import Image, ImageDraw
 
 def create_dmg_background(output_path="dmg_background.png", version_str="", width=600, height=400):
     """Create a stylized DMG background image."""
@@ -28,67 +26,9 @@ def create_dmg_background(output_path="dmg_background.png", version_str="", widt
         color = (gray_value, gray_value, gray_value, 255)
         draw.line([(0, y), (high_width, y)], fill=color)
     
-    # Try to load high-quality system fonts (Raspberry Pi website uses Inter/system fonts)
-    try:
-        # Try to find the best system fonts for macOS (similar to raspberrypi.com)
-        font_paths = [
-            '/System/Library/Fonts/SF-Pro-Display-Regular.otf',  # macOS system font
-            '/System/Library/Fonts/SF-Pro-Text-Regular.otf',     # macOS system font
-            '/System/Library/Fonts/Helvetica.ttc',               # Classic fallback
-            '/System/Library/Fonts/Arial.ttf',                   # Windows compatibility
-            '/Library/Fonts/Arial.ttf'                           # Additional fallback
-        ]
-        
-        title_font = None
-        instruction_font = None
-        chosen_font_path = None
-
-        for font_path in font_paths:
-            if os.path.exists(font_path):
-                try:
-                    # Use larger fonts scaled for high resolution
-                    title_font = ImageFont.truetype(font_path, 32 * scale_factor)
-                    instruction_font = ImageFont.truetype(font_path, 18 * scale_factor)
-                    chosen_font_path = font_path
-                    print(f"Using font: {font_path}")
-                    break
-                except Exception as e:
-                    print(f"Failed to load {font_path}: {e}")
-                    continue
-
-        if not title_font:
-            # Fallback to default font with larger sizes
-            title_font = ImageFont.load_default()
-            instruction_font = ImageFont.load_default()
-            chosen_font_path = None
-            print("Using default fonts")
-
-    except Exception as e:
-        print(f"Warning: Could not load custom font: {e}")
-        title_font = ImageFont.load_default()
-        instruction_font = ImageFont.load_default()
-        chosen_font_path = None
-    
-    # Colors inspired by raspberrypi.com design
-    raspberry_red = '#C51A4A'      # Official Raspberry Pi red
-    text_color = '#1a1a1a'         # Darker, more readable text
-    light_text = '#666666'         # Better contrast gray
-    
-    # Draw title with version if provided
-    if version_str:
-        title_text = f"ZimaOS USB Creator {version_str}"
-    else:
-        title_text = "ZimaOS USB Creator"
-    
-    title_bbox = draw.textbbox((0, 0), title_text, font=title_font)
-    title_width = title_bbox[2] - title_bbox[0]
-    title_x = (high_width - title_width) // 2
-    title_y = 50 * scale_factor
-    
-    # Draw title with clean, modern appearance
-    draw.text((title_x, title_y), title_text, fill=raspberry_red, font=title_font)
-    
-    # No instruction text needed - the visual elements speak for themselves
+    # Keep the background purely visual. The DMG window already provides the
+    # app name and the Finder supplies the Applications label.
+    raspberry_red = '#C51A4A'
     
     # Draw arrow pointing from app position to Applications position (scaled)
     app_x = 150 * scale_factor  # Position where app will be placed
@@ -157,7 +97,7 @@ def create_dmg_background(output_path="dmg_background.png", version_str="", widt
     # Draw the complete chevron as one smooth polygon
     draw.polygon(chevron_points, fill=chevron_color)
     
-    # Applications folder shortcut will have its own label, so we don't add one here
+    # Applications folder shortcut will have its own Finder label.
     
     # Scale down to final resolution with high-quality resampling for smooth antialiasing
     final_img = img.resize((width, height), Image.LANCZOS)
@@ -208,4 +148,4 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -1,5 +1,5 @@
 # GenerateVersion.cmake — run at build time via add_custom_target
-# Writes a C++ header and a CMake include file derived from `git describe`.
+# Writes a C++ header and a CMake include file derived from the nearest Git tag.
 #
 # Expected -D inputs:
 #   GIT_EXECUTABLE   — path to git
@@ -12,7 +12,7 @@ set(VERSION_STR "0.0.0-unknown")
 
 if(GIT_EXECUTABLE)
     execute_process(
-        COMMAND "${GIT_EXECUTABLE}" describe --tags --always --dirty
+        COMMAND "${GIT_EXECUTABLE}" describe --tags --abbrev=0
         WORKING_DIRECTORY "${SOURCE_DIR}"
         OUTPUT_VARIABLE GIT_DESCRIBE
         OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -21,7 +21,31 @@ if(GIT_EXECUTABLE)
     )
     if(GIT_RESULT EQUAL 0 AND GIT_DESCRIBE)
         set(VERSION_STR "${GIT_DESCRIBE}")
+    else()
+        # Untagged source trees still get a useful, stable short revision.
+        execute_process(
+            COMMAND "${GIT_EXECUTABLE}" describe --tags --always
+            WORKING_DIRECTORY "${SOURCE_DIR}"
+            OUTPUT_VARIABLE GIT_DESCRIBE_FALLBACK
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+            RESULT_VARIABLE GIT_FALLBACK_RESULT
+        )
+        if(GIT_FALLBACK_RESULT EQUAL 0 AND GIT_DESCRIBE_FALLBACK)
+            set(VERSION_STR "${GIT_DESCRIBE_FALLBACK}")
+        endif()
     endif()
+endif()
+
+# Normalize repository tag conventions to SemVer for user-visible metadata.
+# Keep the raw tag for numeric file-version parsing below, so a four-part
+# hotfix tag such as v2.0.11.1 remains available as VERSION_TWEAK=1.
+set(RAW_VERSION_STR "${VERSION_STR}")
+string(REGEX MATCH "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$" _four_part "${RAW_VERSION_STR}")
+if(_four_part)
+    set(VERSION_STR "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}.${CMAKE_MATCH_3}+hotfix.${CMAKE_MATCH_4}")
+else()
+    string(REGEX REPLACE "^v" "" VERSION_STR "${VERSION_STR}")
 endif()
 
 # Parse numeric version components (e.g. v2.0.0-rc4-60-geac7c2f0 → 2, 0, 0, 0)
@@ -31,7 +55,7 @@ endif()
 # built from these numbers, so truncating to three would make a hotfix report
 # the same file version as the release it fixes, and anything keyed on that
 # (winget, SCCM, inventory tooling, crash triage) could not tell them apart.
-string(REGEX MATCH "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+)(\\.([0-9]+))?" _match "${VERSION_STR}")
+string(REGEX MATCH "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+)(\\.([0-9]+))?" _match "${RAW_VERSION_STR}")
 if(_match)
     set(VERSION_MAJOR "${CMAKE_MATCH_1}")
     set(VERSION_MINOR "${CMAKE_MATCH_2}")

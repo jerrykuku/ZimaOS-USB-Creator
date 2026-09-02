@@ -40,17 +40,6 @@ cat > "$HTML_FILE" << 'EOF'
             position: relative;
             overflow: hidden;
         }
-        .title {
-            color: #C51A4A;
-            font-size: 32px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            letter-spacing: -0.02em;
-            line-height: 1.2;
-            position: absolute;
-            top: 50px;
-        }
-
         .circle {
             position: absolute;
             border: 2px solid #ecf0f1;
@@ -78,7 +67,6 @@ cat > "$HTML_FILE" << 'EOF'
     </style>
 </head>
 <body>
-    <div class="title">Raspberry Pi Imager${VERSION_STR:+ $VERSION_STR}</div>
     <div class="circle app"></div>
     <div class="circle apps"></div>
     <div class="chevron">›</div>
@@ -141,4 +129,4 @@ echo "The DMG will work without a background image."
 
 # Keep the temp directory for manual use
 echo "Temp directory preserved: $TEMP_DIR"
-exit 1 
+exit 1

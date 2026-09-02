@@ -3148,12 +3148,11 @@ bool ImageWriter::isOnline()
         return false;
     }
     
-    // For non-embedded (desktop) mode: if network becomes available after being
-    // unavailable, and we never successfully fetched the OS list, trigger a retry.
-    // This handles the case where the initial fetch failed due to a firewall blocking
-    // access, and the user later grants permission (fixes GitHub issue #1212).
-    if (hasBasicConnectivity && !_online && _completeOsList.isEmpty()) {
-        qDebug() << "Network now available and OS list empty - retrying fetch";
+    // For non-embedded (desktop) mode, always refresh once when connectivity
+    // becomes available. Cached data remains usable while this request runs,
+    // and a successful response replaces it with the latest manifest.
+    if (hasBasicConnectivity && !_online && !_repo.isLocalFile()) {
+        qDebug() << "Network now available - refreshing OS list";
         _online = true;
         beginOSListFetch();
         emit networkOnline();
@@ -3285,7 +3284,7 @@ QByteArray ImageWriter::getUsbSourceOSlist()
     QJsonArray oslist;
     QDir dir("/media");
     const QStringList medialist = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-    QStringList namefilters = {"*.img", "*.zip", "*.gz", "*.xz", "*.zst", "*.wic"};
+    QStringList namefilters = {"*.img", "*.iso", "*.zip", "*.gz", "*.xz", "*.zst", "*.wic"};
 
     for (const QString &devname : medialist)
     {

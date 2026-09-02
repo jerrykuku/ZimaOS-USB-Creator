@@ -35,8 +35,8 @@ project(zimaos-usb-creator LANGUAGES CXX C)
 
 find_package(Git QUIET)
 
-# Build-time version: re-runs `git describe` on every build so that dirty
-# state and new commits are detected without needing to re-configure.
+# Build-time version: re-runs the Git tag lookup on every build so that the
+# packaged app keeps a stable release version without needing to re-configure.
 # Generates:
 #   imager_version.h          — C++ header with #define IMAGER_VERSION_STR
 #   imager_version_vars.cmake — CMake include file for build-time template substitution
