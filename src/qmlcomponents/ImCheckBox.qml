@@ -41,9 +41,7 @@ CheckBox {
     
     // Custom square indicator for embedded mode to avoid rendering artifacts
     Component.onCompleted: {
-        if (ImageWriterSingleton && ImageWriterSingleton.isEmbeddedMode()) {
-            control.indicator = squareIndicatorComponent.createObject(control)
-        }
+        control.indicator = squareIndicatorComponent.createObject(control)
     }
     
     Component {

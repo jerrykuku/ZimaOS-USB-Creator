@@ -388,7 +388,9 @@ WizardStepBase {
 
             width: parentListView ? parentListView.width : 200
             // Let content determine height for balanced vertical padding
-            height: Math.max(96, row.implicitHeight + Style.spacingSmallPlus + Style.spacingSmallPlus)
+            // Grow with wrapped descriptions/status text, while keeping compact
+            // rows for short entries.
+            height: Math.max(72, row.implicitHeight + Style.spacingSmallPlus + Style.spacingSmallPlus)
 
             // Accessibility properties
             Accessible.role: Accessible.ListItem

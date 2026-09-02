@@ -233,7 +233,7 @@ ColumnLayout {
                         return keyText
                     }
                     font.pixelSize: Style.fontSizeInput
-                    font.family: "Monaco, Courier New, Courier"
+                    font.family: "Menlo"
                     color: Style.formLabelColor
                     elide: Text.ElideRight
                     Accessible.ignored: true  // Parent row provides accessibility

@@ -80,7 +80,7 @@ ListView {
     // Standard ScrollBar
     ScrollBar.vertical: ScrollBar {
         width: Style.scrollBarWidth
-        policy: root.contentHeight > root.height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
+            policy: ScrollBar.AsNeeded
     }
     
     // Focus management

@@ -174,10 +174,8 @@ Item {
         // Language selection step is shown first if requested, then device selection (if online) or OS selection (if offline).
         if (showLanguageSelection) {
             currentStep = stepLanguageSelection;
-        } else if (hasNetworkConnectivity) {
-            currentStep = stepDeviceSelection;
         } else {
-            currentStep = stepOSSelection;
+            currentStep = stepDeviceSelection;
         }
 
         // Default to disabling warnings in embedded mode (per-run, non-persistent)
@@ -203,10 +201,6 @@ Item {
             // When OS list becomes available after starting offline, navigate to device
             // selection so the user can choose their target device (now that the list is available).
             // Guard: don't interrupt an active write operation.
-            if (root.hasNetworkConnectivity && root.currentStep === root.stepOSSelection && !root.isWriting) {
-                console.log("OS list now available - navigating to device selection");
-                root.jumpToStep(root.stepDeviceSelection);
-            }
         }
     }
 
@@ -1365,7 +1359,7 @@ Item {
                 anchors.margins: Style.spacingSmall
                 text: repositoryUrlDialog.repoUrl
                 font.pixelSize: Style.fontSizeCaption
-                font.family: "Monaco, Courier New, Courier"
+                font.family: "Menlo"
                 color: Style.formLabelColor
                 wrapMode: Text.WrapAnywhere
                 elide: Text.ElideMiddle
