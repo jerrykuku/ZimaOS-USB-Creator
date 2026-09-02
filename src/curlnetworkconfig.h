@@ -40,7 +40,7 @@ public:
     enum class FetchProfile {
         SmallFile,    // Icons, JSON files - shorter timeouts, no keepalive
         LargeFile,    // OS images - longer timeouts, TCP keepalive, HTTP/2
-        FireAndForget // Telemetry - short timeouts, failures are silent
+        FireAndForget // Short timeouts, failures are silent
     };
     
     // IPv4-only mode - for users with broken IPv6 routing

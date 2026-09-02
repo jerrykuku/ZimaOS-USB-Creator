@@ -19,9 +19,6 @@
 /* Time synchronization URL (only used on linuxfb QPA platform, URL must be HTTP) */
 #define TIME_URL                          "http://downloads.raspberrypi.com/"
 
-/* Phone home the name of images downloaded for image popularity ranking */
-#define TELEMETRY_URL                     "https://rpi-imager-stats.raspberrypi.com/downloads"
-
 /* Hash algorithm for verifying (uncompressed image) checksum */
 #define OSLIST_HASH_ALGORITHM             QCryptographicHash::Sha256
 

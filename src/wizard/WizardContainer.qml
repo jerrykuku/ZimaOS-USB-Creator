@@ -669,7 +669,7 @@ Item {
                     }
                     Accessible.role: Accessible.Button
                     Accessible.name: qsTr("App Options")
-                    Accessible.description: qsTr("Open application settings to configure sound alerts, auto-eject, telemetry, and content repository")
+                    Accessible.description: qsTr("Open application settings to configure sound alerts, auto-eject, and warning prompts")
                     Accessible.onPressAction: optionsButton.clicked()
                     Keys.onEnterPressed: clicked()
                     Keys.onReturnPressed: clicked()

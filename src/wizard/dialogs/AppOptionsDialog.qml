@@ -34,9 +34,7 @@ BaseDialog {
     implicitWidth: Math.max(
         chkBeep.naturalWidth,
         chkEject.naturalWidth,
-        chkTelemetry.naturalWidth,
-        chkDisableWarnings.naturalWidth,
-        editRepoButton.naturalWidth
+        chkDisableWarnings.naturalWidth
     ) + Style.cardPadding * 4  // Double padding: contentLayout + optionsLayout margins
     
     // Register focus groups when component is ready
@@ -50,11 +48,7 @@ BaseDialog {
             return []
         }, 0)
         registerFocusGroup("options", function(){ 
-            var items = [chkBeep.focusItem, chkEject.focusItem, chkTelemetry.focusItem]
-            // Include telemetry help link if visible
-            if (chkTelemetry.helpLinkItem && chkTelemetry.helpLinkItem.visible)
-                items.push(chkTelemetry.helpLinkItem)
-            items.push(chkDisableWarnings.focusItem, editRepoButton.focusItem)
+            var items = [chkBeep.focusItem, chkEject.focusItem, chkDisableWarnings.focusItem]
             // Only include secure boot key button if visible
             if (secureBootKeyButton.visible)
                 items.push(secureBootKeyButton.focusItem)
@@ -117,18 +111,6 @@ BaseDialog {
             }
 
             ImOptionPill {
-                id: chkTelemetry
-                text: qsTr("Enable anonymous statistics (telemetry)")
-                accessibleDescription: qsTr("Send anonymous usage statistics to help improve ZimaOS USB Creator")
-                helpLabel: imageWriter.isEmbeddedMode() ? "" : qsTr("What is this?")
-                helpUrl: imageWriter.isEmbeddedMode() ? "" : "https://github.com/raspberrypi/rpi-imager?tab=readme-ov-file#anonymous-metrics-telemetry"
-                Layout.fillWidth: true
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
-            }
-
-            ImOptionPill {
                 id: chkDisableWarnings
                 text: qsTr("Disable warnings")
                 accessibleDescription: qsTr("Skip confirmation dialogs before writing images (advanced users only)")
@@ -148,31 +130,6 @@ BaseDialog {
                     } else if (popup.wizardContainer) {
                         popup.wizardContainer.disableWarnings = false;
                     }
-                }
-            }
-
-            ImOptionButton {
-                id: editRepoButton
-                text: qsTr("Content Repository")
-                btnText: qsTr("Edit")
-                accessibleDescription: qsTr("Change the source of operating system images between official ZimaOS repository and custom sources")
-                Layout.fillWidth: true
-                // Disable while write is in progress to prevent changing source during write
-                enabled: imageWriter.writeState === ImageWriter.Idle ||
-                         imageWriter.writeState === ImageWriter.Succeeded ||
-                         imageWriter.writeState === ImageWriter.Failed ||
-                         imageWriter.writeState === ImageWriter.Cancelled
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
-                onClicked: {
-                    if (!repoDialog.wizardContainer) {
-                        repoDialog.wizardContainer = popup.wizardContainer
-                    }
-                    popup.close()
-                    Qt.callLater(function () {
-                        repoDialog.open()
-                    });
                 }
             }
 
@@ -281,13 +238,6 @@ BaseDialog {
         }
     }
 
-    RepositoryDialog {
-        id: repoDialog
-        parent: popup.parent
-        imageWriter: popup.imageWriter
-        wizardContainer: popup.wizardContainer
-    }
-
     // File dialog for RSA key selection (embedded mode)
     ImFileDialog {
         id: rsaKeyFileDialog
@@ -332,7 +282,6 @@ BaseDialog {
             // Only enable beep if it's both saved as enabled AND available on this system
             chkBeep.checked = imageWriter.getBoolSetting("beep") && imageWriter.isBeepAvailable();
             chkEject.checked = imageWriter.getBoolSetting("eject");
-            chkTelemetry.checked = imageWriter.getBoolSetting("telemetry");
             // Do not load from QSettings; keep ephemeral
             chkDisableWarnings.checked = popup.wizardContainer ? popup.wizardContainer.disableWarnings : false;
             // Load secure boot RSA key path
@@ -356,7 +305,6 @@ BaseDialog {
         // Only save beep as enabled if it's actually available on this system
         imageWriter.setSetting("beep", chkBeep.checked && imageWriter.isBeepAvailable());
         imageWriter.setSetting("eject", chkEject.checked);
-        imageWriter.setSetting("telemetry", chkTelemetry.checked);
         imageWriter.setSetting("secureboot_rsa_key", rsaKeyPath.text);
         // Do not persist disable_warnings; set ephemeral flag only
         if (popup.wizardContainer)

@@ -7,7 +7,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import RpiImager
-import QtQuick.Controls.Material
 
 // A labeled switch styled for Imager; only the switch toggles, not the whole row
 Item {
@@ -161,13 +160,14 @@ Item {
         // Flexible spacer to push the switch flush-right and align across rows
         Item { Layout.fillWidth: true }
 
-        // Native switch on the right with custom focus styling
+        // Fixed visual treatment keeps switches consistent across platforms.
         Switch {
             id: sw
             Layout.alignment: Qt.AlignVCenter
-            Material.accent: sw.activeFocus ? Style.zimaBlue : Style.formControlActiveColor
             checked: pill.checked
             activeFocusOnTab: true
+            implicitWidth: indicator.implicitWidth
+            implicitHeight: indicator.implicitHeight
             
             // Access imageWriter from parent context
             property var imageWriter: {
@@ -181,35 +181,26 @@ Item {
                 return null;
             }
             
-            // Custom rectangular indicator for embedded mode to avoid circular rendering artifacts
-            Component.onCompleted: {
-                if (sw.imageWriter && sw.imageWriter.isEmbeddedMode()) {
-                    sw.indicator = squareIndicatorComponent.createObject(sw)
-                }
-            }
-            
-            Component {
-                id: squareIndicatorComponent
+            indicator: Rectangle {
+                implicitWidth: 36
+                implicitHeight: 20
+                x: sw.leftPadding
+                y: sw.topPadding + (sw.availableHeight - height) / 2
+                radius: height / 2
+                color: sw.checked ? Style.formControlActiveColor : "#e1e2e7"
+
                 Rectangle {
-                    implicitWidth: 48
-                    implicitHeight: 24
-                    x: sw.leftPadding
-                    y: sw.height / 2 - height / 2
-                    radius: 0  // Square track
-                    color: sw.checked ? Style.formControlActiveColor : "#bdbebf"
-                    border.color: sw.checked ? Style.formControlActiveColor : "#bdbebf"
-                    
-                    Rectangle {
-                        x: sw.checked ? parent.width - width - 2 : 2
-                        y: 2
-                        width: 20
-                        height: 20
-                        radius: 0  // Square thumb
-                        color: Style.mainBackgroundColor
-                        border.color: sw.checked ? Style.formControlActiveColor : "#bdbebf"
-                        
-                        Behavior on x {
-                            NumberAnimation { duration: 100 }
+                    width: 16
+                    height: width
+                    x: sw.checked ? parent.width - width - 2 : 2
+                    y: (parent.height - height) / 2
+                    radius: width / 2
+                    color: Style.mainBackgroundColor
+
+                    Behavior on x {
+                        NumberAnimation {
+                            duration: 120
+                            easing.type: Easing.OutCubic
                         }
                     }
                 }
@@ -238,8 +229,6 @@ Item {
                 pill.toggled(checked)
             }
             
-            // Focus styling handled by Material.accent color change only
-
             Keys.onReturnPressed: toggle()
             Keys.onEnterPressed: toggle()
         }
@@ -248,5 +237,3 @@ Item {
 
     function forceActiveFocus() { sw.forceActiveFocus() }
 }
-
-

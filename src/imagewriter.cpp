@@ -17,7 +17,6 @@
 #include "driveformatthread.h"
 #include "localfileextractthread.h"
 #include "systemmemorymanager.h"
-#include "downloadstatstelemetry.h"
 #include "wlancredentials.h"
 #include "device_info.h"
 #include "platformquirks.h"
@@ -811,12 +810,6 @@ void ImageWriter::startWrite()
         else
         {
             _thread = new DownloadExtractThread(urlstr, writeDevicePath.toLatin1(), _expectedHash, this);
-            if (_repo.toString() == OSLIST_URL)
-            {
-                DownloadStatsTelemetry *tele = new DownloadStatsTelemetry(urlstr, _parentCategory.toLatin1(), _osName.toLatin1(), isEmbeddedMode(), _currentLangcode, this);
-                connect(tele, SIGNAL(finished()), tele, SLOT(deleteLater()));
-                tele->start();
-            }
         }
     } catch (const std::bad_alloc& e) {
         // Memory allocation failed during thread/buffer creation
@@ -2802,9 +2795,7 @@ void ImageWriter::keychainPermissionResponse(bool granted)
 bool ImageWriter::getBoolSetting(const QString &key)
 {
     /* Some keys have defaults */
-    if (key == "telemetry")
-        return _settings.value(key, TELEMETRY_ENABLED_DEFAULT).toBool();
-    else if (key == "eject")
+    if (key == "eject")
         return _settings.value(key, true).toBool();
     else if (key == "check_version")
         return _settings.value(key, CHECK_VERSION_DEFAULT).toBool();
@@ -3501,12 +3492,6 @@ void ImageWriter::_continueStartWriteAfterCacheVerification(bool cacheIsValid)
         QString writeDevicePath = PlatformQuirks::getWriteDevicePath(_dst);
         try {
             _thread = new DownloadExtractThread(urlstr.toLatin1(), writeDevicePath.toLatin1(), _expectedHash, this);
-            if (_repo.toString() == OSLIST_URL)
-            {
-                DownloadStatsTelemetry *tele = new DownloadStatsTelemetry(urlstr.toLatin1(), _parentCategory.toLatin1(), _osName.toLatin1(), isEmbeddedMode(), _currentLangcode, this);
-                connect(tele, SIGNAL(finished()), tele, SLOT(deleteLater()));
-                tele->start();
-            }
         } catch (const std::bad_alloc& e) {
             _handleMemoryAllocationFailure(e.what());
             return;

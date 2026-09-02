@@ -10,10 +10,12 @@ QT_ROOT="${Qt6_ROOT:-/opt/Qt/6.9.3/macos}"
 APP_NAME="ZimaOS USB Creator"
 BUILD_TARGET="zimaos-usb-creator"
 APP="$BUILD_DIR/$BUILD_TARGET.app/Contents/MacOS/zimaos-usb-creator"
+APP_BUNDLE="$BUILD_DIR/$BUILD_TARGET.app"
 
 
 # Parse command line arguments
 RECONFIGURE=0
+QML_LIVE=0
 for arg in "$@"; do
     case $arg in
         --reconfigure)
@@ -25,11 +27,16 @@ for arg in "$@"; do
             RECONFIGURE=1
             shift
             ;;
+        --qml-live)
+            QML_LIVE=1
+            shift
+            ;;
         --help|-h)
             echo "Usage: $0 [options]"
             echo "Options:"
             echo "  --reconfigure          Force CMake reconfiguration"
             echo "  --qt-root=PATH         Specify Qt installation path"
+            echo "  --qml-live             Load QML directly from src and skip rebuilding when possible"
             echo "  --help, -h             Show this help message"
             exit 0
             ;;
@@ -44,10 +51,10 @@ if ! command -v ninja >/dev/null 2>&1; then
 fi
 
 # Check if CMake reconfiguration is needed (using Ninja)
-if [[ ! -f "$BUILD_DIR/build.ninja" ]] || [[ $RECONFIGURE -eq 1 ]]; then
+if [[ ! -f "$BUILD_DIR/build.ninja" ]] || [[ ! -f "$APP" ]] || [[ $RECONFIGURE -eq 1 ]]; then
     echo "🔧 Configuring Ninja build system..."
     "$SCRIPT_DIR/mac-build-ninja.sh" --qt-root="$QT_ROOT" "$BUILD_TARGET"
-else
+elif [[ $QML_LIVE -eq 0 ]]; then
     # Incremental build (only recompile changed files)
     echo "⏳ Incremental build..."
     START=$(date +%s)
@@ -73,4 +80,11 @@ fi
 
 echo "🚀 Launching: $APP_NAME"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-exec "$APP" "$@"
+if [[ $QML_LIVE -eq 1 ]]; then
+    echo "⚡ Loading QML directly from $SCRIPT_DIR/src"
+    echo "🔏 Signing development app bundle..."
+    codesign --force --deep --sign - "$APP_BUNDLE"
+    exec env RPI_IMAGER_QML_SOURCE_DIR="$SCRIPT_DIR/src" "$APP"
+fi
+
+exec "$APP"

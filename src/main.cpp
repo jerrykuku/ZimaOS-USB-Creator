@@ -352,8 +352,6 @@ int main(int argc, char *argv[])
         {"refresh-interval", "OS list refresh base interval (minutes)", "minutes", ""},
         {"refresh-jitter", "OS list refresh jitter (minutes)", "minutes", ""},
         {"enable-language-selection", "Show language selection on startup"},
-        {"disable-telemetry", "Disable telemetry (persist setting)"},
-        {"enable-telemetry", "Use default telemetry setting (clear override)"},
         {"qml-file-dialogs", "Force use of QML file dialogs instead of native dialogs"},
         {"enable-secure-boot", "Force enable secure boot customization step regardless of OS capabilities"}
     });
@@ -430,19 +428,6 @@ int main(int argc, char *argv[])
     }
 
     enableLanguageSelection = parser.isSet("enable-language-selection");
-
-    if (parser.isSet("disable-telemetry"))
-    {
-        cerr << "Disabled telemetry" << endl;
-        settings.setValue("telemetry", false);
-        settings.sync();
-    }
-    else if (parser.isSet("enable-telemetry"))
-    {
-        cerr << "Using default telemetry setting" << endl;
-        settings.remove("telemetry");
-        settings.sync();
-    }
 
     if (parser.isSet("qml-file-dialogs"))
     {
@@ -672,7 +657,18 @@ int main(int argc, char *argv[])
         {"imageWriter", QVariant::fromValue(&imageWriter)},
         {"showLanguageSelection", showLanguageSelection}
     });
-    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/RpiImager/main.qml")));
+    const QString qmlSourceDir = qEnvironmentVariable("RPI_IMAGER_QML_SOURCE_DIR");
+    const QString sourceMainQml = qmlSourceDir + "/main.qml";
+    if (!qmlSourceDir.isEmpty() && QFileInfo::exists(sourceMainQml))
+    {
+        qDebug() << "Loading QML from development source directory:" << qmlSourceDir;
+        engine.addImportPath(qmlSourceDir);
+        engine.load(QUrl::fromLocalFile(sourceMainQml));
+    }
+    else
+    {
+        engine.load(QUrl(QStringLiteral("qrc:/qt/qml/RpiImager/main.qml")));
+    }
 
     if (engine.rootObjects().isEmpty())
         return -1;

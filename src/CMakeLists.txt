@@ -6,7 +6,6 @@ include(cmake/GeneratedResource.cmake)
 
 cmake_minimum_required(VERSION 3.22)
 OPTION (ENABLE_CHECK_VERSION "Check for version updates" ON)
-OPTION (ENABLE_TELEMETRY "Enable sending telemetry" ON)
 OPTION (BUILD_EMBEDDED "Build for Embedded Imager" OFF)
 OPTION (BUILD_CLI_ONLY "Build CLI-only version without GUI components" OFF)
 
@@ -248,7 +247,7 @@ endif( IS_BIG_ENDIAN )
 set(SOURCES_BASE ${PLATFORM_SOURCES} "main.cpp"
     "drivelistitem.cpp" "drivelistmodel.cpp" "drivelistmodelpollthread.cpp" "downloadthread.cpp" "downloadextractthread.cpp"
     "devicewrapper.cpp" "devicewrapperblockcacheentry.cpp" "devicewrapperpartition.cpp" "devicewrapperfatpartition.cpp"
-    "driveformatthread.cpp" "localfileextractthread.cpp" "downloadstatstelemetry.cpp" "dependencies/sha256crypt/sha256crypt.c" "cli.cpp"
+    "driveformatthread.cpp" "localfileextractthread.cpp" "dependencies/sha256crypt/sha256crypt.c" "cli.cpp"
     "disk_formatter.cpp" "file_operations.cpp" "cachemanager.cpp" "systemmemorymanager.cpp" "imageadvancedoptions.cpp"
     "customization_generator.cpp" "platformhelper.cpp" "suspend_inhibitor.cpp" "secureboot.cpp" "asynccachewriter.cpp" "ringbuffer.cpp"
     "performancestats.cpp" "curlnetworkconfig.cpp" "curlfetcher.cpp" "writeprogresswatchdog.cpp")
@@ -423,12 +422,6 @@ endif()
 # Note: Icon Composer compilation for macOS dark mode icons is handled in
 # mac/PlatformPackaging.cmake as a POST_BUILD step after macdeployqt runs
 
-if(ENABLE_TELEMETRY)
-    add_definitions(-DTELEMETRY_ENABLED_DEFAULT=true)
-else()
-    add_definitions(-DTELEMETRY_ENABLED_DEFAULT=false)
-endif()
-
 if(ENABLE_CHECK_VERSION)
     add_definitions(-DCHECK_VERSION_DEFAULT=true)
 else()
@@ -457,7 +450,6 @@ if(NOT BUILD_CLI_ONLY)
         wizard/dialogs/ConfirmSystemDriveDialog.qml
         wizard/dialogs/KeychainPermissionDialog.qml
         wizard/dialogs/UpdateAvailableDialog.qml
-        wizard/dialogs/RepositoryDialog.qml
         wizard/dialogs/AppOptionsDialog.qml
         wizard/dialogs/DebugOptionsDialog.qml
         wizard/LanguageSelectionStep.qml

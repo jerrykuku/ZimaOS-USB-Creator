@@ -156,7 +156,7 @@ void CurlNetworkConfig::applyCurlSettings(CURL *curl, FetchProfile profile, char
             break;
             
         case FetchProfile::FireAndForget:
-            // Telemetry - short timeouts, we don't want to block
+            // Best-effort requests use short timeouts and do not block.
             curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
             curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, 10L);
             curl_easy_setopt(curl, CURLOPT_LOW_SPEED_LIMIT, 10L);
