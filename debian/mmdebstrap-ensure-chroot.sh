@@ -119,7 +119,7 @@ sh '$_HOOK_ROOT/debian/mmdebstrap-configure-apt.sh' "\$root" '$ARCH'
 cp -a '$_HOOK_ROOT/debian' "\$root/tmp/rpi-imager-hooks"
 chroot "\$root" sh /tmp/rpi-imager-hooks/chroot-apt-install.sh $(tr '\n' ' ' <"$TOP/debian/chroot-packages")
 rm -rf "\$root/tmp/rpi-imager-hooks"
-touch "\$root/.rpi-imager-chroot-ok"
+touch "\$root/.zimaos-usb-creator-chroot-ok"
 EOF
 chmod 0755 "$_CUSTOMIZE_HOOK"
 

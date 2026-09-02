@@ -6,7 +6,9 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/build"
-QT_ROOT="${Qt6_ROOT:-/opt/Qt/6.9.3/macos}"
+QT_VERSION_DEFAULT=$(sed -n 's/^QT_VERSION_DEFAULT="\([^"]*\)".*/\1/p' \
+    "$SCRIPT_DIR/qt/qt-build-common.sh" | head -1)
+QT_ROOT="${Qt6_ROOT:-/opt/Qt/${QT_VERSION_DEFAULT:-6.11.1}/macos}"
 
 # Default parameters
 CLEAN_BUILD=0
@@ -209,11 +211,14 @@ if ninja dmg; then
     echo ""
 
     # Find generated DMG files
-    DMG_FILES=$(find "$BUILD_DIR" -maxdepth 1 -name "*.dmg" -type f)
+    DMG_FILES=()
+    while IFS= read -r -d '' dmg; do
+        DMG_FILES+=("$dmg")
+    done < <(find "$BUILD_DIR" -maxdepth 1 -name "*.dmg" -type f -print0)
 
-    if [ -n "$DMG_FILES" ]; then
+    if [ "${#DMG_FILES[@]}" -gt 0 ]; then
         echo "📦 Generated DMG files:"
-        for dmg in $DMG_FILES; do
+        for dmg in "${DMG_FILES[@]}"; do
             SIZE=$(du -h "$dmg" | cut -f1)
             echo "  • $(basename "$dmg") ($SIZE)"
         done

@@ -1,8 +1,12 @@
 #!/bin/bash
 # 快速构建签名并公证的 DMG
+# Legacy compatibility wrapper. New builds should use:
+#   ./build-macos.sh release [options]
 # 使用预配置的凭据
 
 set -e
+
+echo "mac-build-signed.sh is deprecated; use ./build-macos.sh release" >&2
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 

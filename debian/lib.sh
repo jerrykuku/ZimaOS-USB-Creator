@@ -55,8 +55,8 @@ QT_BUILD=${QT_BUILD:-auto}
 # 6.11 / liburing 2.2+ yet old enough that the resulting AppImages/.debs stay
 # portable to current Debian/Ubuntu/Raspberry Pi OS releases.
 CHROOT_DIST=${CHROOT_DIST:-bookworm}
-# Chroot name suffix (dir: <dist>-<arch>-<suffix>, e.g. bookworm-arm64-rpi-imager).
-CHROOT_SUFFIX=${CHROOT_SUFFIX:-rpi-imager}
+# Chroot name suffix (dir: <dist>-<arch>-<suffix>, e.g. bookworm-arm64-zimaos-usb-creator).
+CHROOT_SUFFIX=${CHROOT_SUFFIX:-zimaos-usb-creator}
 DEBIAN_MIRROR=${DEBIAN_MIRROR:-http://deb.debian.org/debian}
 RASPBIAN_MIRROR=${RASPBIAN_MIRROR:-http://raspbian.raspberrypi.com/raspbian}
 RPI_MIRROR=${RPI_MIRROR:-http://archive.raspberrypi.com/debian}
@@ -304,8 +304,8 @@ appimage_cache_ok() {
 	_arch=$1
 	_img_arch=$(deb_to_image_arch "$_arch")
 	_dir="$APPIMAGE_ROOT/$_arch"
-	test -e "$_dir/rpi-imager-${_img_arch}.AppImage" && \
-		test -e "$_dir/rpi-imager-cli-${_img_arch}.AppImage"
+	test -e "$_dir/zimaos-usb-creator-${_img_arch}.AppImage" && \
+		test -e "$_dir/zimaos-usb-creator-cli-${_img_arch}.AppImage"
 }
 
 # Verify an AppImage's embedded runtime ELF matches the target image arch.
@@ -331,13 +331,13 @@ appimage_cache_arch_ok() {
 	_arch=$1
 	_img_arch=$(deb_to_image_arch "$_arch")
 	_dir="$APPIMAGE_ROOT/$_arch"
-	appimage_elf_arch_ok "$_dir/rpi-imager-${_img_arch}.AppImage" "$_img_arch" || return 1
-	appimage_elf_arch_ok "$_dir/rpi-imager-cli-${_img_arch}.AppImage" "$_img_arch" || return 1
+	appimage_elf_arch_ok "$_dir/zimaos-usb-creator-${_img_arch}.AppImage" "$_img_arch" || return 1
+	appimage_elf_arch_ok "$_dir/zimaos-usb-creator-cli-${_img_arch}.AppImage" "$_img_arch" || return 1
 	return 0
 }
 
 # Parse APPIMAGE_REMOTE_<arch> into APPIMAGE_REMOTE_HOST and APPIMAGE_REMOTE_DIR.
-# Formats: user@host  or  user@host:/path/to/rpi-imager
+# Formats: user@host  or  user@host:/path/to/zimaos-usb-creator
 # APPIMAGE_REMOTE_DIR_<arch> overrides the path when host-only form is used.
 appimage_remote_host() {
 	_arch=$1

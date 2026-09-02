@@ -13,6 +13,12 @@ endif()
 
 # Optional code signing
 if (IMAGER_SIGNED_APP)
+    if (IMAGER_SIGNING_CERTIFICATE)
+        set(_SIGNTOOL_CERT_ARGS /sha1 "${IMAGER_SIGNING_CERTIFICATE}")
+    else()
+        set(_SIGNTOOL_CERT_ARGS /a)
+    endif()
+    string(REPLACE ";" " " _SIGNTOOL_CERT_FLAGS "${_SIGNTOOL_CERT_ARGS}")
     # Determine build architecture
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         set(arch x64)
@@ -48,12 +54,12 @@ if (IMAGER_SIGNED_APP)
     add_definitions(-DSIGNTOOL="${SIGNTOOL}")
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${SIGNTOOL}" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a
+        COMMAND "${SIGNTOOL}" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 ${_SIGNTOOL_CERT_ARGS}
                 "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.exe")
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${SIGNTOOL}" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a
-                "${CMAKE_BINARY_DIR}/rpi-imager-callback-relay.exe")
+        COMMAND "${SIGNTOOL}" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 ${_SIGNTOOL_CERT_ARGS}
+                "${CMAKE_BINARY_DIR}/zimaos-usb-creator-callback-relay.exe")
 
     # inf2cat.exe is always x86 regardless of host/target architecture
     find_program(INF2CAT
@@ -94,7 +100,7 @@ if (IMAGER_SIGNED_APP)
         VERBATIM)
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND "${SIGNTOOL}" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a
+        COMMAND "${SIGNTOOL}" sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 ${_SIGNTOOL_CERT_ARGS}
                 "${_DRIVER_STAGING}/rpiboot-winusb.cat"
         COMMENT "Signing WinUSB driver catalog"
         VERBATIM)
@@ -130,8 +136,8 @@ add_custom_command(TARGET ${PROJECT_NAME}
     COMMAND ${CMAKE_COMMAND} -E copy
         "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.exe"
         "${CMAKE_SOURCE_DIR}/../license.txt"
-        "${CMAKE_SOURCE_DIR}/windows/rpi-imager-cli.cmd"
-        "${CMAKE_BINARY_DIR}/rpi-imager-callback-relay.exe"
+        "${CMAKE_SOURCE_DIR}/windows/zimaos-usb-creator-cli.cmd"
+        "${CMAKE_BINARY_DIR}/zimaos-usb-creator-callback-relay.exe"
         "${CMAKE_BINARY_DIR}/deploy")
 
 add_custom_command(TARGET ${PROJECT_NAME}
@@ -154,17 +160,17 @@ if(ENABLE_INNO_INSTALLER)
 
     # Configure .iss at build time so the version matches the binary
     add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.iss"
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.iss"
         COMMAND ${CMAKE_COMMAND}
             -DVERSION_VARS_FILE=${IMAGER_VERSION_VARS}
             -DEXTRA_VARS_FILE=${_installer_extra_vars}
             -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.iss.in
-            -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.iss
+            -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.iss
             -P ${CONFIGURE_VERSIONED_SCRIPT}
         DEPENDS
             ${IMAGER_VERSION_VARS}
             ${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.iss.in
-        COMMENT "Configuring rpi-imager.iss with build-time version"
+        COMMENT "Configuring zimaos-usb-creator.iss with build-time version"
         VERBATIM
     )
 
@@ -176,14 +182,14 @@ if(ENABLE_INNO_INSTALLER)
     if(INNO_COMPILER)
         if(IMAGER_SIGNED_APP)
             add_custom_target(inno_installer
-                COMMAND "${INNO_COMPILER}" "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.iss" "/DSIGNING_ENABLED" "/Ssign=${SIGNTOOL} sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 /a $p"
-                DEPENDS ${PROJECT_NAME} "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.iss"
+                COMMAND "${INNO_COMPILER}" "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.iss" "/DSIGNING_ENABLED" "/Ssign=${SIGNTOOL} sign /tr http://timestamp.digicert.com /td sha256 /fd sha256 ${_SIGNTOOL_CERT_FLAGS} $p"
+                DEPENDS ${PROJECT_NAME} "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.iss"
                 COMMENT "Building Inno Setup installer"
                 VERBATIM)
         else()
             add_custom_target(inno_installer
-                COMMAND "${INNO_COMPILER}" "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.iss"
-                DEPENDS ${PROJECT_NAME} "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.iss"
+                COMMAND "${INNO_COMPILER}" "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.iss"
+                DEPENDS ${PROJECT_NAME} "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.iss"
                 COMMENT "Building Inno Setup installer"
                 VERBATIM)
         endif()
@@ -195,17 +201,17 @@ else()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.nsi.in")
         # Configure .nsi at build time so the version matches the binary
         add_custom_command(
-            OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.nsi"
+            OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.nsi"
             COMMAND ${CMAKE_COMMAND}
                 -DVERSION_VARS_FILE=${IMAGER_VERSION_VARS}
                 -DEXTRA_VARS_FILE=${_installer_extra_vars}
                 -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.nsi.in
-                -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.nsi
+                -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.nsi
                 -P ${CONFIGURE_VERSIONED_SCRIPT}
             DEPENDS
                 ${IMAGER_VERSION_VARS}
                 ${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.nsi.in
-            COMMENT "Configuring rpi-imager.nsi with build-time version"
+            COMMENT "Configuring zimaos-usb-creator.nsi with build-time version"
             VERBATIM
         )
     else()
@@ -217,40 +223,40 @@ endif()
 # in sync with the binary even without a re-configure.
 # Manifest must be generated before the .rc (which embeds it via RT_MANIFEST)
 add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.manifest"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.manifest"
     COMMAND ${CMAKE_COMMAND}
         -DVERSION_VARS_FILE=${IMAGER_VERSION_VARS}
         -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.manifest.in
-        -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.manifest
+        -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.manifest
         -P ${CONFIGURE_VERSIONED_SCRIPT}
     DEPENDS
         ${IMAGER_VERSION_VARS}
         ${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.manifest.in
-    COMMENT "Configuring rpi-imager.manifest with build-time version"
+    COMMENT "Configuring zimaos-usb-creator.manifest with build-time version"
     VERBATIM
 )
 
 add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.rc"
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.rc"
     COMMAND ${CMAKE_COMMAND}
         -DVERSION_VARS_FILE=${IMAGER_VERSION_VARS}
         -DINPUT=${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.rc.in
-        -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.rc
+        -DOUTPUT=${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.rc
         -P ${CONFIGURE_VERSIONED_SCRIPT}
     DEPENDS
         ${IMAGER_VERSION_VARS}
         ${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.rc.in
-        "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.manifest"
-    COMMENT "Configuring rpi-imager.rc with build-time version"
+        "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.manifest"
+    COMMENT "Configuring zimaos-usb-creator.rc with build-time version"
     VERBATIM
 )
 
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.manifest"
-        "${CMAKE_CURRENT_SOURCE_DIR}/windows/rpi-imager.manifest"
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/rpi-imager.manifest"
+        "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.manifest"
+        "${CMAKE_CURRENT_SOURCE_DIR}/windows/zimaos-usb-creator.manifest"
+    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.manifest"
     COMMENT "Copying generated manifest for resource compilation")
 
 add_custom_command(TARGET ${PROJECT_NAME}
@@ -260,5 +266,3 @@ add_custom_command(TARGET ${PROJECT_NAME}
         "${MINGW64_ROOT}/bin/libstdc++-6.dll"
         "${MINGW64_ROOT}/bin/libwinpthread-1.dll"
         "${CMAKE_BINARY_DIR}/deploy")
-
-

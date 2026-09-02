@@ -1,10 +1,10 @@
 #!/usr/bin/dh-exec
 
-zimaos-usb-creator-embedded.AppImage => /usr/bin/zimaos-usb-creator-embedded
+# The embedded package is assembled by create-embedded.sh, which stages the
+# linuxfb binary and vendored Qt tree under /opt before invoking debhelper.
 
 debian/embedded-imager.service        lib/systemd/system/
 
 src/linux/icon/rpi-imager.svg /usr/share/icons/hicolor/scalable/apps/
 
 debian/com.icewhaletech.zimaos-usb-creator-embedded.desktop /usr/share/applications/
-

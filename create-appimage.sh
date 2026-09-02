@@ -366,7 +366,7 @@ if [ "$APPIMAGE_PACKAGING" != pack ]; then
 fi
 
 if [ "$APPIMAGE_PACKAGING" = build ]; then
-    prepare_appdir_for_appimagetool "$APPDIR" com.raspberrypi.rpi-imager
+    prepare_appdir_for_appimagetool "$APPDIR" com.icewhaletech.zimaos-usb-creator
     echo "create-appimage: build stage complete (AppDir at $APPDIR)"
     exit 0
 fi
@@ -375,7 +375,7 @@ fi
 echo "Creating AppImage..."
 # Remove old symlinks for this variant only
 rm -f "$PWD/zimaos-usb-creator-desktop-$ARCH.AppImage"
-rm -f "$PWD/zimaos-usb-creator-$ARCH.AppImage"  # Legacy symlink name
+rm -f "$PWD/zimaos-usb-creator-$ARCH.AppImage"
 
 export LD_LIBRARY_PATH="$QT_DIR/lib:$LD_LIBRARY_PATH"
 
@@ -400,10 +400,13 @@ else
 fi
 elif [ -n "${APPIMAGETOOL:-}" ] && [ -f "$APPIMAGETOOL" ]; then
     appimage_pack_with_tool "$APPIMAGETOOL" "$APPDIR" "$OUTPUT_FILE" \
-        "$ARCH" "$TOOL_ARCH" com.raspberrypi.rpi-imager || exit 1
+        "$ARCH" "$TOOL_ARCH" com.icewhaletech.zimaos-usb-creator || exit 1
 else
     echo "Error: no AppImage tooling available for $ARCH" >&2
     exit 1
+fi
+
+# End of the pack/all packaging branch.
 fi
 
 echo "AppImage created at $OUTPUT_FILE"
@@ -431,3 +434,5 @@ ln -s "$(basename "$OUTPUT_FILE")" "$DESCRIPTIVE_SYMLINK"
 echo "Created symlink: $DESCRIPTIVE_SYMLINK -> $(basename "$OUTPUT_FILE")"
 
 echo "Build completed successfully for $ARCH architecture."
+# End of the APPIMAGE_PACKAGING selector.
+fi

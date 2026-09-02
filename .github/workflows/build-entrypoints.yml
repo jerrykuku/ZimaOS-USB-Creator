@@ -1,0 +1,62 @@
+name: Build Entrypoints
+
+on:
+  pull_request:
+    paths:
+      - 'build-macos.sh'
+      - 'build-linux.sh'
+      - 'build-windows.ps1'
+      - 'mac-*.sh'
+      - 'debian/**'
+      - 'qt/**'
+      - '.github/workflows/build-entrypoints.yml'
+  push:
+    paths:
+      - 'build-macos.sh'
+      - 'build-linux.sh'
+      - 'build-windows.ps1'
+      - 'mac-*.sh'
+      - 'debian/**'
+      - 'qt/**'
+      - '.github/workflows/build-entrypoints.yml'
+
+jobs:
+  shell-entrypoints:
+    name: ${{ matrix.platform }} entrypoint smoke test
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macOS
+            runner: macos-latest
+            script: build-macos.sh
+          - platform: Linux
+            runner: ubuntu-latest
+            script: build-linux.sh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell syntax
+        run: |
+          bash -n build-macos.sh build-linux.sh mac-build-ninja.sh mac-build-dmg.sh mac-dev.sh
+          dash -n build-linux.sh
+      - name: Check public help
+        run: ./${{ matrix.script }} --help
+
+  windows-entrypoint:
+    name: Windows entrypoint syntax test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse PowerShell entrypoint
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $PWD 'build-windows.ps1'), [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+          Get-Command (Join-Path $PWD 'build-windows.ps1') | Out-Null

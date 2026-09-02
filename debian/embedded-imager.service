@@ -3,7 +3,7 @@ Description=Start Raspberry Pi Embedded Imager on bootup
 
 [Service]
 Type=oneshot
-ExecStart=/bin/rpi-imager-embedded
+ExecStart=/bin/zimaos-usb-creator-embedded
 StandardOutput=append:/embedded-imager.log
 StandardError=inherit
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Unified Debian release workflow for rpi-imager.
+# Unified Debian release workflow for zimaos-usb-creator.
 #
 # Usage:
 #   debian/release.sh status
@@ -50,7 +50,7 @@ AppImage build (APPIMAGE_BUILD=$APPIMAGE_BUILD):
 
 Cross-arch AppImages (foreign host): rootless mmdebstrap chroot, or
 APPIMAGE_REMOTE_<arch> as fallback:
-  APPIMAGE_REMOTE_arm64=user@pi5:/home/tdewey/rpi-imager
+  APPIMAGE_REMOTE_arm64=user@pi5:/home/tdewey/zimaos-usb-creator
 
 Examples:
   cp debian/release.conf.example debian/release.conf

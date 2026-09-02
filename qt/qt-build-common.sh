@@ -232,22 +232,36 @@ download_qt_source() {
     _orig_dir="$PWD"
     cd "$DOWNLOAD_DIR" || return 1
     
-    if [ ! -d "qt-everywhere-src-$QT_VERSION" ]; then
-        if [ ! -f "qt-everywhere-src-$QT_VERSION.tar.xz" ]; then
+    archive="qt-everywhere-src-$QT_VERSION.tar.xz"
+    source_dir="qt-everywhere-src-$QT_VERSION"
+    extraction_marker="$source_dir/.zimaos-extraction-complete"
+
+    # An interrupted tar/curl operation can leave reusable-looking partial
+    # files. Validate the archive and require an explicit extraction marker.
+    if [ -f "$archive" ] && ! xz -t "$archive" 2>/dev/null; then
+        echo "Removing incomplete Qt source archive: $archive"
+        rm -f "$archive"
+    fi
+    if [ -d "$source_dir" ] && [ ! -f "$extraction_marker" ]; then
+        echo "Removing incomplete Qt source tree: $source_dir"
+        rm -rf "$source_dir"
+    fi
+
+    if [ ! -d "$source_dir" ]; then
+        if [ ! -f "$archive" ]; then
             echo "Downloading Qt source archive..."
             download_url="https://download.qt.io/official_releases/qt/${QT_VERSION%.*}/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.tar.xz"
             
             if command -v curl >/dev/null 2>&1; then
-                curl -fL -o "qt-everywhere-src-$QT_VERSION.tar.xz" "$download_url"
+                curl -fL -o "$archive" "$download_url"
             elif command -v wget >/dev/null 2>&1; then
-                wget -O "qt-everywhere-src-$QT_VERSION.tar.xz" "$download_url"
+                wget -O "$archive" "$download_url"
             else
                 echo "Error: Neither wget nor curl found. Please install one of them."
                 cd "$_orig_dir" || return 1
                 return 1
             fi
 
-            archive="qt-everywhere-src-$QT_VERSION.tar.xz"
             if ! xz -t "$archive" 2>/dev/null; then
                 echo "Error: Download of Qt $QT_VERSION failed (not a valid .tar.xz archive)."
                 echo "URL: $download_url"
@@ -259,7 +273,8 @@ download_qt_source() {
         fi
         
         echo "Extracting Qt source..."
-        tar xf "qt-everywhere-src-$QT_VERSION.tar.xz"
+        tar xf "$archive"
+        touch "$extraction_marker"
     else
         echo "Qt source already extracted"
     fi

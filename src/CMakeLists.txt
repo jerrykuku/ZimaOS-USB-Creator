@@ -133,6 +133,7 @@ if (WIN32)
   endif()
 
   set(IMAGER_SIGNED_APP OFF CACHE BOOL "Sign Imager and its installer as part of the build. Requires a valid Code Signing certificate.")
+  set(IMAGER_SIGNING_CERTIFICATE "" CACHE STRING "Optional Windows signing certificate thumbprint (empty uses signtool auto-selection).")
 endif()
 
 if (APPLE)
@@ -391,7 +392,7 @@ if (WIN32)
             PRIVATE RPI_IMAGER_CALLBACK_PORT=${IMAGER_CALLBACK_PORT})
 
     # Ensure the relay builds with the app
-    add_dependencies(${PROJECT_NAME} rpi-imager-callback-relay)
+    add_dependencies(${PROJECT_NAME} zimaos-usb-creator-callback-relay)
 else()
     add_executable(${PROJECT_NAME} ${SOURCES} ${DEPENDENCIES})
 endif()
@@ -406,7 +407,7 @@ else()
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "zimaos-usb-creator")
 endif()
 
-# Create an rpi-imager_lupdate target
+# Create a zimaos-usb-creator_lupdate target
 qt_add_lupdate(TS_FILES ${TRANSLATIONS} SOURCE_TARGETS ${PROJECT_NAME} OPTIONS -no-obsolete -locations none)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY AUTOMOC ON)

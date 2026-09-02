@@ -16,6 +16,9 @@ debian/rpi-imager/**
 debian/rpi-imager-amd64/**
 debian/rpi-imager-embedded/**
 debian/rpi-imager-cli/**
+debian/zimaos-usb-creator/**
+debian/zimaos-usb-creator-embedded/**
+debian/zimaos-usb-creator-cli/**
 debian/.debhelper**
 debian/*.debhelper**
 debian/files
@@ -27,6 +30,9 @@ debian/com.raspberrypi.rpi-imager.metainfo.xml
 # macOS
 .DS_Store
 *.DS_Store
+
+# Windows resource generated next to the source template
+src/windows/zimaos-usb-creator.manifest
 
 # Sensitive credentials (never commit!)
 .env.notarization
@@ -48,6 +54,7 @@ debian/com.raspberrypi.rpi-imager.metainfo.xml
 # Embedded .deb build tree (created by create-embedded.sh)
 /debroot-embedded-*
 /rpi-imager-embedded*.deb
+/zimaos-usb-creator-embedded*.deb
 
 # Qt related
 # build-qt*.sh creates these as $PWD/qt-src and $PWD/qt-build[-suffix], so they
@@ -59,6 +66,9 @@ qt-build/
 qt-build-*/
 qt/language_filters.json
 /build-**
+!/build-macos.sh
+!/build-linux.sh
+!/build-windows.ps1
 
 # build-cli-only related
 /test-cli-**

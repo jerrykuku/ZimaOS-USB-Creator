@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build the embedded (linuxfb) rpi-imager .deb for one architecture.
+# Build the embedded (linuxfb) zimaos-usb-creator .deb for one architecture.
 #
 # The embedded package vendors Qt + dependencies under /opt and renders with
 # linuxfb. It uses a DEDICATED Qt built with -no-opengl -qpa linuxfb (distinct
@@ -66,13 +66,13 @@ chroot_run "$ARCH" bash -lc \
 # create-embedded.sh writes the .deb into $TOP (bind-mounted in the chroot, so
 # it is visible on the host tree either way). Collect it into OUTPUT_DIR.
 _found=0
-for _deb in "$TOP"/rpi-imager-embedded_*_"$ARCH".deb; do
+for _deb in "$TOP"/zimaos-usb-creator-embedded_*_"$ARCH".deb; do
 	[ -f "$_deb" ] || continue
 	mv "$_deb" "$OUTPUT_DIR/"
 	_found=1
 done
 # Drop the convenience symlink create-embedded.sh leaves in the tree.
-rm -f "$TOP/rpi-imager-embedded.deb"
+rm -f "$TOP/zimaos-usb-creator-embedded.deb"
 
 if [ "$_found" -ne 1 ]; then
 	echo "build-embedded: no $ARCH embedded .deb produced" >&2

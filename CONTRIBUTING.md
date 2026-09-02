@@ -1,8 +1,12 @@
 ## Contributing
 
+The authoritative platform and auxiliary build map is
+[doc/build-channels.md](./doc/build-channels.md). The sections below retain deeper Linux release and
+embedded-package details.
+
 ### Linux
 
-Linux artifacts are built by one pipeline, driven from `debian/release.sh`. It
+Linux artifacts are built by one pipeline, driven from `build-linux.sh`. It
 builds every architecture — amd64, arm64 and armhf — inside its own rootless
 `mmdebstrap` chroot, from a machine of any of those architectures, and needs no
 `sudo`. [doc/linux-build.md](./doc/linux-build.md) is the full reference; this is
@@ -14,7 +18,7 @@ Only what is needed to drive the pipeline; the actual build dependencies are
 installed inside the chroot:
 
 ```sh
-sudo apt install mmdebstrap dpkg-dev git curl file xz-utils
+./build-linux.sh install
 ```
 
 To build an architecture other than your own, also install `qemu-user-static`
@@ -33,13 +37,12 @@ the vendored third-party dependencies are git submodules (initialised for you by
 #### Build the release artifacts
 
 ```sh
-debian/release.sh status          # what exists, what doesn't — check this first
-debian/release.sh appimages amd64 # desktop + CLI AppImages for one architecture
-debian/release.sh arch amd64      # ...and the .deb packages that wrap them
+./build-linux.sh release --target=appimages --arch=amd64 --unsigned
+./build-linux.sh release --target=arch --arch=amd64 --unsigned
 
 # All three architectures, plus the source package. RELEASE_ARCHES defaults to
 # your own architecture alone, so pass it explicitly (or set it in release.conf).
-RELEASE_ARCHES="amd64 arm64 armhf" debian/release.sh repo
+./build-linux.sh release --target=repo --unsigned
 ```
 
 `repo` is the only command that builds more than one architecture; the others
@@ -55,9 +58,7 @@ To iterate on the app itself, skip the packaging and build against a Qt tree
 directly:
 
 ```sh
-debian/ensure-qt.sh amd64    # populates .debian/qt/, or use system qt6-base-dev
-cmake -B build -G Ninja src -DQt6_ROOT=$PWD/.debian/qt/amd64/<version>/gcc_64
-cmake --build build
+./build-linux.sh dev --qt-root=/path/to/qt6 --run
 ```
 
 `<version>` is whatever `QT_VERSION_DEFAULT` in
@@ -76,17 +77,14 @@ version is selected.
 
 #### Building
 
-Building Raspberry Pi Imager on Windows is best done with Visual Studio Code (or a derivative).
+Use the PowerShell entry point described in
+[doc/build-channels.md](./doc/build-channels.md):
 
-- Open Visual Studio Code, and select 'Clone repo'. Give it the git url of this project.
-- Open the CMake plugin settings, and set the following Configure Args:
-  - `-DQt6_ROOT=C:\Qt\<version>\mingw_64` - or the equivalent path you installed Qt to.
-  - `-DMINGW64_ROOT=C:\Qt\Tools\mingw1310_64` - or the equivalent path you installed mingw64 to.
-  - `-DENABLE_INNO_INSTALLER=ON` - to enable the Inno Setup installer, rather than the legacy NSIS installer.
-  - `-DIMAGER_SIGNED_APP=ON` - to enable code signing for redistribution.
-- In the CMake plugin tab, ensure you have selected the `MinSizeRel` variant if you intend to distribute to others.
-- In the CMake plugin tab, select the 'inno_installer' target, and build it
-- Your resultant installer will be located in `%WORKSPACE%\build\installer`
+```powershell
+.\build-windows.ps1 install -WithQt
+.\build-windows.ps1 dev
+.\build-windows.ps1 release -SigningCertificateThumbprint <thumbprint>
+```
 
 ### macOS
 
@@ -103,18 +101,14 @@ Building Raspberry Pi Imager on Windows is best done with Visual Studio Code (or
 
 #### Building
 
-Building Raspberry Pi Imager on macOS is best done with Visual Studio Code (or a derivative).
+Use the macOS entry point described in
+[doc/build-channels.md](./doc/build-channels.md):
 
-- Open Visual Studio Code, and select 'Clone repo'. Give it the git url of this project.
-- Open the CMake plugin settings, and set the following Configure Args:
-  - `-DQt6_ROOT=/opt/Qt/<version>/macos` - or the equivalent path `build-qt-macos.sh` installed Qt to.
-  - `-DIMAGER_SIGNED_APP=ON` - to enable code signing.
-  - `-DIMAGER_SIGNING_IDENTITY=$cn` - to specify the Developer ID Certificate Common Name.
-  - `-DIMAGER_NOTARIZE_APP=ON` - to enable automatic notarization for distribution to others.
-  - `-DIMAGER_NOTARIZE_KEYCHAIN_PROFILE=notarytool-password` - specify the name of the keychain item containing your Apple ID credentials for notarizing.
-- In the CMake plugin tab, ensure you have selected the `MinSizeRel` variant if you intend to distribute to others.
-- In the CMake plugin tab, select the 'rpi_imager' target, and build it
-- Your resultant DMG will be located at `$WORKSPACE/build/Raspberry Pi Imager-$VERSION.dmg`
+```sh
+./build-macos.sh install --with-qt
+./build-macos.sh dev
+./build-macos.sh release --signing-identity="Developer ID Application: ..."
+```
 
 ### Linux embedded (netboot) build
 
@@ -131,27 +125,23 @@ The canonical build goes through the release pipeline, which builds inside the
 arm64 mmdebstrap chroot:
 
 ```sh
-debian/release.sh embedded arm64
+./build-linux.sh release --target=embedded --arch=arm64 --unsigned
 ```
 
-This produces `out/debian/rpi-imager-embedded_<version>_arm64.deb`. It stages the
+This produces `out/debian/zimaos-usb-creator-embedded_<version>_arm64.deb`. It stages the
 vendored `/opt` tree with `create-embedded.sh`, then assembles the `.deb` with
 debhelper so that `debian/control` is the single source of the package's
 dependencies and metadata (`dh_shlibdeps` is deliberately not used — the package
 vendors its libraries, so the external `Depends` are maintained explicitly in
-the `rpi-imager-embedded` stanza of `debian/control`).
+the `zimaos-usb-creator-embedded` stanza of `debian/control`).
 
-To build against a Qt tree you resolved yourself, `create-embedded.sh` can be
-run directly:
-
-```sh
-./create-embedded.sh --arch=aarch64 --qt-root=/path/to/qt
-```
+The embedded Qt and packaging scripts are internal pipeline stages. Do not run
+them directly; the Linux entry point creates the dedicated Qt cache on demand.
 
 Finally, import the package into pi-gen-micro:
 
 ```sh
-rm ${pi-gen-micro-root}/packages/rpi-imager-embedded*.deb
-cp out/debian/rpi-imager-embedded*.deb ${pi-gen-micro-root}/packages/
+rm ${pi-gen-micro-root}/packages/zimaos-usb-creator-embedded*.deb
+cp out/debian/zimaos-usb-creator-embedded*.deb ${pi-gen-micro-root}/packages/
 pushd ${pi-gen-micro-root}/packages/ && dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz && popd
 ```

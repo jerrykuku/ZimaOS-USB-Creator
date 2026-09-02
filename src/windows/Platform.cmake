@@ -53,7 +53,7 @@ else()
 endif()
 
 set(DEPENDENCIES
-    ${CMAKE_BINARY_DIR}/rpi-imager.rc
+    ${CMAKE_BINARY_DIR}/zimaos-usb-creator.rc
     wlanapi_delayed.lib
 )
 set(EXTRALIBS setupapi ${CMAKE_BINARY_DIR}/wlanapi_delayed.lib Bcrypt.dll crypt32 ole32 oleaut32 wbemuuid)
@@ -62,12 +62,12 @@ set(EXTRALIBS setupapi ${CMAKE_BINARY_DIR}/wlanapi_delayed.lib Bcrypt.dll crypt3
 set(EXTRALIBS ${EXTRALIBS} winusb)
 
 # ---- Relay exe ----
-add_executable(rpi-imager-callback-relay WIN32 windows/CallbackRelay.cpp)
-target_compile_definitions(rpi-imager-callback-relay
+add_executable(zimaos-usb-creator-callback-relay WIN32 windows/CallbackRelay.cpp)
+target_compile_definitions(zimaos-usb-creator-callback-relay
     PRIVATE RPI_IMAGER_PORT=${IMAGER_CALLBACK_PORT}
-            RPI_IMAGER_EXE_NAME=L"rpi-imager.exe"
+            RPI_IMAGER_EXE_NAME=L"zimaos-usb-creator.exe"
             RPI_IMAGER_START_ON_FAIL=1)
-target_link_libraries(rpi-imager-callback-relay PRIVATE ws2_32)
+target_link_libraries(zimaos-usb-creator-callback-relay PRIVATE ws2_32)
 if (MINGW)
-  target_link_options(rpi-imager-callback-relay PRIVATE -municode)
+  target_link_options(zimaos-usb-creator-callback-relay PRIVATE -municode)
 endif()

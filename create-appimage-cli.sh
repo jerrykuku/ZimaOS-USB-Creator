@@ -383,7 +383,7 @@ cd "$SAVED_DIR"
 fi
 
 if [ "$APPIMAGE_PACKAGING" = build ]; then
-    prepare_appdir_for_appimagetool "$APPDIR" com.raspberrypi.rpi-imager-cli
+    prepare_appdir_for_appimagetool "$APPDIR" com.icewhaletech.zimaos-usb-creator-cli
     echo "create-appimage-cli: build stage complete (AppDir at $APPDIR)"
     exit 0
 fi
@@ -416,8 +416,8 @@ if [ -n "$LINUXDEPLOY" ] && [ -f "$LINUXDEPLOY" ] && [ "$ARCH" = "$TOOL_ARCH" ] 
     rm -f "$APPDIR/usr/lib/libsystemd"*
 
     # Rename the output file from linuxdeploy's default name to our versioned name
-    # linuxdeploy creates: Raspberry_Pi_Imager_(CLI)-${ARCH}.AppImage (based on Name= in desktop file)
-    LINUXDEPLOY_OUTPUT="Raspberry_Pi_Imager_(CLI)-${ARCH}.AppImage"
+    # linuxdeploy creates: ZimaOS_USB_Creator_(CLI)-${ARCH}.AppImage (based on Name= in desktop file)
+    LINUXDEPLOY_OUTPUT="ZimaOS_USB_Creator_(CLI)-${ARCH}.AppImage"
     if [ -f "$LINUXDEPLOY_OUTPUT" ]; then
         echo "Renaming '$LINUXDEPLOY_OUTPUT' to '$(basename "$OUTPUT_FILE")'"
         mv "$LINUXDEPLOY_OUTPUT" "$OUTPUT_FILE"
@@ -430,7 +430,7 @@ if [ -n "$LINUXDEPLOY" ] && [ -f "$LINUXDEPLOY" ] && [ "$ARCH" = "$TOOL_ARCH" ] 
     fi
 elif [ -n "${APPIMAGETOOL:-}" ] && [ -f "$APPIMAGETOOL" ]; then
     appimage_pack_with_tool "$APPIMAGETOOL" "$APPDIR" "$OUTPUT_FILE" \
-        "$ARCH" "$TOOL_ARCH" com.raspberrypi.rpi-imager-cli || exit 1
+        "$ARCH" "$TOOL_ARCH" com.icewhaletech.zimaos-usb-creator-cli || exit 1
 else
     # Manual AppImage creation (basic implementation)
     echo "Creating AppImage manually (basic implementation)..."

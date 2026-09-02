@@ -139,7 +139,7 @@ git-ignored directories:
 
 ```
 .debian/
-  chroots/bookworm-<arch>-rpi-imager/   build chroots (mmdebstrap rootfs)
+  chroots/bookworm-<arch>-zimaos-usb-creator/   build chroots (mmdebstrap rootfs)
   qt/<arch>/<version>/gcc_*/            per-arch Qt trees
   appimages/<arch>/                     staged AppImages, per architecture
   archive-keyrings/                     archive signing keys for mmdebstrap
@@ -168,10 +168,10 @@ traverse a mode-700 `$HOME`.
 ### 2. Chroot
 
 `debian/mmdebstrap-ensure-chroot.sh <arch>` bootstraps
-`.debian/chroots/bookworm-<arch>-rpi-imager`. It writes a tarball in `unshare`
+`.debian/chroots/bookworm-<arch>-zimaos-usb-creator`. It writes a tarball in `unshare`
 mode and then extracts it as your own user, so the tree is always removable
 without `sudo`. A failed bootstrap cleans up after itself; a chroot is only
-considered usable once `.rpi-imager-chroot-ok` exists.
+considered usable once `.zimaos-usb-creator-chroot-ok` exists.
 
 Two mmdebstrap hooks do the configuration:
 
@@ -253,8 +253,8 @@ flags any whose ELF header is the wrong architecture.
 `linuxdeploy` has no armhf build, so armhf always goes through `appimagetool`.
 
 `debian/sync-appimages.sh` then copies the versioned
-`Raspberry_Pi_Imager-<git-describe>-{desktop,cli}-<arch>.AppImage` into
-`.debian/appimages/<arch>/` and points the stable `rpi-imager-<arch>.AppImage`
+`ZimaOS_USB_Creator-<git-describe>-{desktop,cli}-<arch>.AppImage` into
+`.debian/appimages/<arch>/` and points the stable `zimaos-usb-creator-<arch>.AppImage`
 symlinks at them.
 
 ### 5. Binary packages
@@ -283,7 +283,7 @@ dependencies are therefore maintained by hand in `debian/control`.
 `debian/build-embedded.sh arm64` builds the dedicated `-no-opengl -no-dbus
 -qpa linuxfb` Qt if missing, runs `create-embedded.sh` inside the arm64 chroot
 to assemble the vendored `/opt` tree, and collects
-`rpi-imager-embedded_<version>_arm64.deb` into `out/debian/`.
+`zimaos-usb-creator-embedded_<version>_arm64.deb` into `out/debian/`.
 
 The dedicated Qt is not optional: the netboot target image (pi-gen-micro)
 carries no Mesa/GL and no X11 — far too large for a network-loaded image — so
@@ -340,7 +340,7 @@ the environment. Environment wins.
 | `QT_DESKTOP_BUILD` | `try` | armhf desktop Qt: `try` or `required` |
 | `CHROOT_ROOT` | `.debian/chroots` | Chroot trees |
 | `CHROOT_DIST` | `bookworm` | Chroot suite (see “The one rule”) |
-| `CHROOT_SUFFIX` | `rpi-imager` | Chroot name suffix |
+| `CHROOT_SUFFIX` | `zimaos-usb-creator` | Chroot name suffix |
 | `CHROOT_ARCHES` | `arm64 amd64 armhf` | Architectures chroots exist for |
 | `CHROOT_AUTO_CREATE` | `auto` | `0` to require manual chroot setup |
 | `MMDEBSTRAP_MODE` | `auto` | `unshare` when not root |

@@ -2,12 +2,13 @@
 set -e
 
 # Script to create a .deb package for embedded systems using linuxfb as a renderer.
-# The .deb installs a vendored directory tree under /opt/rpi-imager-embedded/ with
-# a wrapper script at /usr/bin/rpi-imager-embedded.
+# The .deb installs a vendored directory tree under /opt/zimaos-usb-creator-embedded/
+# with a wrapper script at /usr/bin/zimaos-usb-creator-embedded.
 
 # Source common build functions for ICU version detection
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TOP="$SCRIPT_DIR"
+cd "$TOP"
 # shellcheck disable=SC1091
 . "$TOP/debian/lib.sh"
 export_cmake_parallel
@@ -33,7 +34,7 @@ usage() {
     echo ""
     echo "This script creates a .deb optimised for embedded systems:"
     echo "  - Uses linuxfb for direct rendering (no X11/Wayland required)"
-    echo "  - All dependencies vendored under /opt/rpi-imager-embedded/"
+    echo "  - All dependencies vendored under /opt/zimaos-usb-creator-embedded/"
     echo "  - Smaller size by excluding desktop-specific libraries"
     echo ""
     echo "Font Configuration:"
@@ -119,7 +120,7 @@ else
     echo "Warning: Could not parse version from git tag: $GIT_VERSION"
 fi
 
-echo "Building rpi-imager version $GIT_VERSION (numeric: $PROJECT_VERSION) for embedded systems"
+echo "Building zimaos-usb-creator version $GIT_VERSION (numeric: $PROJECT_VERSION) for embedded systems"
 
 QT_VERSION=""
 QT_DIR=""
@@ -199,9 +200,9 @@ fi
 # Configuration
 BUILD_TYPE="MinSizeRel"  # Optimize for size in embedded systems
 
-# Location of AppDir and output file
-APPDIR="$PWD/AppDir-embedded-$ARCH"
-OUTPUT_FILE="$PWD/ZimaOS_USB_Creator-${GIT_VERSION}-embedded-${ARCH}.AppImage"
+# .deb staging root and output path
+DEBDIR="$PWD/debroot-embedded-$ARCH"
+OPTDIR="$DEBDIR/opt/zimaos-usb-creator-embedded"
 
 # Map arch to dpkg architecture name
 case "$ARCH" in
@@ -259,24 +260,13 @@ cmake -G Ninja "../$SOURCE_DIR" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCMAKE_INSTALL
 cmake --build . --parallel "$(cmake_build_jobs)"
 cd ..
 
-# Copy the desktop file from debian directory and modify for embedded use
-mkdir -p "$APPDIR/usr/share/applications"
-# Remove any existing desktop files to avoid confusion
-rm -f "$APPDIR/usr/share/applications/"*.desktop
-# Copy and modify the embedded desktop file
-cp "debian/com.icewhaletech.zimaos-usb-creator.desktop" "$APPDIR/usr/share/applications/com.icewhaletech.zimaos-usb-creator-embedded.desktop"
-# Update the desktop file for embedded use (preserve %F for file arguments)
-sed -i 's|Name=.*|Name=ZimaOS USB Creator (Embedded)|' "$APPDIR/usr/share/applications/com.icewhaletech.zimaos-usb-creator-embedded.desktop"
-sed -i 's|Comment=.*|Comment=ZimaOS USB Creator for embedded systems|' "$APPDIR/usr/share/applications/com.icewhaletech.zimaos-usb-creator-embedded.desktop"
-sed -i 's|Exec=.*|Exec=zimaos-usb-creator-embedded %F|' "$APPDIR/usr/share/applications/com.icewhaletech.zimaos-usb-creator-embedded.desktop"
-
 # Copy binary directly from build directory
-cp "$BUILD_DIR/rpi-imager" "$OPTDIR/bin/rpi-imager"
+cp "$BUILD_DIR/zimaos-usb-creator" "$OPTDIR/bin/zimaos-usb-creator"
 
 # Create the wrapper script
-cat > "$DEBDIR/usr/bin/rpi-imager-embedded" << 'EOF'
+cat > "$DEBDIR/usr/bin/zimaos-usb-creator-embedded" << 'EOF'
 #!/bin/sh
-HERE="/opt/rpi-imager-embedded"
+HERE="/opt/zimaos-usb-creator-embedded"
 
 # Set up paths
 export PATH="${HERE}/bin:${PATH}"
@@ -314,12 +304,12 @@ export QT_QPA_FB_DRM=/dev/dri/card1
 # Logging (can be disabled in production)
 # export QT_LOGGING_RULES="*.debug=true;*.qpa.*=false"
 
-exec "${HERE}/usr/bin/zimaos-usb-creator" "$@"
+exec "${HERE}/bin/zimaos-usb-creator" "$@"
 EOF
-chmod +x "$DEBDIR/usr/bin/rpi-imager-embedded"
+chmod +x "$DEBDIR/usr/bin/zimaos-usb-creator-embedded"
 
 # ---------------------------------------------------------------------------
-# Deploy vendored dependencies into /opt/rpi-imager-embedded/
+# Deploy vendored dependencies into /opt/zimaos-usb-creator-embedded/
 # ---------------------------------------------------------------------------
 
 echo "Deploying Qt dependencies for embedded systems..."
@@ -604,85 +594,39 @@ if [ -n "$SO_FILES" ]; then
     strip --strip-unneeded $SO_FILES 2>/dev/null || true
 fi
 
-echo "Creating embedded AppImage..."
-# Remove old symlinks for embedded variant only
-rm -f "$PWD/zimaos-usb-creator-embedded.AppImage"
-rm -f "$PWD/zimaos-usb-creator-embedded-$ARCH.AppImage"
+# ---------------------------------------------------------------------------
+# Assemble the .deb via debhelper, so debian/control is the single source of
+# package metadata. dh_shlibdeps is deliberately not used because Qt and its
+# support libraries are bundled under /opt.
+# ---------------------------------------------------------------------------
+echo "Assembling embedded .deb via debhelper..."
 
-if [ -n "$LINUXDEPLOY" ] && [ -f "$LINUXDEPLOY" ]; then
-    # Create AppImage using linuxdeploy
-    # Explicitly specify the desktop file to ensure correct naming
-    # Exclude libsystemd - it must come from the host system to work correctly with DBus
-    # (see https://github.com/raspberrypi/zimaos-usb-creator/issues/1304)
-    LD_LIBRARY_PATH="$QT_DIR/lib:$LD_LIBRARY_PATH" "$LINUXDEPLOY" --appdir="$APPDIR" \
-        --desktop-file="$APPDIR/usr/share/applications/com.icewhaletech.zimaos-usb-creator-embedded.desktop" \
-        --output=appimage \
-        --exclude-library="libwayland-*" \
-        --exclude-library="libX11*" \
-        --exclude-library="libxcb*" \
-        --exclude-library="libXext*" \
-        --exclude-library="libLLVM*" \
-        --exclude-library="libgallium*" \
-        --exclude-library="libXrender*" \
-        --exclude-library="libicudata*" \
-        --exclude-library="libsystemd*"
-    
-    # Rename the output file from linuxdeploy's default name to our versioned name
-    # linuxdeploy creates: Raspberry_Pi_Imager_(Embedded)-${ARCH}.AppImage (based on Name= in desktop file)
-    LINUXDEPLOY_OUTPUT="Raspberry_Pi_Imager_(Embedded)-${ARCH}.AppImage"
-    if [ -f "$LINUXDEPLOY_OUTPUT" ]; then
-        echo "Renaming '$LINUXDEPLOY_OUTPUT' to '$(basename "$OUTPUT_FILE")'"
-        mv "$LINUXDEPLOY_OUTPUT" "$OUTPUT_FILE"
-    elif [ -f "$OUTPUT_FILE" ]; then
-        echo "Output file already exists: $OUTPUT_FILE"
-    else
-        echo "Warning: Expected linuxdeploy output '$LINUXDEPLOY_OUTPUT' not found"
-        echo "Looking for any matching AppImage..."
-        ls -la ./*.AppImage 2>/dev/null || true
-    fi
-else
-    # Manual AppImage creation (basic implementation)
-    echo "Creating AppImage manually (basic implementation)..."
-    # This is a simplified approach - for full AppImage creation,
-    # you would need appimagetool or similar
-    tar czf "${OUTPUT_FILE%.AppImage}.tar.gz" -C "$APPDIR" .
-    echo "Created compressed archive: ${OUTPUT_FILE%.AppImage}.tar.gz"
-    echo "Note: Full AppImage creation requires appimagetool for $ARCH"
-fi
+_pkg=zimaos-usb-creator-embedded
+_stage="$TOP/debian/$_pkg"
 
-if [ -f "$OUTPUT_FILE" ]; then
-    echo "Embedded AppImage created at $OUTPUT_FILE"
-    
-    # Create symlinks for debian packaging and user convenience
-    # Primary symlink matches debian/zimaos-usb-creator-embedded.install expectations
-    DEBIAN_SYMLINK="$PWD/zimaos-usb-creator-embedded.AppImage"
-    if [ -L "$DEBIAN_SYMLINK" ] || [ -f "$DEBIAN_SYMLINK" ]; then
-        rm -f "$DEBIAN_SYMLINK"
-    fi
-    ln -s "$(basename "$OUTPUT_FILE")" "$DEBIAN_SYMLINK"
-    echo "Created symlink: $DEBIAN_SYMLINK -> $(basename "$OUTPUT_FILE")"
-    
-    # Additional architecture-specific symlink for clarity when building for multiple architectures
-    ARCH_SYMLINK="$PWD/zimaos-usb-creator-embedded-$ARCH.AppImage"
-    if [ -L "$ARCH_SYMLINK" ] || [ -f "$ARCH_SYMLINK" ]; then
-        rm -f "$ARCH_SYMLINK"
-    fi
-    ln -s "$(basename "$OUTPUT_FILE")" "$ARCH_SYMLINK"
-    echo "Created symlink: $ARCH_SYMLINK -> $(basename "$OUTPUT_FILE")"
-    
+rm -rf "$_stage"
+mkdir -p "$_stage"
+cp -a "$DEBDIR/opt" "$_stage/"
+cp -a "$DEBDIR/usr" "$_stage/"
+
+export DEB_BUILD_PROFILES=embedded
+(
+    cd "$TOP"
+    dh_gencontrol -p"$_pkg"
+    dh_md5sums -p"$_pkg"
+    dh_builddeb -p"$_pkg" --destdir="$TOP"
+)
+
+rm -rf "$_stage" "$TOP/debian/$_pkg.substvars" "$TOP/debian/$_pkg.debhelper.log" \
+    "$TOP/debian/files" "$TOP/debian/.debhelper"
+
+_out=$(ls "$TOP"/${_pkg}_*_"${DEB_ARCH}".deb 2>/dev/null | head -1)
+if [ -n "$_out" ] && [ -f "$_out" ]; then
     echo ""
-    echo "Embedded AppImage build completed successfully for $ARCH architecture."
-    echo ""
-    echo "This AppImage is optimized for embedded systems:"
-    echo "  - Uses linuxfb for direct rendering (no X11/Wayland required)"
-    echo "  - Smaller size with desktop libraries excluded"
-    echo "  - Configured for headless/embedded environments"
-    echo ""
-    echo "To run on embedded systems:"
-    echo "  - Ensure /dev/dri/card1 is available"
-    echo "  - Run directly: ./$(basename "$OUTPUT_FILE")"
-    echo "  - No desktop environment required"
+    echo "Embedded .deb created: $_out"
+    echo "Embedded .deb build completed successfully for $ARCH."
+    echo "Install with: sudo dpkg -i $(basename "$_out")"
 else
-    echo "AppImage creation completed, but output file verification failed."
-    echo "Check the build process for any errors."
+    echo "Error: .deb creation failed." >&2
+    exit 1
 fi

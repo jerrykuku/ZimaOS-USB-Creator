@@ -52,7 +52,8 @@ Inno Setup offers several advantages over NSIS:
 
 To modify the installer:
 
-- Edit `rpi-imager.iss.in` to change settings, add files, or modify behavior
+- Edit `rpi-imager.iss.in` to change settings, add files, or modify behavior;
+  the generated installer script is `zimaos-usb-creator.iss`
 - The script uses CMake variables like `@CMAKE_BINARY_DIR@` which are replaced during configuration
 
 ## Testing
@@ -62,4 +63,4 @@ Test the installer in a clean Windows 10 environment to verify:
 1. Installation works correctly
 2. Application launches and functions properly
 3. File associations work as expected
-4. Uninstallation removes all components 
+4. Uninstallation removes all components

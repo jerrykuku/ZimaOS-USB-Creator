@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
+
 # Build script using Ninja for faster compilation
 # Supports both Linux and macOS platforms
 
@@ -29,7 +32,7 @@ usage() {
     echo "Examples:"
     echo "  $0                                           # Build with default settings"
     echo "  $0 --clean                                   # Clean build"
-    echo "  $0 --qt-root=/opt/Qt/6.9.1/macos            # Specify Qt path"
+    echo "  $0 --qt-root=/opt/Qt/6.11.1/macos            # Specify Qt path"
     echo "  $0 --signing-identity=\"Developer ID\"       # Enable code signing (macOS)"
     echo "  $0 zimaos-usb-creator                        # Build specific target"
     exit 1
@@ -150,7 +153,8 @@ else
         # macOS: Check /opt/Qt
         if [ -d "/opt/Qt" ]; then
             echo "Checking for Qt installations in /opt/Qt..."
-            NEWEST_QT=$(find /opt/Qt -maxdepth 1 -type d -name "6.*" | sort -V | tail -n 1)
+            NEWEST_QT=$(find /opt/Qt -maxdepth 1 -type d -name "6.*" |
+                sort -t. -k1,1n -k2,2n -k3,3n | tail -n 1)
             if [ -n "$NEWEST_QT" ]; then
                 QT_VERSION=$(basename "$NEWEST_QT")
                 if [ -d "$NEWEST_QT/macos" ]; then
@@ -163,7 +167,8 @@ else
         # Linux: Check /opt/Qt
         if [ -d "/opt/Qt" ]; then
             echo "Checking for Qt installations in /opt/Qt..."
-            NEWEST_QT=$(find /opt/Qt -maxdepth 1 -type d -name "6.*" | sort -V | tail -n 1)
+            NEWEST_QT=$(find /opt/Qt -maxdepth 1 -type d -name "6.*" |
+                sort -t. -k1,1n -k2,2n -k3,3n | tail -n 1)
             if [ -n "$NEWEST_QT" ]; then
                 QT_VERSION=$(basename "$NEWEST_QT")
 
@@ -203,7 +208,7 @@ if [ -z "$QT_DIR" ]; then
 
     if [ -f "./qt/build-qt.sh" ]; then
         echo "You can build Qt using the provided script:"
-        echo "  ./qt/build-qt.sh --version=6.9.1"
+        echo "  ./qt/build-qt-macos.sh"
         echo "Or specify the Qt location with:"
         echo "  $0 --qt-root=/path/to/qt"
     else
@@ -229,7 +234,7 @@ if ! command -v ninja >/dev/null 2>&1; then
 fi
 
 # Configuration
-BUILD_TYPE="MinSizeRel"  # Optimize for size
+BUILD_TYPE="${BUILD_TYPE:-MinSizeRel}"  # Optimize for size unless overridden (dev uses Debug)
 
 # Set up build directory
 BUILD_DIR="build"

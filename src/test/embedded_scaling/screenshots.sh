@@ -18,7 +18,7 @@
 # hook out on purpose: it writes a capture of the window to a caller-chosen path,
 # in a binary the embedded image runs as root.
 #
-# Usage: screenshots.sh /path/to/rpi-imager [output-dir]
+# Usage: screenshots.sh /path/to/zimaos-usb-creator [output-dir]
 #
 #   RPI_SCALING_PROFILES=<file>  profile list (default: profiles.txt beside this)
 #   RPI_SCALING_FILTER=<glob>    render only profiles whose name matches
@@ -56,7 +56,7 @@ timeout_s=${RPI_SCALING_TIMEOUT:-90}
 imager=${1:-}
 outdir=${2:-$PWD/screenshots}
 if [ -z "$imager" ]; then
-    echo "usage: $(basename "$0") /path/to/rpi-imager [output-dir]" >&2
+    echo "usage: $(basename "$0") /path/to/zimaos-usb-creator [output-dir]" >&2
     exit 2
 fi
 if [ ! -x "$imager" ]; then

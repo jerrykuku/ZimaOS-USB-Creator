@@ -47,18 +47,18 @@ copy_one() {
 	echo "sync-appimages: $dest_name -> $DEST/$(basename "$src")"
 }
 
-DESKTOP=$(pick_in_dir "$SRC_DIR" "Raspberry_Pi_Imager-*-desktop-${IMG_ARCH}.AppImage")
-CLI=$(pick_in_dir "$SRC_DIR" "Raspberry_Pi_Imager-*-cli-${IMG_ARCH}.AppImage")
+DESKTOP=$(pick_in_dir "$SRC_DIR" "ZimaOS_USB_Creator-*-desktop-${IMG_ARCH}.AppImage")
+CLI=$(pick_in_dir "$SRC_DIR" "ZimaOS_USB_Creator-*-cli-${IMG_ARCH}.AppImage")
 
 # Fall back to files already placed in the cache directory.
 if [ -z "$DESKTOP" ]; then
-	DESKTOP=$(pick_in_dir "$DEST" "Raspberry_Pi_Imager-*-desktop-${IMG_ARCH}.AppImage")
+	DESKTOP=$(pick_in_dir "$DEST" "ZimaOS_USB_Creator-*-desktop-${IMG_ARCH}.AppImage")
 fi
 if [ -z "$CLI" ]; then
-	CLI=$(pick_in_dir "$DEST" "Raspberry_Pi_Imager-*-cli-${IMG_ARCH}.AppImage")
+	CLI=$(pick_in_dir "$DEST" "ZimaOS_USB_Creator-*-cli-${IMG_ARCH}.AppImage")
 fi
 
-copy_one desktop "$DESKTOP" "rpi-imager-${IMG_ARCH}.AppImage"
-copy_one cli "$CLI" "rpi-imager-cli-${IMG_ARCH}.AppImage"
+copy_one desktop "$DESKTOP" "zimaos-usb-creator-${IMG_ARCH}.AppImage"
+copy_one cli "$CLI" "zimaos-usb-creator-cli-${IMG_ARCH}.AppImage"
 
 echo "sync-appimages: ready in $DEST"

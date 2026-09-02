@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Script to download and build Qt with minimal configuration for macOS
-# Specifically designed for rpi-imager - builds only what we need
+# Specifically designed for ZimaOS USB Creator - builds only what we need
 #
 # POSIX-compliant shell script
 #
@@ -27,9 +27,9 @@ usage() {
     echo ""
     echo "  --build-examples     Build Qt examples"
     echo ""
-    echo "This script builds a minimal Qt for rpi-imager on macOS:"
+    echo "This script builds a minimal Qt for ZimaOS USB Creator on macOS:"
     echo "  - Excludes unnecessary modules and features"
-    echo "  - Optimized for size and rpi-imager use case"
+    echo "  - Optimized for size and ZimaOS USB Creator use case"
     echo "  - Uses Homebrew for dependency management"
     exit 1
 }

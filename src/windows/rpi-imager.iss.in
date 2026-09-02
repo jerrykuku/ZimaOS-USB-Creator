@@ -80,7 +80,7 @@ Root: HKLM; Subkey: "Software\Classes\ZIMAOS_USB_CREATOR_MANIFEST\shell\open\com
 Root: HKCR; Subkey: "rpi-imager"; ValueType: string; ValueName: ""; ValueData: "URL:ZimaOS USB Creator"; Flags: uninsdeletekey
 Root: HKCR; Subkey: "rpi-imager"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""; Flags: uninsdeletekey
 Root: HKCR; Subkey: "rpi-imager\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},1"; Flags: uninsdeletekey
-Root: HKCR; Subkey: "rpi-imager\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\rpi-imager-callback-relay.exe"" ""%1"""; Flags: uninsdeletekey
+Root: HKCR; Subkey: "rpi-imager\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\zimaos-usb-creator-callback-relay.exe"" ""%1"""; Flags: uninsdeletekey
 
 [Files]
 ; WinUSB driver for Raspberry Pi USB boot mode devices (rpiboot).
@@ -92,8 +92,8 @@ Source: "@CMAKE_BINARY_DIR@\deploy\rpiboot-winusb.cat"; DestDir: "{app}"; Flags:
 ; Main program files
 Source: "@CMAKE_BINARY_DIR@\deploy\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion signonce
 
-Source: "@CMAKE_BINARY_DIR@\deploy\rpi-imager-cli.cmd"; DestDir: "{app}"; Flags: ignoreversion
-Source: "@CMAKE_BINARY_DIR@\deploy\rpi-imager-callback-relay.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "@CMAKE_BINARY_DIR@\deploy\zimaos-usb-creator-cli.cmd"; DestDir: "{app}"; Flags: ignoreversion
+Source: "@CMAKE_BINARY_DIR@\deploy\zimaos-usb-creator-callback-relay.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "@CMAKE_BINARY_DIR@\deploy\license.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Core DLLs

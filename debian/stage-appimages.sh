@@ -3,7 +3,7 @@
 #
 # AppImages are not part of the quilt orig tarball. Before a binary build,
 # place artifacts in APPIMAGE_DIR (default: package root) under the names
-# expected by debian/*.install, or use the Raspberry_Pi_Imager-* naming
+# expected by debian/*.install, or use the ZimaOS_USB_Creator-* naming
 # from create-appimage.sh / create-appimage-cli.sh.
 #
 # Usage:
@@ -116,15 +116,15 @@ link_artifact() {
 
 stage_desktop() {
 	img_arch=$(deb_arch_to_image_arch "$(target_deb_arch)")
-	canonical="rpi-imager-${img_arch}.AppImage"
-	src=$(resolve_artifact "$canonical" "Raspberry_Pi_Imager-*-desktop-${img_arch}.AppImage")
+	canonical="zimaos-usb-creator-${img_arch}.AppImage"
+	src=$(resolve_artifact "$canonical" "ZimaOS_USB_Creator-*-desktop-${img_arch}.AppImage")
 	link_artifact "$canonical" "$src"
 }
 
 stage_cli() {
 	img_arch=$(deb_arch_to_image_arch "$(target_deb_arch)")
-	canonical="rpi-imager-cli-${img_arch}.AppImage"
-	src=$(resolve_artifact "$canonical" "Raspberry_Pi_Imager-*-cli-${img_arch}.AppImage")
+	canonical="zimaos-usb-creator-cli-${img_arch}.AppImage"
+	src=$(resolve_artifact "$canonical" "ZimaOS_USB_Creator-*-cli-${img_arch}.AppImage")
 	link_artifact "$canonical" "$src"
 }
 

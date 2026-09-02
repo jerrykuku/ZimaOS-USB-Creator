@@ -861,12 +861,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     # it needs the screenshot hook, which is compiled out unless a test build
     # asks for it (-DENABLE_TEST_HOOKS=ON). Not a CTest test: it wants fonts and
     # several seconds per profile, and its output is meant to be looked at.
-    if(TARGET rpi-imager AND BUILD_EMBEDDED AND ENABLE_TEST_HOOKS)
+    if(TARGET zimaos-usb-creator AND BUILD_EMBEDDED AND ENABLE_TEST_HOOKS)
         add_custom_target(screenshots_embedded_scaling
             COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/embedded_scaling/screenshots.sh
-                    $<TARGET_FILE:rpi-imager>
+                    $<TARGET_FILE:zimaos-usb-creator>
                     ${CMAKE_CURRENT_BINARY_DIR}/embedded_scaling_screenshots
-            DEPENDS rpi-imager
+            DEPENDS zimaos-usb-creator
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Rendering the embedded UI at each display profile"
         )

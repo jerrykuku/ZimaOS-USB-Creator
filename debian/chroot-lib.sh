@@ -20,7 +20,7 @@ chroot_mmdebstrap_root() {
 chroot_mmdebstrap_ok() {
 	_arch=$1
 	_root=$(chroot_mmdebstrap_root "$_arch")
-	[ -f "$_root/.rpi-imager-chroot-ok" ] && [ -x "$_root/usr/bin/dpkg" ]
+	[ -f "$_root/.zimaos-usb-creator-chroot-ok" ] && [ -x "$_root/usr/bin/dpkg" ]
 }
 
 chroot_rm_mmdebstrap() {
