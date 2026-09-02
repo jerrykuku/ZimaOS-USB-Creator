@@ -153,12 +153,41 @@ WizardStepBase {
                 }
             }
 
-            // Device list (fills available space, hidden when showing offline placeholder)
+            // The device metadata is part of the OS manifest and is not
+            // available until the first manifest request completes.
+            Item {
+                id: loadingPlaceholder
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                visible: hwlist.count === 0 && !root.osListUnavailable
+
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: Style.spacingMedium
+
+                    BusyIndicator {
+                        Layout.alignment: Qt.AlignHCenter
+                        running: loadingPlaceholder.visible
+                        width: 32
+                        height: 32
+                    }
+
+                    Text {
+                        text: qsTr("Loading device types...")
+                        font.pixelSize: Style.fontSizeDescription
+                        font.family: Style.fontFamily
+                        color: Style.textDescriptionColor
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                }
+            }
+
+            // Device list (fills available space once manifest metadata is loaded)
             SelectionListView {
                 id: hwlist
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                visible: !offlinePlaceholder.visible
+                visible: root.modelLoaded && !offlinePlaceholder.visible && !loadingPlaceholder.visible
                 model: root.hwModel
                 delegate: hwdelegate
                 keyboardAutoAdvance: true
