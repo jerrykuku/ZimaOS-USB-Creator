@@ -60,7 +60,7 @@ protected:
     std::shared_ptr<RingBuffer> _writeRingBuffer;
     RingBuffer::Slot* _currentWriteSlot;  // Current slot being written
     
-    bool _ethreadStarted, _isImage;
+    bool _ethreadStarted, _isImage, _rawImage;
     AcceleratedCryptographicHash _inputHash;
     bool _progressStarted;
     qint64 _lastProgressTime;

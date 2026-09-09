@@ -16,7 +16,9 @@ else
 fi
 ARCH="$(uname -m)"
 SIGNING_IDENTITY=""
-NOTARIZE_PROFILE=""
+# Release builds are signed and notarized by default. These can still be
+# overridden from the command line when multiple certificates/profiles exist.
+NOTARIZE_PROFILE="${ZIMAOS_NOTARY_PROFILE:-zimaos-notarytool}"
 WITH_QT=0
 QT_VERBOSE=0
 QT_ROOT_EXPLICIT=0
@@ -31,14 +33,14 @@ Actions:
   install       Install Homebrew tools; use --with-qt to build the Qt toolchain
   dev           Build for the host architecture and launch with QML auto-reload
   build         Build an unsigned DMG
-  release       Build a signed DMG (optionally notarized)
+  release       Build a signed and notarized DMG
   clean         Remove the macOS build directory
 
 Options:
   --arch=ARCH                    arm64, x86_64, or universal (default: $ARCH)
   --qt-root=PATH                 Qt installation root
-  --signing-identity=IDENTITY    Developer ID Application identity (release)
-  --notarize-profile=PROFILE     notarytool keychain profile (release)
+  --signing-identity=IDENTITY    Override the auto-selected signing identity
+  --notarize-profile=PROFILE     Override the default notarytool profile
   --with-qt                      Build the pinned Qt toolchain during install
   --qml-live                     Load QML directly from src for live UI iteration (dev; default)
   --watch                        Restart the QML live app when source files change (dev; default)
@@ -136,6 +138,22 @@ parse_options() {
 parse_options "$@"
 need_macos
 
+# Resolve and validate release credentials before starting any build work.
+if [ "$ACTION" = "release" ]; then
+    if [ -z "$SIGNING_IDENTITY" ]; then
+        SIGNING_IDENTITY=$(security find-identity -v -p codesigning 2>/dev/null |
+            awk -F '"' '/Developer ID Application:/ { print $2; exit }')
+    fi
+    [ -n "$SIGNING_IDENTITY" ] || die "no Developer ID Application certificate found"
+    security find-identity -v -p codesigning | grep -Fq "$SIGNING_IDENTITY" ||
+        die "signing identity not found: $SIGNING_IDENTITY"
+    [ -n "$NOTARIZE_PROFILE" ] || die "no notarization profile configured"
+    xcrun notarytool history --keychain-profile "$NOTARIZE_PROFILE" >/dev/null 2>&1 ||
+        die "notarytool profile not found or invalid: $NOTARIZE_PROFILE"
+    echo "build-macos: signing identity: $SIGNING_IDENTITY"
+    echo "build-macos: notarization profile: $NOTARIZE_PROFILE"
+fi
+
 case "$ACTION" in
     install)
         install_tools
@@ -162,12 +180,9 @@ case "$ACTION" in
         "$SCRIPT_DIR/mac-build-dmg.sh" --arch="$ARCH" --qt-root="$QT_ROOT"
         ;;
     release)
-        [ -n "$SIGNING_IDENTITY" ] || die "release requires --signing-identity=..."
         have codesign || die "codesign is missing; install Xcode Command Line Tools"
-        security find-identity -v -p codesigning | grep -Fq "$SIGNING_IDENTITY" || \
-            die "signing identity not found: $SIGNING_IDENTITY"
         args=(--clean --arch="$ARCH" --qt-root="$QT_ROOT" --signing-identity="$SIGNING_IDENTITY")
-        [ -n "$NOTARIZE_PROFILE" ] && args+=(--notarize-profile="$NOTARIZE_PROFILE")
+        args+=(--notarize-profile="$NOTARIZE_PROFILE")
         "$SCRIPT_DIR/mac-build-dmg.sh" "${args[@]}"
         ;;
     *) die "unknown action '$ACTION' (use install, dev, build, release, or clean)" ;;

@@ -1050,6 +1050,20 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
         _firstBlock = (char *) qMallocAligned(len, 4096);
         _firstBlockSize = len;
         ::memcpy(_firstBlock, buf, len);
+        // When a hash is required, write the first block normally. Seeking
+        // past it leaves macOS raw devices at an unaligned offset, which makes
+        // subsequent aligned pwrite operations fail with EINVAL.
+        if (!_expectedHash.isEmpty()) {
+            const auto result = _file->WriteSequential(
+                reinterpret_cast<const std::uint8_t*>(buf), len);
+            if (result == rpi_imager::FileError::kSuccess) {
+                _bytesWritten += len;
+                if (onComplete) onComplete();
+                return len;
+            }
+            if (onComplete) onComplete();
+            return 0;
+        }
         qDebug() << "_writeFile: captured first block (" << len << ") and advanced file offset via seek";
         if (onComplete) onComplete();
         return (_file->Seek(len) == rpi_imager::FileError::kSuccess) ? len : 0;
@@ -1098,7 +1112,13 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
     size_t bytes_written = 0;
     rpi_imager::FileError write_result;
     
-    bool useAsync = _debugAsyncIO && _file->IsAsyncIOSupported() && _file->GetAsyncQueueDepth() > 1;
+    const QByteArray lowerUrl = _url.toLower();
+    const bool rawImageUrl = lowerUrl.endsWith(".iso") || lowerUrl.endsWith(".img") ||
+                             lowerUrl.endsWith(".raw") || lowerUrl.endsWith(".wic");
+    // Raw disk images are written directly to block devices. Keep this path
+    // synchronous: macOS raw-device alignment/tail handling is stateful and
+    // concurrent pwrite callbacks can race with buffer reuse on failures.
+    bool useAsync = !rawImageUrl && _debugAsyncIO && _file->IsAsyncIOSupported() && _file->GetAsyncQueueDepth() > 1;
     bool useZeroCopy = useAsync && onComplete;  // Zero-copy requires completion callback
     
     if (useZeroCopy) {
@@ -1158,8 +1178,9 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
                 bytes_written = len;
                 _bytesWritten += bytes_written;
             }
-            // Call completion callback since we're done synchronously
-            if (onComplete) onComplete();
+            // AsyncWriteSequential invokes the callback on immediate failure;
+            // do not invoke it again here or zero-copy callers release their
+            // buffer twice.
         }
     } else if (useAsync) {
         // ASYNC WITH COPY: No completion callback, must copy buffer for safety

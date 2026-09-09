@@ -2202,10 +2202,15 @@ void ImageWriter::onOsListFetchComplete(const QByteArray &data, const QUrl &url,
         // This handles both the startup case and the "refresh failed, now succeeded" case
         PlatformQuirks::stopNetworkMonitoring();
         
-        if (wasEmpty) {
+        if (wasEmpty || isTopLevelRequest) {
+            // A top-level manifest is authoritative. Replace the complete
+            // document so newly added OS entries are not lost when refreshing
+            // over an older cached list. Sublist responses are merged below.
             _completeOsList = QJsonDocument(response_object);
-            // Notify UI that OS list is now available (was unavailable, now has data)
-            emit osListUnavailableChanged();
+            if (wasEmpty) {
+                // Notify UI that OS list is now available (was unavailable, now has data)
+                emit osListUnavailableChanged();
+            }
         } else {
             // Preserve latest top-level imager metadata if present in the top-level fetch
             auto new_list = findAndInsertJsonResult(_completeOsList["os_list"].toArray(), response_object["os_list"].toArray(), url, 1);
@@ -3162,15 +3167,17 @@ bool ImageWriter::isOnline()
     } else if (!hasBasicConnectivity && _online) {
         // Network went offline
         _online = false;
-    } else if (!hasBasicConnectivity && _completeOsList.isEmpty()) {
-        // No network and no OS list - notify UI so it can show offline state
-        // This handles startup without network (fixes GitHub issue #809)
-        emit osListUnavailableChanged();
-        
-        // Start monitoring for network availability so we can auto-retry
+    } else if (!hasBasicConnectivity && !_online) {
+        // Network is not ready at startup. Keep monitoring even when a cached
+        // manifest is available: once connectivity returns, fetch the remote
+        // manifest so it can replace the stale cache.
+        if (_completeOsList.isEmpty()) {
+            emit osListUnavailableChanged();
+        }
+
         PlatformQuirks::startNetworkMonitoring([this](bool available) {
-            if (available && _completeOsList.isEmpty()) {
-                qDebug() << "Network became available - auto-retrying OS list fetch";
+            if (available && !_repo.isLocalFile()) {
+                qDebug() << "Network became available - auto-refreshing OS list";
                 // Use QMetaObject::invokeMethod to ensure we're on the Qt thread
                 QMetaObject::invokeMethod(this, "beginOSListFetch", Qt::QueuedConnection);
             }

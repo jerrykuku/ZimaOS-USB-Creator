@@ -135,16 +135,14 @@ WizardStepBase {
                 return;
             }
 
-            // If model was loaded with just Erase/Use custom (2 items) but now we have more,
-            // we need a full reload, not just softRefresh
-            var needsFullReload = !root.modelLoaded || (root.osmodel && root.osmodel.rowCount() <= 2);
-
-            if (needsFullReload) {
-                root.modelLoaded = false;  // Reset so handler does full reload
+            // A manifest refresh can add/remove entries or replace subitems.
+            // softRefresh() only emits dataChanged for the existing rows, so it
+            // cannot expose new entries from the refreshed JSON document.
+            if (!root.modelLoaded) {
+                // Run first-load metadata handling only once (defaults, update prompt).
                 onOsListPreparedHandler();
-            } else if (root.osmodel && typeof root.osmodel.softRefresh === "function") {
-                // Just updating existing data (e.g., sublist loaded)
-                root.osmodel.softRefresh();
+            } else if (root.osmodel) {
+                root.osmodel.reload();
             }
         }
         function onOsListUnavailableChanged() {

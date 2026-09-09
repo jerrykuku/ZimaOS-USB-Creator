@@ -68,7 +68,12 @@ DownloadExtractThread::DownloadExtractThread(const QByteArray &url, const QByteA
       _currentReadSlot(nullptr),
       _currentWriteSlot(nullptr),
       _ethreadStarted(false),
-      _isImage(true), 
+      _isImage(true),
+      _rawImage([&url]() {
+          const QByteArray lower = url.toLower();
+          return lower.endsWith(".iso") || lower.endsWith(".img") ||
+                 lower.endsWith(".raw") || lower.endsWith(".wic");
+      }()),
       _inputHash(OSLIST_HASH_ALGORITHM), 
       _progressStarted(false),
       _lastProgressTime(0),
@@ -289,6 +294,21 @@ size_t DownloadExtractThread::_writeData(const char *buf, size_t len)
 
     _writeCache(buf, len);
 
+    // Remote raw disk images (notably .iso assets hosted on GitHub) must be
+    // written directly. libarchive can recognize an ISO as a raw format but
+    // does not expose its bytes through archive_read_data(), which otherwise
+    // leaves the target empty and produces the SHA-256 of an empty stream.
+    if (_rawImage) {
+        const size_t written = _writeFile(buf, len);
+        if (written != len) {
+            if (!_cancelled)
+                _onWriteError();
+            return 0;
+        }
+        _emitProgressUpdate();
+        return len;
+    }
+
     if (!_ethreadStarted)
     {
         // Extract thread is started when first data comes in
@@ -310,6 +330,13 @@ size_t DownloadExtractThread::_writeData(const char *buf, size_t len)
 void DownloadExtractThread::_onDownloadSuccess()
 {
     _downloadComplete = true;
+
+    if (_rawImage) {
+        // Direct raw-image downloads do not use the extraction thread/ring
+        // buffer; finalize hashing, flushing and verification here.
+        _writeComplete();
+        return;
+    }
     
     // Signal ring buffer that producer is done
     if (_ringBuffer) {
@@ -1087,6 +1114,7 @@ bool DownloadExtractThread::isImage()
 void DownloadExtractThread::enableMultipleFileExtraction()
 {
     _isImage = false;
+    _rawImage = false;
 }
 
 void DownloadExtractThread::_pushQueue(const char *data, size_t len)

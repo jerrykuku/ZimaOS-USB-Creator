@@ -17,6 +17,20 @@
   },
   "os_list": [
     {
+      "name": "ZimaOS 1.7.1 ISO version (test only)",
+      "description": "A Simplified, Focused and Open NAS OS ISO version (test only)",
+      "icon": "https://get.casaos.io/Zima.svg",
+      "url": "https://github.com/jerrykuku/staff/releases/download/v0.1.4/zimaos_zimacube-1.7.1_installer.iso",
+      "extract_size": 1585934336,
+      "extract_sha256": "fa5a18885be0095ba9999d049fc8dc93726616fa60ddce99d1a367fe4cbcd1e8",
+      "image_download_size": 1585934336,
+      "release_date": "2026-09-09",
+      "init_format": "",
+      "devices": [
+        "x86_64-uefi"
+      ]
+    },
+    {
       "name": "ZimaOS 1.7.1",
       "description": "A Simplified, Focused and Open NAS OS (Recommended)",
       "icon": "https://get.casaos.io/Zima.svg",

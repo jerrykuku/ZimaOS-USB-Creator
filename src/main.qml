@@ -53,6 +53,7 @@ ApplicationWindow {
     
     // Track offline state for title display (derived from whether OS list data is available)
     property bool isOffline: ImageWriterSingleton.isOsListUnavailable
+    property bool isWindowsTitleBar: Qt.platform.os === "windows"
     
     title: {
         var baseTitle = qsTr("ZimaOS USB Creator")
@@ -86,13 +87,19 @@ ApplicationWindow {
         }
 
         Row {
-            anchors.left: parent.left
-            anchors.leftMargin: Style.spacingCardInset
+            anchors.left: window.isWindowsTitleBar ? undefined : parent.left
+            anchors.right: window.isWindowsTitleBar ? parent.right : undefined
+            anchors.leftMargin: window.isWindowsTitleBar ? 0 : Style.spacingCardInset
+            anchors.rightMargin: window.isWindowsTitleBar ? Style.spacingCardInset : 0
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.spacingContentInset
 
             Repeater {
-                model: [Style.colorChromeClose, Style.colorChromeMinimize, Style.colorChromeMaximize]
+                // macOS: close/minimize/maximize on the left. Windows:
+                // minimize/maximize/close on the right.
+                model: window.isWindowsTitleBar
+                       ? [Style.colorChromeMinimize, Style.colorChromeMaximize, Style.colorChromeClose]
+                       : [Style.colorChromeClose, Style.colorChromeMinimize, Style.colorChromeMaximize]
                 delegate: Rectangle {
                     required property string modelData
                     required property int index
@@ -104,6 +111,7 @@ ApplicationWindow {
                     border.width: Style.borderWidthDefault
 
                     property bool hovered: false
+                    readonly property int actionIndex: window.isWindowsTitleBar ? (index === 2 ? 0 : index + 1) : index
 
                     MouseArea {
                         anchors.fill: parent
@@ -111,9 +119,9 @@ ApplicationWindow {
                         onEntered: parent.hovered = true
                         onExited: parent.hovered = false
                         onClicked: {
-                            if (index === 0)
+                            if (parent.actionIndex === 0)
                                 window.close()
-                            else if (index === 1)
+                            else if (parent.actionIndex === 1)
                                 window.showMinimized()
                             else
                                 window.visibility === Window.Maximized ? window.showNormal() : window.showMaximized()
@@ -132,7 +140,7 @@ ApplicationWindow {
                             context.lineWidth = 1.15
                             context.lineCap = "round"
                             context.beginPath()
-                            if (index === 0) {
+                            if (parent.actionIndex === 0) {
                                 // Close: compact cross centered on the button geometry.
                                 var closeMin = 3.8
                                 var closeMax = width - closeMin
@@ -141,7 +149,7 @@ ApplicationWindow {
                                 context.lineTo(closeMax, closeCenter + 2.2)
                                 context.moveTo(closeMax, closeCenter - 2.2)
                                 context.lineTo(closeMin, closeCenter + 2.2)
-                            } else if (index === 1) {
+                            } else if (parent.actionIndex === 1) {
                                 // Minimize: centered horizontal stroke.
                                 context.moveTo(3.0, center + 0.5)
                                 context.lineTo(width - 3.0, center + 0.5)
