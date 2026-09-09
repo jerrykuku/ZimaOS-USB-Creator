@@ -69,8 +69,17 @@ version is selected.
 
 #### Get dependencies
 
-- Get the Qt online installer from: https://www.qt.io/download-open-source
-  - During installation, choose the Qt version named by `QT_VERSION_DEFAULT` in [qt/qt-build-common.sh](./qt/qt-build-common.sh), with the Mingw64 64-bit toolchain. Any newer Qt 6 that satisfies the `find_package(Qt6 ...)` minimum in `src/CMakeLists.txt` will also configure.
+- Install Qt with either the repository's automated `aqtinstall` path or the
+  official Qt Online Installer:
+  - Automated: install Python 3, then run `.\build-windows.ps1 install -WithQt`.
+    By default the Qt SDK is installed under `%LOCALAPPDATA%\Qt`, which does
+    not require an elevated shell. Use `-QtInstallRoot` to choose another
+    writable destination, and `-QtVersion` when the default version is unavailable;
+    `py -m aqt list-qt windows desktop` shows available versions.
+  - Manual: get the Qt online installer from https://www.qt.io/download-open-source
+    and choose a Qt 6.9+ `win64_mingw` kit plus its matching MinGW tools. Any
+    newer Qt 6 that satisfies the `find_package(Qt6 ...)` minimum in
+    `src/CMakeLists.txt` will also configure.
 - For building the installer, install Inno Setup scriptable install system: https://jrsoftware.org/isdl.php
 - Install Visual Studio Code (or a derivative) and the Qt Extension Pack.
 - It is assumed you already have a valid code signing certificate, and the Windows 10 Kit (SDK) installed.
@@ -84,7 +93,15 @@ Use the PowerShell entry point described in
 .\build-windows.ps1 install -WithQt
 .\build-windows.ps1 dev
 .\build-windows.ps1 release -SigningCertificateThumbprint <thumbprint>
+# For a local unsigned installer:
+.\build-windows.ps1 release -Unsigned
 ```
+
+`release` installs Inno Setup through `winget` when it is not already present.
+For SafeNet USB-token signing, keep the token inserted and unlocked, then pass
+the certificate thumbprint shown by
+`Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert`; the private key remains
+on the token and is accessed by `signtool` through its CSP/KSP provider.
 
 ### macOS
 

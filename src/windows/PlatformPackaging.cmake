@@ -252,14 +252,6 @@ add_custom_command(
 )
 
 add_custom_command(TARGET ${PROJECT_NAME}
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.manifest"
-        "${CMAKE_CURRENT_SOURCE_DIR}/windows/zimaos-usb-creator.manifest"
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/zimaos-usb-creator.manifest"
-    COMMENT "Copying generated manifest for resource compilation")
-
-add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         "${MINGW64_ROOT}/bin/libgcc_s_seh-1.dll"

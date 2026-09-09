@@ -100,23 +100,89 @@ part of the macOS channel.
 
 ## 2. Windows
 
-Windows uses the CMake project directly through a PowerShell entry point. Install
-Qt with the MinGW 64-bit toolchain, the matching MinGW tools, and Inno Setup:
+Windows uses the CMake project directly through a PowerShell entry point. The
+script can install the Qt SDK and matching MinGW toolchain non-interactively with
+`aqtinstall` (Python 3 is required), or you can install Qt manually with the
+official Qt Online Installer. In either case, select the MinGW 64-bit kit and
+make sure the paths passed to the build match the installed directories.
+
+Automated installation:
 
 ```powershell
 .\build-windows.ps1 install -WithQt
-.\build-windows.ps1 dev -QtRoot C:\Qt\6.11.1\mingw_64 -MingwRoot C:\Qt\Tools\mingw1310_64 -Run
+.\build-windows.ps1 dev -QtRoot "$env:LOCALAPPDATA\Qt\6.10.3\mingw_64" -MingwRoot "$env:LOCALAPPDATA\Qt\Tools\mingw1310_64"
 .\build-windows.ps1 build
+```
+
+Like the macOS development channel, `dev` launches the completed debug app.
+Pass `-NoRun` when you only need to build it (for example, in CI).
+The manually launchable executable is `build-windows\deploy\zimaos-usb-creator.exe`:
+`windeployqt` places it there together with `Qt6Network.dll` and the other Qt
+runtime files. The same-named executable directly under `build-windows\` is the
+raw build output and is not self-contained.
+
+The default aqt version is `6.10.3` with the `win64_mingw` kit. The SDK is
+installed under `%LOCALAPPDATA%\Qt` by default so a normal PowerShell session
+can write it. Override the destination with `-QtInstallRoot` (or set
+`QT_INSTALL_ROOT`) when a different writable location is required. Override
+the Qt version when a different Qt 6 version is available or required:
+
+```powershell
+.\build-windows.ps1 install -WithQt -QtVersion 6.11.0 -QtArch win64_mingw
+```
+
+Before changing the defaults, check the versions and kits exposed by aqt:
+
+```powershell
+py -m aqt list-qt windows desktop
+py -m aqt list-tool windows desktop
+```
+
+Manual installation with the official Qt Online Installer is also supported:
+install Qt 6.9 or newer with `win64_mingw`, install the corresponding MinGW
+tools, then pass the resulting `-QtRoot` and `-MingwRoot` paths to this script.
+For example:
+
+```powershell
+.\build-windows.ps1 dev `
+  -QtRoot "$env:LOCALAPPDATA\Qt\6.10.3\mingw_64" `
+  -MingwRoot "$env:LOCALAPPDATA\Qt\Tools\mingw1310_64"
 ```
 
 For a distributable signed installer, run `release` from a Developer PowerShell.
 It enables `ENABLE_INNO_INSTALLER` and `IMAGER_SIGNED_APP`, checks for a
 code-signing certificate and `signtool`, and builds the `inno_installer` target:
 
+If Inno Setup is not installed, `release` installs it automatically through
+`winget` (the Microsoft App Installer must be available).
+
 ```powershell
-.\build-windows.ps1 release -QtRoot C:\Qt\6.11.1\mingw_64 `
-  -MingwRoot C:\Qt\Tools\mingw1310_64 `
+.\build-windows.ps1 release -QtRoot "$env:LOCALAPPDATA\Qt\6.10.3\mingw_64" `
+  -MingwRoot "$env:LOCALAPPDATA\Qt\Tools\mingw1310_64" `
   -SigningCertificateThumbprint ABCDEF1234567890
+```
+
+SafeNet USB-token certificates are supported. Install and unlock the SafeNet
+client first, then either let the script select the only valid code-signing
+certificate in `Cert:\CurrentUser\My`, or pass its thumbprint explicitly:
+
+```powershell
+Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
+  Select-Object Subject,Thumbprint,HasPrivateKey,NotAfter
+.\build-windows.ps1 release -SigningCertificateThumbprint YOUR_THUMBPRINT
+```
+
+The private key stays on the SafeNet token; `signtool` accesses it through the
+SafeNet CSP/KSP provider. Keep the token inserted and unlocked so its PIN prompt
+can be displayed during signing.
+
+For local testing or distribution through a channel that applies signing later,
+use `-Unsigned`. This still builds the Inno Setup installer and deploys all Qt
+runtime files, but skips the certificate, `signtool`, and WinUSB catalog signing
+checks:
+
+```powershell
+.\build-windows.ps1 release -Unsigned
 ```
 
 The Windows packaging implementation is in
