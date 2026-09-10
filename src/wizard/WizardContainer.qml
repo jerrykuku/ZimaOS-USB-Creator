@@ -441,7 +441,7 @@ Item {
                     Text {
                         id: sidebarHeader
                         text: qsTr("Setup steps")
-                        font.pixelSize: Style.fontSizeHeading
+                        font.pixelSize: Style.fontSizeHeadingChrome
                         font.family: Style.fontFamily
                         font.bold: true
                         color: Style.sidebarTitleColor
@@ -534,7 +534,7 @@ Item {
                                         Layout.fillWidth: true
                                         Layout.alignment: Qt.AlignVCenter
                                         text: stepItem.modelData
-                                        font.pixelSize: Style.fontSizeSidebarItem
+                                        font.pixelSize: Style.fontSizeSidebarItemChrome
                                         font.family: Style.fontFamily
                                         color: stepItem.index > root.getSidebarIndex(root.currentStep) ? Style.formLabelDisabledColor : (stepItem.index === root.getSidebarIndex(root.currentStep) ? Style.sidebarTitleColor : Style.sidebarTitleColor)
                                     }

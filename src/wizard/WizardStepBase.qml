@@ -94,7 +94,7 @@ FocusScope {
             MarqueeText {
                 id: titleText
                 text: root.title
-                font.pixelSize: Style.fontSizeHeading
+                font.pixelSize: Style.fontSizeHeadingChrome
                 font.family: Style.fontFamilyBold
                 font.bold: true
                 color: Style.formLabelColor
@@ -107,11 +107,11 @@ FocusScope {
                 focusPolicy: (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) ? Qt.TabFocus : Qt.NoFocus
                 activeFocusOnTab: ImageWriterSingleton ? ImageWriterSingleton.screenReaderActive : false
             }
-            
+
             MarqueeText {
                 id: subtitleText
                 text: root.subtitle
-                font.pointSize: Style.fontSizeSubtitle
+                font.pixelSize: Style.fontSizeSubtitleChrome
                 font.family: Style.fontFamily
                 color: Style.colorTextPrimary
                 Layout.fillWidth: true

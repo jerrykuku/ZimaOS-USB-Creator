@@ -314,14 +314,33 @@ DiskpartResult cleanDiskFast(const QByteArray &device, TimingCallback timingCall
         if (error != ERROR_INVALID_FUNCTION && error != ERROR_FILE_NOT_FOUND)
         {
             qDebug() << "IOCTL_DISK_DELETE_DRIVE_LAYOUT failed with error" << error << "- will try zeroing MBR";
-            
+
             // Fallback: zero out the first sector to clear partition table
             LARGE_INTEGER zero = {};
             SetFilePointerEx(hDisk, zero, nullptr, FILE_BEGIN);
-            
-            char emptyMBR[512] = {0};
+
+            // Query physical sector size to ensure proper alignment
+            DWORD sectorSize = 512; // Default to 512
+            STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR alignmentDesc = {};
+            STORAGE_PROPERTY_QUERY query = {};
+            query.PropertyId = StorageAccessAlignmentProperty;
+            query.QueryType = PropertyStandardQuery;
+
+            if (DeviceIoControl(hDisk, IOCTL_STORAGE_QUERY_PROPERTY,
+                               &query, sizeof(query),
+                               &alignmentDesc, sizeof(alignmentDesc),
+                               &bytesReturned, nullptr)) {
+                // Use physical sector size if larger than 512
+                if (alignmentDesc.BytesPerPhysicalSector > 512) {
+                    sectorSize = alignmentDesc.BytesPerPhysicalSector;
+                    qDebug() << "Device has" << sectorSize << "byte physical sectors, adjusting write size";
+                }
+            }
+
+            // Allocate buffer with detected sector size
+            char* emptyMBR = new char[sectorSize]();
             DWORD bytesWritten;
-            if (!WriteFile(hDisk, emptyMBR, 512, &bytesWritten, nullptr) || bytesWritten != 512)
+            if (!WriteFile(hDisk, emptyMBR, sectorSize, &bytesWritten, nullptr) || bytesWritten != sectorSize)
             {
                 error = GetLastError();
                 errorMessage = QObject::tr("Failed to clear partition table. Error code: %1").arg(error);
@@ -331,6 +350,7 @@ DiskpartResult cleanDiskFast(const QByteArray &device, TimingCallback timingCall
             {
                 qDebug() << "Zeroed MBR as fallback";
             }
+            delete[] emptyMBR;
         }
         else
         {

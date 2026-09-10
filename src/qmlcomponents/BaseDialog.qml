@@ -59,6 +59,9 @@ Dialog {
         radius: Style.radiusPanel
         antialiasing: true
         clip: true
+        // Ensure overlay only covers the content area (not the shadow margins on Windows)
+        anchors.fill: parent
+        anchors.margins: Qt.platform.os === "windows" ? 8 : 0
         Behavior on opacity {
             NumberAnimation {
                 duration: PlatformHelper.prefersReducedMotion ? 0 : 150

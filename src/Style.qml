@@ -143,6 +143,13 @@ Item {
     readonly property real fontSizeMd: Math.round(16 * fontScale)
     readonly property real fontSizeXl: Math.round(24 * fontScale)
 
+    // Pixel-sized QML text is not DPI-normalized by Qt. Do not apply the
+    // Windows point-size correction to it, otherwise these controls render
+    // smaller than their macOS counterparts.
+    readonly property real fontSizePixelXs: Math.round(12 * textScale)
+    readonly property real fontSizePixelSm: Math.round(14 * textScale)
+    readonly property real fontSizePixelMd: Math.round(16 * textScale)
+
     // Role tokens mapped to base scale
     readonly property real fontSizeTitle: fontSizeMd
     readonly property real fontSizeHeading: fontSizeMd
@@ -154,6 +161,11 @@ Item {
     readonly property real fontSizeCaption: fontSizeXs
     readonly property real fontSizeSmall: fontSizeXs
     readonly property real fontSizeSidebarItem: fontSizeSm
+
+    // Pixel-based versions for UI chrome (titles, navigation) that should be consistent across platforms
+    readonly property real fontSizeHeadingChrome: fontSizePixelMd
+    readonly property real fontSizeSidebarItemChrome: fontSizePixelSm
+    readonly property real fontSizeSubtitleChrome: fontSizePixelSm
 
     // === SPACING TOKENS ===
     readonly property int spacingPageInset: 8
@@ -173,7 +185,7 @@ Item {
 
     // === SIZES ===
     readonly property int buttonHeightStandard: 32
-    readonly property int buttonFontSize: fontSizeSm          // 14px
+    readonly property int buttonFontSize: fontSizePixelSm     // 14px
     readonly property int buttonLineHeight: 20
     readonly property int buttonPadding: 6
     readonly property int buttonWidthMinimum: 90

@@ -79,7 +79,7 @@ BaseDialog {
     Text {
         id: headerText
         text: qsTr("App Options")
-        font.pixelSize: Style.fontSizeLargeHeading
+        font.pixelSize: Style.fontSizeHeadingChrome
         font.family: Style.fontFamilyBold
         font.bold: true
         color: Style.formLabelColor
@@ -202,7 +202,7 @@ BaseDialog {
     Text {
         id: versionText
         text: qsTr("Version: %1").arg(imageWriter.constantVersion())
-        font.pixelSize: Style.fontSizeCaption
+        font.pixelSize: Style.fontSizePixelXs
         font.family: Style.fontFamily
         color: Style.colorTextPrimary
         Layout.fillWidth: true

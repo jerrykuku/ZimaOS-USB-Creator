@@ -21,6 +21,7 @@
 #include <QProcess>
 #include <QTemporaryDir>
 #include <QDebug>
+#include <QUrl>
 #include <QElapsedTimer>
 
 #ifdef Q_OS_WIN
@@ -70,9 +71,9 @@ DownloadExtractThread::DownloadExtractThread(const QByteArray &url, const QByteA
       _ethreadStarted(false),
       _isImage(true),
       _rawImage([&url]() {
-          const QByteArray lower = url.toLower();
-          return lower.endsWith(".iso") || lower.endsWith(".img") ||
-                 lower.endsWith(".raw") || lower.endsWith(".wic");
+          const QByteArray path = QUrl::fromEncoded(url).path().toLower().toUtf8();
+          return path.endsWith(".iso") || path.endsWith(".img") ||
+                 path.endsWith(".raw") || path.endsWith(".wic");
       }()),
       _inputHash(OSLIST_HASH_ALGORITHM), 
       _progressStarted(false),
@@ -299,12 +300,30 @@ size_t DownloadExtractThread::_writeData(const char *buf, size_t len)
     // does not expose its bytes through archive_read_data(), which otherwise
     // leaves the target empty and produces the SHA-256 of an empty stream.
     if (_rawImage) {
+#ifdef Q_OS_WIN
+        constexpr qsizetype kRawWriteAlignment = 4096;
+        _rawWritePending.append(buf, static_cast<qsizetype>(len));
+        const qsizetype alignedLength =
+            (_rawWritePending.size() / kRawWriteAlignment) * kRawWriteAlignment;
+
+        if (alignedLength > 0) {
+            const size_t written = _writeFile(_rawWritePending.constData(),
+                                              static_cast<size_t>(alignedLength));
+            if (written != static_cast<size_t>(alignedLength)) {
+                if (!_cancelled)
+                    _onWriteError();
+                return 0;
+            }
+            _rawWritePending.remove(0, alignedLength);
+        }
+#else
         const size_t written = _writeFile(buf, len);
         if (written != len) {
             if (!_cancelled)
                 _onWriteError();
             return 0;
         }
+#endif
         _emitProgressUpdate();
         return len;
     }
@@ -334,6 +353,23 @@ void DownloadExtractThread::_onDownloadSuccess()
     if (_rawImage) {
         // Direct raw-image downloads do not use the extraction thread/ring
         // buffer; finalize hashing, flushing and verification here.
+#ifdef Q_OS_WIN
+        // Normally a disk image is 4K aligned and this is empty.  Do not pad
+        // callback fragments individually: that inserts zeros into the image.
+        // If a valid image has only a smaller final sector-aligned tail, submit
+        // it once here and let the device report whether that sector size is
+        // supported.
+        if (!_rawWritePending.isEmpty()) {
+            const size_t pendingLength = static_cast<size_t>(_rawWritePending.size());
+            if (_writeFile(_rawWritePending.constData(), pendingLength) != pendingLength) {
+                if (!_cancelled)
+                    _onWriteError();
+                _rawWritePending.clear();
+                return;
+            }
+            _rawWritePending.clear();
+        }
+#endif
         _writeComplete();
         return;
     }

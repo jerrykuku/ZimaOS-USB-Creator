@@ -61,6 +61,10 @@ protected:
     RingBuffer::Slot* _currentWriteSlot;  // Current slot being written
     
     bool _ethreadStarted, _isImage, _rawImage;
+    // Windows raw-disk WriteFile calls must be sector aligned.  Network
+    // callbacks have arbitrary boundaries, so retain the incomplete tail and
+    // prepend it to the next callback instead of padding between callbacks.
+    QByteArray _rawWritePending;
     AcceleratedCryptographicHash _inputHash;
     bool _progressStarted;
     qint64 _lastProgressTime;

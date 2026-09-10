@@ -10,6 +10,7 @@
 #include <sstream>
 #include <chrono>
 #include <algorithm>
+#include <cstring>
 
 using rpi_imager::TimeoutDefaults::kSyncWriteTimeoutSeconds;
 using rpi_imager::TimeoutDefaults::kMinAsyncQueueDepth;
@@ -266,10 +267,17 @@ FileError WindowsFileOperations::OpenDevice(const std::string& path) {
   // Check if this is a physical drive
   bool isPhysicalDrive = IsPhysicalDrivePath(path);
   Log("Path '" + path + "' isPhysicalDrive=" + (isPhysicalDrive ? "YES" : "NO"));
-  
+
+  // TEMPORARY FIX: Disable direct I/O for all physical drives to avoid
+  // ERROR_INVALID_PARAMETER on 4K sector devices. The app currently uses
+  // 512-byte aligned writes which fail on Advanced Format drives.
+  // TODO: Implement proper sector alignment handling like macOS does.
+  bool skipDirectIO = isPhysicalDrive;
   if (isPhysicalDrive) {
-    Log("Detected physical drive, will attempt direct I/O");
-    direct_io_info_.attempted = true;
+    Log("Detected physical drive, disabling direct I/O to ensure compatibility with 4K sector devices");
+    direct_io_info_.attempted = false;
+    direct_io_info_.succeeded = false;
+    direct_io_info_.error_message = "Disabled: Using buffered I/O for compatibility with 4K sector devices";
   }
   
   // Use direct I/O flags for physical drives to bypass OS page cache
@@ -279,17 +287,31 @@ FileError WindowsFileOperations::OpenDevice(const std::string& path) {
   // 3. Reduced memory pressure on the system
   // Note: Requires sector-aligned buffers (already done via qMallocAligned with 4096 alignment)
   //
-  // FILE_FLAG_OVERLAPPED is always included to enable async I/O via IOCP
+  // Keep the compatibility path synchronous as well.  ERROR_INVALID_PARAMETER
+  // was primarily caused by FILE_FLAG_NO_BUFFERING transfers whose final length
+  // was only 512-byte aligned on devices requiring 4096-byte alignment; removing
+  // OVERLAPPED at the same time gives this fallback one unambiguous I/O model.
   // One open attempt at a given share mode: try direct I/O first (physical
   // drives), fall back to buffered I/O if the direct-I/O flags are rejected.
   // Returns the final FileError for this share mode.
   auto tryOpenAtShareMode = [&](DWORD shareMode) -> FileError {
-    DWORD flags = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
+    DWORD flags = FILE_ATTRIBUTE_NORMAL;
+    if (!isPhysicalDrive) {
+      // Use OVERLAPPED only for non-physical drives (regular files)
+      flags |= FILE_FLAG_OVERLAPPED;
+    } else {
+      // For physical drives, use synchronous I/O to avoid ERROR_INVALID_PARAMETER
+      flags |= FILE_FLAG_SEQUENTIAL_SCAN;
+      Log("Using synchronous I/O for physical drive (maximum compatibility)");
+    }
+
     bool attemptingDirectIO = false;
-    if (isPhysicalDrive) {
-      flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED;
+    if (isPhysicalDrive && !skipDirectIO) {
+      flags |= FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
       attemptingDirectIO = true;
-      Log("Using direct I/O (FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_FLAG_OVERLAPPED) for physical drive");
+      Log("Attempting direct I/O (FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH) for physical drive");
+    } else if (isPhysicalDrive && skipDirectIO) {
+      Log("Skipping direct I/O, using buffered synchronous I/O");
     }
 
     FileError r = OpenInternal(path,
@@ -338,9 +360,9 @@ FileError WindowsFileOperations::OpenDevice(const std::string& path) {
                          shareMode);
       }
     } else if (isPhysicalDrive) {
-      // Direct I/O succeeded!
-      using_direct_io_ = true;  // Set AFTER OpenInternal (which calls Close() and resets it)
-      direct_io_info_.succeeded = true;
+      // Set AFTER OpenInternal (which calls Close() and resets the state).
+      using_direct_io_ = attemptingDirectIO;
+      direct_io_info_.succeeded = attemptingDirectIO;
     }
     return r;
   };
@@ -471,7 +493,7 @@ FileError WindowsFileOperations::WriteAtOffset(
     std::uint64_t offset,
     const std::uint8_t* data,
     std::size_t size) {
-  
+
   if (!IsOpen()) {
     Log("WriteAtOffset: Device not open");
     return FileError::kOpenError;
@@ -482,114 +504,175 @@ FileError WindowsFileOperations::WriteAtOffset(
     return FileError::kCancelled;
   }
 
-  // With FILE_FLAG_OVERLAPPED, we MUST use an OVERLAPPED structure
-  // and specify the offset there, not via SetFilePointerEx
-  
+  // Query physical sector size for alignment (especially important for 4K sector devices)
+  // Even without FILE_FLAG_NO_BUFFERING, some device drivers require aligned I/O
+  DWORD sectorSize = 512; // Default
+  bool isPhysicalDrive = IsPhysicalDrivePath(current_path_);
+
+  if (isPhysicalDrive) {
+    STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR alignmentDesc = {};
+    STORAGE_PROPERTY_QUERY query = {};
+    query.PropertyId = StorageAccessAlignmentProperty;
+    query.QueryType = PropertyStandardQuery;
+    DWORD bytesReturned = 0;
+
+    if (DeviceIoControl(handle_, IOCTL_STORAGE_QUERY_PROPERTY,
+                        &query, sizeof(query),
+                        &alignmentDesc, sizeof(alignmentDesc),
+                        &bytesReturned, nullptr)) {
+      if (alignmentDesc.BytesPerPhysicalSector > 512) {
+        sectorSize = alignmentDesc.BytesPerPhysicalSector;
+        std::ostringstream oss;
+        oss << "WriteAtOffset: Using " << sectorSize << " byte sector alignment";
+        Log(oss.str());
+      }
+    }
+
+    // Check if offset and size are properly aligned
+    if (offset % sectorSize != 0 || size % sectorSize != 0) {
+      std::ostringstream oss;
+      oss << "WriteAtOffset: WARNING - Unaligned write: offset=" << offset
+          << " size=" << size << " sectorSize=" << sectorSize;
+      Log(oss.str());
+      // For now, let it proceed - WriteSequential handles this better
+    }
+  }
+
   // Write data in chunks with retry logic
   std::size_t bytes_written = 0;
   int retry_count = 0;
   const int max_retries = 3;
-  
+
   while (bytes_written < size) {
     // Check for cancellation in the loop
     if (cancelled_.load()) {
       return FileError::kCancelled;
     }
-    
-    OVERLAPPED overlapped = {};
-    
-    // Create a manual-reset event for this write operation
-    overlapped.hEvent = CreateEventA(nullptr, TRUE, FALSE, nullptr);
-    if (overlapped.hEvent == nullptr) {
-      last_error_code_ = GetLastError();
-      Log("WriteAtOffset: Failed to create event");
-      return FileError::kWriteError;
-    }
-    
-    // Set the file offset in the OVERLAPPED structure
-    LARGE_INTEGER write_offset;
-    write_offset.QuadPart = static_cast<LONGLONG>(offset + bytes_written);
-    overlapped.Offset = write_offset.LowPart;
-    overlapped.OffsetHigh = write_offset.HighPart;
-    
-    DWORD chunk_size = static_cast<DWORD>(std::min(size - bytes_written, 
+
+    DWORD chunk_size = static_cast<DWORD>(std::min(size - bytes_written,
                                                    static_cast<std::size_t>(MAXDWORD)));
     DWORD written = 0;
-    
-    BOOL result = WriteFile(handle_, data + bytes_written, chunk_size, &written, &overlapped);
-    
-    if (!result) {
-      DWORD error = GetLastError();
-      
-      if (error == ERROR_IO_PENDING) {
-        // I/O is pending - wait for completion with cancellation support
-        if (!WaitForOverlappedWithCancel(&overlapped, &written)) {
-          error = GetLastError();
-          CloseHandle(overlapped.hEvent);
-          
-          // Check if cancelled
-          if (cancelled_.load() || error == ERROR_OPERATION_ABORTED) {
-            return FileError::kCancelled;
-          }
-          
-          std::ostringstream oss;
-          oss << "WriteAtOffset: GetOverlappedResult failed, offset=" << (offset + bytes_written)
-              << ", chunk_size=" << chunk_size << ", error=" << error;
-          Log(oss.str());
-          
-          // Handle specific Windows errors
-          if (error == ERROR_ACCESS_DENIED || error == ERROR_DISK_FULL ||
-              error == ERROR_WRITE_PROTECT || error == ERROR_SECTOR_NOT_FOUND || 
-              error == ERROR_CRC) {
+    BOOL result;
+
+    if (isPhysicalDrive) {
+      // Synchronous I/O for physical drives
+      LARGE_INTEGER write_offset;
+      write_offset.QuadPart = static_cast<LONGLONG>(offset + bytes_written);
+
+      // Set file pointer for synchronous write
+      if (!SetFilePointerEx(handle_, write_offset, nullptr, FILE_BEGIN)) {
+        last_error_code_ = GetLastError();
+        std::ostringstream oss;
+        oss << "WriteAtOffset: SetFilePointerEx failed, offset=" << (offset + bytes_written)
+            << ", error=" << last_error_code_;
+        Log(oss.str());
+        return FileError::kWriteError;
+      }
+
+      // Write without OVERLAPPED structure
+      result = WriteFile(handle_, data + bytes_written, chunk_size, &written, nullptr);
+
+      if (!result) {
+        last_error_code_ = GetLastError();
+        std::ostringstream oss;
+        oss << "WriteAtOffset: WriteFile (sync) failed, offset=" << (offset + bytes_written)
+            << ", chunk_size=" << chunk_size << ", error=" << last_error_code_;
+        Log(oss.str());
+        return FileError::kWriteError;
+      }
+    } else {
+      // Asynchronous I/O for regular files
+      OVERLAPPED overlapped = {};
+
+      // Create a manual-reset event for this write operation
+      overlapped.hEvent = CreateEventA(nullptr, TRUE, FALSE, nullptr);
+      if (overlapped.hEvent == nullptr) {
+        last_error_code_ = GetLastError();
+        Log("WriteAtOffset: Failed to create event");
+        return FileError::kWriteError;
+      }
+
+      // Set the file offset in the OVERLAPPED structure
+      LARGE_INTEGER write_offset;
+      write_offset.QuadPart = static_cast<LONGLONG>(offset + bytes_written);
+      overlapped.Offset = write_offset.LowPart;
+      overlapped.OffsetHigh = write_offset.HighPart;
+
+      result = WriteFile(handle_, data + bytes_written, chunk_size, &written, &overlapped);
+
+      if (!result) {
+        DWORD error = GetLastError();
+
+        if (error == ERROR_IO_PENDING) {
+          // I/O is pending - wait for completion with cancellation support
+          if (!WaitForOverlappedWithCancel(&overlapped, &written)) {
+            error = GetLastError();
+            CloseHandle(overlapped.hEvent);
+
+            // Check if cancelled
+            if (cancelled_.load() || error == ERROR_OPERATION_ABORTED) {
+              return FileError::kCancelled;
+            }
+
+            std::ostringstream oss;
+            oss << "WriteAtOffset: GetOverlappedResult failed, offset=" << (offset + bytes_written)
+                << ", chunk_size=" << chunk_size << ", error=" << error;
+            Log(oss.str());
+
+            // Handle specific Windows errors
+            if (error == ERROR_ACCESS_DENIED || error == ERROR_DISK_FULL ||
+                error == ERROR_WRITE_PROTECT || error == ERROR_SECTOR_NOT_FOUND ||
+                error == ERROR_CRC) {
+              return FileError::kWriteError;
+            }
+
+            // For other errors, try to retry
+            if (retry_count < max_retries) {
+              retry_count++;
+              Sleep(100 * retry_count);
+              continue;
+            }
             return FileError::kWriteError;
           }
-          
+        } else {
+          // Real error (not pending)
+          std::ostringstream oss;
+          oss << "WriteAtOffset: WriteFile failed, offset=" << (offset + bytes_written)
+              << ", chunk_size=" << chunk_size << ", error=" << error;
+          Log(oss.str());
+          CloseHandle(overlapped.hEvent);
+
+          // Handle specific Windows errors
+          if (error == ERROR_ACCESS_DENIED) {
+            Log("WriteAtOffset: Access denied - volume may be locked or protected");
+            return FileError::kWriteError;
+          } else if (error == ERROR_DISK_FULL) {
+            Log("WriteAtOffset: Disk full");
+            return FileError::kWriteError;
+          } else if (error == ERROR_WRITE_PROTECT) {
+            Log("WriteAtOffset: Write protected");
+            return FileError::kWriteError;
+          } else if (error == ERROR_SECTOR_NOT_FOUND || error == ERROR_CRC) {
+            Log("WriteAtOffset: Media error detected");
+            return FileError::kWriteError;
+          }
+
           // For other errors, try to retry
           if (retry_count < max_retries) {
             retry_count++;
+            std::ostringstream oss2;
+            oss2 << "WriteAtOffset: Retrying write operation, attempt " << retry_count;
+            Log(oss2.str());
             Sleep(100 * retry_count);
             continue;
           }
+
           return FileError::kWriteError;
         }
-      } else {
-        // Real error (not pending)
-        std::ostringstream oss;
-        oss << "WriteAtOffset: WriteFile failed, offset=" << (offset + bytes_written)
-            << ", chunk_size=" << chunk_size << ", error=" << error;
-        Log(oss.str());
-        CloseHandle(overlapped.hEvent);
-        
-        // Handle specific Windows errors
-        if (error == ERROR_ACCESS_DENIED) {
-          Log("WriteAtOffset: Access denied - volume may be locked or protected");
-          return FileError::kWriteError;
-        } else if (error == ERROR_DISK_FULL) {
-          Log("WriteAtOffset: Disk full");
-          return FileError::kWriteError;
-        } else if (error == ERROR_WRITE_PROTECT) {
-          Log("WriteAtOffset: Write protected");
-          return FileError::kWriteError;
-        } else if (error == ERROR_SECTOR_NOT_FOUND || error == ERROR_CRC) {
-          Log("WriteAtOffset: Media error detected");
-          return FileError::kWriteError;
-        }
-        
-        // For other errors, try to retry
-        if (retry_count < max_retries) {
-          retry_count++;
-          std::ostringstream oss2;
-          oss2 << "WriteAtOffset: Retrying write operation, attempt " << retry_count;
-          Log(oss2.str());
-          Sleep(100 * retry_count);
-          continue;
-        }
-        
-        return FileError::kWriteError;
       }
+
+      CloseHandle(overlapped.hEvent);
     }
-    
-    CloseHandle(overlapped.hEvent);
     
     if (written == 0) {
       Log("WriteAtOffset: WriteFile returned 0 bytes written");
@@ -719,18 +802,34 @@ FileError WindowsFileOperations::SetDirectIOEnabled(bool enabled) {
   
   std::string savedPath = current_path_;
   bool isPhysicalDrive = IsPhysicalDrivePath(savedPath);
+
+  // Physical-drive writes are intentionally buffered for now.  The image
+  // pipeline can end with a 512-byte block while Advanced Format devices may
+  // require 4096-byte lengths for FILE_FLAG_NO_BUFFERING.  Re-enabling the flag
+  // here would undo OpenDevice's compatibility mode and produce error 87.
+  if (enabled && isPhysicalDrive) {
+    using_direct_io_ = false;
+    Log("Direct I/O request ignored for physical drive: unbuffered alignment is not guaranteed");
+    return FileError::kSuccess;
+  }
   
   // Close the current handle
   CloseHandle(handle_);
   handle_ = INVALID_HANDLE_VALUE;
   
   // Determine flags based on desired state
-  // Always include FILE_FLAG_OVERLAPPED for async I/O support
-  DWORD flags = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
+  DWORD flags = FILE_ATTRIBUTE_NORMAL;
+
+  if (!isPhysicalDrive) {
+    // Regular files use OVERLAPPED for async I/O
+    flags |= FILE_FLAG_OVERLAPPED;
+  } else {
+    // Physical drives use synchronous I/O (no OVERLAPPED)
+    flags |= FILE_FLAG_SEQUENTIAL_SCAN;
+  }
+
   if (enabled && isPhysicalDrive) {
-    flags = FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED;
-  } else if (isPhysicalDrive) {
-    flags = FILE_FLAG_WRITE_THROUGH | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED;
+    flags |= FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
   }
   
   // Preserve the share mode the device was originally opened with (physical
@@ -738,7 +837,15 @@ FileError WindowsFileOperations::SetDirectIOEnabled(bool enabled) {
   DWORD shareMode = current_share_mode_;
   FileError result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING, flags, shareMode);
   if (result != FileError::kSuccess) {
-    result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, shareMode);
+    // Fallback: try without direct I/O flags
+    DWORD fallbackFlags = FILE_ATTRIBUTE_NORMAL;
+    if (!isPhysicalDrive) {
+      fallbackFlags |= FILE_FLAG_OVERLAPPED;
+    } else {
+      fallbackFlags |= FILE_FLAG_SEQUENTIAL_SCAN;
+    }
+
+    result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING, fallbackFlags, shareMode);
     using_direct_io_ = false;
     if (result != FileError::kSuccess &&
         shareMode != (FILE_SHARE_READ | FILE_SHARE_WRITE)) {
@@ -747,7 +854,7 @@ FileError WindowsFileOperations::SetDirectIOEnabled(bool enabled) {
       // was already in flight. OpenDevice() degrades to a shared open in the same
       // situation; do the same here rather than lose the write.
       result = OpenInternal(savedPath, GENERIC_READ | GENERIC_WRITE, OPEN_EXISTING,
-                            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+                            fallbackFlags,
                             FILE_SHARE_READ | FILE_SHARE_WRITE);
       if (result == FileError::kSuccess) {
         Log("Exclusive reopen failed; continuing with a shared handle");
@@ -849,74 +956,116 @@ FileError WindowsFileOperations::OpenInternal(const std::string& path, DWORD acc
 // Streaming I/O operations
 FileError WindowsFileOperations::WriteSequential(const std::uint8_t* data, std::size_t size) {
   if (!IsOpen()) {
+    Log("WriteSequential: Device not open");
     return FileError::kOpenError;
   }
+
+  // Log write parameters for debugging
+  std::ostringstream debugOss;
+  debugOss << "WriteSequential: size=" << size
+           << ", position=" << current_file_position_
+           << ", direct_io=" << (using_direct_io_ ? "YES" : "NO")
+           << ", handle_valid=" << (handle_ != INVALID_HANDLE_VALUE ? "YES" : "NO");
+  Log(debugOss.str());
 
   // Check for cancellation before starting
   if (cancelled_.load()) {
     return FileError::kCancelled;
   }
 
-  // With FILE_FLAG_OVERLAPPED, we MUST use an OVERLAPPED structure
-  // even for synchronous-style writes. We use a manual-reset event
-  // and wait on it to achieve synchronous behavior.
-  
+  // With synchronous I/O (no OVERLAPPED), no alignment is required
+  // The OS handles sector alignment automatically with buffered I/O
+  return WriteSequentialInternal(data, size);
+}
+
+FileError WindowsFileOperations::WriteSequentialInternal(const std::uint8_t* data, std::size_t size) {
+
   DWORD total_written = 0;
-  
+
+  // Check if we're using OVERLAPPED I/O or synchronous I/O
+  bool isPhysicalDrive = IsPhysicalDrivePath(current_path_);
+  bool useSyncIO = isPhysicalDrive;  // Physical drives use synchronous I/O to avoid ERROR_INVALID_PARAMETER
+
   while (total_written < size) {
     // Check for cancellation
     if (cancelled_.load()) {
       return FileError::kCancelled;
     }
-    
-    OVERLAPPED overlapped = {};
-    
-    // Create a manual-reset event for this write operation
-    overlapped.hEvent = CreateEventA(nullptr, TRUE, FALSE, nullptr);
-    if (overlapped.hEvent == nullptr) {
-      last_error_code_ = GetLastError();
-      return FileError::kWriteError;
-    }
-    
-    // Set the file offset in the OVERLAPPED structure
-    LARGE_INTEGER offset;
-    offset.QuadPart = static_cast<LONGLONG>(current_file_position_ + total_written);
-    overlapped.Offset = offset.LowPart;
-    overlapped.OffsetHigh = offset.HighPart;
-    
+
     DWORD bytes_written = 0;
-    BOOL result = WriteFile(handle_, 
-                           data + total_written, 
-                           static_cast<DWORD>(size - total_written), 
-                           &bytes_written, 
-                           &overlapped);
-    
-    if (!result) {
-      DWORD error = GetLastError();
-      if (error == ERROR_IO_PENDING) {
-        // I/O is pending - wait for completion with cancellation support
-        if (!WaitForOverlappedWithCancel(&overlapped, &bytes_written)) {
-          CloseHandle(overlapped.hEvent);
-          if (cancelled_.load()) {
-            return FileError::kCancelled;
-          }
-          return FileError::kWriteError;
-        }
-      } else {
-        // Real error
-        last_error_code_ = error;
-        CloseHandle(overlapped.hEvent);
+    BOOL result;
+
+    if (useSyncIO) {
+      // Synchronous I/O without OVERLAPPED structure
+      result = WriteFile(handle_,
+                        data + total_written,
+                        static_cast<DWORD>(size - total_written),
+                        &bytes_written,
+                        nullptr);  // No OVERLAPPED for synchronous I/O
+
+      if (!result) {
+        last_error_code_ = GetLastError();
+        std::ostringstream oss;
+        oss << "WriteFile failed with error " << last_error_code_;
+        Log(oss.str());
         return FileError::kWriteError;
       }
+    } else {
+      // Asynchronous I/O with OVERLAPPED structure
+      OVERLAPPED overlapped = {};
+
+      // Create a manual-reset event for this write operation
+      overlapped.hEvent = CreateEventA(nullptr, TRUE, FALSE, nullptr);
+      if (overlapped.hEvent == nullptr) {
+        last_error_code_ = GetLastError();
+        return FileError::kWriteError;
+      }
+
+      // Set the file offset in the OVERLAPPED structure
+      LARGE_INTEGER offset;
+      offset.QuadPart = static_cast<LONGLONG>(current_file_position_ + total_written);
+      overlapped.Offset = offset.LowPart;
+      overlapped.OffsetHigh = offset.HighPart;
+
+      result = WriteFile(handle_,
+                        data + total_written,
+                        static_cast<DWORD>(size - total_written),
+                        &bytes_written,
+                        &overlapped);
+
+      if (!result) {
+        DWORD error = GetLastError();
+        if (error == ERROR_IO_PENDING) {
+          // I/O is pending - wait for completion with cancellation support
+          if (!WaitForOverlappedWithCancel(&overlapped, &bytes_written)) {
+            CloseHandle(overlapped.hEvent);
+            if (cancelled_.load()) {
+              return FileError::kCancelled;
+            }
+            return FileError::kWriteError;
+          }
+        } else {
+          // Real error
+          last_error_code_ = error;
+          CloseHandle(overlapped.hEvent);
+          return FileError::kWriteError;
+        }
+      }
+
+      CloseHandle(overlapped.hEvent);
     }
-    
-    CloseHandle(overlapped.hEvent);
+
     total_written += bytes_written;
+    if (bytes_written == 0) {
+      last_error_code_ = ERROR_WRITE_FAULT;
+      Log("WriteSequential: WriteFile completed without writing data");
+      return FileError::kWriteError;
+    }
   }
 
   // Update our tracked file position
   current_file_position_ += total_written;
-  
+
   // Update async_write_offset_ so Tell() returns correct position
   // This is needed because Seek() sets async_write_offset_, and Tell()
   // uses it if > 0. Without this update, Tell() would return a stale value.
@@ -937,55 +1086,69 @@ FileError WindowsFileOperations::ReadSequential(std::uint8_t* data, std::size_t 
     return FileError::kCancelled;
   }
 
-  // With FILE_FLAG_OVERLAPPED, we MUST use an OVERLAPPED structure
-  // even for synchronous-style reads. We use a manual-reset event
-  // and wait on it to achieve synchronous behavior.
-  
-  OVERLAPPED overlapped = {};
-  
-  // Create a manual-reset event for this read operation
-  overlapped.hEvent = CreateEventA(nullptr, TRUE, FALSE, nullptr);
-  if (overlapped.hEvent == nullptr) {
-    last_error_code_ = GetLastError();
-    bytes_read = 0;
-    return FileError::kReadError;
-  }
-  
-  // Set the file offset in the OVERLAPPED structure
-  LARGE_INTEGER offset;
-  offset.QuadPart = static_cast<LONGLONG>(current_file_position_);
-  overlapped.Offset = offset.LowPart;
-  overlapped.OffsetHigh = offset.HighPart;
-  
+  // Check if we're using OVERLAPPED I/O or synchronous I/O
+  bool isPhysicalDrive = IsPhysicalDrivePath(current_path_);
+  bool useSyncIO = isPhysicalDrive;  // Physical drives use synchronous I/O
+
   DWORD win_bytes_read = 0;
-  BOOL result = ReadFile(handle_, data, static_cast<DWORD>(size), &win_bytes_read, &overlapped);
-  
-  if (!result) {
-    DWORD error = GetLastError();
-    if (error == ERROR_IO_PENDING) {
-      // I/O is pending - wait for completion with cancellation support
-      if (!WaitForOverlappedWithCancel(&overlapped, &win_bytes_read)) {
-        CloseHandle(overlapped.hEvent);
-        bytes_read = 0;
-        if (cancelled_.load()) {
-          return FileError::kCancelled;
-        }
-        return FileError::kReadError;
-      }
-    } else {
-      // Real error
-      last_error_code_ = error;
-      CloseHandle(overlapped.hEvent);
+  BOOL result;
+
+  if (useSyncIO) {
+    // Synchronous I/O without OVERLAPPED structure
+    result = ReadFile(handle_, data, static_cast<DWORD>(size), &win_bytes_read, nullptr);
+
+    if (!result) {
+      last_error_code_ = GetLastError();
       bytes_read = 0;
       return FileError::kReadError;
     }
+  } else {
+    // Asynchronous I/O with OVERLAPPED structure
+    OVERLAPPED overlapped = {};
+
+    // Create a manual-reset event for this read operation
+    overlapped.hEvent = CreateEventA(nullptr, TRUE, FALSE, nullptr);
+    if (overlapped.hEvent == nullptr) {
+      last_error_code_ = GetLastError();
+      bytes_read = 0;
+      return FileError::kReadError;
+    }
+
+    // Set the file offset in the OVERLAPPED structure
+    LARGE_INTEGER offset;
+    offset.QuadPart = static_cast<LONGLONG>(current_file_position_);
+    overlapped.Offset = offset.LowPart;
+    overlapped.OffsetHigh = offset.HighPart;
+
+    result = ReadFile(handle_, data, static_cast<DWORD>(size), &win_bytes_read, &overlapped);
+
+    if (!result) {
+      DWORD error = GetLastError();
+      if (error == ERROR_IO_PENDING) {
+        // I/O is pending - wait for completion with cancellation support
+        if (!WaitForOverlappedWithCancel(&overlapped, &win_bytes_read)) {
+          CloseHandle(overlapped.hEvent);
+          bytes_read = 0;
+          if (cancelled_.load()) {
+            return FileError::kCancelled;
+          }
+          return FileError::kReadError;
+        }
+      } else {
+        // Real error
+        last_error_code_ = error;
+        CloseHandle(overlapped.hEvent);
+        bytes_read = 0;
+        return FileError::kReadError;
+      }
+    }
+
+    CloseHandle(overlapped.hEvent);
   }
-  
-  CloseHandle(overlapped.hEvent);
-  
+
   // Update our tracked file position
   current_file_position_ += win_bytes_read;
-  
+
   bytes_read = static_cast<std::size_t>(win_bytes_read);
   return FileError::kSuccess;
 }
@@ -996,7 +1159,22 @@ FileError WindowsFileOperations::Seek(std::uint64_t position) {
   }
 
   // Wait for pending async writes before seeking
-  WaitForPendingWrites();
+  FileError waitResult = WaitForPendingWrites();
+  if (waitResult != FileError::kSuccess) {
+    return waitResult;
+  }
+
+  // A synchronous physical-drive handle uses the kernel file pointer for
+  // ReadFile/WriteFile.  Updating only the software offsets leaves the real
+  // pointer at EOF and makes verification read from the wrong location.
+  if (IsPhysicalDrivePath(current_path_)) {
+    LARGE_INTEGER target;
+    target.QuadPart = static_cast<LONGLONG>(position);
+    if (!SetFilePointerEx(handle_, target, nullptr, FILE_BEGIN)) {
+      last_error_code_ = GetLastError();
+      return FileError::kSeekError;
+    }
+  }
 
   // With FILE_FLAG_OVERLAPPED, file position is specified in OVERLAPPED struct,
   // not via SetFilePointerEx. We just track the position ourselves.
@@ -1148,6 +1326,12 @@ int WindowsFileOperations::GetLastErrorCode() const {
 }
 
 WriteErrorClass WindowsFileOperations::ClassifyLastWriteError() const {
+  // Log the actual error code for debugging
+  std::ostringstream oss;
+  oss << "ClassifyLastWriteError called with error code: " << last_error_code_
+      << " (0x" << std::hex << last_error_code_ << std::dec << ")";
+  Log(oss.str());
+
   switch (last_error_code_) {
     case ERROR_ACCESS_DENIED: {
       // Probe Windows Defender Controlled Folder Access. If enabled, surface
@@ -1190,8 +1374,22 @@ WriteErrorClass WindowsFileOperations::ClassifyLastWriteError() const {
 
 // ============= Async I/O Implementation (using IOCP) =============
 
+bool WindowsFileOperations::IsAsyncIOSupported() const {
+  // Physical drives are deliberately opened without FILE_FLAG_OVERLAPPED for
+  // compatibility with removable media and 4K-sector devices. Supplying an
+  // OVERLAPPED structure to such a synchronous handle does not provide safe
+  // positional concurrent I/O, so it can corrupt sequential image writes.
+  return !IsPhysicalDrivePath(current_path_);
+}
+
 bool WindowsFileOperations::SetAsyncQueueDepth(int depth) {
   if (depth < 1) depth = 1;
+
+  if (!IsAsyncIOSupported()) {
+    async_queue_depth_ = 1;
+    Log("Async I/O disabled for synchronous physical-drive handle");
+    return false;
+  }
   
   async_queue_depth_ = depth;
   
@@ -1298,6 +1496,10 @@ FileError WindowsFileOperations::AsyncWriteSequential(const std::uint8_t* data, 
         pending_contexts_.erase(&ctx->overlapped);
       }
       delete ctx;
+      async_write_offset_ -= size;
+      if (first_async_error_ == FileError::kSuccess) {
+        first_async_error_ = FileError::kWriteError;
+      }
       
       std::ostringstream oss;
       oss << "Async WriteFile failed, error: " << error;

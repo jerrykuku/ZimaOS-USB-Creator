@@ -10,6 +10,7 @@ import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Controls.Material
+import QtQuick.Effects
 import "qmlcomponents"
 import "wizard"
 import "wizard/dialogs"
@@ -30,10 +31,21 @@ ApplicationWindow {
     Rectangle {
         id: windowSurface
         anchors.fill: parent
+        anchors.margins: Qt.platform.os === "windows" ? 8 : 0
         color: Style.colorSurfacePage
         radius: Style.radiusPanel
         clip: true
         z: 0
+
+        // Add drop shadow on Windows only (macOS has native window shadow)
+        layer.enabled: Qt.platform.os === "windows"
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.15)
+            shadowBlur: 0.5
+            shadowVerticalOffset: 4
+            shadowHorizontalOffset: 0
+        }
     }
 
     // Whether to show the landing Language Selection step (set from C++)
@@ -89,29 +101,46 @@ ApplicationWindow {
         Row {
             anchors.left: window.isWindowsTitleBar ? undefined : parent.left
             anchors.right: window.isWindowsTitleBar ? parent.right : undefined
+            anchors.top: parent.top
             anchors.leftMargin: window.isWindowsTitleBar ? 0 : Style.spacingCardInset
-            anchors.rightMargin: window.isWindowsTitleBar ? Style.spacingCardInset : 0
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacingContentInset
+            // Windows caption controls sit flush with the right edge. The
+            // title bar's rounded clipping keeps the window's top-right
+            // corner rounded while allowing the close button to reach it.
+            anchors.rightMargin: 0
+            anchors.topMargin: (parent.height - height) / 2
+            spacing: window.isWindowsTitleBar ? 0 : Style.spacingContentInset
 
             Repeater {
                 // macOS: close/minimize/maximize on the left. Windows:
                 // minimize/maximize/close on the right.
-                model: window.isWindowsTitleBar
-                       ? [Style.colorChromeMinimize, Style.colorChromeMaximize, Style.colorChromeClose]
-                       : [Style.colorChromeClose, Style.colorChromeMinimize, Style.colorChromeMaximize]
+                model: window.isWindowsTitleBar ? [1, 2, 0] : [0, 1, 2]
                 delegate: Rectangle {
-                    required property string modelData
+                    required property int modelData
                     required property int index
-                    width: Style.titleBarControlSize
-                    height: Style.titleBarControlSize
-                    radius: Style.titleBarControlSize / 2
-                    color: modelData
-                    border.color: Qt.darker(modelData, 1.08)
-                    border.width: Style.borderWidthDefault
+                    readonly property int actionIndex: modelData
+                    readonly property bool windowsStyle: window.isWindowsTitleBar
+                    width: windowsStyle ? 40 : Style.titleBarControlSize
+                    height: windowsStyle ? 32 : Style.titleBarControlSize
+                    radius: windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    // The close button reaches the window edge, so preserve
+                    // the title bar's rounded top-right corner on that item.
+                    topLeftRadius: windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    topRightRadius: windowsStyle && actionIndex === 0
+                                    ? Style.radiusPanel : (windowsStyle ? 0 : Style.titleBarControlSize / 2)
+                    bottomLeftRadius: windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    bottomRightRadius: windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    color: windowsStyle
+                           ? (hovered
+                              ? (actionIndex === 0 ? "#C42B1C" : "#E5E5E5")
+                              : Style.transparent)
+                           : [Style.colorChromeClose, Style.colorChromeMinimize, Style.colorChromeMaximize][actionIndex]
+                    border.width: windowsStyle ? 0 : Style.borderWidthDefault
+                    border.color: windowsStyle
+                                  ? Style.transparent
+                                  : Qt.darker(color, 1.08)
 
                     property bool hovered: false
-                    readonly property int actionIndex: window.isWindowsTitleBar ? (index === 2 ? 0 : index + 1) : index
+                    onHoveredChanged: glyphCanvas.requestPaint()
 
                     MouseArea {
                         anchors.fill: parent
@@ -129,18 +158,37 @@ ApplicationWindow {
                     }
 
                     Canvas {
+                        id: glyphCanvas
                         anchors.fill: parent
-                        visible: parent.hovered
+                        visible: parent.windowsStyle || parent.hovered
                         antialiasing: true
                         onPaint: {
                             var context = getContext("2d")
-                            var center = width / 2
                             context.reset()
-                            context.strokeStyle = Style.colorTextChrome
-                            context.lineWidth = 1.15
+                            context.strokeStyle = parent.windowsStyle && parent.hovered && parent.actionIndex === 0
+                                                  ? "#FFFFFF" : Style.colorTextChrome
+                            context.lineWidth = parent.windowsStyle ? 1.2 : 1.15
                             context.lineCap = "round"
                             context.beginPath()
-                            if (parent.actionIndex === 0) {
+                            if (parent.windowsStyle) {
+                                // Windows caption glyphs: minimize, maximize, close.
+                                var glyphSize = 9
+                                var glyphLeft = (width - glyphSize) / 2
+                                var glyphRight = glyphLeft + glyphSize
+                                var glyphTop = (height - glyphSize) / 2
+                                var glyphBottom = glyphTop + glyphSize
+                                if (parent.actionIndex === 1) {
+                                    context.moveTo(glyphLeft, height / 2 + 3)
+                                    context.lineTo(glyphRight, height / 2 + 3)
+                                } else if (parent.actionIndex === 2) {
+                                    context.rect(glyphLeft + 0.5, glyphTop + 0.5, glyphSize - 1, glyphSize - 1)
+                                } else {
+                                    context.moveTo(glyphLeft, glyphTop)
+                                    context.lineTo(glyphRight, glyphBottom)
+                                    context.moveTo(glyphRight, glyphTop)
+                                    context.lineTo(glyphLeft, glyphBottom)
+                                }
+                            } else if (parent.actionIndex === 0) {
                                 // Close: compact cross centered on the button geometry.
                                 var closeMin = 3.8
                                 var closeMax = width - closeMin
@@ -151,6 +199,7 @@ ApplicationWindow {
                                 context.lineTo(closeMin, closeCenter + 2.2)
                             } else if (parent.actionIndex === 1) {
                                 // Minimize: centered horizontal stroke.
+                                var center = width / 2
                                 context.moveTo(3.0, center + 0.5)
                                 context.lineTo(width - 3.0, center + 0.5)
                             } else {
@@ -175,7 +224,7 @@ ApplicationWindow {
             text: window.title
             color: Style.colorTextChromeMuted
             font.family: Style.fontFamilyBold
-            font.pixelSize: Style.fontSizeSm
+            font.pixelSize: Style.fontSizePixelSm
             font.bold: true
             elide: Text.ElideRight
             width: parent.width - 180
@@ -202,6 +251,7 @@ ApplicationWindow {
     // Global overlay to parent/center dialogs across the whole window
     Item {
         id: overlayRoot
+        parent: windowSurface
         anchors.fill: parent
         z: 1000
     }

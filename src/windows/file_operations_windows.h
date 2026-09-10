@@ -80,7 +80,7 @@ class WindowsFileOperations : public FileOperations {
   // ============= Async I/O API (Windows: using IOCP) =============
   bool SetAsyncQueueDepth(int depth) override;
   int GetAsyncQueueDepth() const override { return async_queue_depth_; }
-  bool IsAsyncIOSupported() const override { return true; }
+  bool IsAsyncIOSupported() const override;
   FileError AsyncWriteSequential(const std::uint8_t* data, std::size_t size, 
                                   AsyncWriteCallback callback = nullptr) override;
   int GetPendingWriteCount() const override { return pending_writes_.load(); }
@@ -127,19 +127,22 @@ class WindowsFileOperations : public FileOperations {
   std::unordered_map<OVERLAPPED*, AsyncWriteContext*> pending_contexts_;
   
   // Note: write_latency_stats_ is inherited from FileOperations base class
-  
+
   FileError LockVolume();
   FileError UnlockVolume();
   FileError OpenInternal(const std::string& path, DWORD access, DWORD creation, DWORD flags = FILE_ATTRIBUTE_NORMAL, DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE);
-  
+
   static bool IsPhysicalDrivePath(const std::string& path);
-  
+
   bool InitIOCP();
   void CleanupIOCP();
   void ProcessCompletions(bool wait);
   FileError AttemptSyncFallback() override;
   bool DrainAndSwitchToSync(int timeoutSeconds) override;
-  
+
+  // Internal write method used by WriteSequential after alignment
+  FileError WriteSequentialInternal(const std::uint8_t* data, std::size_t size);
+
   // Wait for overlapped I/O with cancellation support
   // Returns true if completed successfully, false if cancelled or error
   bool WaitForOverlappedWithCancel(OVERLAPPED* overlapped, DWORD* bytes_transferred);
@@ -147,4 +150,4 @@ class WindowsFileOperations : public FileOperations {
 
 } // namespace rpi_imager
 
-#endif // FILE_OPERATIONS_WINDOWS_H_ 
+#endif // FILE_OPERATIONS_WINDOWS_H_

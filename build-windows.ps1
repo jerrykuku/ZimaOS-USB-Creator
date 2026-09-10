@@ -30,6 +30,28 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+
+# A PowerShell process keeps the PATH it inherited when it was started.  This
+# is commonly stale after `winget install` (CMake/Ninja update the User or
+# Machine environment, but the current shell does not see those changes).
+# Merge the registered Windows PATH values into this process before checking
+# for build tools, so `install` followed by `build` works in one shell too.
+function Refresh-ProcessPath {
+    $entries = @($env:Path -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    foreach ($scope in @('User', 'Machine')) {
+        $registered = [Environment]::GetEnvironmentVariable('Path', $scope)
+        foreach ($entry in @($registered -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })) {
+            if (-not (Test-Path -LiteralPath $entry -PathType Container)) { continue }
+            if (-not ($entries | Where-Object { $_.TrimEnd('\') -ieq $entry.TrimEnd('\') })) {
+                $entries += $entry
+            }
+        }
+    }
+    $env:Path = $entries -join ';'
+}
+
+Refresh-ProcessPath
+
 # Markdown may escape underscores as `\_`; accept those values when copied from
 # documentation, and keep compatibility with the old aqt names used here.
 $QtArch = $QtArch -replace '\\_', '_'
@@ -78,7 +100,11 @@ function Install-Prerequisites {
             # available upgrade. Continue when the package is discoverable;
             # otherwise report the actual package that failed.
             $installed = winget list --exact --id $package.Id --accept-source-agreements 2>$null
-            if ($installed -notmatch [regex]::Escape($package.Id)) {
+            # winget returns an array of output lines; join them before the
+            # match so PowerShell does not evaluate a multi-element boolean
+            # array as truthy when the package is actually present.
+            $installedText = $installed -join "`n"
+            if ($installedText -notmatch [regex]::Escape($package.Id)) {
                 Fail "$($package.Name) installation failed (winget exit code $packageExitCode)."
             }
             Write-Host "build-windows: $($package.Name) is already installed; continuing."
@@ -232,7 +258,11 @@ function Configure-And-Build([string]$BuildType, [bool]$Installer, [bool]$Signed
     & cmake @buildArgs
     if ($LASTEXITCODE -ne 0) { Fail "Build target '$target' failed." }
     Write-Host "build-windows: completed target $target in $BuildDir"
-    return $target
+    # Keep the target available to callers without returning it through the
+    # success stream.  Capturing this function's output (`[void](...)` or
+    # `$target = ...`) also captures native CMake/Ninja output, making a long
+    # build look completely silent in PowerShell.
+    $script:LastBuildTarget = $target
 }
 
 switch ($Action) {
@@ -246,7 +276,8 @@ switch ($Action) {
         }
     }
     'dev' {
-        $target = Configure-And-Build 'Debug' $false $false
+        Configure-And-Build 'Debug' $false $false
+        $target = $script:LastBuildTarget
         if (-not $NoRun) {
             # windeployqt stages the executable and all Qt runtime DLLs under
             # deploy\. Launch the staged copy; the raw build output does not
@@ -259,7 +290,7 @@ switch ($Action) {
         }
     }
     'build' {
-        [void](Configure-And-Build 'MinSizeRel' $false $false)
+        Configure-And-Build 'MinSizeRel' $false $false
     }
     'release' {
         if ($Cli) { Fail 'release creates the desktop installer; do not pass -Cli.' }
@@ -272,7 +303,7 @@ switch ($Action) {
             Resolve-SigningCertificate
             Require-Command signtool 'Install the Windows SDK signing tools.'
         }
-        [void](Configure-And-Build 'MinSizeRel' $true $signed)
+        Configure-And-Build 'MinSizeRel' $true $signed
         $installerDirectory = Join-Path $BuildDir 'installer'
         if (-not (Get-ChildItem $installerDirectory -Filter '*.exe' -ErrorAction SilentlyContinue)) {
             Fail "Inno Setup did not produce an installer in $installerDirectory"

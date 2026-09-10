@@ -24,6 +24,7 @@
 #include <regex>
 #include <future>
 #include <chrono>
+#include <cstring>
 #include <QDebug>
 #include <QProcess>
 #include <QSettings>
@@ -32,6 +33,7 @@
 #include <QtNetwork/QNetworkProxy>
 #include <QTextStream>
 #include <QRegularExpression>
+#include <QUrl>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -61,7 +63,7 @@ QByteArray DownloadThread::_proxy;
 
 DownloadThread::DownloadThread(const QByteArray &url, const QByteArray &localfilename, const QByteArray &expectedHash, QObject *parent) :
     QThread(parent), _startOffset(0), _lastDlTotal(0), _lastDlNow(0), _extractTotal(0), _verifyTotal(0), _lastVerifyNow(0), _bytesWritten(0), _lastFailureOffset(0), _sectorsStart(-1), _url(url), _filename(localfilename), _expectedHash(expectedHash),
-    _firstBlock(nullptr), _cancelled(false), _successful(false), _verifyEnabled(false), _cacheEnabled(false), _lastModified(0), _serverTime(0),  _lastFailureTime(0),
+    _firstBlock(nullptr), _firstBlockSize(0), _cancelled(false), _successful(false), _verifyEnabled(false), _cacheEnabled(false), _lastModified(0), _serverTime(0),  _lastFailureTime(0),
     _inputBufferSize(SystemMemoryManager::instance().getOptimalInputBufferSize()), _writehash(OSLIST_HASH_ALGORITHM), _verifyhash(OSLIST_HASH_ALGORITHM),
     _hasPendingHash(false)
 {
@@ -1049,6 +1051,11 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
         _writehash.addData(buf, len);
         _firstBlock = (char *) qMallocAligned(len, 4096);
         _firstBlockSize = len;
+        if (!_firstBlock) {
+            _firstBlockSize = 0;
+            if (onComplete) onComplete();
+            return 0;
+        }
         ::memcpy(_firstBlock, buf, len);
         // When a hash is required, write the first block normally. Seeking
         // past it leaves macOS raw devices at an unaligned offset, which makes
@@ -1058,9 +1065,19 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
                 reinterpret_cast<const std::uint8_t*>(buf), len);
             if (result == rpi_imager::FileError::kSuccess) {
                 _bytesWritten += len;
+                // This block is already on the device.  Do not leave it marked
+                // as deferred: _verify() must read it back from offset zero and
+                // the finalisation path must not write it a second time after
+                // whole-image verification.
+                qFreeAligned(_firstBlock);
+                _firstBlock = nullptr;
+                _firstBlockSize = 0;
                 if (onComplete) onComplete();
                 return len;
             }
+            qFreeAligned(_firstBlock);
+            _firstBlock = nullptr;
+            _firstBlockSize = 0;
             if (onComplete) onComplete();
             return 0;
         }
@@ -1112,9 +1129,9 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
     size_t bytes_written = 0;
     rpi_imager::FileError write_result;
     
-    const QByteArray lowerUrl = _url.toLower();
-    const bool rawImageUrl = lowerUrl.endsWith(".iso") || lowerUrl.endsWith(".img") ||
-                             lowerUrl.endsWith(".raw") || lowerUrl.endsWith(".wic");
+    const QByteArray sourcePath = QUrl::fromEncoded(_url).path().toLower().toUtf8();
+    const bool rawImageUrl = sourcePath.endsWith(".iso") || sourcePath.endsWith(".img") ||
+                             sourcePath.endsWith(".raw") || sourcePath.endsWith(".wic");
     // Raw disk images are written directly to block devices. Keep this path
     // synchronous: macOS raw-device alignment/tail handling is stateful and
     // concurrent pwrite callbacks can race with buffer reuse on failures.
@@ -1168,19 +1185,11 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
             bytes_written = len;
             // Don't increment _bytesWritten here - callback will do it on completion
         } else {
-            qDebug() << "Async write queue failed, falling back to sync";
-            // Fallback to sync - wait for hash before releasing
-            if (!_pendingHashFuture.isFinished()) {
-                _pendingHashFuture.waitForFinished();
-            }
-            write_result = _file->WriteSequential(reinterpret_cast<const std::uint8_t*>(buf), len);
-            if (write_result == rpi_imager::FileError::kSuccess) {
-                bytes_written = len;
-                _bytesWritten += bytes_written;
-            }
-            // AsyncWriteSequential invokes the callback on immediate failure;
-            // do not invoke it again here or zero-copy callers release their
-            // buffer twice.
+            // AsyncWriteSequential invokes the callback even on immediate
+            // failure.  For a zero-copy ring-buffer slot that callback releases
+            // the storage, so it is no longer safe to retry synchronously with
+            // the same pointer.
+            qDebug() << "Async write queue failed; not reusing released zero-copy buffer";
         }
     } else if (useAsync) {
         // ASYNC WITH COPY: No completion callback, must copy buffer for safety
@@ -1216,7 +1225,8 @@ size_t DownloadThread::_writeFile(const char *buf, size_t len, WriteCompleteCall
                 bytes_written = len;
                 // Don't increment _bytesWritten here - callback will do it on completion
             } else {
-                qFreeAligned(asyncBuf);
+                // The completion callback is also invoked for immediate
+                // submission failures and owns asyncBuf in every case.
                 qDebug() << "Async write queue failed with error" << static_cast<int>(write_result);
             }
         } else {
@@ -1621,7 +1631,9 @@ void DownloadThread::_onWriteError()
             _onDownloadError(tr("Media error detected. The storage device may be damaged or counterfeit. Please try a different device."));
             return;
         case rpi_imager::WriteErrorClass::kInvalidParameter:
-            _onDownloadError(tr("Invalid disk parameter. The storage device may not be properly recognized. Please try reconnecting the device."));
+            {
+                _onDownloadError(tr("Invalid disk parameter. The storage device may not be properly recognized. Please try reconnecting the device."));
+            }
             return;
         case rpi_imager::WriteErrorClass::kIoDeviceError:
             _onDownloadError(tr("I/O device error. The storage device may have been disconnected or is malfunctioning."));
@@ -1870,8 +1882,11 @@ void DownloadThread::_writeComplete()
             return;
         }
 
-        _file->Seek(0);
-        rpi_imager::FileError writeResult = _file->WriteSequential(reinterpret_cast<const std::uint8_t*>(_firstBlock), _firstBlockSize);
+        rpi_imager::FileError firstBlockSeekResult = _file->Seek(0);
+        rpi_imager::FileError writeResult =
+            firstBlockSeekResult == rpi_imager::FileError::kSuccess
+                ? _file->WriteSequential(reinterpret_cast<const std::uint8_t*>(_firstBlock), _firstBlockSize)
+                : firstBlockSeekResult;
         rpi_imager::FileError flushResult = (writeResult == rpi_imager::FileError::kSuccess) ? _file->Flush() : writeResult;
         
         if (writeResult != rpi_imager::FileError::kSuccess || flushResult != rpi_imager::FileError::kSuccess)
@@ -1883,9 +1898,39 @@ void DownloadThread::_writeComplete()
             DownloadThread::_onDownloadError(_fileErrorToString(errorToReport, tr("writing partition table")));
             return;
         }
+
+        // The whole-image pass used the saved first block because this block
+        // was deliberately withheld to prevent Windows mounting a half-written
+        // partition.  Now that it has been written for the final time, read it
+        // back before success so the final media state is covered as well.
+        if (_verifyEnabled) {
+            char *firstBlockReadback = static_cast<char *>(qMallocAligned(_firstBlockSize, 4096));
+            size_t firstBlockBytesRead = 0;
+            const rpi_imager::FileError seekResult = _file->Seek(0);
+            const rpi_imager::FileError readResult =
+                (seekResult == rpi_imager::FileError::kSuccess && firstBlockReadback)
+                    ? _file->ReadSequential(reinterpret_cast<std::uint8_t *>(firstBlockReadback),
+                                            _firstBlockSize, firstBlockBytesRead)
+                    : rpi_imager::FileError::kReadError;
+            const bool firstBlockMatches =
+                readResult == rpi_imager::FileError::kSuccess &&
+                firstBlockBytesRead == _firstBlockSize &&
+                std::memcmp(firstBlockReadback, _firstBlock, _firstBlockSize) == 0;
+            if (firstBlockReadback)
+                qFreeAligned(firstBlockReadback);
+            if (!firstBlockMatches) {
+                qFreeAligned(_firstBlock);
+                _firstBlock = nullptr;
+                _firstBlockSize = 0;
+                DownloadThread::_onDownloadError(
+                    tr("Verifying write failed. The partition table on the storage device is different from what was written."));
+                return;
+            }
+        }
         _bytesWritten += _firstBlockSize;
         qFreeAligned(_firstBlock);
         _firstBlock = nullptr;
+        _firstBlockSize = 0;
     }
 
     QElapsedTimer syncTimer;
@@ -2142,6 +2187,11 @@ bool DownloadThread::_verify()
     // Use adaptive buffer size based on file size and system memory for optimal verification performance
     size_t verifyBufferSize = SystemMemoryManager::instance().getAdaptiveVerifyBufferSize(_verifyTotal);
     char *verifyBuf = (char *) qMallocAligned(verifyBufferSize, 4096);
+    if (!verifyBuf)
+    {
+        DownloadThread::_onDownloadError(tr("Unable to allocate memory for verification."));
+        return false;
+    }
     
     QElapsedTimer t1;
     t1.start();
@@ -2153,15 +2203,22 @@ bool DownloadThread::_verify()
     // Invalidates cache and enables read-ahead hints
     _file->PrepareForSequentialRead(0, _verifyTotal);
 
+    rpi_imager::FileError verifySeekResult;
     if (!_firstBlock)
     {
-        _file->Seek(0);
+        verifySeekResult = _file->Seek(0);
     }
     else
     {
         _verifyhash.addData(_firstBlock, _firstBlockSize);
-        _file->Seek(_firstBlockSize);
+        verifySeekResult = _file->Seek(_firstBlockSize);
         _lastVerifyNow += _firstBlockSize;
+    }
+    if (verifySeekResult != rpi_imager::FileError::kSuccess)
+    {
+        DownloadThread::_onDownloadError(_fileErrorToString(verifySeekResult, tr("seeking storage for verification")));
+        qFreeAligned(verifyBuf);
+        return false;
     }
 
     while (_verifyEnabled && _lastVerifyNow < _verifyTotal && !_cancelled)
@@ -2173,6 +2230,13 @@ bool DownloadThread::_verify()
         {
             DownloadThread::_onDownloadError(tr("Error reading from storage.<br>"
                                                 "SD card may be broken."));
+            qFreeAligned(verifyBuf);
+            return false;
+        }
+        if (lenRead == 0)
+        {
+            DownloadThread::_onDownloadError(tr("Error reading from storage.<br>"
+                                                "The device returned less data than expected."));
             qFreeAligned(verifyBuf);
             return false;
         }
@@ -2203,7 +2267,14 @@ bool DownloadThread::_verify()
     qDebug() << "Verify hash:" << _verifyhash.result().toHex();
     qDebug() << "Verify done in" << t1.elapsed() / 1000.0 << "seconds";
 
-    if (_verifyhash.result() == _writehash.result() || !_verifyEnabled || _cancelled)
+    if (_cancelled)
+    {
+        emit eventVerify(static_cast<quint32>(t1.elapsed()), false,
+                         _writehash.result().toHex(), _verifyhash.result().toHex());
+        return false;
+    }
+
+    if (_verifyhash.result() == _writehash.result() || !_verifyEnabled)
     {
         emit eventVerify(static_cast<quint32>(t1.elapsed()), true, 
                          _writehash.result().toHex(), _verifyhash.result().toHex());
@@ -2355,7 +2426,9 @@ void DownloadThread::_periodicSync()
             return;
         }
         
-        // Force filesystem sync using unified FileOperations
+        // On Windows Flush() already maps to FlushFileBuffers(), so a second
+        // ForceSync() would issue the same blocking operation twice.
+#ifndef Q_OS_WIN
         if (_file->ForceSync() != rpi_imager::FileError::kSuccess) {
             quint64 syncMs = static_cast<quint64>(syncTimer.elapsed());
             _writeTimingStats.totalSyncMs.fetch_add(syncMs);
@@ -2364,6 +2437,7 @@ void DownloadThread::_periodicSync()
             qDebug() << "Warning: ForceSync() failed during periodic sync";
             return;
         }
+#endif
         
         quint64 syncMs = static_cast<quint64>(syncTimer.elapsed());
         _writeTimingStats.totalSyncMs.fetch_add(syncMs);

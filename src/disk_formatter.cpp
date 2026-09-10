@@ -331,7 +331,7 @@ Result<void> DiskFormatter::WriteBootSector(
   std::memcpy(aligned_buffer.data(), &boot_sector, sizeof(boot_sector));
 
   std::uint64_t offset = static_cast<std::uint64_t>(offset_sectors) * kSectorSize;
-  
+
   FileError error = file_ops_->WriteAtOffset(offset, aligned_buffer.data(), sizeof(boot_sector));
   if (error != FileError::kSuccess) {
     std::cout << "Failed to write boot sector at offset " << offset << " (sector " << offset_sectors << "). Error: " << static_cast<int>(error) << std::endl;
@@ -370,6 +370,7 @@ Result<void> DiskFormatter::WriteFsInfo(
   std::memcpy(aligned_buffer.data(), &fs_info, sizeof(fs_info));
 
   std::uint64_t offset = static_cast<std::uint64_t>(offset_sectors) * kSectorSize;
+
   FileError error = file_ops_->WriteAtOffset(offset, aligned_buffer.data(), sizeof(fs_info));
   if (error != FileError::kSuccess) {
     return Result<void>(ConvertError(error));
@@ -471,4 +472,4 @@ std::uint32_t DiskFormatter::CalculateSectorsPerFat(const Fat32Config& config) c
   return fat_sectors;
 }
 
-}  // namespace rpi_imager 
+}  // namespace rpi_imager
