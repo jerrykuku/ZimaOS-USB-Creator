@@ -14,6 +14,22 @@ import RpiImager
 
 BaseDialog {
     id: popup
+
+    // Keep this custom popup in the application scene so macOS does not add a
+    // rectangular native shadow around its rounded QML surface.
+    popupType: Popup.Item
+
+    // Match the rounded application surface used by the main window.
+    background: Rectangle {
+        color: Style.colorSurfacePage
+        radius: Style.radiusPanel
+        border.color: Style.colorBorderSubtle
+        border.width: Style.sectionBorderWidth
+        antialiasing: true
+        clip: true
+        layer.enabled: true
+        layer.smooth: true
+    }
     
     // Override default height for this more complex dialog
     height: Math.max(280, contentLayout ? (contentLayout.implicitHeight + Style.spacingPopupInset * 2) : 280)

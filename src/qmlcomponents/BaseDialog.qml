@@ -24,7 +24,6 @@ Dialog {
     
     // Standard dialog properties
     modal: true
-    
     // Reset Dialog's built-in padding - we use our own margins in contentLayout
     padding: 0
     topPadding: 0
@@ -57,6 +56,9 @@ Dialog {
     // Custom modal overlay background
     Overlay.modal: Rectangle {
         color: Qt.rgba(0, 0, 0, 0.3)
+        radius: Style.radiusPanel
+        antialiasing: true
+        clip: true
         Behavior on opacity {
             NumberAnimation {
                 duration: PlatformHelper.prefersReducedMotion ? 0 : 150
@@ -82,6 +84,9 @@ Dialog {
         id: dialogFocusScope
         anchors.fill: parent
         focus: true
+        // Keep dialog content inside the rounded popup surface. Without this,
+        // full-width child rectangles can paint over the background's corners.
+        clip: true
         
         // Accessibility properties
         Accessible.role: Accessible.Dialog

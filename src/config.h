@@ -8,7 +8,7 @@
 
 
 /* Repository URL */
-#define OSLIST_URL                        "https://get.casaos.io/zimaos-manifest.json"
+#define OSLIST_URL                        "https://release.zimaos.com/zimaos-manifest.json"
 
 /* Custom repository manifest file extension (without leading dot) */
 #define MANIFEST_EXTENSION                      "zimaos-usb-creator-manifest"

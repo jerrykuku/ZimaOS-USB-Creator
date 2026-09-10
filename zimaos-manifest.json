@@ -8,7 +8,7 @@
         "tags": [
           "x86_64-uefi"
         ],
-        "icon": "https://get.casaos.io/pc.png",
+        "icon": "https://release.zimaos.com/pc.png",
         "description": "Intel/AMD Generic x86_64 PC with UEFI firmware",
         "matching_type": "exclusive",
         "capabilities": []
@@ -19,7 +19,7 @@
     {
       "name": "ZimaOS 1.7.1 ISO version (test only)",
       "description": "A Simplified, Focused and Open NAS OS ISO version (test only)",
-      "icon": "https://get.casaos.io/Zima.svg",
+      "icon": "https://release.zimaos.com/Zima.svg",
       "url": "https://github.com/jerrykuku/staff/releases/download/v0.1.4/zimaos_zimacube-1.7.1_installer.iso",
       "extract_size": 1585934336,
       "extract_sha256": "fa5a18885be0095ba9999d049fc8dc93726616fa60ddce99d1a367fe4cbcd1e8",
@@ -33,7 +33,7 @@
     {
       "name": "ZimaOS 1.7.1",
       "description": "A Simplified, Focused and Open NAS OS (Recommended)",
-      "icon": "https://get.casaos.io/Zima.svg",
+      "icon": "https://release.zimaos.com/Zima.svg",
       "url": "https://github.com/IceWhaleTech/ZimaOS/releases/download/1.7.1/zimaos-x86_64-1.7.1_installer.img",
       "extract_size": 2023804928,
       "extract_sha256": "601cc24ae777b25176f38556dfd8eff62f8303bbf52c3e8cd4e9d7514996ee74",
@@ -47,7 +47,7 @@
     {
       "name": "ZimaOS 1.7.0",
       "description": "A Simplified, Focused and Open NAS OS",
-      "icon": "https://get.casaos.io/Zima.svg",
+      "icon": "https://release.zimaos.com/Zima.svg",
       "url": "https://github.com/IceWhaleTech/ZimaOS/releases/download/1.7.0/zimaos-x86_64-1.7.0_installer.img",
       "extract_size": 2029047808,
       "extract_sha256": "f00999bd606053563c393370f424e828fa3e5c042f5a991d78147858e6ef3a18",
@@ -61,7 +61,7 @@
     {
       "name": "ZimaOS 1.6.2",
       "description": "A Simplified, Focused and Open NAS OS",
-      "icon": "https://get.casaos.io/Zima.svg",
+      "icon": "https://release.zimaos.com/Zima.svg",
       "url": "https://github.com/IceWhaleTech/ZimaOS/releases/download/1.6.2/zimaos-x86_64-1.6.2_installer.img",
       "extract_size": 2015416320,
       "extract_sha256": "4018a8517a9ef144cc481b8cade41c7cfdf6fffadb261132f55d2a3ccba9b0b4",
