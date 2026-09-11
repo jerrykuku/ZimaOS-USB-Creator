@@ -32,7 +32,6 @@
 #include "device_info.h"
 #include "imageadvancedoptions.h"
 #include "performancestats.h"
-#include "rpiboot/rpiboot_types.h"
 
 class QQmlApplicationEngine;
 class DownloadThread;
@@ -42,8 +41,6 @@ class WriteProgressWatchdog;
 #ifndef CLI_ONLY_BUILD
 class NativeFileDialog;
 #endif
-class RpibootThread;
-class FastbootFlashThread;
 
 class ImageWriter : public QObject
 {
@@ -69,7 +66,7 @@ public:
     // Progress of the post-write eject, which runs in the background after
     // success() so the done screen can show a live status instead of the
     // write blocking on a slow flush. EjectIdle also covers writes where no
-    // eject was requested (auto-eject disabled, fastboot flash).
+    // eject was requested or auto-eject is disabled.
     enum class EjectState {
         EjectIdle,
         EjectInProgress,
@@ -108,7 +105,7 @@ public:
     Q_INVOKABLE bool isExtractSizeKnown() const { return _extractSizeKnown; }
 
     /* Set URL to download from, and if known download length and uncompressed length */
-    Q_INVOKABLE void setSrc(const QUrl &url, quint64 downloadLen = 0, quint64 extrLen = 0, QByteArray expectedHash = "", bool multifilesinzip = false, QString parentcategory = "", QString osname = "", QByteArray initFormat = "", QString releaseDate = "", QString bmapUrl = "");
+    Q_INVOKABLE void setSrc(const QUrl &url, quint64 downloadLen = 0, quint64 extrLen = 0, QByteArray expectedHash = "", bool multifilesinzip = false, QString parentcategory = "", QString osname = "", QByteArray initFormat = "", QString releaseDate = "");
 
     /* Set device to write to */
     Q_INVOKABLE void setDst(const QString &device, quint64 deviceSize = 0);
@@ -331,14 +328,8 @@ public:
     Q_INVOKABLE void setDebugSkipEndOfDevice(bool enabled);
     Q_INVOKABLE bool getDebugIgnoreDeviceLimits() const;
     Q_INVOKABLE void setDebugIgnoreDeviceLimits(bool enabled);
-    Q_INVOKABLE bool getDebugRpiboot() const;
-    Q_INVOKABLE void setDebugRpiboot(bool enabled);
-    Q_INVOKABLE QString getDebugCustomFastbootGadget() const;
-    Q_INVOKABLE void setDebugCustomFastbootGadget(const QString &path);
     Q_INVOKABLE bool getDebugForceSecureBoot() const;
     Q_INVOKABLE void setDebugForceSecureBoot(bool enabled);
-    Q_INVOKABLE bool getDebugSignFastbootGadget() const;
-    Q_INVOKABLE void setDebugSignFastbootGadget(bool enabled);
 
     // Customisation API
     Q_INVOKABLE void applyCustomisationFromSettings(const QVariantMap &settings);  // Main entry: generates scripts from settings
@@ -424,25 +415,8 @@ public:
     /* Check if audio notification (beep) is available on this system */
     Q_INVOKABLE bool isBeepAvailable();
 
-    /* Set an rpiboot device as the write target.
-       `storageTarget` is the block-device name (e.g. "mmcblk0", "nvme0n1")
-       to flash to once the device has been bootstrapped into fastboot
-       mode.  Pass an empty string only when the storage choice is not yet
-       known --- the rpiboot-then-flash path will then fall back to the
-       eMMC (the only universally-present CM storage) and log a warning. */
-    Q_INVOKABLE void setRpibootDevice(const QString &deviceId,
-                                       const QString &storageTarget = QString());
-    /* Returns true if the current target is an rpiboot device */
-    Q_INVOKABLE bool isRpibootDevice() const;
-
-    /* Set a fastboot storage device as the write target */
-    Q_INVOKABLE void setFastbootDevice(const QString &device, quint64 size);
-    /* Returns true if the current target is a fastboot storage device */
-    Q_INVOKABLE bool isFastbootDevice() const;
-
     // Mint a single-use Raspberry Pi Connect auth key for the
-    // currently configured organisation API key.  Used when the
-    // target is not a fastboot device — the returned secret is
+    // currently configured organisation API key. The returned secret is
     // written into the OS image's customisation as if the user had
     // pasted a per-user token.  Returns a map with:
     //   ok      bool    — true on success
@@ -531,13 +505,6 @@ protected slots:
     void onCacheVerificationComplete(bool isValid);
     void onSelectedDeviceRemoved(const QString &device);
     void onOsListRefreshTimeout();
-    void onRpibootFastbootReady(const QString &fastbootId);
-    void onRpibootError(const QString &msg);
-    void onRpibootDeviceDetected(const QString &deviceId,
-                                  uint8_t busNumber, uint8_t deviceAddress,
-                                  const QList<uint8_t> &portPath, uint16_t productId);
-    void onBootstrapComplete(const QString &portPathKey, const QString &fastbootId);
-    void onBootstrapError(const QString &portPathKey, const QString &msg);
 
 private:
 #ifndef CLI_ONLY_BUILD
@@ -573,7 +540,7 @@ private:
 
 protected:
     QUrl _src, _repo;
-    QString _dst, _parentCategory, _osName, _osReleaseDate, _currentLang, _currentLangcode, _currentKeyboard, _bmapUrl;
+    QString _dst, _parentCategory, _osName, _osReleaseDate, _currentLang, _currentLangcode, _currentKeyboard;
     QByteArray _expectedHash, _cmdline, _config, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat;
     ImageOptions::AdvancedOptions _advancedOptions;
     quint64 _downloadLen, _extrLen, _devLen, _dlnow, _verifynow;
@@ -627,26 +594,7 @@ protected:
     bool _debugIPv4Only;
     bool _debugSkipEndOfDevice;
     bool _debugIgnoreDeviceLimits;
-    bool _debugRpiboot;
-    QString _debugCustomFastbootGadget;
     bool _debugForceSecureBoot;
-    bool _debugSignFastbootGadget;
-
-    QString _rpibootDeviceId;
-    QString _rpibootStorageTarget;  // block device on the CM to flash after bootstrap (e.g. "mmcblk0", "nvme0n1")
-    bool _isRpibootDevice = false;
-    RpibootThread *_rpibootThread = nullptr;
-    FastbootFlashThread *_fastbootFlashThread = nullptr;
-    rpiboot::SideloadMode _rpibootSideloadMode = rpiboot::SideloadMode::Fastboot;
-
-    // Fastboot storage device selection (pre-bootstrapped)
-    bool _isFastbootDevice = false;
-    QString _fastbootId;
-    QString _fastbootBlockDevice;
-
-    // Auto-bootstrap tracking
-    QSet<QString> _bootstrappingDevices;           // port path keys in progress
-    QMap<QString, RpibootThread*> _activeBootstrapThreads;
 
     void _parseCompressedFile();
     void _parseXZFile();

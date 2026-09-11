@@ -37,7 +37,7 @@ BaseDialog {
             return []
         }, 0)
         registerFocusGroup("options", function(){
-            return [chkDirectIO.focusItem, chkAsyncIO.focusItem, chkIgnoreDeviceLimits.focusItem, chkPeriodicSync.focusItem, chkVerboseLogging.focusItem, chkIPv4Only.focusItem, chkSkipEndOfDevice.focusItem, chkRpiboot.focusItem, browseGadgetButton, chkForceSecureBoot.focusItem, chkSignFastbootGadget.focusItem]
+            return [chkDirectIO.focusItem, chkAsyncIO.focusItem, chkIgnoreDeviceLimits.focusItem, chkPeriodicSync.focusItem, chkVerboseLogging.focusItem, chkIPv4Only.focusItem, chkSkipEndOfDevice.focusItem, chkForceSecureBoot.focusItem]
         }, 1)
         registerFocusGroup("buttons", function(){ 
             return [cancelButton, applyButton]
@@ -303,78 +303,6 @@ BaseDialog {
                 Layout.fillWidth: true
             }
 
-            ImOptionPill {
-                id: chkRpiboot
-                text: qsTr("Enable Rpiboot/Fastboot Support")
-                accessibleDescription: qsTr("Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.")
-                Layout.fillWidth: true
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
-            }
-
-            // Custom fastboot gadget file picker (only visible when rpiboot enabled)
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: Style.spacingLarge
-                visible: chkRpiboot.checked
-                spacing: Style.spacingSmall
-
-                Text {
-                    text: qsTr("Custom Fastboot Gadget:")
-                    font.pointSize: Style.fontSizeDescription
-                    font.family: Style.fontFamily
-                    color: Style.formLabelColor
-                    Layout.alignment: Qt.AlignVCenter
-                }
-
-                Text {
-                    id: gadgetPathText
-                    text: gadgetPathText.gadgetPath || qsTr("(default)")
-                    font.pointSize: Style.fontSizeDescription
-                    font.family: Style.fontFamily
-                    font.italic: !gadgetPathText.gadgetPath
-                    color: gadgetPathText.gadgetPath ? Style.formLabelColor : Style.colorTextPrimary
-                    Layout.fillWidth: true
-                    elide: Text.ElideMiddle
-                    Layout.alignment: Qt.AlignVCenter
-
-                    property string gadgetPath: ""
-                }
-
-                ImButton {
-                    id: browseGadgetButton
-                    text: qsTr("Browse...")
-                    accessibleDescription: qsTr("Select a local fastboot gadget boot.img file")
-                    Layout.minimumWidth: 80
-                    activeFocusOnTab: true
-                    onClicked: {
-                        gadgetFileDialog.open()
-                    }
-                }
-
-                ImButton {
-                    text: qsTr("Clear")
-                    accessibleDescription: qsTr("Revert to the default fastboot gadget from GitHub")
-                    Layout.minimumWidth: 60
-                    activeFocusOnTab: true
-                    visible: !!gadgetPathText.gadgetPath
-                    onClicked: {
-                        gadgetPathText.gadgetPath = ""
-                    }
-                }
-            }
-
-            ImFileDialog {
-                id: gadgetFileDialog
-                parent: popup.parent
-                dialogTitle: qsTr("Select Fastboot Gadget Image")
-                nameFilters: [qsTr("Boot images (*.img *.bin)"), qsTr("All files (*)")]
-                onAccepted: {
-                    gadgetPathText.gadgetPath = selectedFile
-                }
-            }
-
             // Spacer
             Item {
                 Layout.preferredHeight: Style.spacingMedium
@@ -398,28 +326,6 @@ BaseDialog {
                 Component.onCompleted: {
                     focusItem.activeFocusOnTab = true
                 }
-            }
-
-            ImOptionPill {
-                id: chkSignFastbootGadget
-                text: qsTr("CM5 re-provisioning mode (special-reprovision-device)")
-                accessibleDescription: qsTr("Match rpi-sb-provisioner's special-reprovision-device: run secure-boot recovery (re-sign recovery.bin from upstream, reuse cached pieeprom) then fastboot (sign bootfiles and gadget). Requires the RSA key in App Options. Only for Compute Modules whose secure-boot OTP is already fused.")
-                Layout.fillWidth: true
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
-            }
-
-            // Warning when signing is enabled without an RSA key configured
-            Text {
-                Layout.fillWidth: true
-                Layout.leftMargin: Style.spacingLarge
-                visible: chkSignFastbootGadget.checked && !ImageWriterSingleton.getStringSetting("secureboot_rsa_key")
-                text: qsTr("⚠️ No Secure Boot RSA key configured. Set one in App Options → Secure Boot RSA Key, otherwise signing will be skipped.")
-                font.pointSize: Style.fontSizeSmall
-                font.family: Style.fontFamily
-                color: Style.formLabelErrorColor
-                wrapMode: Text.WordWrap
             }
 
             // Status display
@@ -454,9 +360,6 @@ BaseDialog {
                             lines.push("Periodic Sync: " + (chkPeriodicSync.checked ? "Enabled" : "Disabled"));
                             lines.push("IPv4-only: " + (chkIPv4Only.checked ? "Enabled" : "Disabled"));
                             lines.push("Counterfeit Card Mode: " + (chkSkipEndOfDevice.checked ? "Enabled" : "Disabled"));
-                            lines.push("Rpiboot/Fastboot: " + (chkRpiboot.checked ? "Enabled" : "Disabled"));
-                            if (chkRpiboot.checked && gadgetPathText.gadgetPath)
-                                lines.push("Custom Gadget: " + gadgetPathText.gadgetPath);
                             if (chkDirectIO.checked && chkAsyncIO.checked) {
                                 lines.push("✓ Optimal: Direct I/O + Async I/O for best performance");
                             } else if (chkDirectIO.checked) {
@@ -538,10 +441,7 @@ BaseDialog {
             chkIPv4Only.checked = ImageWriterSingleton.getDebugIPv4Only();
             chkIgnoreDeviceLimits.checked = ImageWriterSingleton.getDebugIgnoreDeviceLimits();
             chkSkipEndOfDevice.checked = ImageWriterSingleton.getDebugSkipEndOfDevice();
-            chkRpiboot.checked = ImageWriterSingleton.getDebugRpiboot();
-            gadgetPathText.gadgetPath = ImageWriterSingleton.getDebugCustomFastbootGadget();
             chkForceSecureBoot.checked = ImageWriterSingleton.getDebugForceSecureBoot();
-            chkSignFastbootGadget.checked = ImageWriterSingleton.getDebugSignFastbootGadget();
 
             initialized = true;
             isInitializing = false;
@@ -558,10 +458,7 @@ BaseDialog {
         ImageWriterSingleton.setDebugIPv4Only(chkIPv4Only.checked);
         ImageWriterSingleton.setDebugIgnoreDeviceLimits(chkIgnoreDeviceLimits.checked);
         ImageWriterSingleton.setDebugSkipEndOfDevice(chkSkipEndOfDevice.checked);
-        ImageWriterSingleton.setDebugRpiboot(chkRpiboot.checked);
-        ImageWriterSingleton.setDebugCustomFastbootGadget(gadgetPathText.gadgetPath || "");
         ImageWriterSingleton.setDebugForceSecureBoot(chkForceSecureBoot.checked);
-        ImageWriterSingleton.setDebugSignFastbootGadget(chkSignFastbootGadget.checked);
 
         console.log("Debug options applied: DirectIO=" + chkDirectIO.checked +
                     ", AsyncIO=" + chkAsyncIO.checked +
@@ -570,9 +467,7 @@ BaseDialog {
                     ", VerboseLogging=" + chkVerboseLogging.checked +
                     ", IPv4Only=" + chkIPv4Only.checked +
                     ", SkipEndOfDevice=" + chkSkipEndOfDevice.checked +
-                    ", Rpiboot=" + chkRpiboot.checked +
-                    ", ForceSecureBoot=" + chkForceSecureBoot.checked +
-                    ", SignFastbootGadget=" + chkSignFastbootGadget.checked);
+                    ", ForceSecureBoot=" + chkForceSecureBoot.checked);
     }
 
     onOpened: {

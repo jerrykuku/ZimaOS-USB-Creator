@@ -46,7 +46,6 @@
 #include "imageadvancedoptions.h"
 #include "secureboot.h"
 #include "curlnetworkconfig.h"
-#include "fastboot/sparse_encoder.h"  // isBlockZero()
 #include <QTemporaryDir>
 
 using namespace std;
@@ -58,6 +57,19 @@ using rpi_imager::runWithTimeout;
 using rpi_imager::TimeoutDefaults::kHardTimeoutSeconds;
 using rpi_imager::TimeoutDefaults::kMemoryCheckIntervalMs;
 using rpi_imager::TimeoutDefaults::kCriticalMemoryMB;
+
+namespace {
+constexpr size_t ZERO_SKIP_BLOCK_SIZE = 4096;
+
+bool isZeroBlock(const uint8_t *data)
+{
+    for (size_t i = 0; i < ZERO_SKIP_BLOCK_SIZE; ++i) {
+        if (data[i] != 0)
+            return false;
+    }
+    return true;
+}
+}
 
 QByteArray DownloadThread::_proxy;
 
@@ -971,7 +983,7 @@ void DownloadThread::_hashData(const char *buf, size_t len)
  */
 size_t DownloadThread::_writeFileZeroSkip(const char *buf, size_t len)
 {
-    constexpr size_t BLK = fastboot::SPARSE_BLK_SZ;  // 4096
+    constexpr size_t BLK = ZERO_SKIP_BLOCK_SIZE;
 
     // First block hasn't been captured yet — pass through unconditionally
     if (!_firstBlock)
@@ -998,7 +1010,7 @@ size_t DownloadThread::_writeFileZeroSkip(const char *buf, size_t len)
 
         // Skip the unaligned prefix — we'll write it as part of the non-zero region
         while (pos + BLK <= len) {
-            if (fastboot::isBlockZero(p + pos)) {
+            if (isZeroBlock(p + pos)) {
                 // Found a zero block. Write everything before it.
                 if (pos > nonZeroStart) {
                     size_t writeLen = pos - nonZeroStart;
@@ -1010,7 +1022,7 @@ size_t DownloadThread::_writeFileZeroSkip(const char *buf, size_t len)
 
                 // Count consecutive zero blocks
                 size_t zeroStart = pos;
-                while (pos + BLK <= len && fastboot::isBlockZero(p + pos))
+                while (pos + BLK <= len && isZeroBlock(p + pos))
                     pos += BLK;
 
                 // Seek past the zero region

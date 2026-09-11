@@ -19,13 +19,6 @@ WizardStepBase {
     // Track RSA key path for reactive UI updates
     property string rsaKeyPath: getRsaKeyPath()
 
-    // OTP secure-boot provisioning UI is scaffolded but not yet wired to a backend:
-    // the pill below sets state nothing consumes, and ConfirmOtpProgramDialog is never
-    // shown. Keep the section hidden until the rpiboot OTP-bootstrap flow is ported from
-    // rpi-sb-provisioner; flip this to true (or remove the gate) when it lands. Shipping
-    // it inert would present misleading "device is locked to signed boot" UI.
-    readonly property bool otpProvisioningImplemented: false
-
     // Only show and enable this step if OS supports secure boot
     visible: wizardContainer.secureBootAvailable
     enabled: wizardContainer.secureBootAvailable
@@ -164,66 +157,6 @@ WizardStepBase {
                 wrapMode: Text.WordWrap
             }
 
-            // OTP Provisioning section (only shown when an rpiboot device is selected)
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.topMargin: Style.spacingLarge
-                implicitHeight: otpColumn.implicitHeight + Style.spacingMedium * 2
-                color: "transparent"
-                border.color: Style.titleSeparatorColor
-                border.width: 1
-                radius: Style.sectionBorderRadius
-                visible: root.otpProvisioningImplemented
-                         && typeof ImageWriterSingleton.isRpibootDevice === "function" && ImageWriterSingleton.isRpibootDevice()
-
-                ColumnLayout {
-                    id: otpColumn
-                    anchors.fill: parent
-                    anchors.margins: Style.spacingMedium
-
-                    Text {
-                        Layout.fillWidth: true
-                        text: qsTr("OTP Secure Boot Provisioning")
-                        font.family: Style.fontFamily
-                        font.pointSize: Style.fontSizeSubtitle
-                        font.bold: true
-                        color: Style.formLabelColor
-                    }
-
-                    Text {
-                        Layout.fillWidth: true
-                        wrapMode: Text.WordWrap
-                        font.family: Style.fontFamily
-                        font.pointSize: Style.fontSizeDescription
-                        color: Style.colorTextPrimary
-                        text: qsTr("Program the secure boot public key hash into the device's OTP memory. This is a permanent, irreversible operation.")
-                    }
-
-                    ImOptionPill {
-                        id: otpProvisionPill
-                        Layout.fillWidth: true
-                        Layout.topMargin: Style.spacingSmall
-                        text: qsTr("Provision Secure Boot OTP")
-                        accessibleDescription: qsTr("Permanently program the secure boot key into device OTP memory")
-                        checked: false
-                        enabled: root.rsaKeyPath && root.rsaKeyPath.length > 0
-                        onToggled: function(isChecked) {
-                            root.wizardContainer.otpProvisioningEnabled = isChecked
-                            root.rebuildFocusOrder()
-                        }
-                    }
-
-                    Text {
-                        Layout.fillWidth: true
-                        visible: otpProvisionPill.checked
-                        wrapMode: Text.WordWrap
-                        font.family: Style.fontFamily
-                        font.pointSize: Style.fontSizeCaption
-                        color: Style.colorTextErrorStrong
-                        text: qsTr("WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.")
-                    }
-                }
-            }
         }
     }
     ]

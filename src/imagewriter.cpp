@@ -60,11 +60,8 @@
 #include <QHostAddress>
 #include <QDateTime>
 #include "curlfetcher.h"
-#include "rpibootthread.h"
-#include "fastbootflashthread.h"
-#include "fastbootflashthread.h"
-#include "connect_device_registrar.h"
 #include "curlnetworkconfig.h"
+#include "connect_auth_key_client.h"
 #include <QDebug>
 #include <QJsonObject>
 #include <QTranslator>
@@ -170,20 +167,7 @@ ImageWriter::ImageWriter(QObject *parent)
     _debugIPv4Only = false;     // Use both IPv4 and IPv6 by default
     _debugSkipEndOfDevice = false; // Normal behavior; enable for counterfeit cards
     _debugIgnoreDeviceLimits = false; // Use device-reported I/O limits by default
-    // Rpiboot/fastboot support is off by default, but sticky once turned on:
-    // the people who need it (CM provisioning) want it every session, and
-    // re-entering the secret menu on every launch is needless friction.
-    _debugRpiboot = _settings.value(QStringLiteral("debug_rpiboot"), false).toBool();
     _debugForceSecureBoot = false;  // No UI override; CLI flag still wins
-    _debugSignFastbootGadget = false; // CM5 special-reprovision-device (SBR then fastboot)
-
-    // Propagate a restored rpiboot setting to the poll thread; these only set
-    // atomics, so it is safe before polling starts.
-    if (_debugRpiboot) {
-        _drivelist.setRpibootEnabled(true);
-        _drivelist.setFastbootScanEnabled(true);
-        qDebug() << "Debug: Rpiboot/fastboot support enabled from saved settings";
-    }
 
     // Calculate optimal async queue depth based on system memory
     _debugAsyncQueueDepth = SystemMemoryManager::instance().getOptimalAsyncQueueDepth();
@@ -367,14 +351,6 @@ ImageWriter::ImageWriter(QObject *parent)
     connect(&_drivelist, &DriveListModel::deviceRemoved,
             this, &ImageWriter::onSelectedDeviceRemoved);
     
-    // Forward connected rpiboot chip names to hardware list model for USB boot annotations
-    connect(&_drivelist, &DriveListModel::connectedRpibootChipsChanged,
-            &_hwlist, &HWListModel::setConnectedRpibootChips);
-
-    // Auto-bootstrap: when a new rpiboot device is detected, start sideloading fastbootd
-    connect(&_drivelist, &DriveListModel::rpibootDeviceDetected,
-            this, &ImageWriter::onRpibootDeviceDetected);
-
     // Connect drive list poll timing events for performance tracking
     // Only record polls that take longer than 200ms to avoid noise from normal fast polls
     connect(&_drivelist, &DriveListModel::eventDriveListPoll,
@@ -486,24 +462,6 @@ ImageWriter::~ImageWriter()
     qDebug() << "Stopping network monitoring";
     PlatformQuirks::stopNetworkMonitoring();
     
-    // Cancel FastbootFlashThread before stopping drive list polling.
-    // Both use libusb; concurrent libusb_exit (FastbootFlashThread) and
-    // libusb_init (DriveListModelPollThread) trigger a macOS libusb deadlock
-    // where darwin_exit holds active_contexts_lock while waiting for the
-    // IONotification thread, which itself needs that lock for a pending IOKit
-    // callback.  Stopping FastbootFlashThread first eliminates the conflict.
-    if (_fastbootFlashThread) {
-        qDebug() << "Stopping FastbootFlashThread";
-        _fastbootFlashThread->cancel();
-        if (!_fastbootFlashThread->wait(10000)) {
-            qWarning() << "FastbootFlashThread did not stop within 10s, terminating";
-            _fastbootFlashThread->terminate();
-            _fastbootFlashThread->wait();
-        }
-        delete _fastbootFlashThread;
-        _fastbootFlashThread = nullptr;
-    }
-
     // Stop background drive list polling
     qDebug() << "Stopping background drive list polling";
     _drivelist.stopPolling();
@@ -574,7 +532,7 @@ void ImageWriter::setEngine(QQmlApplicationEngine *engine)
 }
 
 /* Set URL to download from */
-void ImageWriter::setSrc(const QUrl &url, quint64 downloadLen, quint64 extrLen, QByteArray expectedHash, bool multifilesinzip, QString parentcategory, QString osname, QByteArray initFormat, QString releaseDate, QString bmapUrl)
+void ImageWriter::setSrc(const QUrl &url, quint64 downloadLen, quint64 extrLen, QByteArray expectedHash, bool multifilesinzip, QString parentcategory, QString osname, QByteArray initFormat, QString releaseDate)
 {
     _src = url;
     _downloadLen = downloadLen;
@@ -586,8 +544,6 @@ void ImageWriter::setSrc(const QUrl &url, quint64 downloadLen, quint64 extrLen, 
     _osName = osname;
     _initFormat = (initFormat == "none") ? "" : initFormat;
     _osReleaseDate = releaseDate;
-    _bmapUrl = bmapUrl;
-
     qDebug() << "setSrc: initFormat parameter:" << initFormat << "-> _initFormat set to:" << _initFormat;
 
     if (!_downloadLen && url.isLocalFile())
@@ -634,301 +590,12 @@ void ImageWriter::setDst(const QString &device, quint64 deviceSize)
     _dst = device;
     _devLen = deviceSize;
     _selectedDeviceValid = !device.isEmpty();
-    _isRpibootDevice = false;  // Reset — setRpibootDevice() will re-set if needed
-    _isFastbootDevice = false;  // Reset — setFastbootDevice() will re-set if needed
-
     // Reset write completion state when device selection changes
     if (device.isEmpty()) {
         setWriteState(WriteState::Idle);
     }
 
     qDebug() << "Device selection changed to:" << device;
-}
-
-void ImageWriter::setRpibootDevice(const QString &deviceId,
-                                    const QString &storageTarget)
-{
-    _rpibootDeviceId = deviceId;
-    _rpibootStorageTarget = storageTarget;
-    _isRpibootDevice = true;
-    _selectedDeviceValid = true;
-    // Set _dst to the rpiboot ID so readyToWrite() passes
-    _dst = deviceId;
-    _devLen = 0;
-
-    qDebug() << "rpiboot device selected:" << deviceId
-             << "storageTarget=" << (storageTarget.isEmpty() ? QStringLiteral("<unset>") : storageTarget);
-}
-
-bool ImageWriter::isRpibootDevice() const
-{
-    return _isRpibootDevice;
-}
-
-void ImageWriter::setFastbootDevice(const QString &device, quint64 size)
-{
-    // device format: "fastboot://bus:addr/blockdevice"
-    QString path = device;
-    if (path.startsWith("fastboot://"))
-        path = path.mid(11); // strip scheme
-
-    // Parse "bus:addr/blockdevice"
-    int slashIdx = path.indexOf('/');
-    if (slashIdx > 0) {
-        _fastbootId = path.left(slashIdx);
-        _fastbootBlockDevice = path.mid(slashIdx + 1);
-    } else {
-        _fastbootId = path;
-        _fastbootBlockDevice = QStringLiteral("mmcblk0");
-    }
-
-    _isFastbootDevice = true;
-    _isRpibootDevice = false;
-    _dst = device;
-    _devLen = size;
-    _selectedDeviceValid = true;
-
-    qDebug() << "Fastboot device selected:" << device
-             << "id=" << _fastbootId << "block=" << _fastbootBlockDevice;
-}
-
-bool ImageWriter::isFastbootDevice() const
-{
-    return _isFastbootDevice;
-}
-
-void ImageWriter::onRpibootDeviceDetected(const QString &deviceId,
-                                            uint8_t busNumber, uint8_t deviceAddress,
-                                            const QList<uint8_t> &portPath, uint16_t productId)
-{
-    // Only auto-bootstrap when rpiboot/fastboot debug mode is enabled
-    if (!_debugRpiboot)
-        return;
-
-    // Compute port path key for dedup
-    QString ppKey;
-    for (int i = 0; i < portPath.size(); ++i) {
-        if (i > 0) ppKey += '.';
-        ppKey += QString::number(portPath[i]);
-    }
-
-    // Skip if already bootstrapping this device
-    if (_bootstrappingDevices.contains(ppKey))
-        return;
-
-    _bootstrappingDevices.insert(ppKey);
-    qDebug() << "Auto-bootstrap: starting rpiboot for" << ppKey << "deviceId=" << deviceId;
-
-    // Create DeviceInfo from parameters
-    RpibootThread::DeviceInfo devInfo;
-    devInfo.busNumber = busNumber;
-    devInfo.deviceAddress = deviceAddress;
-    for (const auto& p : portPath)
-        devInfo.portPath.push_back(p);
-
-    // Determine chip generation from PID
-    devInfo.chipGeneration = rpiboot::ChipGeneration::BCM2711; // safe default
-    if (auto gen = rpiboot::chipGenerationFromPid(productId))
-        devInfo.chipGeneration = *gen;
-
-    auto *thread = new RpibootThread(devInfo, _rpibootSideloadMode, this);
-    if (!_debugCustomFastbootGadget.isEmpty())
-        thread->setCustomFastbootGadget(_debugCustomFastbootGadget);
-    // Plumb the re-provisioning key through to FirmwareManager so the
-    // bootcode upload + gadget signing run on auto-bootstrap too — without
-    // this a pre-fused CM5 silently rejects the unsigned bootcode and the
-    // 15s re-enumerate timeout fires.
-    if (_debugSignFastbootGadget) {
-        QString rsaKey = _settings.value(QStringLiteral("secureboot_rsa_key")).toString();
-        if (rsaKey.isEmpty()) {
-            qWarning() << "Auto-bootstrap: re-provisioning enabled but no secure boot RSA key configured; "
-                          "uploaded bootcode will not be counter-signed and the device will reject it";
-        } else {
-            thread->setSignFastbootGadgetKey(rsaKey);
-        }
-        thread->setReprovisionDevice(true);
-    }
-
-    connect(thread, &RpibootThread::fastbootDeviceReady, this,
-            [this, ppKey](const QString &fastbootId) {
-                onBootstrapComplete(ppKey, fastbootId);
-            });
-    connect(thread, &RpibootThread::error, this,
-            [this, ppKey](const QString &msg) {
-                onBootstrapError(ppKey, msg);
-            });
-    connect(thread, &RpibootThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
-
-    _activeBootstrapThreads[ppKey] = thread;
-
-    // Pause drive scanning for the duration of the bootstrap.  The poll
-    // thread also calls libusb_get_device_list / scanRpibootDevices on a
-    // 1 s tick, and on macOS concurrent libusb access against the same
-    // bus while the bootstrap thread is doing sustained bulk transfers
-    // produces sporadic LIBUSB_ERROR_IO / NO_DEVICE failures partway
-    // through boot.img upload (variable cutoff at ~12-14 MB).  Same
-    // pattern the regular write path uses while WriteState != Idle.
-    qDebug() << "Auto-bootstrap: pausing drive scan to avoid concurrent libusb access";
-    _drivelist.pausePolling();
-
-    thread->start();
-}
-
-void ImageWriter::onBootstrapComplete(const QString &portPathKey, const QString &fastbootId)
-{
-    qDebug() << "Auto-bootstrap complete:" << portPathKey << "fastbootId=" << fastbootId;
-
-    // Clean up the thread
-    if (_activeBootstrapThreads.contains(portPathKey)) {
-        _activeBootstrapThreads[portPathKey]->deleteLater();
-        _activeBootstrapThreads.remove(portPathKey);
-    }
-    _bootstrappingDevices.remove(portPathKey);
-
-    // Enable fastboot scanning so the poll thread discovers storage devices,
-    // then unpause polling — paired with pausePolling() in the bootstrap kickoff.
-    _drivelist.setFastbootScanEnabled(true);
-    if (_activeBootstrapThreads.isEmpty()) {
-        qDebug() << "Auto-bootstrap: resuming drive scan";
-        _drivelist.resumePolling();
-    }
-}
-
-void ImageWriter::onBootstrapError(const QString &portPathKey, const QString &msg)
-{
-    qWarning() << "Auto-bootstrap error for" << portPathKey << ":" << msg;
-
-    // Clean up the thread
-    if (_activeBootstrapThreads.contains(portPathKey)) {
-        _activeBootstrapThreads[portPathKey]->deleteLater();
-        _activeBootstrapThreads.remove(portPathKey);
-    }
-    _bootstrappingDevices.remove(portPathKey);
-
-    // Unpause drive scanning when the last bootstrap finishes (success or
-    // error).  Only resume once no bootstraps remain in flight, in case
-    // multiple devices are being bootstrapped simultaneously.
-    if (_activeBootstrapThreads.isEmpty()) {
-        qDebug() << "Auto-bootstrap: resuming drive scan after error";
-        _drivelist.resumePolling();
-    }
-}
-
-void ImageWriter::onRpibootFastbootReady(const QString &fastbootId)
-{
-    qDebug() << "rpiboot fastboot device ready:" << fastbootId;
-
-    if (_rpibootThread) {
-        _rpibootThread->deleteLater();
-        _rpibootThread = nullptr;
-    }
-
-    // Resolve cache before starting the flash thread.  The regular
-    // (non-fastboot) write path at startWrite() does this — if a cached
-    // image exists and has been background-verified, it substitutes a
-    // file:// URL for _src so libcurl reads off disk instead of going to
-    // the network.  Without the same logic here, fastboot writes always
-    // hit the network even when the OS image is fully cached locally,
-    // which is what produced the "Recv failure: Connection reset by peer"
-    // we just saw despite the user reporting a cached image.
-    QUrl flashSrc = _src;
-    if (_cacheManager && !_expectedHash.isEmpty() &&
-        _cacheManager->hasPotentialCache(_expectedHash)) {
-        auto cacheStatus = _cacheManager->getCacheStatus();
-        if (cacheStatus.verificationComplete && cacheStatus.isValid) {
-            qDebug() << "FastbootFlashThread: using verified cache file"
-                     << cacheStatus.cacheFileName;
-            flashSrc = QUrl::fromLocalFile(cacheStatus.cacheFileName);
-        } else {
-            qDebug() << "FastbootFlashThread: cached file present but not yet"
-                        " verified — falling back to network download";
-        }
-    }
-
-    // Start FastbootFlashThread.  Use the storage target the user picked
-    // in the wizard --- this drives both where the image is written and
-    // the BOOT_ORDER nibble we'll set in the EEPROM afterwards.  An empty
-    // target here means the rpiboot selection didn't carry one through,
-    // in which case fall back to the eMMC (the only storage every CM is
-    // guaranteed to have) and log a warning so the mismatch is visible
-    // in support logs.
-    QString storageTarget = _rpibootStorageTarget;
-    if (storageTarget.isEmpty()) {
-        qWarning() << "rpiboot fastboot handoff: no storage target carried"
-                      " through selection --- defaulting to mmcblk0;"
-                      " EEPROM BOOT_ORDER will reflect SD/eMMC, not the"
-                      " user's intended target";
-        storageTarget = QStringLiteral("mmcblk0");
-    }
-    _fastbootFlashThread = new FastbootFlashThread(fastbootId, storageTarget, flashSrc, _downloadLen, _extrLen, _expectedHash, this);
-    _fastbootFlashThread->setImageCustomisation(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat);
-    if (!_bmapUrl.isEmpty())
-        _fastbootFlashThread->setBmapUrl(QUrl(_bmapUrl));
-
-    // Propagate Raspberry Pi Connect organisation registration.
-    // The API key is persisted in QSettings but never handed back to
-    // QML; read it directly here and forward to the flash thread.
-    // Only applies when "Raspberry Pi Connect for Organisations" is
-    // enabled in App Options.
-    if (_settings.value(QStringLiteral("connect_org_enabled")).toBool()) {
-        const QString orgKey =
-            _settings.value(QStringLiteral("connect_org_api_key")).toString();
-        if (!orgKey.isEmpty()) {
-            const QString orgDesc =
-                _settings.value(QStringLiteral("connect_org_description")).toString();
-            _fastbootFlashThread->setConnectRegistration(orgKey, orgDesc);
-        }
-    }
-    connect(_fastbootFlashThread, &FastbootFlashThread::success, this, &ImageWriter::onSuccess);
-    connect(_fastbootFlashThread, &FastbootFlashThread::error, this, &ImageWriter::onError);
-    connect(_fastbootFlashThread, &FastbootFlashThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
-    connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress, this, [this](quint64 now, quint64 total) {
-        emit downloadProgress(QVariant(now), QVariant(total));
-    });
-    connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress, this, [this](quint64 now, quint64 total) {
-        emit writeProgress(QVariant(now), QVariant(total));
-    });
-    connect(_fastbootFlashThread, &FastbootFlashThread::finalizing, this, &ImageWriter::onFinalizing);
-    connect(_fastbootFlashThread, &FastbootFlashThread::writing, this, [this]() {
-        setWriteState(WriteState::Writing);
-        startProgressPolling();
-    });
-
-    // Clean up thread pointer when finished
-    connect(_fastbootFlashThread, &QThread::finished, this, [this]() {
-        if (_fastbootFlashThread) {
-            _fastbootFlashThread->deleteLater();
-            _fastbootFlashThread = nullptr;
-        }
-    });
-
-    // Wire fastboot timing events and progress to PerformanceStats
-    connect(_fastbootFlashThread, &FastbootFlashThread::eventFastbootDeviceOpen,
-            this, [this](quint32 ms, bool ok, QString meta){
-                _performanceStats->recordEvent(PerformanceStats::EventType::FastbootDeviceOpen, ms, ok, meta);
-            });
-    connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress,
-            this, [this](quint64 now, quint64 total){
-                _performanceStats->recordDownloadProgress(now, total);
-            });
-    connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress,
-            this, [this](quint64 now, quint64 total){
-                _performanceStats->recordWriteProgress(now, total);
-            });
-
-    _fastbootFlashThread->start();
-}
-
-void ImageWriter::onRpibootError(const QString &msg)
-{
-    qWarning() << "rpiboot error:" << msg;
-
-    if (_rpibootThread) {
-        _rpibootThread->deleteLater();
-        _rpibootThread = nullptr;
-    }
-
-    onError(msg);
 }
 
 /* Returns true if src and dst are set and destination device is still valid */
@@ -996,28 +663,6 @@ void ImageWriter::startWrite()
         _thread = nullptr;
     }
 
-    // Same for the rpiboot thread — if a previous attempt finished or was
-    // cancelled, the handler sets _rpibootThread = nullptr via deleteLater(),
-    // but the deletion may still be pending in the event queue.
-    if (_rpibootThread) {
-        if (_rpibootThread->isRunning()) {
-            _rpibootThread->cancel();
-            _rpibootThread->wait(5000);
-        }
-        delete _rpibootThread;
-        _rpibootThread = nullptr;
-    }
-
-    // Same for the fastboot flash thread.
-    if (_fastbootFlashThread) {
-        if (_fastbootFlashThread->isRunning()) {
-            _fastbootFlashThread->cancel();
-            _fastbootFlashThread->wait(5000);
-        }
-        delete _fastbootFlashThread;
-        _fastbootFlashThread = nullptr;
-    }
-
     if (!readyToWrite())
     {
         // Provide a user-visible error rather than silently returning, so the UI can recover
@@ -1050,132 +695,6 @@ void ImageWriter::startWrite()
 
     setWriteState(WriteState::Preparing);
     setEjectState(EjectState::EjectIdle);
-
-    if (_isFastbootDevice)
-    {
-        // Already in fastboot mode — go directly to flash
-        emit preparationStatusUpdate(tr("Starting fastboot flash..."));
-        _fastbootFlashThread = new FastbootFlashThread(
-            _fastbootId, _fastbootBlockDevice, _src, _downloadLen, _extrLen, _expectedHash, this);
-        _fastbootFlashThread->setImageCustomisation(_config, _cmdline, _firstrun, _cloudinit, _cloudinitNetwork, _initFormat);
-        if (!_bmapUrl.isEmpty())
-            _fastbootFlashThread->setBmapUrl(QUrl(_bmapUrl));
-        // Same Connect-org wire-up as the rpiboot path: when the user
-        // picked a fastboot storage device directly, register the
-        // device's firmware identity with the organisation before
-        // reboot.
-        if (_settings.value(QStringLiteral("connect_org_enabled")).toBool()) {
-            const QString orgKey =
-                _settings.value(QStringLiteral("connect_org_api_key")).toString();
-            if (!orgKey.isEmpty()) {
-                const QString orgDesc =
-                    _settings.value(QStringLiteral("connect_org_description")).toString();
-                _fastbootFlashThread->setConnectRegistration(orgKey, orgDesc);
-            }
-        }
-        connect(_fastbootFlashThread, &FastbootFlashThread::success, this, &ImageWriter::onSuccess);
-        connect(_fastbootFlashThread, &FastbootFlashThread::error, this, &ImageWriter::onError);
-        connect(_fastbootFlashThread, &FastbootFlashThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
-        connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress, this, [this](quint64 now, quint64 total) {
-            emit downloadProgress(QVariant(now), QVariant(total));
-        });
-        connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress, this, [this](quint64 now, quint64 total) {
-            emit writeProgress(QVariant(now), QVariant(total));
-        });
-        connect(_fastbootFlashThread, &FastbootFlashThread::finalizing, this, &ImageWriter::onFinalizing);
-        connect(_fastbootFlashThread, &FastbootFlashThread::writing, this, [this]() {
-            setWriteState(WriteState::Writing);
-            startProgressPolling();
-        });
-        connect(_fastbootFlashThread, &QThread::finished, this, [this]() {
-            if (_fastbootFlashThread) {
-                _fastbootFlashThread->deleteLater();
-                _fastbootFlashThread = nullptr;
-            }
-        });
-        connect(_fastbootFlashThread, &FastbootFlashThread::eventFastbootDeviceOpen,
-                this, [this](quint32 ms, bool ok, QString meta){
-                    _performanceStats->recordEvent(PerformanceStats::EventType::FastbootDeviceOpen, ms, ok, meta);
-                });
-        connect(_fastbootFlashThread, &FastbootFlashThread::downloadProgress,
-                this, [this](quint64 now, quint64 total){
-                    _performanceStats->recordDownloadProgress(now, total);
-                });
-        connect(_fastbootFlashThread, &FastbootFlashThread::writeProgress,
-                this, [this](quint64 now, quint64 total){
-                    _performanceStats->recordWriteProgress(now, total);
-                });
-        _fastbootFlashThread->start();
-        return;
-    }
-
-    if (_isRpibootDevice)
-    {
-        emit preparationStatusUpdate(tr("Preparing device for imaging..."));
-
-        // Parse the rpiboot device ID to extract USB bus/address/port info
-        RpibootThread::DeviceInfo devInfo;
-
-        // Parse "rpiboot://bus:addr:port1.port2..."
-        QString devPath = _rpibootDeviceId;
-        if (devPath.startsWith("rpiboot://"))
-            devPath = devPath.mid(10);
-        QStringList parts = devPath.split(':');
-        if (parts.size() >= 2) {
-            devInfo.busNumber = static_cast<uint8_t>(parts[0].toUInt());
-            devInfo.deviceAddress = static_cast<uint8_t>(parts[1].toUInt());
-        }
-        if (parts.size() >= 3) {
-            for (const auto& p : parts[2].split('.'))
-                if (!p.isEmpty())
-                    devInfo.portPath.push_back(static_cast<uint8_t>(p.toUInt()));
-        }
-
-        // Part 4 is the USB PID, which encodes the chip generation.
-        // Format added in rpiboot_scanner.cpp: rpiboot://bus:addr:portpath:pid
-        devInfo.chipGeneration = rpiboot::ChipGeneration::BCM2711;  // safe default
-        if (parts.size() >= 4) {
-            auto pid = static_cast<uint16_t>(parts[3].toUInt());
-            if (auto gen = rpiboot::chipGenerationFromPid(pid))
-                devInfo.chipGeneration = *gen;
-        }
-
-        _rpibootThread = new RpibootThread(devInfo, _rpibootSideloadMode, this);
-        if (!_debugCustomFastbootGadget.isEmpty())
-            _rpibootThread->setCustomFastbootGadget(_debugCustomFastbootGadget);
-        if (_debugSignFastbootGadget) {
-            QString rsaKey = _settings.value("secureboot_rsa_key").toString();
-            if (rsaKey.isEmpty()) {
-                qWarning() << "Debug: Re-provisioning requested, but no secure boot RSA key is configured; signing will be skipped";
-            } else {
-                _rpibootThread->setSignFastbootGadgetKey(rsaKey);
-            }
-            _rpibootThread->setReprovisionDevice(true);
-        }
-
-        // After sideload, start FastbootFlashThread
-        connect(_rpibootThread, &RpibootThread::fastbootDeviceReady, this, &ImageWriter::onRpibootFastbootReady);
-
-        connect(_rpibootThread, &RpibootThread::error, this, &ImageWriter::onRpibootError);
-        connect(_rpibootThread, &RpibootThread::preparationStatusUpdate, this, &ImageWriter::onPreparationStatusUpdate);
-
-        // Wire rpiboot timing events to PerformanceStats
-        connect(_rpibootThread, &RpibootThread::eventFirmwareSetup,
-                this, [this](quint32 ms, bool ok, QString meta){
-                    _performanceStats->recordEvent(PerformanceStats::EventType::RpibootFirmwareSetup, ms, ok, meta);
-                });
-        connect(_rpibootThread, &RpibootThread::eventRpibootProtocol,
-                this, [this](quint32 ms, bool ok, QString meta){
-                    _performanceStats->recordEvent(PerformanceStats::EventType::RpibootProtocol, ms, ok, meta);
-                });
-        connect(_rpibootThread, &RpibootThread::eventFastbootWait,
-                this, [this](quint32 ms, bool ok){
-                    _performanceStats->recordEvent(PerformanceStats::EventType::RpibootFastbootWait, ms, ok);
-                });
-
-        _rpibootThread->start();
-        return;
-    }
 
     if (_src.toString() == "internal://format")
     {
@@ -1797,34 +1316,6 @@ void ImageWriter::cancelWrite()
     if (_waitingForCacheVerification)
     {
         skipCacheVerification();
-        return;
-    }
-
-    if (_rpibootThread)
-    {
-        _rpibootThread->cancel();
-        connect(_rpibootThread, &QThread::finished, this, [this]() {
-            if (_rpibootThread) {
-                _rpibootThread->deleteLater();
-                _rpibootThread = nullptr;
-            }
-            setWriteState(WriteState::Cancelled);
-            emit cancelled();
-        });
-        return;
-    }
-
-    if (_fastbootFlashThread)
-    {
-        _fastbootFlashThread->cancel();
-        connect(_fastbootFlashThread, &QThread::finished, this, [this]() {
-            if (_fastbootFlashThread) {
-                _fastbootFlashThread->deleteLater();
-                _fastbootFlashThread = nullptr;
-            }
-            setWriteState(WriteState::Cancelled);
-            emit cancelled();
-        });
         return;
     }
 
@@ -2727,8 +2218,7 @@ void ImageWriter::ejectDrive()
     if (_ejectState == EjectState::EjectInProgress || _manualEjectThread)
         return;
 
-    // Only regular block devices can be ejected (not fastboot targets)
-    if (_dst.isEmpty() || _dst.startsWith("fastboot://"))
+    if (_dst.isEmpty())
         return;
 
     setEjectState(EjectState::EjectInProgress);
@@ -2812,8 +2302,7 @@ void ImageWriter::setVerifyEnabled(bool verify)
 void ImageWriter::onSuccess()
 {
     // Guard against a late success signal arriving after an error has
-    // already been reported (e.g. FastbootFlashThread falling through
-    // after a flash failure).
+    // already been reported.
     if (_writeState == WriteState::Failed || _writeState == WriteState::Cancelled ||
         _writeState == WriteState::Cancelling) {
         qDebug() << "Ignoring late success signal — write already in state:" << _writeState;
@@ -2857,10 +2346,6 @@ void ImageWriter::onError(QString msg)
     if (_thread && _thread->isRunning()) {
         _thread->cancelDownload();
     }
-    if (_fastbootFlashThread && _fastbootFlashThread->isRunning()) {
-        _fastbootFlashThread->cancel();
-    }
-    
     // End performance stats session with error
     _performanceStats->endSession(false, msg);
     
@@ -3718,8 +3203,8 @@ QVariantMap ImageWriter::requestOrgAuthKey(const QString &description, int ttlDa
     if (ttlDays > kMaxTtlDays)
         ttlDays = kMaxTtlDays;
 
-    ConnectDeviceRegistrar registrar(apiKey, QString());
-    auto result = registrar.requestAuthKey(description, ttlDays);
+    ConnectAuthKeyClient client(apiKey);
+    auto result = client.requestAuthKey(description, ttlDays);
     if (!result.ok) {
         qWarning() << "Connect: auth-key request failed:" << result.errorMessage;
         out.insert(QStringLiteral("error"), result.errorMessage);
@@ -3866,44 +3351,6 @@ void ImageWriter::setDebugIgnoreDeviceLimits(bool enabled)
     }
 }
 
-bool ImageWriter::getDebugRpiboot() const
-{
-    return _debugRpiboot;
-}
-
-void ImageWriter::setDebugRpiboot(bool enabled)
-{
-    if (_debugRpiboot != enabled) {
-        _debugRpiboot = enabled;
-        _drivelist.setRpibootEnabled(enabled);
-        _drivelist.setFastbootScanEnabled(enabled);
-        // Sticky across runs — restored in the constructor.
-        _settings.setValue(QStringLiteral("debug_rpiboot"), enabled);
-        _settings.sync();
-        qDebug() << "Debug: Rpiboot/fastboot support" << (enabled ? "enabled" : "disabled");
-    }
-}
-
-QString ImageWriter::getDebugCustomFastbootGadget() const
-{
-    return _debugCustomFastbootGadget;
-}
-
-void ImageWriter::setDebugCustomFastbootGadget(const QString &path)
-{
-    // The QML file dialog returns file:// URLs; convert to a local path
-    // so downstream code (FirmwareManager::ensureAvailable) can use it
-    // with std::filesystem::copy_file.
-    QString localPath = path;
-    if (localPath.startsWith(QStringLiteral("file://"))) {
-        localPath = QUrl(localPath).toLocalFile();
-    }
-    if (_debugCustomFastbootGadget != localPath) {
-        _debugCustomFastbootGadget = localPath;
-        qDebug() << "Debug: Custom fastboot gadget" << (localPath.isEmpty() ? "cleared" : localPath);
-    }
-}
-
 bool ImageWriter::getDebugForceSecureBoot() const
 {
     return _debugForceSecureBoot;
@@ -3914,19 +3361,6 @@ void ImageWriter::setDebugForceSecureBoot(bool enabled)
     if (_debugForceSecureBoot != enabled) {
         _debugForceSecureBoot = enabled;
         qDebug() << "Debug: Force Secure Boot available" << (enabled ? "enabled" : "disabled");
-    }
-}
-
-bool ImageWriter::getDebugSignFastbootGadget() const
-{
-    return _debugSignFastbootGadget;
-}
-
-void ImageWriter::setDebugSignFastbootGadget(bool enabled)
-{
-    if (_debugSignFastbootGadget != enabled) {
-        _debugSignFastbootGadget = enabled;
-        qDebug() << "Debug: Sign fastboot gadget" << (enabled ? "enabled" : "disabled");
     }
 }
 

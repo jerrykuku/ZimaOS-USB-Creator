@@ -26,7 +26,8 @@ param(
     # Build a distributable installer without Authenticode signing. The
     # default release path remains signed and still requires a certificate.
     [switch]$Unsigned,
-    [string]$SigningCertificateThumbprint
+    [string]$SigningCertificateThumbprint,
+    [string]$TimestampServer = $env:SIGNING_TIMESTAMP_SERVER
 )
 
 $ErrorActionPreference = 'Stop'
@@ -75,6 +76,15 @@ function Fail([string]$Message) {
     throw "build-windows: $Message"
 }
 
+if ([string]::IsNullOrWhiteSpace($TimestampServer)) {
+    $TimestampServer = 'http://timestamp.sectigo.com'
+}
+$timestampUri = $null
+if (-not [Uri]::TryCreate($TimestampServer, [UriKind]::Absolute, [ref]$timestampUri) -or
+    $timestampUri.Scheme -notin @('http', 'https')) {
+    Fail "invalid timestamp server URL: $TimestampServer"
+}
+
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) { Fail 'this channel must run on Windows.' }
 
 function Require-Command([string]$Name, [string]$Hint) {
@@ -111,6 +121,22 @@ function Install-Prerequisites {
         }
     }
 
+    try {
+        [void](Resolve-SignTool)
+        Write-Host 'build-windows: Windows SDK signing tools are already installed.'
+    } catch {
+        # Request the signing component explicitly. A default Windows SDK
+        # installation can omit it, leaving release builds without signtool.
+        $windowsSdkPackage = 'Microsoft.WindowsSDK.10.0.26100'
+        Write-Host 'build-windows: installing Windows SDK signing tools...'
+        & winget install --exact --id $windowsSdkPackage --source winget --force --accept-package-agreements --accept-source-agreements --override '/quiet /norestart /features OptionId.SigningTools'
+        $sdkExitCode = $LASTEXITCODE
+        try {
+            [void](Resolve-SignTool)
+        } catch {
+            Fail "Windows SDK signing tools installation failed (winget exit code $sdkExitCode)."
+        }
+    }
     if ($WithQt) {
         Require-Command py 'Install Python 3, then reopen PowerShell.'
         & py -m pip install --user --upgrade aqtinstall
@@ -209,6 +235,38 @@ function Resolve-SigningCertificate {
     Write-Host "build-windows: using signing certificate $script:SigningCertificateThumbprint ($($candidates[0].Subject))"
 }
 
+function Resolve-SignTool {
+    $command = Get-Command signtool.exe -ErrorAction SilentlyContinue
+    if ($command) { return $command.Source }
+
+    # Windows SDK installers do not normally add their versioned bin folder to
+    # PATH. Prefer the native host architecture from the newest installed SDK.
+    $sdkBinRoots = @(
+        (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin'),
+        (Join-Path $env:ProgramFiles 'Windows Kits\10\bin')
+    ) | Where-Object { $_ -and (Test-Path -LiteralPath $_ -PathType Container) }
+    if ($sdkBinRoots.Count -eq 0) {
+        Fail 'signtool is required. Install the Windows SDK Signing Tools for Desktop Apps component.'
+    }
+    $architectures = if ([Environment]::Is64BitOperatingSystem) { @('x64', 'x86') } else { @('x86') }
+    foreach ($architecture in $architectures) {
+        $candidate = Get-ChildItem -LiteralPath $sdkBinRoots -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -match '^\d+(\.\d+)+$' } |
+            Sort-Object { [version]$_.Name } -Descending |
+            ForEach-Object { Join-Path $_.FullName "$architecture\signtool.exe" } |
+            Where-Object { Test-Path -LiteralPath $_ -PathType Leaf } |
+            Select-Object -First 1
+        if ($candidate) {
+            $signToolDirectory = Split-Path -Parent $candidate
+            $env:Path = "$signToolDirectory;$env:Path"
+            Write-Host "build-windows: using signtool at $candidate"
+            return $candidate
+        }
+    }
+
+    Fail 'signtool is required. Install the Windows SDK Signing Tools for Desktop Apps component.'
+}
+
 function Resolve-Toolchain {
     if (-not (Test-Path (Join-Path $QtRoot 'bin\qmake.exe'))) {
         Fail "Qt 6 was not found at '$QtRoot'. Run '.\build-windows.ps1 install -WithQt' or pass -QtRoot."
@@ -237,7 +295,8 @@ function Configure-And-Build([string]$BuildType, [bool]$Installer, [bool]$Signed
         "-DMINGW64_ROOT=$MingwRoot",
         "-DBUILD_CLI_ONLY=$cliValue",
         "-DENABLE_INNO_INSTALLER=$installerValue",
-        "-DIMAGER_SIGNED_APP=$signedValue"
+        "-DIMAGER_SIGNED_APP=$signedValue",
+        "-DIMAGER_TIMESTAMP_SERVER=$TimestampServer"
     )
     if ($Signed -and $SigningCertificateThumbprint) {
         $cmakeArgs += "-DIMAGER_SIGNING_CERTIFICATE=$SigningCertificateThumbprint"
@@ -301,7 +360,7 @@ switch ($Action) {
         [void](Resolve-InnoSetup)
         if ($signed) {
             Resolve-SigningCertificate
-            Require-Command signtool 'Install the Windows SDK signing tools.'
+            [void](Resolve-SignTool)
         }
         Configure-And-Build 'MinSizeRel' $true $signed
         $installerDirectory = Join-Path $BuildDir 'installer'

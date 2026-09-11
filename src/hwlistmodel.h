@@ -33,8 +33,7 @@ public:
         IconRole,
         DescriptionRole,
         MatchingTypeRole,
-        ArchitectureRole,
-        IsUsbBootConnectedRole
+        ArchitectureRole
     };
 
     struct HardwareDevice {
@@ -64,9 +63,6 @@ public:
     int currentIndex() const;
     void setCurrentIndex(int index);
 
-public slots:
-    void setConnectedRpibootChips(const QStringList &chips);
-
 Q_SIGNALS:
     void currentNameChanged();
     void currentArchitectureChanged();
@@ -78,13 +74,10 @@ protected:
     QVariant data(const QModelIndex &index, int role) const override;
 
 private:
-    static bool tagsMatchChip(const QJsonArray &tags, const QString &chipName);
-
     QVector<HardwareDevice> _hwDevices;
     ImageWriter &_imageWriter;
     int _currentIndex = -1;
     QString _lastSelectedDeviceName;  // Track actual device to detect changes
-    QStringList _connectedRpibootChips;
 };
 
 #endif

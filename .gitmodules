@@ -16,6 +16,3 @@
 [submodule "src/dependencies/vendor/curl"]
 	path = src/dependencies/vendor/curl
 	url = https://github.com/curl/curl.git
-[submodule "src/dependencies/vendor/libusb"]
-	path = src/dependencies/vendor/libusb
-	url = https://github.com/libusb/libusb.git

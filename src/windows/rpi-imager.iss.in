@@ -83,12 +83,6 @@ Root: HKCR; Subkey: "rpi-imager\DefaultIcon"; ValueType: string; ValueName: ""; 
 Root: HKCR; Subkey: "rpi-imager\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\zimaos-usb-creator-callback-relay.exe"" ""%1"""; Flags: uninsdeletekey
 
 [Files]
-; WinUSB driver for Raspberry Pi USB boot mode devices (rpiboot).
-; For signed builds the INF has CatalogFile= uncommented and the matching
-; signed .cat is included; for unsigned builds only the bare INF is present.
-Source: "@CMAKE_BINARY_DIR@\deploy\rpiboot-winusb.inf"; DestDir: "{app}"; Flags: ignoreversion
-Source: "@CMAKE_BINARY_DIR@\deploy\rpiboot-winusb.cat"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-
 ; Main program files
 Source: "@CMAKE_BINARY_DIR@\deploy\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion signonce
 
@@ -123,11 +117,6 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AfterInstall: S
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; AfterInstall: SetElevationBit('{commondesktop}\{#MyAppName}.lnk')
 
 [Run]
-; Stage and install WinUSB driver for Raspberry Pi USB boot mode devices.
-; pnputil /install also applies the driver to any currently-connected device.
-; Return code 3010 means success-with-reboot-required and is treated as success.
-Filename: "{sys}\pnputil.exe"; Parameters: "/add-driver ""{app}\rpiboot-winusb.inf"" /install"; Flags: runhidden waituntilterminated; StatusMsg: "Installing USB driver for Raspberry Pi boot mode..."
-
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent runascurrentuser
 
 [InstallDelete]
@@ -469,74 +458,10 @@ begin
   end;
 end;
 
-// Remove the WinUSB driver package staged by pnputil during install.
-// pnputil renames our INF to an oem*.inf in the driver store; we must
-// enumerate drivers to recover that published name before we can delete it.
-procedure UninstallWinUSBDriver();
-var
-  TmpFile: string;
-  Lines: TArrayOfString;
-  I: Integer;
-  CurrentOem, OemName: string;
-  ResultCode: Integer;
-begin
-  TmpFile := ExpandConstant('{tmp}\pnputil_enum.txt');
-
-  // Dump all staged third-party drivers to a temp file
-  if not Exec(ExpandConstant('{sys}\cmd.exe'),
-              '/c pnputil /enum-drivers > "' + TmpFile + '" 2>&1',
-              '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    Log('WinUSB driver uninstall: could not run pnputil /enum-drivers');
-    Exit;
-  end;
-
-  if not LoadStringsFromFile(TmpFile, Lines) then
-  begin
-    Log('WinUSB driver uninstall: could not read pnputil output');
-    Exit;
-  end;
-  DeleteFile(TmpFile);
-
-  // pnputil output format (Win10+):
-  //   Published Name:  oem5.inf
-  //   Original Name:   rpiboot-winusb.inf
-  //   ...
-  // Track the most-recently-seen Published Name as we scan for our Original Name.
-  OemName := '';
-  CurrentOem := '';
-  for I := 0 to GetArrayLength(Lines) - 1 do
-  begin
-    if Pos('published name', LowerCase(Lines[I])) > 0 then
-      CurrentOem := Trim(Copy(Lines[I], Pos(':', Lines[I]) + 1, MaxInt))
-    else if (Pos('original name', LowerCase(Lines[I])) > 0) and
-            (Pos('rpiboot-winusb.inf', LowerCase(Lines[I])) > 0) then
-    begin
-      OemName := CurrentOem;
-      Break;
-    end;
-  end;
-
-  if OemName <> '' then
-  begin
-    Log('WinUSB driver uninstall: removing ' + OemName);
-    Exec(ExpandConstant('{sys}\pnputil.exe'),
-         '/delete-driver "' + OemName + '" /uninstall',
-         '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Log('pnputil /delete-driver returned ' + IntToStr(ResultCode));
-  end
-  else
-    Log('WinUSB driver uninstall: rpiboot-winusb.inf not found in driver store');
-end;
-
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   CacheFile, CacheDir: string;
 begin
-  if CurUninstallStep = usUninstall then begin
-    UninstallWinUSBDriver();
-  end;
-
   if CurUninstallStep = usPostUninstall then begin
     // Delete the cached OS download (potentially several GB). Path is read
     // from QSettings at HKCU\Software\Raspberry Pi\Raspberry Pi Imager\caching\lastFileName.

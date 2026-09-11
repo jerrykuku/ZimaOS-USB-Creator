@@ -30,19 +30,9 @@ WizardStepBase {
 
     // True when "Raspberry Pi Connect for Organisations" is enabled
     // in App Options.  In org mode, this step collects an organisation
-    // API key (session-only) instead of a per-user authentication
-    // token.  The key is forwarded to the fastboot flash thread and
-    // used to register each provisioned device with Connect.
+    // API key (session-only) instead of a per-user authentication token.
     readonly property bool orgModeEnabled:
         ImageWriterSingleton ? ImageWriterSingleton.getBoolSetting("connect_org_enabled") : false
-
-    // True when the selected target storage is a fastboot device.
-    // Determines which organisation flow to run on Next:
-    //   true  → device-identity registration via firmware crypto.
-    //   false → mint a single-use auth key over the org API key and
-    //           write it into the OS image like a per-user token.
-    readonly property bool targetIsFastboot:
-        wizardContainer ? wizardContainer.targetIsFastboot === true : false
 
     // Content
     content: [
@@ -63,9 +53,7 @@ WizardStepBase {
                 font.pointSize: Style.fontSizeDescription
                 font.family: Style.fontFamily
                 color: Style.formLabelColor
-                text: root.targetIsFastboot
-                    ? qsTr("Each device will join your Connect organisation using its firmware identity key.")
-                    : qsTr("A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.")
+                text: qsTr("A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.")
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
             }
@@ -92,12 +80,8 @@ WizardStepBase {
 
                 WizardFormLabel {
                     id: labelOrgDesc
-                    text: root.targetIsFastboot
-                        ? qsTr("Description prefix:")
-                        : qsTr("Auth key description:")
-                    accessibleDescription: root.targetIsFastboot
-                        ? qsTr("Optional prefix for the device description sent to Raspberry Pi Connect. The board type and serial number are appended automatically.")
-                        : qsTr("Description for the auth key shown in the Connect organisation UI.")
+                    text: qsTr("Auth key description:")
+                    accessibleDescription: qsTr("Description for the auth key shown in the Connect organisation UI.")
                 }
 
                 ImTextField {
@@ -399,11 +383,7 @@ WizardStepBase {
         // ImageWriter.  The key is persisted in QSettings; the UI
         // never reads it back.
         //
-        // Fastboot target → device identity is registered later, in
-        // the fastboot pre-reboot hook.  Skip the user-token flow.
-        //
-        // Non-fastboot target → mint a single-use organisation auth
-        // key now and treat it as if the user had pasted a per-user
+        // Mint a single-use organisation auth key and treat it as if the user had pasted a per-user
         // token.  This causes the cloud-init / firstrun customisation
         // to write the key to the image, so the device joins the
         // organisation on first boot.
@@ -423,37 +403,17 @@ WizardStepBase {
             root.hasStoredOrgKey = ImageWriterSingleton.hasConnectOrgRegistration()
             wizardContainer.connectOrgDescription = desc
 
-            if (!root.targetIsFastboot) {
-                // Mint a fresh auth key from the org API key and use it
-                // as the Connect token for this image.  requestOrgAuthKey
-                // stores the secret in ImageWriter directly — keeps the
-                // raw secret off the QML stack and lets the wizard
-                // discard it cleanly if the user changes target later.
-                var authDesc = desc.length > 0 ? desc : qsTr("Raspberry Pi Imager")
-                var authResult = ImageWriterSingleton.requestOrgAuthKey(authDesc, 1)
-                if (!authResult || authResult.ok !== true) {
-                    authKeyErrorDialog.detail =
-                        (authResult && authResult.error) ? authResult.error : ""
-                    authKeyErrorDialog.open()
-                    return
-                }
-                wizardContainer.customizationSettings.piConnectEnabled = true
-                root.wizardContainer.piConnectEnabled = true
-                root.isValid = true
+            // Store a fresh auth key in the image without exposing the secret to QML.
+            var authDesc = desc.length > 0 ? desc : qsTr("Raspberry Pi Imager")
+            var authResult = ImageWriterSingleton.requestOrgAuthKey(authDesc, 1)
+            if (!authResult || authResult.ok !== true) {
+                authKeyErrorDialog.detail =
+                    (authResult && authResult.error) ? authResult.error : ""
+                authKeyErrorDialog.open()
                 return
             }
-
-            // Fastboot path: device identity registration runs at
-            // flash time, not via cloud-init, so customizationSettings
-            // stays clear (the customisation generator must not emit
-            // Connect setup into the image).  But the *wizard*-level
-            // piConnectEnabled tracks whether the user configured this
-            // step at all — it drives the sidebar highlight, the
-            // customisation summary, and the "any customisation set"
-            // check.  Mark configured iff there's a usable org key
-            // the fastboot flash thread will register with.
-            delete wizardContainer.customizationSettings.piConnectEnabled
-            root.wizardContainer.piConnectEnabled = root.hasStoredOrgKey
+            wizardContainer.customizationSettings.piConnectEnabled = true
+            root.wizardContainer.piConnectEnabled = true
             root.isValid = true
             return
         }
@@ -563,7 +523,7 @@ WizardStepBase {
         }
     }
 
-    // Auth-key minting failure dialog (non-fastboot org mode).
+    // Auth-key minting failure dialog.
     BaseDialog {
         id: authKeyErrorDialog
         parent: root.wizardContainer && root.wizardContainer.overlayRootRef ? root.wizardContainer.overlayRootRef : undefined

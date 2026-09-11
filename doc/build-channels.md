@@ -172,6 +172,12 @@ Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert |
 .\build-windows.ps1 release -SigningCertificateThumbprint YOUR_THUMBPRINT
 ```
 
+Sectigo is used for RFC 3161 timestamps by default. Override it when needed:
+
+```powershell
+.\build-windows.ps1 release -TimestampServer http://timestamp.digicert.com
+```
+
 The private key stays on the SafeNet token; `signtool` accesses it through the
 SafeNet CSP/KSP provider. Keep the token inserted and unlocked so its PIN prompt
 can be displayed during signing.

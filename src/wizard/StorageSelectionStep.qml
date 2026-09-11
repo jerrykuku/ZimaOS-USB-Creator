@@ -335,12 +335,8 @@ WizardStepBase {
             required property bool isSystem
             required property var mountpoints
             required property QtObject modelData
-            property bool isRpiboot: modelData && typeof modelData.isRpiboot !== "undefined" ? modelData.isRpiboot : false
-            property bool isFastbootStorage: modelData && typeof modelData.isFastbootStorage !== "undefined" ? modelData.isFastbootStorage : false
-            property string fastbootStorageType: modelData && typeof modelData.fastbootStorageType !== "undefined" ? modelData.fastbootStorageType : ""
-
             readonly property bool shouldHide: isSystem && filterSystemDrives.checked
-            readonly property bool unselectable: isReadOnly && !isRpiboot && !isFastbootStorage
+            readonly property bool unselectable: isReadOnly
             
             // Accessibility properties
             Accessible.role: Accessible.ListItem
@@ -406,12 +402,7 @@ WizardStepBase {
                     // Storage icon
                     Image {
                         id: storageIcon
-                        source: dstitem.isRpiboot ? "../icons/ic_rpiboot_40px.svg" :
-                                dstitem.isFastbootStorage ? (
-                                    dstitem.fastbootStorageType === "nvme" ? "../icons/ic_storage_40px.svg" :
-                                    "../icons/ic_sd_storage_40px.svg"
-                                ) :
-                                dstitem.isUsb ? "../icons/ic_usb_40px.svg" :
+                        source: dstitem.isUsb ? "../icons/ic_usb_40px.svg" :
                                 dstitem.isScsi ? "../icons/ic_storage_40px.svg" :
                                 "../icons/ic_sd_storage_40px.svg"
                         Layout.preferredWidth: 40
@@ -448,7 +439,7 @@ WizardStepBase {
                         }
                         
                         Text {
-                            text: dstitem.isRpiboot ? qsTr("Ready for USB boot") : ImageWriterSingleton.formatSize(parseFloat(dstitem.size))
+                            text: ImageWriterSingleton.formatSize(parseFloat(dstitem.size))
                             font.pointSize: Style.fontSizeDescription
                             font.family: Style.fontFamily
                             color: dstitem.unselectable ? Style.formLabelDisabledColor : Style.colorTextPrimary
@@ -514,27 +505,9 @@ WizardStepBase {
             return
         }
 
-        // Fastboot storage devices use setFastbootDevice
-        if (dstitem.isFastbootStorage && typeof ImageWriterSingleton.setFastbootDevice === "function") {
-            ImageWriterSingleton.setFastbootDevice(dstitem.device, dstitem.size)
-        } else if (dstitem.isRpiboot && typeof ImageWriterSingleton.setRpibootDevice === "function") {
-            // Pass the chosen storage block-device name through to the rpiboot
-            // selection.  After auto-bootstrap into fastboot mode the same
-            // string drives both the flash destination and the EEPROM
-            // BOOT_ORDER nibble we set post-flash; leaving it unset would
-            // silently default to the eMMC.
-            ImageWriterSingleton.setRpibootDevice(dstitem.device, dstitem.fastbootBlockDevice || "")
-        } else {
-            ImageWriterSingleton.setDst(dstitem.device, dstitem.size)
-        }
+        ImageWriterSingleton.setDst(dstitem.device, dstitem.size)
         selectedDeviceName = dstitem.description || dstitem.device
         root.wizardContainer.selectedStorageName = dstitem.description || dstitem.device
-        // Drives the org-mode branch in the Pi Connect customisation step
-        // (device-identity registration vs. auth-key minting).  rpiboot
-        // bootstraps into fastboot before the flash, so it counts as
-        // fastboot for this purpose.
-        root.wizardContainer.targetIsFastboot =
-            dstitem.isFastbootStorage === true || dstitem.isRpiboot === true
         // Drop any auth key we minted for a previous target choice.
         // No-op on first selection or if the runtime token came from
         // the user-token flow.
@@ -565,7 +538,6 @@ WizardStepBase {
         var isReadOnlyRole = 0x106
         var isSystemRole = 0x107
         var mountpointsRole = 0x108
-        var isFastbootStorageRole = 0x10B
 
         var isReadOnly = model.data(modelIndex, isReadOnlyRole)
         if (isReadOnly) {
@@ -577,14 +549,11 @@ WizardStepBase {
         var description = model.data(modelIndex, descriptionRole)
         var size = model.data(modelIndex, sizeRole)
         var mountpoints = model.data(modelIndex, mountpointsRole) || []
-        var isFastbootStorage = model.data(modelIndex, isFastbootStorageRole) || false
 
         // Create a mock item object with the required properties
         var mockItem = {
             unselectable: isReadOnly,
             isSystem: isSystem,
-            isFastbootStorage: isFastbootStorage,
-            isRpiboot: false,
             device: device,
             description: description,
             size: size,
@@ -699,7 +668,6 @@ WizardStepBase {
             ImageWriterSingleton.setDst(systemDriveConfirm.device, systemDriveConfirm.deviceSize)
             root.selectedDeviceName = systemDriveConfirm.driveName || systemDriveConfirm.device
             root.wizardContainer.selectedStorageName = systemDriveConfirm.driveName || systemDriveConfirm.device
-            root.wizardContainer.targetIsFastboot = false
             if (typeof ImageWriterSingleton.discardOrgMintedConnectToken === "function")
                 ImageWriterSingleton.discardOrgMintedConnectToken()
             // Re-enable filtering after selection via confirmation path

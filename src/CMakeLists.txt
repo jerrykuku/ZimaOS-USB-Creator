@@ -134,6 +134,7 @@ if (WIN32)
 
   set(IMAGER_SIGNED_APP OFF CACHE BOOL "Sign Imager and its installer as part of the build. Requires a valid Code Signing certificate.")
   set(IMAGER_SIGNING_CERTIFICATE "" CACHE STRING "Optional Windows signing certificate thumbprint (empty uses signtool auto-selection).")
+  set(IMAGER_TIMESTAMP_SERVER "http://timestamp.sectigo.com" CACHE STRING "RFC 3161 timestamp server used for Windows code signing.")
 endif()
 
 if (APPLE)
@@ -199,9 +200,6 @@ else()
 endif()
 
 
-# Bundled libusb (for rpiboot Compute Module support)
-include(dependencies/libusb.cmake)
-
 # Add dependencies
 if (APPLE)
     include(mac/Platform.cmake)
@@ -245,7 +243,7 @@ set(SOURCES_BASE ${PLATFORM_SOURCES} "main.cpp"
     "driveformatthread.cpp" "localfileextractthread.cpp" "dependencies/sha256crypt/sha256crypt.c" "cli.cpp"
     "disk_formatter.cpp" "file_operations.cpp" "cachemanager.cpp" "systemmemorymanager.cpp" "imageadvancedoptions.cpp"
     "customization_generator.cpp" "platformhelper.cpp" "suspend_inhibitor.cpp" "secureboot.cpp" "asynccachewriter.cpp" "ringbuffer.cpp"
-    "performancestats.cpp" "curlnetworkconfig.cpp" "curlfetcher.cpp" "writeprogresswatchdog.cpp")
+    "performancestats.cpp" "curlnetworkconfig.cpp" "curlfetcher.cpp" "connect_auth_key_client.cpp" "writeprogresswatchdog.cpp")
 
 # Add GUI-specific sources only for non-CLI builds
 if(BUILD_CLI_ONLY)
@@ -268,27 +266,6 @@ if(BUILD_EMBEDDED)
 else()
     set(SOURCES ${SOURCES} "device_info.cpp")
 endif()
-
-# rpiboot and fastboot sources (Compute Module imaging)
-set(SOURCES ${SOURCES}
-    "rpiboot/libusb_transport.cpp"
-    "rpiboot/bootcode_loader.cpp"
-    "rpiboot/file_server.cpp"
-    "rpiboot/bootfiles.cpp"
-    "rpiboot/rpiboot_protocol.cpp"
-    "rpiboot/firmware_manager.cpp"
-    "rpiboot/rpiboot_scanner.cpp"
-    "rpiboot/secure_boot_provisioner.cpp"
-    "rpiboot/bootloader_image.cpp"
-    "rpibootthread.cpp"
-    "fastboot/fastboot_protocol.cpp"
-    "fastboot/bmap.cpp"
-    "fastboot/sparse_encoder.cpp"
-    "fastboot/pieeprom.cpp"
-    "fastboot/eeprom_signer.cpp"
-    "fastbootflashthread.cpp"
-    "connect_device_registrar.cpp"
-)
 
 # Find Qt components - different requirements for CLI-only vs GUI builds
 if(BUILD_CLI_ONLY)
@@ -545,23 +522,20 @@ else()
     include(linux/PlatformPackaging.cmake)
 endif()
 
-add_dependencies(${PROJECT_NAME} zlibstatic yescrypt usb-1.0-static)
-include_directories(${CURL_INCLUDE_DIR} ${LibArchive_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${LIBDRM_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR} ${YESCRYPT_INCLUDE_DIR} ${LIBUSB_INCLUDE_DIR})
+add_dependencies(${PROJECT_NAME} zlibstatic yescrypt)
+include_directories(${CURL_INCLUDE_DIR} ${LibArchive_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${LIBDRM_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${ZSTD_INCLUDE_DIR} ${YESCRYPT_INCLUDE_DIR})
 
 # Link different Qt components based on build type
-# rpiboot link libraries (libusb)
-set(RPIBOOT_LIBS ${LIBUSB_LIBRARIES})
-
 if(BUILD_CLI_ONLY)
     # CLI-only build: link Core, Network and essential libraries
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${RPIBOOT_LIBS} ${EXTRALIBS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${EXTRALIBS})
 else()
     # Regular GUI build: link all GUI components
     # Add DBus on Linux for suspend inhibitor and native file dialogs (portals)
     if(UNIX AND NOT APPLE)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${QT}::DBus ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${RPIBOOT_LIBS} ${EXTRALIBS})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${QT}::DBus ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${EXTRALIBS})
     else()
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${RPIBOOT_LIBS} ${EXTRALIBS})
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${QT}::Core ${QT}::Gui ${QT}::Quick ${QT}::QuickControls2 ${QT}::Svg ${QT}::Network ${CURL_LIBRARIES} ${LibArchive_LIBRARIES} ${ZLIB_LIBRARIES} ${YESCRYPT_LIBRARIES} ${LIBDRM_LIBRARIES} ${ATOMIC_LIBRARY} ${EXTRALIBS})
     endif()
 endif()
 

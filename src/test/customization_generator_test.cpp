@@ -2080,8 +2080,8 @@ TEST_CASE("CustomisationGenerator handles empty cloud-init settings gracefully",
 
     // Nothing configured means nothing written. Both generators used to emit a
     // baseline (manage_resolv_conf, and eth0 DHCP) unconditionally, which made
-    // the fastboot and download paths write meta-data/network-config even when
-    // the user had skipped customisation — and older fastboot gadgets failed on
+    // the download path writes meta-data/network-config even when
+    // the user had skipped customisation — and older readers failed on
     // that write. An empty payload is what tells those paths to skip the file.
     REQUIRE(userdata.isEmpty());
     REQUIRE(netcfg.isEmpty());

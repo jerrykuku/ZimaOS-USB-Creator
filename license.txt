@@ -49,7 +49,6 @@ This software depends on the following third-party components covered by open so
 - libcurl (libcurl license)
 - zstd (BSD license)
 - nghttp2 (MIT license)
-- libusb (LGPL 2.1 license)
 - yescrypt (BSD 2-Clause license)
 
 ==
@@ -1142,30 +1141,6 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-==
-libusb license
-==
-
-libusb is covered by the GNU LGPL version 2.1 or later. Refer to the
-"GNU C library" section above for the full license text. The full
-libusb COPYING file is distributed with the libusb source at
-https://github.com/libusb/libusb.
-
-Copyright (c) 2001 Johannes Erdfelt <johannes@erdfelt.com>
-Copyright (c) 2007-2009 Daniel Drake <dsd@gentoo.org>
-Copyright (c) 2010-2012 Peter Stuge <peter@stuge.se>
-Copyright (c) 2008-2016 Nathan Hjelm <hjelmn@users.sourceforge.net>
-Copyright (c) 2009-2013 Pete Batard <pete@akeo.ie>
-Copyright (c) 2009-2013 Ludovic Rousseau <ludovic.rousseau@gmail.com>
-Copyright (c) 2010-2012 Michael Plante <michael.plante@gmail.com>
-Copyright (c) 2011-2013 Hans de Goede <hdegoede@redhat.com>
-Copyright (c) 2012-2013 Martin Pieuchot <mpi@openbsd.org>
-Copyright (c) 2012-2013 Toby Gray <toby.gray@realvnc.com>
-Copyright (c) 2013-2018 Chris Dickens <christopher.a.dickens@gmail.com>
-
-For other contributors refer to the AUTHORS file distributed with the
-upstream source.
 
 ==
 yescrypt license

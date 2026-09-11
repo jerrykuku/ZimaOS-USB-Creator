@@ -20,8 +20,7 @@ WizardStepBase {
     showNextButton: false
     readonly property var ejectState: ImageWriterSingleton.ejectState
     readonly property bool ejectInProgress: ejectState === ImageWriterSingleton.EjectInProgress
-    // Fastboot targets have no removable medium to eject
-    readonly property bool ejectApplicable: !ImageWriterSingleton.isFastbootDevice()
+    readonly property bool ejectApplicable: true
     // Use snapshot of customization flags captured when write completed
     // This preserves the state even after token/flags are cleared for security
     readonly property bool anyCustomizationsApplied: (
