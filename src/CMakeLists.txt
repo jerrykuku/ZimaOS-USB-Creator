@@ -283,7 +283,9 @@ endif()
 if (Qt6_FOUND)
     set(QT Qt6)
     if (APPLE)
-        set(CMAKE_OSX_DEPLOYMENT_TARGET "13" CACHE STRING "" FORCE)
+        # Qt 6.11 itself requires macOS 13. Keep this explicit so the bundle
+        # does not accidentally inherit a newer build-host deployment target.
+        set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum macOS version supported by the Qt 6.11 build" FORCE)
     endif()
 else()
     message(FATAL_ERROR "Missing suitable Qt library (must be at least version 6.9)" )

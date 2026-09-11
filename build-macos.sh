@@ -15,6 +15,7 @@ else
     QT_ROOT="$HOME/Qt/$QT_VERSION/macos"
 fi
 ARCH="$(uname -m)"
+ARCH_EXPLICIT=0
 SIGNING_IDENTITY=""
 # Release builds are signed and notarized by default. These can still be
 # overridden from the command line when multiple certificates/profiles exist.
@@ -120,7 +121,7 @@ parse_options() {
     ACTION="${1:-}"; [ -n "$ACTION" ] || { usage; exit 1; }; shift || true
     while [ "$#" -gt 0 ]; do
         case "$1" in
-            --arch=*) ARCH="${1#*=}" ;;
+            --arch=*) ARCH="${1#*=}"; ARCH_EXPLICIT=1 ;;
             --qt-root=*) QT_ROOT="${1#*=}"; QT_ROOT_EXPLICIT=1 ;;
             --signing-identity=*) SIGNING_IDENTITY="${1#*=}" ;;
             --notarize-profile=*) NOTARIZE_PROFILE="${1#*=}" ;;
@@ -137,6 +138,11 @@ parse_options() {
 
 parse_options "$@"
 need_macos
+
+if { [ "$ACTION" = "build" ] || [ "$ACTION" = "release" ]; } && [ "$ARCH_EXPLICIT" -eq 0 ]; then
+    ARCH="arm64"
+    echo "build-macos: no distribution architecture selected; defaulting to arm64"
+fi
 
 # Resolve and validate release credentials before starting any build work.
 if [ "$ACTION" = "release" ]; then

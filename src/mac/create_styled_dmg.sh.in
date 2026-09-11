@@ -151,6 +151,15 @@ if [ -n "$SIGNING_IDENTITY" ] && [ "$SIGNING_IDENTITY" != "NONE" ] && [ "$SIGNIN
         echo "Error: Failed to sign main app bundle"
         exit 1
     }
+
+    codesign --verify --deep --strict --verbose=2 "$DMG_APP_PATH" || {
+        echo "Error: Signed app bundle failed strict verification"
+        exit 1
+    }
+    codesign -dvv "$DMG_APP_PATH" 2>&1 | grep -q 'Authority=Developer ID Application:' || {
+        echo "Error: App is not signed with a Developer ID Application certificate"
+        exit 1
+    }
     
     echo "✓ App bundle signed successfully"
 else
@@ -259,4 +268,4 @@ if [ "$SHOULD_NOTARIZE" = "ON" ] && [ -n "$KEYCHAIN_PROFILE" ] && [ "$KEYCHAIN_P
  echo "Cleaning up temporary app bundle..."
  rm -rf "$DMG_APP_PATH"
  
- exit 0 
+ exit 0

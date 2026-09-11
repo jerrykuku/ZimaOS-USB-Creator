@@ -12,7 +12,7 @@ QT_ROOT="${Qt6_ROOT:-/opt/Qt/${QT_VERSION_DEFAULT:-6.11.1}/macos}"
 
 # Default parameters
 CLEAN_BUILD=0
-ARCH="universal"
+ARCH="arm64"
 SIGNING_IDENTITY=""
 NOTARIZE_PROFILE=""
 SKIP_BUILD=0
@@ -199,6 +199,41 @@ if [ ! -d "$APP_BUNDLE" ]; then
     echo "❌ Error: Application bundle not found: $APP_BUNDLE"
     exit 1
 fi
+
+# Validate every executable library in the bundle. A universal main binary is
+# insufficient if a Qt framework or plugin is missing one architecture.
+APP_BINARY="$APP_BUNDLE/Contents/MacOS/zimaos-usb-creator"
+if [ ! -x "$APP_BINARY" ]; then
+    echo "❌ Error: Application executable not found: $APP_BINARY"
+    exit 1
+fi
+
+REQUIRED_ARCHES=()
+if [ "$ARCH" = "universal" ]; then
+    REQUIRED_ARCHES=(arm64 x86_64)
+else
+    REQUIRED_ARCHES=("$ARCH")
+fi
+
+MISSING_ARCHES=()
+while IFS= read -r -d '' binary; do
+    if file "$binary" | grep -q 'Mach-O'; then
+        binary_arches=$(lipo -archs "$binary" 2>/dev/null || true)
+        for required_arch in "${REQUIRED_ARCHES[@]}"; do
+            case " $binary_arches " in
+                *" $required_arch "*) ;;
+                *) MISSING_ARCHES+=("$binary: missing $required_arch (found: ${binary_arches:-none})") ;;
+            esac
+        done
+    fi
+done < <(find "$APP_BUNDLE/Contents" -type f -print0)
+
+if [ "${#MISSING_ARCHES[@]}" -gt 0 ]; then
+    echo "❌ Error: Application bundle does not match requested architecture '$ARCH':"
+    printf '  %s\n' "${MISSING_ARCHES[@]}"
+    exit 1
+fi
+echo "✅ Application bundle contains required architecture(s): ${REQUIRED_ARCHES[*]}"
 
 # Create DMG
 echo "📦 Creating DMG installer..."
