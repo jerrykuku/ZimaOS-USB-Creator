@@ -16,14 +16,6 @@
         <translation>Expulsa el mitjà quan acabi</translation>
     </message>
     <message>
-        <source>Enable anonymous statistics (telemetry)</source>
-        <translation>Activa les estadístiques anònimes (telemetria)</translation>
-    </message>
-    <message>
-        <source>What is this?</source>
-        <translation>Què és això?</translation>
-    </message>
-    <message>
         <source>Disable warnings</source>
         <translation>Desactiva els avisos</translation>
     </message>
@@ -38,14 +30,6 @@
     <message>
         <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
         <translation>Si desactiveu els avisos, el ZimaOS USB Creator &lt;b&gt;no mostrarà les confirmacions abans d&apos;escriure les imatges&lt;/b&gt;. Encara haureu d&apos; &lt;b&gt;escriure el nom exacte &lt;/b&gt; en seleccionar una unitat del sistema.</translation>
-    </message>
-    <message>
-        <source>Content Repository</source>
-        <translation>Repositori de contingut</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Edita</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -72,16 +56,8 @@
         <translation>Expulsa automàticament el dispositiu d&apos;emmagatzematge quan el procés d&apos;escriptura es completi correctament</translation>
     </message>
     <message>
-        <source>Send anonymous usage statistics to help improve ZimaOS USB Creator</source>
-        <translation>Envia estadístiques d&apos;ús anònimes per ajudar a millorar el ZimaOS USB Creator</translation>
-    </message>
-    <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Omet els diàlegs de confirmació abans d&apos;escriure imatges (només per a usuaris avançats)</translation>
-    </message>
-    <message>
-        <source>Change the source of operating system images between official Raspberry Pi repository and custom sources</source>
-        <translation>Canvia la font de les imatges del sistema operatiu entre el repositori oficial de Raspberry Pi i fonts personalitzades</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -120,35 +96,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Saved Customisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings such as hostname, WiFi, and user credentials</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved customisation?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This will remove all saved OS customisation settings such as hostname, WiFi, and user credentials.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Keep saved customisation settings and return to the options dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings permanently</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -180,6 +128,10 @@
     <message>
         <source>Image files (%1)</source>
         <translation>Fitxers d&apos;imatge (%1)</translation>
+    </message>
+    <message>
+        <source>Repository Manifest Files (*.json *.%1)</source>
+        <translation>Fitxers de manifest del dipòsit (*.json *.%1)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -258,8 +210,8 @@
         <translation>Wi‑Fi configurada</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect enabled</source>
-        <translation>Raspberry Pi Connect activat</translation>
+        <source>ZimaOS Connect enabled</source>
+        <translation>ZimaOS Connect activat</translation>
     </message>
     <message>
         <source>I2C enabled</source>
@@ -288,10 +240,6 @@
     <message>
         <source>Authorized keys files (authorized_keys)</source>
         <translation>Fitxers de claus autoritzades (authorized_keys)</translation>
-    </message>
-    <message>
-        <source>Imager Repository Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -470,6 +418,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Ignore Device I/O Limits</source>
+        <translation>Ignora els límits d'E/S del dispositiu</translation>
+    </message>
+    <message>
+        <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
+        <translation>Ignora els límits de profunditat de cua i mida de transferència informats pel dispositiu. Útil per a armaris USB-NVMe que subinformen de les seves capacitats.</translation>
+    </message>
+    <message>
         <source>Enable Periodic Sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -522,48 +478,16 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable Rpiboot/Fastboot Support</source>
-        <translation type="unfinished"></translation>
+        <source>Secure Boot</source>
+        <translation type="unfinished">Arrencada segura</translation>
     </message>
     <message>
-        <source>Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.</source>
-        <translation type="unfinished"></translation>
+        <source>Force Secure Boot Available</source>
+        <translation>Força l'arrencada segura disponible</translation>
     </message>
     <message>
-        <source>Custom Fastboot Gadget:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>(default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a local fastboot gadget boot.img file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Revert to the default fastboot gadget from GitHub</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Fastboot Gadget Image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Boot images (*.img *.bin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All files (*)</source>
-        <translation type="unfinished">Tots els fitxers (*)</translation>
+        <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
+        <translation>Mostra la personalització d'arrencada segura independentment de les capacitats del sistema operatiu. Equivalent a la bandera --enable-secure-boot CLI.</translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -586,7 +510,11 @@
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
-        <translation>Seleccioneu el vostre dispositiu Raspberry Pi</translation>
+        <translation>Seleccioneu el vostre dispositiu ZimaOS</translation>
+    </message>
+    <message>
+        <source>Loading device types...</source>
+        <translation>S'estan carregant els tipus de dispositius...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -626,10 +554,6 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
         <source>Retry downloading the device list</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Connected via USB</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DoneStep</name>
@@ -638,12 +562,28 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
         <translation>Les vostres eleccions:</translation>
     </message>
     <message>
+        <source>Ejecting the storage device — do not remove it yet…</source>
+        <translation>S'està expulsant el dispositiu d'emmagatzematge: encara no el treu...</translation>
+    </message>
+    <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
         <translation>El dispositiu d&apos;emmagatzematge s&apos;ha expulsat automàticament. Ara podeu retirar-lo amb seguretat.</translation>
     </message>
     <message>
+        <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
+        <translation>No s'ha pogut expulsar el dispositiu d'emmagatzematge. Tanca qualsevol aplicació que encara l'utilitzi i, a continuació, prem Expulsa.</translation>
+    </message>
+    <message>
         <source>Please eject the storage device before removing it from your computer.</source>
         <translation>Expulseu el dispositiu d&apos;emmagatzematge abans de retirar-lo de l&apos;ordinador.</translation>
+    </message>
+    <message>
+        <source>Eject</source>
+        <translation>Expulsar</translation>
+    </message>
+    <message>
+        <source>Eject the storage device so it can be removed safely</source>
+        <translation>Expulsa el dispositiu d'emmagatzematge perquè es pugui treure amb seguretat</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -842,6 +782,30 @@ Please check your network connection and try again.</source>
         <translation>No es pot obrir el dispositiu d&apos;emmagatzematge &apos;%1&apos;. Executeu amb privilegis elevats (sudo).</translation>
     </message>
     <message>
+        <source>Verifying OS customisation...</source>
+        <translation>S'està verificant la personalització del SO...</translation>
+    </message>
+    <message>
+        <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
+
+The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
+        <translation>La configuració de personalització del SO no s'ha emmagatzemat correctament al dispositiu. Falten o estan malmesos els fitxers següents: %1.
+
+El dispositiu ha acceptat les dades però no les ha conservat, la qual cosa normalment significa que la targeta SD o l'adaptador USB estan fallant o són falsificats. La imatge en si s'ha escrit correctament, però el dispositiu no hauria aplicat la configuració en el primer arrencada (per la qual cosa no hauríeu pogut connectar-vos-hi). Prova amb una targeta o un lector de targetes diferent.</translation>
+    </message>
+    <message>
+        <source>Unable to allocate memory for verification.</source>
+        <translation>No s'ha pogut assignar memòria per a la verificació.</translation>
+    </message>
+    <message>
+        <source>seeking storage for verification</source>
+        <translation>buscant emmagatzematge per verificar</translation>
+    </message>
+    <message>
+        <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Creating signed boot image...</source>
         <translation>S&apos;està creant la imatge d&apos;arrencada signada...</translation>
     </message>
@@ -936,6 +900,10 @@ Please check your network connection and try again.</source>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for drive to become available... (%1s)</source>
+        <translation>Esperant que la unitat estigui disponible... (%1s)</translation>
     </message>
     <message>
         <source>getting device size</source>
@@ -1084,8 +1052,16 @@ Please check the device and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>flushing image before writing partition table</source>
+        <translation>buidar la imatge abans d'escriure la taula de particions</translation>
+    </message>
+    <message>
         <source>writing partition table</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
+        <translation>Ha fallat la verificació de l'escriptura. La taula de particions del dispositiu d'emmagatzematge és diferent del que s'ha escrit.</translation>
     </message>
     <message>
         <source>final flush</source>
@@ -1148,105 +1124,6 @@ Please check the device and try again.</source>
     </message>
 </context>
 <context>
-    <name>FastbootFlashThread</name>
-    <message>
-        <source>Applying OS customisation...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to mount boot partition: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to read config.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write config.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write firstrun.sh: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write meta-data: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write user-data: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write network-config: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to read cmdline.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write cmdline.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to initialize curl</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No entries in image archive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot error: unexpected internal error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connecting to fastboot device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open fastboot device: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloading and flashing OS image...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fetching block map...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot download failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot flash failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Decompression failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Image hash mismatch. Expected: %1 Got: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>HWListModel</name>
     <message>
         <source>CHOOSE DEVICE</source>
@@ -1256,8 +1133,8 @@ Please check the device and try again.</source>
 <context>
     <name>HostnameCustomizationStep</name>
     <message>
-        <source>A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.</source>
-        <translation>Un nom de host és un nom únic que identifica el vostre Raspberry Pi a la xarxa. Només ha de contenir lletres, números i guions.</translation>
+        <source>A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.</source>
+        <translation>Un nom de host és un nom únic que identifica el vostre ZimaOS a la xarxa. Només ha de contenir lletres, números i guions.</translation>
     </message>
     <message>
         <source>Customisation: Choose hostname</source>
@@ -1355,8 +1232,8 @@ Please check the device and try again.</source>
         <translation>Activa la interfície 1-Wire per connectar sensors de temperatura i altres dispositius Dallas/Maxim</translation>
     </message>
     <message>
-        <source>Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage</source>
-        <translation>Activa el mode de dispositiu USB per utilitzar el vostre Raspberry Pi com a perifèric USB per a xarxes i emmagatzematge</translation>
+        <source>Enable USB device mode to use your ZimaOS as a USB peripheral for networking and storage</source>
+        <translation>Activa el mode de dispositiu USB per utilitzar el vostre ZimaOS com a perifèric USB per a xarxes i emmagatzematge</translation>
     </message>
     <message>
         <source>Save interface and feature settings and continue to writing step</source>
@@ -1525,13 +1402,6 @@ or type a path in the address bar above.</source>
     </message>
 </context>
 <context>
-    <name>ImPopup</name>
-    <message>
-        <source>Dialog</source>
-        <translation>Diàleg</translation>
-    </message>
-</context>
-<context>
     <name>ImSaveFileDialog</name>
     <message>
         <source>Save File</source>
@@ -1636,6 +1506,14 @@ or type a path in the address bar above.</source>
         <translation>o</translation>
     </message>
     <message>
+        <source>No organisation API key is configured.</source>
+        <translation>No s'ha configurat cap clau API d'organització.</translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect returned an unexpected response.</source>
+        <translation>El ZimaOS Connect ha enviat una resposta inesperada.</translation>
+    </message>
+    <message>
         <source>Save Performance Data</source>
         <translation>Desa les dades de rendiment</translation>
     </message>
@@ -1644,23 +1522,9 @@ or type a path in the address bar above.</source>
         <translation>Fitxers JSON (*.json);;Tots els fitxers (*)</translation>
     </message>
     <message>
-        <source>Starting fastboot flash...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preparing device for imaging...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input file is not a valid disk image.
-
-File size %1 bytes is not a multiple of 512 bytes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1800,20 +1664,34 @@ Technical details: %1</source>
         <translation>Trieu la vostra capital més propera. Això recomanarà automàticament la zona horària i la disposició del teclat correctes per a la vostra regió, i establirà el domini regulador sense fils per a les normatives de Wi-Fi del vostre país.</translation>
     </message>
     <message>
-        <source>Choose your time zone so your Raspberry Pi displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
-        <translation>Trieu la vostra zona horària perquè el Raspberry Pi mostri l&apos;hora local correcta. Es recomana automàticament segons la selecció de la capital, però podeu canviar-la si el suggeriment és incorrecte.</translation>
+        <source>Why am I being asked this?</source>
+        <translation>Per què em pregunten això?</translation>
+    </message>
+    <message>
+        <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
+        <translation>Trieu la vostra zona horària perquè el ZimaOS mostri l&apos;hora local correcta. Es recomana automàticament segons la selecció de la capital, però podeu canviar-la si el suggeriment és incorrecte.</translation>
     </message>
     <message>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
         <translation>Trieu la disposició del vostre teclat perquè les tecles produeixin els caràcters correctes en escriure. Es recomana automàticament segons la selecció de la capital, però podeu canviar-la si utilitzeu una disposició diferent.</translation>
     </message>
     <message>
-        <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation>El ZimaOS USB Creator necessita accedir al disc per escriure la imatge.</translation>
-    </message>
-    <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MacFile</name>
+    <message>
+        <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
+        <translation type="unfinished">El ZimaOS USB Creator necessita accedir al disc per escriure la imatge.</translation>
+    </message>
+</context>
+<context>
+    <name>NativeFileDialog</name>
+    <message>
+        <source>File type:</source>
+        <translation>Tipus d'arxiu:</translation>
     </message>
 </context>
 <context>
@@ -1852,10 +1730,6 @@ Technical details: %1</source>
     <message>
         <source>Choose operating system</source>
         <translation>Trieu el sistema operatiu</translation>
-    </message>
-    <message>
-        <source>Select the ZimaOS version you want to install</source>
-        <translation>Seleccioneu un sistema operatiu per instal·lar al vostre Raspberry Pi</translation>
     </message>
     <message>
         <source>Operating system list</source>
@@ -1936,36 +1810,40 @@ Technical details: %1</source>
 <context>
     <name>PiConnectCustomizationStep</name>
     <message>
-        <source>Customisation: Raspberry Pi Connect</source>
-        <translation>Personalització: Raspberry Pi Connect</translation>
+        <source>Customisation: ZimaOS Connect</source>
+        <translation>Personalització: ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Enable Raspberry Pi Connect</source>
-        <translation>Activa Raspberry Pi Connect</translation>
+        <source>Enable ZimaOS Connect</source>
+        <translation>Activa ZimaOS Connect</translation>
     </message>
     <message>
-        <source>What is Raspberry Pi Connect?</source>
-        <translation>Què és Raspberry Pi Connect?</translation>
+        <source>What is ZimaOS Connect?</source>
+        <translation>Què és ZimaOS Connect?</translation>
     </message>
     <message>
-        <source>Open Raspberry Pi Connect</source>
-        <translation>Obre Raspberry Pi Connect</translation>
+        <source>Open ZimaOS Connect</source>
+        <translation>Obre ZimaOS Connect</translation>
     </message>
     <message>
         <source>Token received from browser</source>
         <translation>Token rebut del navegador</translation>
     </message>
     <message>
-        <source>Open the Raspberry Pi Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Obriu el lloc web de Raspberry Pi Connect al navegador per iniciar la sessió i rebre un token d&apos;autenticació</translation>
+        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
+        <translation>Obriu el lloc web de ZimaOS Connect al navegador per iniciar la sessió i rebre un token d&apos;autenticació</translation>
     </message>
     <message>
-        <source>Enable secure remote access to your Raspberry Pi through the Raspberry Pi Connect cloud service</source>
-        <translation>Activeu l&apos;accés remot segur al vostre Raspberry Pi mitjançant el servei al núvol de Raspberry Pi Connect</translation>
+        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
+        <translation>Activeu l&apos;accés remot segur al vostre ZimaOS mitjançant el servei al núvol de ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Save Raspberry Pi Connect settings and continue to next customisation step</source>
-        <translation>Desa la configuració de Raspberry Pi Connect i continua al següent pas de personalització</translation>
+        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
+        <translation>Desa la configuració de ZimaOS Connect i continua al següent pas de personalització</translation>
+    </message>
+    <message>
+        <source>Register this device with your ZimaOS Connect organisation</source>
+        <translation>Registra aquest dispositiu amb la teva organització ZimaOS Connect</translation>
     </message>
     <message>
         <source>Return to previous step</source>
@@ -1976,8 +1854,52 @@ Technical details: %1</source>
         <translation>Omet tota la personalització i continua directament a escriure la imatge</translation>
     </message>
     <message>
-        <source>Enter or paste the authentication token from Raspberry Pi Connect. The token will be automatically filled if you use the &apos;Open Raspberry Pi Connect&apos; button to sign in.</source>
-        <translation>Introduïu o enganxeu el token d&apos;autenticació de Raspberry Pi Connect. El token s&apos;emplenarà automàticament si utilitzeu el botó &apos;Obre Raspberry Pi Connect&apos; per iniciar la sessió.</translation>
+        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
+        <translation>S'escriurà una clau d'autenticació d'un sol ús a la imatge perquè el dispositiu s'uneixi a la teva organització Connect al primer arrencada.</translation>
+    </message>
+    <message>
+        <source>Organisation API Key:</source>
+        <translation>Clau API de l'organització:</translation>
+    </message>
+    <message>
+        <source>Enter or paste your ZimaOS Connect organisation API key</source>
+        <translation>Introduïu o enganxeu la vostra clau API d'organització ZimaOS Connect</translation>
+    </message>
+    <message>
+        <source>Saved — type to replace</source>
+        <translation>Desat — tipus a reemplaçar</translation>
+    </message>
+    <message>
+        <source>Paste organisation API key</source>
+        <translation>Enganxa la clau API d'organització</translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
+        <translation>Clau API d'organització ZimaOS Connect. Un cop desat, el valor no es torna a mostrar mai.</translation>
+    </message>
+    <message>
+        <source>Auth key description:</source>
+        <translation>Descripció de la clau d'autenticitat:</translation>
+    </message>
+    <message>
+        <source>Description for the auth key shown in the Connect organisation UI.</source>
+        <translation>Descripció de la clau d'autenticació que es mostra a la interfície d'usuari de l'organització Connect.</translation>
+    </message>
+    <message>
+        <source>e.g. Factory-A</source>
+        <translation>per exemple, la fàbrica A</translation>
+    </message>
+    <message>
+        <source>Clear saved key</source>
+        <translation>Esborra la clau desada</translation>
+    </message>
+    <message>
+        <source>Remove the saved ZimaOS Connect organisation API key</source>
+        <translation>Elimina la clau API d'organització ZimaOS Connect desada</translation>
+    </message>
+    <message>
+        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
+        <translation>Introduïu o enganxeu el token d&apos;autenticació de ZimaOS Connect. El token s&apos;emplenarà automàticament si utilitzeu el botó &apos;Obre ZimaOS Connect&apos; per iniciar la sessió.</translation>
     </message>
     <message>
         <source>Waiting for token (%1s)</source>
@@ -1988,12 +1910,16 @@ Technical details: %1</source>
         <translation>Enganxeu el token aquí</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Invalid Token</source>
         <translation>Token no vàlid</translation>
     </message>
     <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open Raspberry Pi Connect&apos; button to get a valid token.</source>
-        <translation>El token que heu introduït no és vàlid. Comproveu el token i torneu-ho a provar, o utilitzeu el botó &apos;Obre Raspberry Pi Connect&apos; per obtenir un token vàlid.</translation>
+        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
+        <translation>El token que heu introduït no és vàlid. Comproveu el token i torneu-ho a provar, o utilitzeu el botó &apos;Obre ZimaOS Connect&apos; per obtenir un token vàlid.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -2004,12 +1930,24 @@ Technical details: %1</source>
         <translation>Tanca aquest diàleg i torna al camp del token</translation>
     </message>
     <message>
+        <source>Could not create auth key</source>
+        <translation>No s'ha pogut crear la clau d'autorització</translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
+        <translation>ZimaOS USB Creator no ha pogut crear una clau d'autorització d'organització. Comprova que la clau API de la teva organització és vàlida i que aquest ordinador està en línia i torna-ho a provar.</translation>
+    </message>
+    <message>
+        <source>Close this dialog and return to the organisation API key field</source>
+        <translation>Tanca aquest diàleg i torna al camp de clau de l'API de l'organització</translation>
+    </message>
+    <message>
         <source>Authentication token:</source>
         <translation>Token d&apos;autenticació:</translation>
     </message>
     <message>
-        <source>Sign in to receive a token and enable Raspberry Pi Connect</source>
-        <translation>inicieu la sessió per rebre un token i activar Raspberry Pi Connect</translation>
+        <source>Sign in to receive a token and enable ZimaOS Connect</source>
+        <translation>inicieu la sessió per rebre un token i activar ZimaOS Connect</translation>
     </message>
 </context>
 <context>
@@ -2043,38 +1981,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>No esteu executant com a root.
             Feu clic a «Instal·la l&apos;autorització» per configurar l&apos;elevació de privilegis automàtica, o executeu manualment amb: sudo %1</translation>
     </message>
-    <message>
-        <source>Invalid Windows physical drive path: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open disk for cleaning. Error code: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clear partition table. Error code: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to start disk cleanup utility. Please ensure you have administrator privileges.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disk cleaning operation timed out. The disk may be in use by another application.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clean disk. Error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clean disk after %1 attempts. %2</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>RemoteAccessStep</name>
@@ -2107,8 +2013,8 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>Mecanisme d&apos;autenticació:</translation>
     </message>
     <message>
-        <source>Enable secure shell access for remote command-line control of your Raspberry Pi</source>
-        <translation>Activa l&apos;accés shell segur per al control remot per línia d&apos;ordres del vostre Raspberry Pi</translation>
+        <source>Enable secure shell access for remote command-line control of your ZimaOS</source>
+        <translation>Activa l&apos;accés shell segur per al control remot per línia d&apos;ordres del vostre ZimaOS</translation>
     </message>
     <message>
         <source>Save SSH settings and continue to next customisation step</source>
@@ -2131,130 +2037,8 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>Permet l&apos;inici de sessió SSH utilitzant un parell de claus criptogràfiques en lloc d&apos;una contrasenya. Més segur que l&apos;autenticació de contrasenya.</translation>
     </message>
     <message>
-        <source>Choose how you will authenticate when connecting to your Raspberry Pi via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
-        <translation>Trieu com us autenticareu en connectar-vos al vostre Raspberry Pi mitjançant SSH. L&apos;autenticació de contrasenya utilitza les credencials del compte que heu configurat. L&apos;autenticació de clau pública utilitza un parell de claus criptogràfiques i és més segura.</translation>
-    </message>
-</context>
-<context>
-    <name>RepositoryDialog</name>
-    <message>
-        <source>Content Repository</source>
-        <translation>Repositori de contingut</translation>
-    </message>
-    <message>
-        <source>Repository source:</source>
-        <translation>Font del repositori:</translation>
-    </message>
-    <message>
-        <source>Use custom file</source>
-        <translation>Utilitza un fitxer personalitzat</translation>
-    </message>
-    <message>
-        <source>Please select a custom repository json file</source>
-        <translation>Seleccioneu un fitxer json de repositori personalitzat</translation>
-    </message>
-    <message>
-        <source>Select Repository</source>
-        <translation>Selecciona el repositori</translation>
-    </message>
-    <message>
-        <source>Apply &amp; Restart</source>
-        <translation>Aplica i reinicia</translation>
-    </message>
-    <message>
-        <source>Select custom repository</source>
-        <translation>Selecciona el repositori personalitzat</translation>
-    </message>
-    <message>
-        <source>Use custom URL</source>
-        <translation>Utilitza un URL personalitzat</translation>
-    </message>
-    <message>
-        <source>Select a custom repository JSON file from your computer</source>
-        <translation>Seleccioneu un fitxer JSON de repositori personalitzat del vostre ordinador</translation>
-    </message>
-    <message>
-        <source>Close the repository dialog without changing the content source</source>
-        <translation>Tanca el diàleg del repositori sense canviar la font de contingut</translation>
-    </message>
-    <message>
-        <source>Apply the new content repository and restart the wizard from the beginning</source>
-        <translation>Aplica el nou repositori de contingut i reinicia l&apos;assistent des del principi</translation>
-    </message>
-    <message>
-        <source>Choose the source for operating system images</source>
-        <translation>Trieu la font de les imatges del sistema operatiu</translation>
-    </message>
-    <message>
-        <source>Use the official Raspberry Pi operating system repository</source>
-        <translation>Utilitza el repositori del sistema operatiu oficial de Raspberry Pi</translation>
-    </message>
-    <message>
-        <source>Load operating system list from a JSON file on your computer</source>
-        <translation>Carrega la llista de sistemes operatius des d&apos;un fitxer JSON del vostre ordinador</translation>
-    </message>
-    <message>
-        <source>Download operating system list from a custom web address</source>
-        <translation>Baixa la llista de sistemes operatius des d&apos;una adreça web personalitzada</translation>
-    </message>
-</context>
-<context>
-    <name>RpibootThread</name>
-    <message>
-        <source>Downloading firmware...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to obtain rpiboot firmware: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connecting to device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open USB device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>rpiboot protocol failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>USB error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to restart...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open USB device after re-enumeration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for fastboot device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timed out waiting for fastboot device to appear.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to disconnect (%1/%2)...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device disconnected, waiting for reconnect...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to reconnect (%1/%2s)...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timed out waiting for device to re-enumerate after bootcode upload (waited %1s).</source>
-        <translation type="unfinished"></translation>
+        <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
+        <translation>Trieu com us autenticareu en connectar-vos al vostre ZimaOS mitjançant SSH. L&apos;autenticació de contrasenya utilitza les credencials del compte que heu configurat. L&apos;autenticació de clau pública utilitza un parell de claus criptogràfiques i és més segura.</translation>
     </message>
 </context>
 <context>
@@ -2284,16 +2068,16 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>Activa la signatura d&apos;arrencada segura</translation>
     </message>
     <message>
-        <source>Sign the boot partition with your RSA key to enable secure boot verification on Raspberry Pi</source>
-        <translation>Signa la partició d&apos;arrencada amb la vostra clau RSA per activar la verificació d&apos;arrencada segura al Raspberry Pi</translation>
+        <source>Sign the boot partition with your RSA key to enable secure boot verification on ZimaOS</source>
+        <translation>Signa la partició d&apos;arrencada amb la vostra clau RSA per activar la verificació d&apos;arrencada segura al ZimaOS</translation>
     </message>
     <message>
         <source>Learn about Secure Boot</source>
         <translation>Més informació sobre l&apos;arrencada segura</translation>
     </message>
     <message>
-        <source>This will create boot.img and boot.sig files required for Raspberry Pi Secure Boot.</source>
-        <translation>Això crearà els fitxers boot.img i boot.sig necessaris per a l&apos;arrencada segura de Raspberry Pi.</translation>
+        <source>This will create boot.img and boot.sig files required for ZimaOS Secure Boot.</source>
+        <translation>Això crearà els fitxers boot.img i boot.sig necessaris per a l&apos;arrencada segura de ZimaOS.</translation>
     </message>
     <message>
         <source>Public Key Fingerprint: %1</source>
@@ -2350,26 +2134,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     <message>
         <source>All Files (*)</source>
         <translation>Tots els fitxers (*)</translation>
-    </message>
-    <message>
-        <source>OTP Secure Boot Provisioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Program the secure boot public key hash into the device&apos;s OTP memory. This is a permanent, irreversible operation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Provision Secure Boot OTP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2552,10 +2316,6 @@ to show system drives.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ready for USB boot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2567,6 +2327,10 @@ to show system drives.</source>
         <translation>Hi ha una actualització disponible</translation>
     </message>
     <message>
+        <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
+        <translation>La versió de creador %1 està disponible. Vols visitar la pàgina web per descarregar-la?</translation>
+    </message>
+    <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
         <translation>Hi ha una versió més recent de l&apos;Imager disponible. Voleu visitar el lloc web per baixar-la?</translation>
     </message>
@@ -2576,11 +2340,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
-        <translation>Obre el lloc web de Raspberry Pi al navegador per baixar l&apos;última versió</translation>
-    </message>
-    <message>
-        <source>Imager version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Obre el lloc web de ZimaOS al navegador per baixar l&apos;última versió</translation>
     </message>
     <message>
         <source>Update</source>
@@ -2622,8 +2382,8 @@ to show system drives.</source>
         <translation>Torneu a introduir-la per canviar la contrasenya</translation>
     </message>
     <message>
-        <source>Create a user account for your Raspberry Pi</source>
-        <translation>Creeu un compte d&apos;usuari per al vostre Raspberry Pi</translation>
+        <source>Create a user account for your ZimaOS</source>
+        <translation>Creeu un compte d&apos;usuari per al vostre ZimaOS</translation>
     </message>
     <message>
         <source>Enter your username</source>
@@ -2642,8 +2402,8 @@ to show system drives.</source>
         <translation>Omet tota la personalització i continua directament a escriure la imatge</translation>
     </message>
     <message>
-        <source>Enter a username for your Raspberry Pi account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
-        <translation>Introduïu un nom d&apos;usuari per al compte de Raspberry Pi. El nom d&apos;usuari ha de ser en minúscules i contenir només lletres, números, guions baixos i guions.</translation>
+        <source>Enter a username for your ZimaOS account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
+        <translation>Introduïu un nom d&apos;usuari per al compte de ZimaOS. El nom d&apos;usuari ha de ser en minúscules i contenir només lletres, números, guions baixos i guions.</translation>
     </message>
     <message>
         <source>Enter a new password for this account, or leave blank to keep the previously saved password.</source>
@@ -2660,6 +2420,10 @@ to show system drives.</source>
     <message>
         <source>Re-enter the password to confirm it matches.</source>
         <translation>Torneu a introduir la contrasenya per confirmar que coincideix.</translation>
+    </message>
+    <message>
+        <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
@@ -2816,10 +2580,6 @@ to show system drives.</source>
         <translation>Fet</translation>
     </message>
     <message>
-        <source>Customisation</source>
-        <translation>Personalització</translation>
-    </message>
-    <message>
         <source>Hostname</source>
         <translation>Nom de host</translation>
     </message>
@@ -2832,8 +2592,8 @@ to show system drives.</source>
         <translation>Wi‑Fi</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect</source>
-        <translation>Raspberry Pi Connect</translation>
+        <source>ZimaOS Connect</source>
+        <translation>ZimaOS Connect</translation>
     </message>
     <message>
         <source>App Options</source>
@@ -2856,18 +2616,14 @@ to show system drives.</source>
         <translation>Accés remot</translation>
     </message>
     <message>
-        <source>Open application settings to configure sound alerts, auto-eject, telemetry, and content repository</source>
-        <translation>Obre la configuració de l&apos;aplicació per configurar les alertes de so, l&apos;autoexpulsió, la telemetria i el repositori de contingut</translation>
+        <source>Replace existing ZimaOS Connect token?</source>
+        <translation>Voleu substituir el token de ZimaOS Connect existent?</translation>
     </message>
     <message>
-        <source>Replace existing Raspberry Pi Connect token?</source>
-        <translation>Voleu substituir el token de Raspberry Pi Connect existent?</translation>
-    </message>
-    <message>
-        <source>A new Raspberry Pi Connect token was received that differs from your current one.
+        <source>A new ZimaOS Connect token was received that differs from your current one.
 
 </source>
-        <translation>S&apos;ha rebut un nou token de Raspberry Pi Connect que difereix de l&apos;actual.
+        <translation>S&apos;ha rebut un nou token de ZimaOS Connect que difereix de l&apos;actual.
 </translation>
     </message>
     <message>
@@ -2894,20 +2650,20 @@ to show system drives.</source>
         <translation>Mantén l&apos;existent</translation>
     </message>
     <message>
-        <source>Keep your current Raspberry Pi Connect token</source>
-        <translation>Mantén el vostre token de Raspberry Pi Connect actual</translation>
+        <source>Keep your current ZimaOS Connect token</source>
+        <translation>Mantén el vostre token de ZimaOS Connect actual</translation>
     </message>
     <message>
         <source>Secure Boot</source>
         <translation>Arrencada segura</translation>
     </message>
     <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Avís: Només sobreescriviu el token si heu iniciat aquesta acció.</translation>
+        <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
+        <translation>Obre els paràmetres de l'aplicació per configurar les alertes de so, l'expulsió automàtica i les indicacions d'avís</translation>
     </message>
     <message>
-        <source>Sidebar resize handle</source>
-        <translation type="unfinished"></translation>
+        <source>Warning: Only overwrite the token if you initiated this action.</source>
+        <translation>Avís: Només sobreescriviu el token si heu iniciat aquesta acció.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -2918,11 +2674,11 @@ to show system drives.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You are opening a local Raspberry Pi Imager manifest file. This will replace the current OS list with the contents of this file.</source>
+        <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A website is requesting to switch Raspberry Pi Imager to use a custom OS repository.
+        <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
         <translation type="unfinished"></translation>
@@ -3005,6 +2761,18 @@ Please check your storage device and try again.</source>
     <message>
         <source>Starting write process...</source>
         <translation>S&apos;està iniciant el procés d&apos;escriptura...</translation>
+    </message>
+    <message>
+        <source>Limited by download speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>You are about to ERASE all data on: %1</source>
@@ -3103,20 +2871,12 @@ Please check your storage device and try again.</source>
         <translation>S&apos;està finalitzant…</translation>
     </message>
     <message>
-        <source>Write complete</source>
-        <translation>Escriptura completada</translation>
-    </message>
-    <message>
         <source>customization</source>
         <translation>personalització</translation>
     </message>
     <message>
         <source>customizations</source>
         <translation>personalitzacions</translation>
-    </message>
-    <message>
-        <source>Writing in progress — do not disconnect the storage device</source>
-        <translation>Escriptura en curs — no desconnecteu el dispositiu d&apos;emmagatzematge</translation>
     </message>
     <message>
         <source>Please wait... %1</source>
@@ -3186,10 +2946,6 @@ Please check your storage device and try again.</source>
         <translation>Força la sortida del ZimaOS USB Creator i cancel·la l&apos;operació d&apos;escriptura actual</translation>
     </message>
     <message>
-        <source>ZimaOS USB Creator %1</source>
-        <translation>ZimaOS USB Creator %1</translation>
-    </message>
-    <message>
         <source>Insufficient Permissions</source>
         <translation>Permisos insuficients</translation>
     </message>
@@ -3208,6 +2964,10 @@ Please check your storage device and try again.</source>
     <message>
         <source>Install Authorization</source>
         <translation>Instal·la l&apos;autorització</translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>

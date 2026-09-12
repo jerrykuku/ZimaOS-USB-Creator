@@ -174,7 +174,7 @@ WizardStepBase {
                                 id: chkEnableUsbGadget
                                 Layout.fillWidth: true
                                 text: qsTr("Enable USB Gadget Mode")
-                                accessibleDescription: qsTr("Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage")
+                                accessibleDescription: qsTr("Enable USB device mode to use your ZimaOS as a USB peripheral for networking and storage")
                                 helpLabel: ImageWriterSingleton.isEmbeddedMode() ? "" : qsTr("Learn more about USB Gadget Mode")
                                 helpUrl: ImageWriterSingleton.isEmbeddedMode() ? "" : "https://github.com/raspberrypi/rpi-usb-gadget?tab=readme-ov-file"
                                 checked: false

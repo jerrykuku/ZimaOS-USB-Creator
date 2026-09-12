@@ -604,7 +604,7 @@ bool ImageWriter::readyToWrite()
     return !_src.isEmpty() && !_dst.isEmpty() && _selectedDeviceValid;
 }
 
-/* Returns true if running on Raspberry Pi */
+/* Returns true if running on a Raspberry Pi */
 bool ImageWriter::isRaspberryPiDevice()
 {
     return _device_info->isRaspberryPi();
@@ -1684,6 +1684,14 @@ void ImageWriter::onOsListFetchComplete(const QByteArray &data, const QUrl &url,
     auto response_object = QJsonDocument::fromJson(data).object();
 
     if (response_object.contains("os_list")) {
+        if (isTopLevelRequest) {
+            _osListFetchInProgress = false;
+            if (_osListFetchFailed) {
+                _osListFetchFailed = false;
+                emit osListUnavailableChanged();
+            }
+        }
+
         // Step 1: Insert the items into the canonical JSON document.
         //         It doesn't matter that these may still contain subitems_url items
         //         As these will be fixed up as the subitems_url instances are blinked in
@@ -1738,6 +1746,10 @@ void ImageWriter::onOsListFetchComplete(const QByteArray &data, const QUrl &url,
         qDebug() << "Incorrectly formatted OS list at:" << url;
         // If this was the top-level fetch and it failed, notify UI
         if (isTopLevelRequest && _completeOsList.isEmpty()) {
+            _osListFetchInProgress = false;
+            if (!_osListFetchFailed) {
+                _osListFetchFailed = true;
+            }
             qWarning() << "Top-level OS list fetch failed - malformed response. Operating in offline mode.";
             emit osListUnavailableChanged();
         }
@@ -1751,6 +1763,9 @@ void ImageWriter::onOsListFetchError(const QString &errorMessage, const QUrl &ur
     
     // Track if this is the top-level OS list request
     bool isTopLevelRequest = (url == osListUrl());
+    if (isTopLevelRequest) {
+        _osListFetchInProgress = false;
+    }
 
     // Detect scheme-less URL usage which commonly happens with local repo files
     if (url.scheme().isEmpty() || !url.isValid()) {
@@ -1778,9 +1793,13 @@ void ImageWriter::onOsListFetchError(const QString &errorMessage, const QUrl &ur
 
     if (isTopLevelRequest) {
         if (_completeOsList.isEmpty()) {
+            const bool wasUnavailable = _osListFetchFailed;
+            _osListFetchFailed = true;
             // No data at all - notify UI of offline state
             qWarning() << "Top-level OS list fetch failed:" << errorMessage << ". Operating in offline mode.";
-            emit osListUnavailableChanged();
+            if (!wasUnavailable) {
+                emit osListUnavailableChanged();
+            }
         } else {
             // We have stale data - reschedule refresh to retry later
             // Use a shorter retry interval (5 minutes) rather than full refresh interval
@@ -1906,9 +1925,26 @@ QJsonDocument ImageWriter::getFilteredOSlistDocument() {
 }
 
 void ImageWriter::beginOSListFetch() {
+    // A cold start must remain usable while the manifest is loading.  In
+    // particular, do not let repeated connectivity polls queue duplicate
+    // requests for the same top-level document.
+    if (_osListFetchInProgress) {
+        return;
+    }
+
     const QUrl topUrl = osListUrl();
     if (!preflightValidateUrl(topUrl, QStringLiteral("repository:"))) {
+        if (!_osListFetchFailed) {
+            _osListFetchFailed = true;
+            emit osListUnavailableChanged();
+        }
         return;
+    }
+
+    _osListFetchInProgress = true;
+    if (_osListFetchFailed) {
+        _osListFetchFailed = false;
+        emit osListUnavailableChanged();
     }
 
     // Auto-detect system proxy (e.g. corporate proxy configured in Windows Internet Options).
@@ -1973,9 +2009,12 @@ void ImageWriter::refreshOsListFrom(const QUrl &url) {
     setCustomRepo(url);
     bool wasAvailable = !_completeOsList.isEmpty();
     _completeOsList = QJsonDocument();
+    const bool wasUnavailable = _osListFetchFailed;
+    _osListFetchFailed = false;
+    _osListFetchInProgress = false;
     loadCachedOsList();
-    if (wasAvailable) {
-        // Notify UI that OS list is now unavailable (cleared for refetch)
+    if (wasAvailable || wasUnavailable) {
+        // Notify UI that the previous failure/stale state was cleared for refetch.
         emit osListUnavailableChanged();
     }
     _osListRefreshTimer.stop();
@@ -2608,11 +2647,12 @@ void ImageWriter::_parseZstdFile()
 
 bool ImageWriter::isOnline()
 {
-    // Use platform abstraction for network connectivity check
-    bool hasBasicConnectivity = PlatformQuirks::hasNetworkConnectivity();
-    
-    // For embedded mode, report IP addresses on status display and check time sync
+    // Embedded targets need the platform-level readiness check because their
+    // network stack may still be coming up. Desktop targets can start curl
+    // immediately; doing a synchronous probe here delays the first frame and
+    // is unnecessary for an asynchronous HTTP request.
     if (isEmbeddedMode()) {
+        const bool hasBasicConnectivity = PlatformQuirks::hasNetworkConnectivity();
         if (hasBasicConnectivity) {
             /* Report detected IP addresses for embedded mode status display */
             QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
@@ -2635,41 +2675,36 @@ bool ImageWriter::isOnline()
             }
             return networkReady;
         }
-        return false;
-    }
-    
-    // For non-embedded (desktop) mode, always refresh once when connectivity
-    // becomes available. Cached data remains usable while this request runs,
-    // and a successful response replaces it with the latest manifest.
-    if (hasBasicConnectivity && !_online && !_repo.isLocalFile()) {
-        qDebug() << "Network now available - refreshing OS list";
-        _online = true;
-        beginOSListFetch();
-        emit networkOnline();
-    } else if (hasBasicConnectivity && !_online) {
-        // Network came online but we already have OS list data
-        _online = true;
-    } else if (!hasBasicConnectivity && _online) {
-        // Network went offline
-        _online = false;
-    } else if (!hasBasicConnectivity && !_online) {
-        // Network is not ready at startup. Keep monitoring even when a cached
-        // manifest is available: once connectivity returns, fetch the remote
-        // manifest so it can replace the stale cache.
-        if (_completeOsList.isEmpty()) {
+
+        // Embedded images have no useful offline flow until the network stack
+        // is ready, so retain the existing offline indication for that mode.
+        if (_completeOsList.isEmpty() && !_osListFetchFailed) {
+            _osListFetchFailed = true;
             emit osListUnavailableChanged();
         }
+        return false;
+    }
 
-        PlatformQuirks::startNetworkMonitoring([this](bool available) {
-            if (available && !_repo.isLocalFile()) {
-                qDebug() << "Network became available - auto-refreshing OS list";
-                // Use QMetaObject::invokeMethod to ensure we're on the Qt thread
-                QMetaObject::invokeMethod(this, "beginOSListFetch", Qt::QueuedConnection);
-            }
-        });
+    // Do not gate the first desktop request on a synchronous connectivity
+    // probe.  That probe can be slower than the actual HTTP request and can
+    // also report false on systems where DNS/proxy setup is still settling.
+    // Curl performs the real check asynchronously and the UI stays on its
+    // loading state until the request succeeds or fails.
+    if (!_repo.isLocalFile() && !_osListFetchInProgress &&
+        (!_online || _completeOsList.isEmpty())) {
+        qDebug() << "Starting OS list fetch without waiting for connectivity probe";
+        beginOSListFetch();
+    } else if (_repo.isLocalFile() && !_osListFetchInProgress && _completeOsList.isEmpty()) {
+        // Local repositories do not need a network probe at all.
+        beginOSListFetch();
+    }
+
+    if (!_online) {
+        _online = true;
+        emit networkOnline();
     }
     
-    return hasBasicConnectivity;
+    return true;
 }
 
 void ImageWriter::pollNetwork()
@@ -3220,7 +3255,7 @@ QVariantMap ImageWriter::requestOrgAuthKey(const QString &description, int ttlDa
         qWarning() << "Connect: API returned a secret that does not match the "
                       "expected auth-key format; refusing to use it";
         out.insert(QStringLiteral("error"),
-                   tr("Raspberry Pi Connect returned an unexpected response."));
+                   tr("ZimaOS Connect returned an unexpected response."));
         return out;
     }
     qDebug() << "Connect: minted auth key id=" << result.id;

@@ -438,8 +438,8 @@ public:
     /* Check if performance data is available */
     Q_INVOKABLE bool hasPerformanceData();
 
-    /* Check if OS list is unavailable - derived from whether we have data (for QML offline UI) */
-    bool isOsListUnavailable() const { return _completeOsList.isEmpty(); }
+    /* True only after a manifest request has actually failed (not while it is loading). */
+    bool isOsListUnavailable() const { return _osListFetchFailed; }
 
     /* Get access to performance stats for instrumentation */
     PerformanceStats* performanceStats() { return _performanceStats; }
@@ -560,6 +560,8 @@ protected:
     SuspendInhibitor *_suspendInhibitor;
     DownloadThread *_thread;
     bool _verifyEnabled, _multipleFilesInZip, _online, _extractSizeKnown;
+    bool _osListFetchInProgress = false;
+    bool _osListFetchFailed = false;
     QSettings _settings;
     QMap<QString,QString> _translations;
     QTranslator *_trans;

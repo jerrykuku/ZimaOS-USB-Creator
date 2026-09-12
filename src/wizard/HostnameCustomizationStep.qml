@@ -60,7 +60,7 @@ WizardStepBase {
                     Layout.fillWidth: true
                     placeholderText: qsTr("Enter your hostname")
                     font.pointSize: Style.fontSizeInput
-                    Accessible.description: qsTr("A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.")
+                    Accessible.description: qsTr("A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.")
                     trimWhitespace: true
 
                     validator: RegularExpressionValidator {
@@ -71,7 +71,7 @@ WizardStepBase {
             
             WizardDescriptionText {
                 id: helpText
-                text: qsTr("A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.")
+                text: qsTr("A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.")
             }
         }
     }

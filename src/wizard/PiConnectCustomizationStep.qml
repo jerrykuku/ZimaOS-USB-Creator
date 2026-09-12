@@ -15,12 +15,12 @@ import RpiImager
 WizardStepBase {
     id: root
 
-    title: qsTr("Customisation: Raspberry Pi Connect")
+    title: qsTr("Customisation: ZimaOS Connect")
     subtitle: orgModeEnabled
-             ? qsTr("Register this device with your Raspberry Pi Connect organisation")
-             : qsTr("Sign in to receive a token and enable Raspberry Pi Connect")
+             ? qsTr("Register this device with your ZimaOS Connect organisation")
+             : qsTr("Sign in to receive a token and enable ZimaOS Connect")
     showSkipButton: true
-    nextButtonAccessibleDescription: qsTr("Save Raspberry Pi Connect settings and continue to next customisation step")
+    nextButtonAccessibleDescription: qsTr("Save ZimaOS Connect settings and continue to next customisation step")
     backButtonAccessibleDescription: qsTr("Return to previous step")
     skipButtonAccessibleDescription: qsTr("Skip all customisation and proceed directly to writing the image")
 
@@ -64,7 +64,7 @@ WizardStepBase {
                 WizardFormLabel {
                     id: labelOrgKey
                     text: qsTr("Organisation API Key:")
-                    accessibleDescription: qsTr("Enter or paste your Raspberry Pi Connect organisation API key")
+                    accessibleDescription: qsTr("Enter or paste your ZimaOS Connect organisation API key")
                 }
 
                 ImPasswordField {
@@ -73,7 +73,7 @@ WizardStepBase {
                     placeholderText: root.hasStoredOrgKey
                         ? qsTr("Saved — type to replace")
                         : qsTr("Paste organisation API key")
-                    accessibleDescription: qsTr("Raspberry Pi Connect organisation API key. Once saved the value is never redisplayed.")
+                    accessibleDescription: qsTr("ZimaOS Connect organisation API key. Once saved the value is never redisplayed.")
                     trimWhitespace: true
                     onTextChanged: root.orgKeyDirty = true
                 }
@@ -106,7 +106,7 @@ WizardStepBase {
                 Layout.alignment: Qt.AlignRight
                 visible: root.hasStoredOrgKey && fieldOrgApiKey.text.length === 0
                 text: qsTr("Clear saved key")
-                accessibleDescription: qsTr("Remove the saved Raspberry Pi Connect organisation API key")
+                accessibleDescription: qsTr("Remove the saved ZimaOS Connect organisation API key")
                 onClicked: {
                     ImageWriterSingleton.clearConnectOrgRegistration()
                     fieldOrgApiKey.text = ""
@@ -127,9 +127,9 @@ WizardStepBase {
                 id: useTokenPill
                 Layout.fillWidth: true
                 visible: !root.orgModeEnabled
-                text: qsTr("Enable Raspberry Pi Connect")
-                accessibleDescription: qsTr("Enable secure remote access to your Raspberry Pi through the Raspberry Pi Connect cloud service")
-                helpLabel: ImageWriterSingleton.isEmbeddedMode() ? "" : qsTr("What is Raspberry Pi Connect?")
+                text: qsTr("Enable ZimaOS Connect")
+                accessibleDescription: qsTr("Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service")
+                helpLabel: ImageWriterSingleton.isEmbeddedMode() ? "" : qsTr("What is ZimaOS Connect?")
                 helpUrl: ImageWriterSingleton.isEmbeddedMode() ? "" : "https://www.raspberrypi.com/software/connect/"
                 checked: false
                 onToggled: function(isChecked) {
@@ -143,8 +143,8 @@ WizardStepBase {
             ImButton {
                 id: btnOpenConnect
                 Layout.fillWidth: true
-                text: qsTr("Open Raspberry Pi Connect")
-                accessibleDescription: qsTr("Open the Raspberry Pi Connect website in your browser to sign in and receive an authentication token")
+                text: qsTr("Open ZimaOS Connect")
+                accessibleDescription: qsTr("Open the ZimaOS Connect website in your browser to sign in and receive an authentication token")
                 enabled: useTokenPill.checked
                 visible: !root.orgModeEnabled && useTokenPill.checked && !root.connectTokenReceived
                 onClicked: {
@@ -160,7 +160,7 @@ WizardStepBase {
                 id: labelConnectToken
                 text: qsTr("Authentication token:")
                 visible: !root.orgModeEnabled && useTokenPill.checked
-                accessibleDescription: qsTr("Enter or paste the authentication token from Raspberry Pi Connect. The token will be automatically filled if you use the 'Open Raspberry Pi Connect' button to sign in.")
+                accessibleDescription: qsTr("Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the 'Open ZimaOS Connect' button to sign in.")
             }
 
             ImTextField {
@@ -404,7 +404,7 @@ WizardStepBase {
             wizardContainer.connectOrgDescription = desc
 
             // Store a fresh auth key in the image without exposing the secret to QML.
-            var authDesc = desc.length > 0 ? desc : qsTr("Raspberry Pi Imager")
+            var authDesc = desc.length > 0 ? desc : qsTr("ZimaOS USB Creator")
             var authResult = ImageWriterSingleton.requestOrgAuthKey(authDesc, 1)
             if (!authResult || authResult.ok !== true) {
                 authKeyErrorDialog.detail =
@@ -491,7 +491,7 @@ WizardStepBase {
         
         Text {
             id: dialogMessage
-            text: qsTr("The token you entered is not valid. Please check the token and try again, or use the 'Open Raspberry Pi Connect' button to get a valid token.")
+            text: qsTr("The token you entered is not valid. Please check the token and try again, or use the 'Open ZimaOS Connect' button to get a valid token.")
             font.pointSize: Style.fontSizeFormLabel
             font.family: Style.fontFamily
             color: Style.formLabelColor
@@ -558,7 +558,7 @@ WizardStepBase {
         }
 
         Text {
-            text: qsTr("Raspberry Pi Imager could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.")
+            text: qsTr("ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.")
             font.pointSize: Style.fontSizeFormLabel
             font.family: Style.fontFamily
             color: Style.formLabelColor
@@ -612,4 +612,3 @@ WizardStepBase {
         wizardContainer.jumpToStep(wizardContainer.stepWriting)
     }
 }
-

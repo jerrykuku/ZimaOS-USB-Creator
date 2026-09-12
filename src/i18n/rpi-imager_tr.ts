@@ -16,14 +16,6 @@
         <translation>Bittiğinde medyayı çıkart</translation>
     </message>
     <message>
-        <source>Enable anonymous statistics (telemetry)</source>
-        <translation>Anonim istatistikleri etkinleştir (telemetri)</translation>
-    </message>
-    <message>
-        <source>What is this?</source>
-        <translation>Bu nedir?</translation>
-    </message>
-    <message>
         <source>Disable warnings</source>
         <translation>Uyarıları devre dışı bırak</translation>
     </message>
@@ -40,20 +32,12 @@
         <translation>Uyarıları devre dışı bırakırsanız, ZimaOS USB Creator &lt;b&gt;görüntüleri yazmadan önce onay istemeyecektir&lt;/b&gt;. Bir sistem sürücüsü seçerken yine de &lt;b&gt;tam adını yazmanız&lt;/b&gt; gerekecektir.</translation>
     </message>
     <message>
-        <source>Content Repository</source>
-        <translation>İçerik Deposu (Repository)</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Düzenle</translation>
-    </message>
-    <message>
         <source>Close the options dialog without saving any changes</source>
         <translation>Değişiklikleri kaydetmeden seçenekler penceresini kapat</translation>
     </message>
     <message>
         <source>Save the selected options and apply them to ZimaOS USB Creator</source>
-        <translation>Seçilen seçenekleri kaydet ve ZimaOS USB Creator'a uygula</translation>
+        <translation>Seçilen seçenekleri kaydet ve ZimaOS USB Creator&apos;a uygula</translation>
     </message>
     <message>
         <source>Keep warnings enabled and return to the options dialog</source>
@@ -72,16 +56,8 @@
         <translation>Yazma işlemi başarıyla tamamlandığında depolama cihazını otomatik olarak çıkart</translation>
     </message>
     <message>
-        <source>Send anonymous usage statistics to help improve ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator'ı geliştirmeye yardımcı olmak için anonim kullanım istatistikleri gönder</translation>
-    </message>
-    <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Yazma öncesi onay iletişim kutularını atla (Yalnızca ileri düzey kullanıcılar)</translation>
-    </message>
-    <message>
-        <source>Change the source of operating system images between official Raspberry Pi repository and custom sources</source>
-        <translation>İşletim sistemi görüntülerinin kaynağını resmi depo ve özel kaynaklar arasında değiştir</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -115,41 +91,13 @@
         <source>All Files (*)</source>
         <translation>Tüm Dosyalar (*)</translation>
     </message>
-<message>
+    <message>
         <source>Audio notification unavailable - no viable audio player found on this system</source>
         <translation>Sesli bildirim kullanılamıyor - bu sistemde uygun bir ses oynatıcı bulunamadı</translation>
     </message>
     <message>
-        <source>Saved Customisation</source>
-        <translation>Kaydedilmiş Özelleştirme</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Temizle</translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings such as hostname, WiFi, and user credentials</source>
-        <translation>Ana makine adı, WiFi ve kullanıcı kimlik bilgileri gibi kaydedilmiş tüm işletim sistemi özelleştirme ayarlarını kaldırır</translation>
-    </message>
-    <message>
         <source>Version: %1</source>
         <translation>Sürüm: %1</translation>
-    </message>
-    <message>
-        <source>Clear saved customisation?</source>
-        <translation>Kaydedilmiş özelleştirmeler temizlensin mi?</translation>
-    </message>
-    <message>
-        <source>This will remove all saved OS customisation settings such as hostname, WiFi, and user credentials.</source>
-        <translation>Bu işlem; ana makine adı, WiFi ve kullanıcı kimlik bilgileri gibi kaydedilmiş tüm işletim sistemi özelleştirme ayarlarını silecek.</translation>
-    </message>
-    <message>
-        <source>Keep saved customisation settings and return to the options dialog</source>
-        <translation>Kaydedilmiş özelleştirme ayarlarını koru ve seçenekler penceresine dön</translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings permanently</source>
-        <translation>Kaydedilmiş tüm işletim sistemi özelleştirme ayarlarını kalıcı olarak kaldır</translation>
     </message>
 </context>
 <context>
@@ -180,6 +128,10 @@
     <message>
         <source>Image files (%1)</source>
         <translation>İmaj dosyaları (%1)</translation>
+    </message>
+    <message>
+        <source>Repository Manifest Files (*.json *.%1)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -258,8 +210,8 @@
         <translation>Wi-Fi yapılandırıldı</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect enabled</source>
-        <translation>Raspberry Pi Connect etkinleştirildi</translation>
+        <source>ZimaOS Connect enabled</source>
+        <translation>ZimaOS Connect etkinleştirildi</translation>
     </message>
     <message>
         <source>I2C enabled</source>
@@ -288,10 +240,6 @@
     <message>
         <source>Authorized keys files (authorized_keys)</source>
         <translation>Yetkilendirilmiş anahtar dosyaları (authorized_keys)</translation>
-    </message>
-<message>
-        <source>Imager Repository Files (*.json *.%1)</source>
-        <translation>İmaj Hazırlayıcı Depo Dosyaları (*.json *.%1)</translation>
     </message>
 </context>
 <context>
@@ -443,7 +391,7 @@
     </message>
     <message>
         <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
-        <translation>Doğrudan G/Ç'yi Etkinleştir (F_NOCACHE / O_DIRECT)</translation>
+        <translation>Doğrudan G/Ç&apos;yi Etkinleştir (F_NOCACHE / O_DIRECT)</translation>
     </message>
     <message>
         <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
@@ -451,7 +399,7 @@
     </message>
     <message>
         <source>Enable Async I/O</source>
-        <translation>Asenkron G/Ç'yi Etkinleştir</translation>
+        <translation>Asenkron G/Ç&apos;yi Etkinleştir</translation>
     </message>
     <message>
         <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
@@ -467,7 +415,15 @@
     </message>
     <message>
         <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
-        <translation>Tampon bellek: ~%1-%2 MB (sistem RAM'ine göre değişir)</translation>
+        <translation>Tampon bellek: ~%1-%2 MB (sistem RAM&apos;ine göre değişir)</translation>
+    </message>
+    <message>
+        <source>Ignore Device I/O Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable Periodic Sync</source>
@@ -522,48 +478,16 @@
         <translation>Gelişmiş Özellikler</translation>
     </message>
     <message>
-        <source>Enable Rpiboot/Fastboot Support</source>
-        <translation>Rpiboot/Fastboot Desteğini Etkinleştir</translation>
+        <source>Secure Boot</source>
+        <translation type="unfinished">Güvenli Önyükleme</translation>
     </message>
     <message>
-        <source>Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.</source>
-        <translation>USB önyükleme modundaki (rpiboot) Raspberry Pi cihazlarını tarar. libusb gerektirir.</translation>
+        <source>Force Secure Boot Available</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Custom Fastboot Gadget:</source>
-        <translation>Özel Fastboot Aracı:</translation>
-    </message>
-    <message>
-        <source>(default)</source>
-        <translation>(varsayılan)</translation>
-    </message>
-    <message>
-        <source>Browse...</source>
-        <translation>Gözat...</translation>
-    </message>
-    <message>
-        <source>Select a local fastboot gadget boot.img file</source>
-        <translation>Yerel bir fastboot aracı boot.img dosyası seçin</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Temizle</translation>
-    </message>
-    <message>
-        <source>Revert to the default fastboot gadget from GitHub</source>
-        <translation>GitHub'daki varsayılan fastboot aracına geri dön</translation>
-    </message>
-    <message>
-        <source>Select Fastboot Gadget Image</source>
-        <translation>Fastboot Aracı İmajı Seçin</translation>
-    </message>
-    <message>
-        <source>Boot images (*.img *.bin)</source>
-        <translation>Önyükleme imajları (*.img *.bin)</translation>
-    </message>
-    <message>
-        <source>All files (*)</source>
-        <translation>Tüm dosyalar (*)</translation>
+        <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -586,7 +510,11 @@
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
-        <translation>Raspberry Pi cihazınızı seçin</translation>
+        <translation>ZimaOS cihazınızı seçin</translation>
+    </message>
+    <message>
+        <source>Loading device types...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -628,10 +556,6 @@ Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan
         <source>Retry downloading the device list</source>
         <translation>Cihaz listesini indirmeyi tekrar dene</translation>
     </message>
-    <message>
-        <source>Connected via USB</source>
-        <translation>Usb ile bağlandı</translation>
-    </message>
 </context>
 <context>
     <name>DoneStep</name>
@@ -640,12 +564,28 @@ Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan
         <translation>Seçimleriniz:</translation>
     </message>
     <message>
+        <source>Ejecting the storage device — do not remove it yet…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
         <translation>Depolama aygıtı otomatik olarak çıkarıldı. Artık güvenle çıkarabilirsiniz.</translation>
     </message>
     <message>
+        <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Please eject the storage device before removing it from your computer.</source>
         <translation>Lütfen bilgisayarınızdan çıkarmadan önce depolama aygıtını çıkarın.</translation>
+    </message>
+    <message>
+        <source>Eject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Eject the storage device so it can be removed safely</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -677,7 +617,7 @@ Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan
     </message>
     <message>
         <source>Close ZimaOS USB Creator and exit the application</source>
-        <translation>ZimaOS USB Creator'ı kapat ve uygulamadan çık</translation>
+        <translation>ZimaOS USB Creator&apos;ı kapat ve uygulamadan çık</translation>
     </message>
     <message>
         <source>Return to storage selection to write the same image to another storage device</source>
@@ -710,7 +650,7 @@ Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan
         <source>Error changing to directory &apos;%1&apos;</source>
         <translation>Dizin değiştirirken hata oluştu &apos;%1&apos;</translation>
     </message>
-<message>
+    <message>
         <source>The write operation has stalled.
 
 No data has been written for 30 seconds. This could be caused by:
@@ -858,6 +798,28 @@ Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
         <translation>Depolama aygıtı &apos;%1&apos; açılamıyor. Lütfen yönetici ayrıcalıklarıyla (sudo) çalıştırın.</translation>
     </message>
     <message>
+        <source>Verifying OS customisation...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
+
+The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to allocate memory for verification.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seeking storage for verification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Creating signed boot image...</source>
         <translation>İmzalı önyükleme görüntüsü oluşturuluyor...</translation>
     </message>
@@ -945,13 +907,17 @@ Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
         <source>Writing customization files...</source>
         <translation>Özelleştirme dosyaları yazılıyor...</translation>
     </message>
-<message>
+    <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
         <translation>&apos;%1&apos; diski ayrılamadı. Lütfen diski kullanan tüm uygulamaları kapatın ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
         <translation>&apos;%1&apos; diski ayrılamadı.</translation>
+    </message>
+    <message>
+        <source>Waiting for drive to become available... (%1s)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>getting device size</source>
@@ -1154,8 +1120,16 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
         <translation>senkronizasyon (sync)</translation>
     </message>
     <message>
+        <source>flushing image before writing partition table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>writing partition table</source>
         <translation>bölüm tablosu yazılıyor</translation>
+    </message>
+    <message>
+        <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>final flush</source>
@@ -1208,112 +1182,13 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
         <source>Cannot format device: insufficient permissions. Please run with elevated privileges (sudo).</source>
         <translation>Cihaz biçimlendirilemiyor: yetersiz izin. Lütfen yönetici ayrıcalıklarıyla (sudo) çalıştırın.</translation>
     </message>
-<message>
+    <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
         <translation>&apos;%1&apos; diski ayrılamadı. Lütfen diski kullanan tüm uygulamaları kapatın ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
         <translation>&apos;%1&apos; diski ayrılamadı.</translation>
-    </message>
-</context>
-<context>
-    <name>FastbootFlashThread</name>
-    <message>
-        <source>Applying OS customisation...</source>
-        <translation>İşletim sistemi özelleştirmeleri uygulanıyor...</translation>
-    </message>
-    <message>
-        <source>Failed to mount boot partition: %1</source>
-        <translation>Önyükleme (boot) bölümü bağlanamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to read config.txt: %1</source>
-        <translation>config.txt okunamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write config.txt: %1</source>
-        <translation>config.txt yazılamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write firstrun.sh: %1</source>
-        <translation>firstrun.sh yazılamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write meta-data: %1</source>
-        <translation>meta-data yazılamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write user-data: %1</source>
-        <translation>user-data yazılamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write network-config: %1</source>
-        <translation>network-config yazılamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to read cmdline.txt: %1</source>
-        <translation>cmdline.txt okunamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write cmdline.txt: %1</source>
-        <translation>cmdline.txt yazılamadı: %1</translation>
-    </message>
-    <message>
-        <source>Failed to initialize curl</source>
-        <translation>curl başlatılamadı</translation>
-    </message>
-    <message>
-        <source>No entries in image archive</source>
-        <translation>İmaj arşivinde girdi bulunamadı</translation>
-    </message>
-    <message>
-        <source>Fastboot error: %1</source>
-        <translation>Fastboot hatası: %1</translation>
-    </message>
-    <message>
-        <source>Fastboot error: unexpected internal error</source>
-        <translation>Fastboot hatası: beklenmedik dahili hata</translation>
-    </message>
-    <message>
-        <source>Connecting to fastboot device...</source>
-        <translation>Fastboot cihazına bağlanılıyor...</translation>
-    </message>
-    <message>
-        <source>Failed to open fastboot device: %1</source>
-        <translation>Fastboot cihazı açılamadı: %1</translation>
-    </message>
-    <message>
-        <source>Downloading and flashing OS image...</source>
-        <translation>İşletim sistemi imajı indiriliyor ve yazdırılıyor...</translation>
-    </message>
-    <message>
-        <source>Fetching block map...</source>
-        <translation>Blok haritası getiriliyor...</translation>
-    </message>
-    <message>
-        <source>Fastboot download failed: %1</source>
-        <translation>Fastboot indirmesi başarısız oldu: %1</translation>
-    </message>
-    <message>
-        <source>Fastboot flash failed: %1</source>
-        <translation>Fastboot yazdırma (flash) işlemi başarısız oldu: %1</translation>
-    </message>
-    <message>
-        <source>Download failed: %1</source>
-        <translation>İndirme başarısız oldu: %1</translation>
-    </message>
-    <message>
-        <source>Decompression failed: %1</source>
-        <translation>Sıkıştırma açma başarısız oldu: %1</translation>
-    </message>
-    <message>
-        <source>Cancelled</source>
-        <translation>İptal edildi</translation>
-    </message>
-    <message>
-        <source>Image hash mismatch. Expected: %1 Got: %2</source>
-        <translation>İmaj hash uyuşmazlığı. Beklenen: %1 Alınan: %2</translation>
     </message>
 </context>
 <context>
@@ -1326,8 +1201,8 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
 <context>
     <name>HostnameCustomizationStep</name>
     <message>
-        <source>A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.</source>
-        <translation>Ana makine adı (hostname), Raspberry Pi&apos;nizi ağda tanımlayan benzersiz bir isimdir. Sadece harf, rakam ve tire içermelidir.</translation>
+        <source>A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.</source>
+        <translation>Ana makine adı (hostname), ZimaOS&apos;nizi ağda tanımlayan benzersiz bir isimdir. Sadece harf, rakam ve tire içermelidir.</translation>
     </message>
     <message>
         <source>Customisation: Choose hostname</source>
@@ -1425,8 +1300,8 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
         <translation>Sıcaklık sensörleri ve diğer Dallas/Maxim cihazlarını bağlamak için 1-Wire arayüzünü etkinleştirir</translation>
     </message>
     <message>
-        <source>Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage</source>
-        <translation>Raspberry Pi&apos;nizi ağ ve depolama için bir USB çevre birimi olarak kullanmak üzere USB cihaz modunu etkinleştirir</translation>
+        <source>Enable USB device mode to use your ZimaOS as a USB peripheral for networking and storage</source>
+        <translation>ZimaOS&apos;nizi ağ ve depolama için bir USB çevre birimi olarak kullanmak üzere USB cihaz modunu etkinleştirir</translation>
     </message>
     <message>
         <source>Save interface and feature settings and continue to writing step</source>
@@ -1595,13 +1470,6 @@ veya yukarıdaki adres çubuğuna bir yol yazın.</translation>
     </message>
 </context>
 <context>
-    <name>ImPopup</name>
-    <message>
-        <source>Dialog</source>
-        <translation>İletişim Kutusu</translation>
-    </message>
-</context>
-<context>
     <name>ImSaveFileDialog</name>
     <message>
         <source>Save File</source>
@@ -1706,20 +1574,20 @@ veya yukarıdaki adres çubuğuna bir yol yazın.</translation>
         <translation> veya </translation>
     </message>
     <message>
+        <source>No organisation API key is configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect returned an unexpected response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Save Performance Data</source>
         <translation>Performans Verilerini Kaydet</translation>
     </message>
     <message>
         <source>JSON files (*.json);;All files (*)</source>
         <translation>JSON dosyaları (*.json);;Tüm dosyalar (*)</translation>
-    </message>
-<message>
-        <source>Starting fastboot flash...</source>
-        <translation>Fastboot yazdırma işlemi başlatılıyor...</translation>
-    </message>
-    <message>
-        <source>Preparing device for imaging...</source>
-        <translation>Cihaz imaj yazdırma için hazırlanıyor...</translation>
     </message>
     <message>
         <source>Storage capacity is not large enough.
@@ -1730,14 +1598,6 @@ The image requires at least %1 of storage.</source>
 İmaj dosyası en az %1 depolama alanı gerektiriyor.</translation>
     </message>
     <message>
-        <source>Input file is not a valid disk image.
-
-File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>Giriş dosyası geçerli bir disk imajı değil.
-
-%1 bayt olan dosya boyutu 512 baytın katı değil.</translation>
-    </message>
-<message>
         <source>Failed to start write operation: insufficient memory.
 
 The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
@@ -1878,20 +1738,34 @@ Teknik detaylar: %1</translation>
         <translation>Size en yakın başkenti seçin. Bu, bölgeniz için doğru saat dilimini ve klavye düzenini otomatik olarak önerecek ve ülkenizin Wi-Fi yönetmelikleri için kablosuz düzenleme alanını ayarlayacaktır.</translation>
     </message>
     <message>
-        <source>Choose your time zone so your Raspberry Pi displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
-        <translation>Raspberry Pi&apos;nizin doğru yerel saati göstermesi için saat diliminizi seçin. Bu, başkent seçiminize göre otomatik olarak önerilir ancak öneri yanlışsa değiştirebilirsiniz.</translation>
+        <source>Why am I being asked this?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
+        <translation>ZimaOS&apos;nizin doğru yerel saati göstermesi için saat diliminizi seçin. Bu, başkent seçiminize göre otomatik olarak önerilir ancak öneri yanlışsa değiştirebilirsiniz.</translation>
     </message>
     <message>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
         <translation>Yazarken tuşların doğru karakterleri üretmesi için klavye düzeninizi seçin. Bu, başkent seçiminize göre otomatik olarak önerilir ancak farklı bir klavye düzeni kullanıyorsanız değiştirebilirsiniz.</translation>
     </message>
     <message>
-        <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation>ZimaOS USB Creator'ın imajı yazabilmesi için diske erişmesi gerekiyor.</translation>
-    </message>
-    <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
         <translation>Bu aynı zamanda bölgeniz için Wi-Fi düzenleme alanını da belirler.</translation>
+    </message>
+</context>
+<context>
+    <name>MacFile</name>
+    <message>
+        <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
+        <translation type="unfinished">ZimaOS USB Creator&apos;ın imajı yazabilmesi için diske erişmesi gerekiyor.</translation>
+    </message>
+</context>
+<context>
+    <name>NativeFileDialog</name>
+    <message>
+        <source>File type:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1932,10 +1806,6 @@ Teknik detaylar: %1</translation>
         <translation>İşletim sistemi seçin</translation>
     </message>
     <message>
-        <source>Select the ZimaOS version you want to install</source>
-        <translation>Raspberry Pi'nize yüklemek için bir işletim sistemi seçin</translation>
-    </message>
-    <message>
         <source>Operating system list</source>
         <translation>İşletim sistemi listesi</translation>
     </message>
@@ -1967,7 +1837,7 @@ Teknik detaylar: %1</translation>
         <source>Released: %1</source>
         <translation>Yayınlanma: %1</translation>
     </message>
-<message>
+    <message>
         <source>Unable to download OS list. You can still use a local image file.</source>
         <translation>İşletim sistemi listesi indirilemedi. Yine de yerel bir imaj dosyası kullanabilirsiniz.</translation>
     </message>
@@ -1988,7 +1858,7 @@ Teknik detaylar: %1</translation>
     </message>
     <message>
         <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
-        <translation>Parolasız sudo'nun etkinleştirilmesi, bu kullanıcı olarak çalışan herhangi bir işlemin kimlik doğrulaması olmadan tam kök (root) ayrıcalıkları kazanmasına izin verir. Bu, sisteminizin güvenliğini önemli ölçüde zayıflatır.</translation>
+        <translation>Parolasız sudo&apos;nun etkinleştirilmesi, bu kullanıcı olarak çalışan herhangi bir işlemin kimlik doğrulaması olmadan tam kök (root) ayrıcalıkları kazanmasına izin verir. Bu, sisteminizin güvenliğini önemli ölçüde zayıflatır.</translation>
     </message>
     <message>
         <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
@@ -2008,42 +1878,46 @@ Teknik detaylar: %1</translation>
     </message>
     <message>
         <source>Enable passwordless sudo for this user account</source>
-        <translation>Bu kullanıcı hesabı için parolasız sudo'yu etkinleştir</translation>
+        <translation>Bu kullanıcı hesabı için parolasız sudo&apos;yu etkinleştir</translation>
     </message>
 </context>
 <context>
     <name>PiConnectCustomizationStep</name>
     <message>
-        <source>Customisation: Raspberry Pi Connect</source>
-        <translation>Özelleştirme: Raspberry Pi Connect</translation>
+        <source>Customisation: ZimaOS Connect</source>
+        <translation>Özelleştirme: ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Enable Raspberry Pi Connect</source>
-        <translation>Raspberry Pi Connect&apos;i Etkinleştir</translation>
+        <source>Enable ZimaOS Connect</source>
+        <translation>ZimaOS Connect&apos;i Etkinleştir</translation>
     </message>
     <message>
-        <source>What is Raspberry Pi Connect?</source>
-        <translation>Raspberry Pi Connect nedir?</translation>
+        <source>What is ZimaOS Connect?</source>
+        <translation>ZimaOS Connect nedir?</translation>
     </message>
     <message>
-        <source>Open Raspberry Pi Connect</source>
-        <translation>Raspberry Pi Connect&apos;i Aç</translation>
+        <source>Open ZimaOS Connect</source>
+        <translation>ZimaOS Connect&apos;i Aç</translation>
     </message>
     <message>
         <source>Token received from browser</source>
         <translation>Tarayıcıdan alınan belirteç (token)</translation>
     </message>
     <message>
-        <source>Open the Raspberry Pi Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Oturum açmak ve bir doğrulama belirteci almak için tarayıcınızda Raspberry Pi Connect web sitesini açın</translation>
+        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
+        <translation>Oturum açmak ve bir doğrulama belirteci almak için tarayıcınızda ZimaOS Connect web sitesini açın</translation>
     </message>
     <message>
-        <source>Enable secure remote access to your Raspberry Pi through the Raspberry Pi Connect cloud service</source>
-        <translation>Raspberry Pi Connect bulut hizmeti aracılığıyla Raspberry Pi&apos;nize güvenli uzaktan erişimi etkinleştirin</translation>
+        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
+        <translation>ZimaOS Connect bulut hizmeti aracılığıyla ZimaOS&apos;nize güvenli uzaktan erişimi etkinleştirin</translation>
     </message>
     <message>
-        <source>Save Raspberry Pi Connect settings and continue to next customisation step</source>
-        <translation>Raspberry Pi Connect ayarlarını kaydet ve sonraki özelleştirme adımına geç</translation>
+        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
+        <translation>ZimaOS Connect ayarlarını kaydet ve sonraki özelleştirme adımına geç</translation>
+    </message>
+    <message>
+        <source>Register this device with your ZimaOS Connect organisation</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Return to previous step</source>
@@ -2054,8 +1928,52 @@ Teknik detaylar: %1</translation>
         <translation>Tüm özelleştirmeleri atla ve doğrudan imaj yazma işlemine geç</translation>
     </message>
     <message>
-        <source>Enter or paste the authentication token from Raspberry Pi Connect. The token will be automatically filled if you use the &apos;Open Raspberry Pi Connect&apos; button to sign in.</source>
-        <translation>Raspberry Pi Connect&apos;ten aldığınız doğrulama belirtecini girin veya yapıştırın. Oturum açmak için &apos;Raspberry Pi Connect&apos;i Aç&apos; butonunu kullanırsanız belirteç otomatik olarak doldurulacaktır.</translation>
+        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Organisation API Key:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste your ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved — type to replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auth key description:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description for the auth key shown in the Connect organisation UI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>e.g. Factory-A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear saved key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove the saved ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
+        <translation>ZimaOS Connect&apos;ten aldığınız doğrulama belirtecini girin veya yapıştırın. Oturum açmak için &apos;ZimaOS Connect&apos;i Aç&apos; butonunu kullanırsanız belirteç otomatik olarak doldurulacaktır.</translation>
     </message>
     <message>
         <source>Waiting for token (%1s)</source>
@@ -2066,12 +1984,16 @@ Teknik detaylar: %1</translation>
         <translation>Belirteci buraya yapıştırın</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Invalid Token</source>
         <translation>Geçersiz Belirteç</translation>
     </message>
     <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open Raspberry Pi Connect&apos; button to get a valid token.</source>
-        <translation>Girdiğiniz belirteç geçerli değil. Lütfen belirteci kontrol edip tekrar deneyin veya geçerli bir belirteç almak için &apos;Raspberry Pi Connect&apos;i Aç&apos; butonunu kullanın.</translation>
+        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
+        <translation>Girdiğiniz belirteç geçerli değil. Lütfen belirteci kontrol edip tekrar deneyin veya geçerli bir belirteç almak için &apos;ZimaOS Connect&apos;i Aç&apos; butonunu kullanın.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -2082,12 +2004,24 @@ Teknik detaylar: %1</translation>
         <translation>Bu iletişim kutusunu kapat ve belirteç alanına geri dön</translation>
     </message>
     <message>
+        <source>Could not create auth key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close this dialog and return to the organisation API key field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Authentication token:</source>
         <translation>Doğrulama belirteci:</translation>
     </message>
     <message>
-        <source>Sign in to receive a token and enable Raspberry Pi Connect</source>
-        <translation>Belirteç almak ve Raspberry Pi Connect&apos;i etkinleştirmek için oturum açın</translation>
+        <source>Sign in to receive a token and enable ZimaOS Connect</source>
+        <translation>Belirteç almak ve ZimaOS Connect&apos;i etkinleştirmek için oturum açın</translation>
     </message>
 </context>
 <context>
@@ -2124,38 +2058,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
 
 Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&quot;ye tıklayın veya şu komutla manuel olarak çalıştırın: sudo %1</translation>
     </message>
-<message>
-        <source>Invalid Windows physical drive path: %1</source>
-        <translation>Geçersiz Windows fiziksel sürücü yolu: %1</translation>
-    </message>
-    <message>
-        <source>Failed to open disk for cleaning. Error code: %1</source>
-        <translation>Disk temizleme için açılamadı. Hata kodu: %1</translation>
-    </message>
-    <message>
-        <source>Failed to clear partition table. Error code: %1</source>
-        <translation>Bölüm tablosu temizlenemedi. Hata kodu: %1</translation>
-    </message>
-    <message>
-        <source>Failed to start disk cleanup utility. Please ensure you have administrator privileges.</source>
-        <translation>Disk temizleme aracı başlatılamadı. Lütfen yönetici ayrıcalıklarına sahip olduğunuzdan emin olun.</translation>
-    </message>
-    <message>
-        <source>Disk cleaning operation timed out. The disk may be in use by another application.</source>
-        <translation>Disk temizleme işlemi zaman aşımına uğradı. Disk başka bir uygulama tarafından kullanılıyor olabilir.</translation>
-    </message>
-    <message>
-        <source>Failed to clean disk. Error: %1</source>
-        <translation>Disk temizlenemedi. Hata: %1</translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation>Bilinmeyen hata</translation>
-    </message>
-    <message>
-        <source>Failed to clean disk after %1 attempts. %2</source>
-        <translation>%1 denemeden sonra disk temizlenemedi. %2</translation>
-    </message>
 </context>
 <context>
     <name>RemoteAccessStep</name>
@@ -2188,8 +2090,8 @@ Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&q
         <translation>Doğrulama mekanizması:</translation>
     </message>
     <message>
-        <source>Enable secure shell access for remote command-line control of your Raspberry Pi</source>
-        <translation>Raspberry Pi&apos;nizin uzaktan komut satırı kontrolü için güvenli kabuk (SSH) erişimini etkinleştirin</translation>
+        <source>Enable secure shell access for remote command-line control of your ZimaOS</source>
+        <translation>ZimaOS&apos;nizin uzaktan komut satırı kontrolü için güvenli kabuk (SSH) erişimini etkinleştirin</translation>
     </message>
     <message>
         <source>Save SSH settings and continue to next customisation step</source>
@@ -2212,130 +2114,8 @@ Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&q
         <translation>Parola yerine kriptografik bir anahtar çifti kullanarak SSH girişine izin verin. Parola doğrulamasından daha güvenlidir.</translation>
     </message>
     <message>
-        <source>Choose how you will authenticate when connecting to your Raspberry Pi via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
-        <translation>Raspberry Pi&apos;nize SSH üzerinden bağlanırken nasıl doğrulama yapacağınızı seçin. Parola doğrulaması yapılandırdığınız hesap bilgilerini kullanır. Kamu anahtarı doğrulaması ise kriptografik bir anahtar çifti kullanır ve daha güvenlidir.</translation>
-    </message>
-</context>
-<context>
-    <name>RepositoryDialog</name>
-    <message>
-        <source>Content Repository</source>
-        <translation>İçerik Deposu (Repository)</translation>
-    </message>
-    <message>
-        <source>Repository source:</source>
-        <translation>Depo kaynağı:</translation>
-    </message>
-    <message>
-        <source>Use custom file</source>
-        <translation>Özel dosya kullan</translation>
-    </message>
-    <message>
-        <source>Please select a custom repository json file</source>
-        <translation>Lütfen özel bir depo JSON dosyası seçin</translation>
-    </message>
-    <message>
-        <source>Select Repository</source>
-        <translation>Depo Seç</translation>
-    </message>
-    <message>
-        <source>Apply &amp; Restart</source>
-        <translation>Uygula ve Yeniden Başlat</translation>
-    </message>
-    <message>
-        <source>Select custom repository</source>
-        <translation>Özel depo seç</translation>
-    </message>
-    <message>
-        <source>Use custom URL</source>
-        <translation>Özel URL kullan</translation>
-    </message>
-    <message>
-        <source>Select a custom repository JSON file from your computer</source>
-        <translation>Bilgisayarınızdan özel bir depo JSON dosyası seçin</translation>
-    </message>
-    <message>
-        <source>Close the repository dialog without changing the content source</source>
-        <translation>İçerik kaynağını değiştirmeden depo iletişim kutusunu kapat</translation>
-    </message>
-    <message>
-        <source>Apply the new content repository and restart the wizard from the beginning</source>
-        <translation>Yeni içerik deposunu uygula ve sihirbazı baştan başlat</translation>
-    </message>
-    <message>
-        <source>Choose the source for operating system images</source>
-        <translation>İşletim sistemi imajları için kaynak seçin</translation>
-    </message>
-    <message>
-        <source>Use the official Raspberry Pi operating system repository</source>
-        <translation>Resmi Raspberry Pi işletim sistemi deposunu kullan</translation>
-    </message>
-    <message>
-        <source>Load operating system list from a JSON file on your computer</source>
-        <translation>İşletim sistemi listesini bilgisayarınızdaki bir JSON dosyasından yükleyin</translation>
-    </message>
-    <message>
-        <source>Download operating system list from a custom web address</source>
-        <translation>İşletim sistemi listesini özel bir web adresinden indirin</translation>
-    </message>
-</context>
-<context>
-    <name>RpibootThread</name>
-    <message>
-        <source>Downloading firmware...</source>
-        <translation>Ürün yazılımı indiriliyor...</translation>
-    </message>
-    <message>
-        <source>Failed to obtain rpiboot firmware: %1</source>
-        <translation>rpiboot ürün yazılımı alınamadı: %1</translation>
-    </message>
-    <message>
-        <source>Connecting to device...</source>
-        <translation>Cihaza bağlanılıyor...</translation>
-    </message>
-    <message>
-        <source>Failed to open USB device</source>
-        <translation>USB cihazı açılamadı</translation>
-    </message>
-    <message>
-        <source>rpiboot protocol failed: %1</source>
-        <translation>rpiboot protokolü başarısız oldu: %1</translation>
-    </message>
-    <message>
-        <source>USB error: %1</source>
-        <translation>USB hatası: %1</translation>
-    </message>
-    <message>
-        <source>Waiting for device to restart...</source>
-        <translation>Cihazın yeniden başlaması bekleniyor...</translation>
-    </message>
-    <message>
-        <source>Failed to open USB device after re-enumeration</source>
-        <translation>Yeniden numaralandırma (re-enumeration) sonrası USB cihazı açılamadı</translation>
-    </message>
-    <message>
-        <source>Waiting for fastboot device...</source>
-        <translation>Fastboot cihazı bekleniyor...</translation>
-    </message>
-    <message>
-        <source>Timed out waiting for fastboot device to appear.</source>
-        <translation>Fastboot cihazının görünmesi beklenirken zaman aşımı oluştu.</translation>
-    </message>
-    <message>
-        <source>Waiting for device to disconnect (%1/%2)...</source>
-        <translation>Cihazın bağlantısının kesilmesi bekleniyor (%1/%2)...</translation>
-    </message>
-    <message>
-        <source>Device disconnected, waiting for reconnect...</source>
-        <translation>Cihaz bağlantısı kesildi, yeniden bağlanması bekleniyor...</translation>
-    </message>
-    <message>
-        <source>Waiting for device to reconnect (%1/%2s)...</source>
-        <translation>Cihazın yeniden bağlanması bekleniyor (%1/%2sn)...</translation>
-    </message>
-    <message>
-        <source>Timed out waiting for device to re-enumerate after bootcode upload (waited %1s).</source>
-        <translation>Önyükleme kodu (bootcode) yüklemesinden sonra cihazın yeniden numaralandırılması beklenirken zaman aşımı oluştu (%1sn beklendi).</translation>
+        <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
+        <translation>ZimaOS&apos;nize SSH üzerinden bağlanırken nasıl doğrulama yapacağınızı seçin. Parola doğrulaması yapılandırdığınız hesap bilgilerini kullanır. Kamu anahtarı doğrulaması ise kriptografik bir anahtar çifti kullanır ve daha güvenlidir.</translation>
     </message>
 </context>
 <context>
@@ -2365,16 +2145,16 @@ Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&q
         <translation>Güvenli Önyükleme İmzalamayı Etkinleştir</translation>
     </message>
     <message>
-        <source>Sign the boot partition with your RSA key to enable secure boot verification on Raspberry Pi</source>
-        <translation>Raspberry Pi&apos;de güvenli önyükleme doğrulamasını etkinleştirmek için önyükleme bölümünü RSA anahtarınızla imzalayın</translation>
+        <source>Sign the boot partition with your RSA key to enable secure boot verification on ZimaOS</source>
+        <translation>ZimaOS&apos;de güvenli önyükleme doğrulamasını etkinleştirmek için önyükleme bölümünü RSA anahtarınızla imzalayın</translation>
     </message>
     <message>
         <source>Learn about Secure Boot</source>
         <translation>Güvenli Önyükleme hakkında bilgi edinin</translation>
     </message>
     <message>
-        <source>This will create boot.img and boot.sig files required for Raspberry Pi Secure Boot.</source>
-        <translation>Bu işlem, Raspberry Pi Güvenli Önyükleme için gerekli olan boot.img ve boot.sig dosyalarını oluşturacaktır.</translation>
+        <source>This will create boot.img and boot.sig files required for ZimaOS Secure Boot.</source>
+        <translation>Bu işlem, ZimaOS Güvenli Önyükleme için gerekli olan boot.img ve boot.sig dosyalarını oluşturacaktır.</translation>
     </message>
     <message>
         <source>Public Key Fingerprint: %1</source>
@@ -2431,26 +2211,6 @@ Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&q
     <message>
         <source>All Files (*)</source>
         <translation>Tüm Dosyalar (*)</translation>
-    </message>
-    <message>
-        <source>OTP Secure Boot Provisioning</source>
-        <translation>OTP Güvenli Önyükleme Hazırlama</translation>
-    </message>
-    <message>
-        <source>Program the secure boot public key hash into the device&apos;s OTP memory. This is a permanent, irreversible operation.</source>
-        <translation>Güvenli önyükleme genel anahtar özetini cihazın OTP belleğine programlar. Bu kalıcı ve geri döndürülemez bir işlemdir.</translation>
-    </message>
-    <message>
-        <source>Provision Secure Boot OTP</source>
-        <translation>Güvenli Önyükleme OTP'sini Hazırla</translation>
-    </message>
-    <message>
-        <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation>Güvenli önyükleme anahtarını cihazın OTP belleğine kalıcı olarak programla</translation>
-    </message>
-    <message>
-        <source>WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.</source>
-        <translation>UYARI: OTP hazırlama işleminden sonra bu cihaz YALNIZCA seçilen anahtarla imzalanmış imajları başlatacaktır. Bu işlem geri alınamaz.</translation>
     </message>
 </context>
 <context>
@@ -2633,10 +2393,6 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Hata: Depolama aygıtları listelenemedi. %1</translation>
     </message>
     <message>
-        <source>Ready for USB boot</source>
-        <translation>USB önyükleme için hazır</translation>
-    </message>
-    <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
         <translation>Depolama aygıtları listelenemedi: %1. Bu bir yetki sorunu olabilir. Uygulamayı yönetici ayrıcalıklarıyla çalıştırmayı deneyin.</translation>
     </message>
@@ -2648,20 +2404,20 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Güncelleme mevcut</translation>
     </message>
     <message>
+        <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
-        <translation>Imager'ın daha yeni bir sürümü mevcut. İndirmek için web sitesini ziyaret etmek ister misiniz?</translation>
+        <translation>Imager&apos;ın daha yeni bir sürümü mevcut. İndirmek için web sitesini ziyaret etmek ister misiniz?</translation>
     </message>
     <message>
         <source>Continue using the current version of ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator'ın mevcut sürümünü kullanmaya devam et</translation>
+        <translation>ZimaOS USB Creator&apos;ın mevcut sürümünü kullanmaya devam et</translation>
     </message>
     <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
-        <translation>En son sürümü indirmek için tarayıcınızda Raspberry Pi web sitesini açın</translation>
-    </message>
-    <message>
-        <source>Imager version %1 is available. Would you like to visit the website to download it?</source>
-        <translation>Imager sürüm %1 mevcuttur. İndirmek için web sitesini ziyaret etmek ister misiniz?</translation>
+        <translation>En son sürümü indirmek için tarayıcınızda ZimaOS web sitesini açın</translation>
     </message>
     <message>
         <source>Update</source>
@@ -2703,8 +2459,8 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Parolayı değiştirmek için tekrar girin</translation>
     </message>
     <message>
-        <source>Create a user account for your Raspberry Pi</source>
-        <translation>Raspberry Pi&apos;niz için bir kullanıcı hesabı oluşturun</translation>
+        <source>Create a user account for your ZimaOS</source>
+        <translation>ZimaOS&apos;niz için bir kullanıcı hesabı oluşturun</translation>
     </message>
     <message>
         <source>Enter your username</source>
@@ -2723,8 +2479,8 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Tüm özelleştirmeleri atla ve doğrudan imaj yazma işlemine geç</translation>
     </message>
     <message>
-        <source>Enter a username for your Raspberry Pi account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
-        <translation>Raspberry Pi hesabınız için bir kullanıcı adı girin. Kullanıcı adı küçük harf olmalı; yalnızca harf, rakam, alt çizgi ve tire içermelidir.</translation>
+        <source>Enter a username for your ZimaOS account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
+        <translation>ZimaOS hesabınız için bir kullanıcı adı girin. Kullanıcı adı küçük harf olmalı; yalnızca harf, rakam, alt çizgi ve tire içermelidir.</translation>
     </message>
     <message>
         <source>Enter a new password for this account, or leave blank to keep the previously saved password.</source>
@@ -2743,8 +2499,12 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Eşleştiğinden emin olmak için parolayı tekrar girin.</translation>
     </message>
     <message>
+        <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable passwordless sudo</source>
-        <translation>Parolasız sudo'yu etkinleştir</translation>
+        <translation>Parolasız sudo&apos;yu etkinleştir</translation>
     </message>
     <message>
         <source>Allow this user to run sudo commands without entering a password.</source>
@@ -2897,10 +2657,6 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Bitti</translation>
     </message>
     <message>
-        <source>Customisation</source>
-        <translation>Özelleştirme</translation>
-    </message>
-    <message>
         <source>Hostname</source>
         <translation>Ana Makine Adı</translation>
     </message>
@@ -2913,8 +2669,8 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Wi-Fi</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect</source>
-        <translation>Raspberry Pi Connect</translation>
+        <source>ZimaOS Connect</source>
+        <translation>ZimaOS Connect</translation>
     </message>
     <message>
         <source>App Options</source>
@@ -2937,18 +2693,14 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Uzaktan erişim</translation>
     </message>
     <message>
-        <source>Open application settings to configure sound alerts, auto-eject, telemetry, and content repository</source>
-        <translation>Sesli uyarılar, otomatik çıkarma, telemetri ve içerik deposunu yapılandırmak için uygulama ayarlarını açın</translation>
+        <source>Replace existing ZimaOS Connect token?</source>
+        <translation>Mevcut ZimaOS Connect belirteci değiştirilsin mi?</translation>
     </message>
     <message>
-        <source>Replace existing Raspberry Pi Connect token?</source>
-        <translation>Mevcut Raspberry Pi Connect belirteci değiştirilsin mi?</translation>
-    </message>
-    <message>
-        <source>A new Raspberry Pi Connect token was received that differs from your current one.
+        <source>A new ZimaOS Connect token was received that differs from your current one.
 
 </source>
-        <translation>Mevcut olanınızdan farklı yeni bir Raspberry Pi Connect belirteci alındı.
+        <translation>Mevcut olanınızdan farklı yeni bir ZimaOS Connect belirteci alındı.
 
 </translation>
     </message>
@@ -2977,20 +2729,20 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Mevcut olanı koru</translation>
     </message>
     <message>
-        <source>Keep your current Raspberry Pi Connect token</source>
-        <translation>Mevcut Raspberry Pi Connect belirtecinizi koruyun</translation>
+        <source>Keep your current ZimaOS Connect token</source>
+        <translation>Mevcut ZimaOS Connect belirtecinizi koruyun</translation>
     </message>
     <message>
         <source>Secure Boot</source>
         <translation>Güvenli Önyükleme</translation>
     </message>
     <message>
+        <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Warning: Only overwrite the token if you initiated this action.</source>
         <translation>Uyarı: Belirtecin üzerine yalnızca bu işlemi siz başlattıysanız yazın.</translation>
-    </message>
-<message>
-        <source>Sidebar resize handle</source>
-        <translation>Yan çubuk boyutlandırma tutamacı</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -3001,14 +2753,14 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Özel bir depoya geçilsin mi?</translation>
     </message>
     <message>
-        <source>You are opening a local Raspberry Pi Imager manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation>Yerel bir Raspberry Pi Imager manifest dosyası açıyorsunuz. Bu işlem, mevcut işletim sistemi listesini bu dosyanın içeriğiyle değiştirecektir.</translation>
+        <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
+        <translation>Yerel bir ZimaOS USB Creator manifest dosyası açıyorsunuz. Bu işlem, mevcut işletim sistemi listesini bu dosyanın içeriğiyle değiştirecektir.</translation>
     </message>
     <message>
-        <source>A website is requesting to switch Raspberry Pi Imager to use a custom OS repository.
+        <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation>Bir web sitesi, Raspberry Pi Imager'ın özel bir işletim sistemi deposu kullanmasını talep ediyor.
+        <translation>Bir web sitesi, ZimaOS USB Creator&apos;ın özel bir işletim sistemi deposu kullanmasını talep ediyor.
 
 </translation>
     </message>
@@ -3018,7 +2770,7 @@ Sistem sürücülerini göstermek için aşağıdaki
     </message>
     <message>
         <source>Repository URL: %1</source>
-        <translation>Depo URL'si: %1</translation>
+        <translation>Depo URL&apos;si: %1</translation>
     </message>
     <message>
         <source>Open</source>
@@ -3044,7 +2796,7 @@ Sistem sürücülerini göstermek için aşağıdaki
         <source>Keep your current repository settings</source>
         <translation>Mevcut depo ayarlarınızı koruyun</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>WizardStepBase</name>
     <message>
@@ -3058,7 +2810,7 @@ Sistem sürücülerini göstermek için aşağıdaki
 </context>
 <context>
     <name>WriteProgressWatchdog</name>
-<message>
+    <message>
         <source>Switched to compatibility mode - write continuing...</source>
         <translation>Uyumluluk moduna geçildi - yazma işlemi devam ediyor...</translation>
     </message>
@@ -3074,7 +2826,7 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
         <source>Storage device not responding. Restarting in compatibility mode...</source>
         <translation>Depolama aygıtı yanıt vermiyor. Uyumluluk modunda yeniden başlatılıyor...</translation>
     </message>
-    </context>
+</context>
 <context>
     <name>WritingStep</name>
     <message>
@@ -3092,6 +2844,18 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     <message>
         <source>Starting write process...</source>
         <translation>Yazma işlemi başlıyor...</translation>
+    </message>
+    <message>
+        <source>Limited by download speed</source>
+        <translation type="unfinished">İndirme hızıyla sınırlı</translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation type="unfinished">Sıkıştırma açma hızıyla sınırlı</translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation type="unfinished">Depolama aygıtı hızıyla sınırlı</translation>
     </message>
     <message>
         <source>You are about to ERASE all data on: %1</source>
@@ -3190,20 +2954,12 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
         <translation>Tamamlanıyor…</translation>
     </message>
     <message>
-        <source>Write complete</source>
-        <translation>Yazma tamamlandı</translation>
-    </message>
-    <message>
         <source>customization</source>
         <translation>özelleştirme</translation>
     </message>
     <message>
         <source>customizations</source>
         <translation>özelleştirmeler</translation>
-    </message>
-    <message>
-        <source>Writing in progress — do not disconnect the storage device</source>
-        <translation>Yazma işlemi devam ediyor — depolama aygıtının bağlantısını kesmeyin</translation>
     </message>
     <message>
         <source>Please wait... %1</source>
@@ -3266,15 +3022,11 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>Return to ZimaOS USB Creator and continue the current operation</source>
-        <translation>ZimaOS USB Creator'a dön ve mevcut işleme devam et</translation>
+        <translation>ZimaOS USB Creator&apos;a dön ve mevcut işleme devam et</translation>
     </message>
     <message>
         <source>Force quit ZimaOS USB Creator and cancel the current write operation</source>
-        <translation>ZimaOS USB Creator'dan çıkmaya zorla ve mevcut yazma işlemini iptal et</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator %1</source>
-        <translation>ZimaOS USB Creator %1</translation>
+        <translation>ZimaOS USB Creator&apos;dan çıkmaya zorla ve mevcut yazma işlemini iptal et</translation>
     </message>
     <message>
         <source>Insufficient Permissions</source>
@@ -3290,15 +3042,19 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>Exit ZimaOS USB Creator - you must restart with elevated privileges to write images</source>
-        <translation>ZimaOS USB Creator'dan çık - imaj yazmak için yönetici ayrıcalıklarıyla yeniden başlatmalısınız</translation>
+        <translation>ZimaOS USB Creator&apos;dan çık - imaj yazmak için yönetici ayrıcalıklarıyla yeniden başlatmalısınız</translation>
     </message>
     <message>
         <source>Install Authorization</source>
         <translation>Yetkilendirmeyi Yükle</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>
-        <translation>ZimaOS USB Creator'ın yüksek ayrıcalıklarla çalışmasına izin vermek için sistem yetkilendirmesini yükleyin</translation>
+        <translation>ZimaOS USB Creator&apos;ın yüksek ayrıcalıklarla çalışmasına izin vermek için sistem yetkilendirmesini yükleyin</translation>
     </message>
     <message>
         <source>Save Performance Data</source>

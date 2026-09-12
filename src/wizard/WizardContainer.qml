@@ -245,7 +245,7 @@ Item {
             labels.push(qsTr("Secure Boot"));
         }
         if (piConnectAvailable) {
-            labels.push(qsTr("Raspberry Pi Connect"));
+            labels.push(qsTr("ZimaOS Connect"));
         }
         if (ccRpiAvailable && ifAndFeaturesAvailable) {
             labels.push(qsTr("Interfaces & Features"));
@@ -273,7 +273,7 @@ Item {
             return sshEnabled;
         if (stepLabel === qsTr("Secure Boot"))
             return secureBootEnabled;
-        if (stepLabel === qsTr("Raspberry Pi Connect"))
+        if (stepLabel === qsTr("ZimaOS Connect"))
             return piConnectEnabled;
         if (stepLabel === qsTr("Interfaces & Features"))
             return (ifI2cEnabled || ifSpiEnabled || if1WireEnabled || ifSerial !== "" || featUsbGadgetEnabled);
@@ -582,7 +582,7 @@ Item {
                                             else if (root.currentStep === root.stepRemoteAccess)
                                                 currentStepLabel = qsTr("Remote access");
                                             else if (root.currentStep === root.stepPiConnectCustomization)
-                                                currentStepLabel = qsTr("Raspberry Pi Connect");
+                                                currentStepLabel = qsTr("ZimaOS Connect");
                                             else if (root.currentStep === root.stepIfAndFeatures)
                                                 currentStepLabel = qsTr("Interfaces & Features");
 
@@ -620,7 +620,7 @@ Item {
                                                     target = root.stepWifiCustomization;
                                                 else if (stepLabel === qsTr("Remote access"))
                                                     target = root.stepRemoteAccess;
-                                                else if (stepLabel === qsTr("Raspberry Pi Connect"))
+                                                else if (stepLabel === qsTr("ZimaOS Connect"))
                                                     target = root.stepPiConnectCustomization;
                                                 else if (stepLabel === qsTr("Interfaces & Features"))
                                                     target = root.stepIfAndFeatures;
@@ -1175,7 +1175,7 @@ Item {
         // ----- CONTENT -----
         FocusableHeading {
             id: titleText
-            text: qsTr("Replace existing Raspberry Pi Connect token?")
+            text: qsTr("Replace existing ZimaOS Connect token?")
             font.pointSize: Style.fontSizeHeading
             font.family: Style.fontFamilyBold
             font.bold: true
@@ -1188,7 +1188,7 @@ Item {
         // Body / security note
         FocusableText {
             id: bodyText
-            text: qsTr("A new Raspberry Pi Connect token was received that differs from your current one.\n\n") + qsTr("Do you want to overwrite the existing token?\n\n") + qsTr("Warning: Only overwrite the token if you initiated this action.")
+            text: qsTr("A new ZimaOS Connect token was received that differs from your current one.\n\n") + qsTr("Do you want to overwrite the existing token?\n\n") + qsTr("Warning: Only overwrite the token if you initiated this action.")
             font.pixelSize: Style.fontSizeFormLabel
             font.family: Style.fontFamily
             color: Style.formLabelColor
@@ -1225,7 +1225,7 @@ Item {
             ImButtonRed {
                 id: keepBtn
                 text: qsTr("Keep existing")
-                accessibleDescription: qsTr("Keep your current Raspberry Pi Connect token")
+                accessibleDescription: qsTr("Keep your current ZimaOS Connect token")
                 activeFocusOnTab: true
                 onClicked: tokenConflictDialog.close()
             }

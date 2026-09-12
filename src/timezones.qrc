@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="timezones.txt">timezones.txt</file>
+  </qresource>
+</RCC>

@@ -16,14 +16,6 @@
         <translation>완료 시 미디어 꺼내기</translation>
     </message>
     <message>
-        <source>Enable anonymous statistics (telemetry)</source>
-        <translation>익명 통계(테레메트리)를 활성화합니다</translation>
-    </message>
-    <message>
-        <source>What is this?</source>
-        <translation>이게 무슨 의미인가요?</translation>
-    </message>
-    <message>
         <source>Disable warnings</source>
         <translation>경고 비활성화</translation>
     </message>
@@ -38,14 +30,6 @@
     <message>
         <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
         <translation>경고를 비활성화하면 ZimaOS USB Creator는 &lt;b&gt;이미지를 기록하기 전에 확인 프롬프트를 표시하지 않습니다&lt;/b&gt;. 시스템 드라이브를 선택할 때 여전히 &lt;b&gt;정확한 이름을 입력&lt;/b&gt;해야 합니다.</translation>
-    </message>
-    <message>
-        <source>Content Repository</source>
-        <translation>콘텐츠 저장소</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>편집</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -72,16 +56,8 @@
         <translation>쓰기 프로세스가 성공적으로 완료되면 저장 장치를 자동으로 꺼냅니다</translation>
     </message>
     <message>
-        <source>Send anonymous usage statistics to help improve ZimaOS USB Creator</source>
-        <translation>익명 사용 통계를 보내어 라즈베리 파이 이미저를 개선하는 데 도움을 줍니다</translation>
-    </message>
-    <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>이미지를 기록하기 전에 확인 대화 상자를 건너뛰기 (고급 사용자 전용)</translation>
-    </message>
-    <message>
-        <source>Change the source of operating system images between official Raspberry Pi repository and custom sources</source>
-        <translation>운영 체제 이미지 소스를 공식 라즈베리 파이 저장소와 사용자 정의 소스 간에 변경합니다</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -120,35 +96,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Saved Customisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings such as hostname, WiFi, and user credentials</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved customisation?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This will remove all saved OS customisation settings such as hostname, WiFi, and user credentials.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Keep saved customisation settings and return to the options dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings permanently</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -180,6 +128,10 @@
     <message>
         <source>Image files (%1)</source>
         <translation>이미지 파일 (%1)</translation>
+    </message>
+    <message>
+        <source>Repository Manifest Files (*.json *.%1)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -258,8 +210,8 @@
         <translation>Wi‑Fi가 설정되었습니다</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect enabled</source>
-        <translation>라즈베리 파이 커넥트가 활성화되었습니다</translation>
+        <source>ZimaOS Connect enabled</source>
+        <translation>ZimaOS Connect가 활성화되었습니다</translation>
     </message>
     <message>
         <source>I2C enabled</source>
@@ -288,10 +240,6 @@
     <message>
         <source>Authorized keys files (authorized_keys)</source>
         <translation>인증 키 파일(authorized_keys)</translation>
-    </message>
-    <message>
-        <source>Imager Repository Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -470,6 +418,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Ignore Device I/O Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable Periodic Sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -522,48 +478,16 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable Rpiboot/Fastboot Support</source>
+        <source>Secure Boot</source>
+        <translation type="unfinished">보안 부트</translation>
+    </message>
+    <message>
+        <source>Force Secure Boot Available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.</source>
+        <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Custom Fastboot Gadget:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>(default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a local fastboot gadget boot.img file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Revert to the default fastboot gadget from GitHub</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Fastboot Gadget Image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Boot images (*.img *.bin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All files (*)</source>
-        <translation type="unfinished">모든 파일 (*)</translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -586,7 +510,11 @@
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
-        <translation>라즈베리 파이 장치를 선택하세요</translation>
+        <translation>ZimaOS 장치를 선택하세요</translation>
+    </message>
+    <message>
+        <source>Loading device types...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -626,10 +554,6 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
         <source>Retry downloading the device list</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Connected via USB</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DoneStep</name>
@@ -638,12 +562,28 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
         <translation>선택한 내용:</translation>
     </message>
     <message>
+        <source>Ejecting the storage device — do not remove it yet…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
         <translation>저장 장치가 자동으로 꺼졌습니다. 이제 안전하게 제거할 수 있습니다</translation>
     </message>
     <message>
+        <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Please eject the storage device before removing it from your computer.</source>
         <translation>저장 장치를 컴퓨터에서 제거하기 전에 꺼내십시오</translation>
+    </message>
+    <message>
+        <source>Eject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Eject the storage device so it can be removed safely</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -675,7 +615,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Close ZimaOS USB Creator and exit the application</source>
-        <translation>라즈베리 파이 이미저를 닫고 애플리케이션을 종료합니다</translation>
+        <translation>ZimaOS USB Creator를 닫고 애플리케이션을 종료합니다</translation>
     </message>
     <message>
         <source>Return to storage selection to write the same image to another storage device</source>
@@ -842,6 +782,28 @@ Please check your network connection and try again.</source>
         <translation>저장 장치 &apos;%1&apos;을 열 수 없습니다. 관리자 권한으로 실행하십시오(sudo)</translation>
     </message>
     <message>
+        <source>Verifying OS customisation...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
+
+The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to allocate memory for verification.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seeking storage for verification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Creating signed boot image...</source>
         <translation>서명된 부트 이미지를 생성 중...</translation>
     </message>
@@ -935,6 +897,10 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for drive to become available... (%1s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1084,7 +1050,15 @@ Please check the device and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>flushing image before writing partition table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>writing partition table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1148,105 +1122,6 @@ Please check the device and try again.</source>
     </message>
 </context>
 <context>
-    <name>FastbootFlashThread</name>
-    <message>
-        <source>Applying OS customisation...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to mount boot partition: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to read config.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write config.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write firstrun.sh: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write meta-data: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write user-data: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write network-config: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to read cmdline.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write cmdline.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to initialize curl</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No entries in image archive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot error: unexpected internal error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connecting to fastboot device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open fastboot device: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloading and flashing OS image...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fetching block map...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot download failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot flash failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Decompression failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Image hash mismatch. Expected: %1 Got: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>HWListModel</name>
     <message>
         <source>CHOOSE DEVICE</source>
@@ -1256,8 +1131,8 @@ Please check the device and try again.</source>
 <context>
     <name>HostnameCustomizationStep</name>
     <message>
-        <source>A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.</source>
-        <translation>호스트 이름은 네트워크에서 라즈베리 파이를 식별하는 고유한 이름입니다. 영문자, 숫자 및 하이픈만 포함해야 합니다</translation>
+        <source>A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.</source>
+        <translation>호스트 이름은 네트워크에서 ZimaOS를 식별하는 고유한 이름입니다. 영문자, 숫자 및 하이픈만 포함해야 합니다</translation>
     </message>
     <message>
         <source>Customisation: Choose hostname</source>
@@ -1355,8 +1230,8 @@ Please check the device and try again.</source>
         <translation>온도 센서 및 다른 Dallas/Maxim 장치를 연결하기 위해 1‑Wire 인터페이스를 활성화합니다</translation>
     </message>
     <message>
-        <source>Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage</source>
-        <translation>USB 장치 모드를 활성화하여 라즈베리 파이를 네트워킹 및 저장용 USB 주변 장치로 사용합니다</translation>
+        <source>Enable USB device mode to use your ZimaOS as a USB peripheral for networking and storage</source>
+        <translation>USB 장치 모드를 활성화하여 ZimaOS를 네트워킹 및 저장용 USB 주변 장치로 사용합니다</translation>
     </message>
     <message>
         <source>Save interface and feature settings and continue to writing step</source>
@@ -1525,13 +1400,6 @@ or type a path in the address bar above.</source>
     </message>
 </context>
 <context>
-    <name>ImPopup</name>
-    <message>
-        <source>Dialog</source>
-        <translation>대화상자</translation>
-    </message>
-</context>
-<context>
     <name>ImSaveFileDialog</name>
     <message>
         <source>Save File</source>
@@ -1636,6 +1504,14 @@ or type a path in the address bar above.</source>
         <translation> 또는 </translation>
     </message>
     <message>
+        <source>No organisation API key is configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect returned an unexpected response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Save Performance Data</source>
         <translation>성능 데이터 저장</translation>
     </message>
@@ -1644,23 +1520,9 @@ or type a path in the address bar above.</source>
         <translation>JSON 파일 (*.json);;모든 파일 (*)</translation>
     </message>
     <message>
-        <source>Starting fastboot flash...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preparing device for imaging...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input file is not a valid disk image.
-
-File size %1 bytes is not a multiple of 512 bytes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1727,11 +1589,11 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Choose your language for ZimaOS USB Creator</source>
-        <translation>라즈베리 파이 이미저에 사용할 언어를 선택하세요</translation>
+        <translation>ZimaOS USB Creator에 사용할 언어를 선택하세요</translation>
     </message>
     <message>
         <source>Select the language for the ZimaOS USB Creator interface</source>
-        <translation>라즈베리 파이 이미저 인터페이스에 사용할 언어를 선택하세요</translation>
+        <translation>ZimaOS USB Creator 인터페이스에 사용할 언어를 선택하세요</translation>
     </message>
 </context>
 <context>
@@ -1800,19 +1662,33 @@ Technical details: %1</source>
         <translation>가장 가까운 수도를 선택하세요. 이 옵션은 지역에 맞는 올바른 시간대와 키보드 레이아웃을 자동으로 추천하고, 국가의 Wi-Fi 규정을 위한 무선 규제 도메인을 설정합니다</translation>
     </message>
     <message>
-        <source>Choose your time zone so your Raspberry Pi displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
-        <translation>라즈베리 파이가 올바른 현지 시간을 표시하도록 시간대를 선택하세요. 이 옵션은 수도 선택에 따라 자동으로 추천되지만, 제안이 부정확하면 변경할 수 있습니다</translation>
+        <source>Why am I being asked this?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
+        <translation>ZimaOS가 올바른 현지 시간을 표시하도록 시간대를 선택하세요. 이 옵션은 수도 선택에 따라 자동으로 추천되지만, 제안이 부정확하면 변경할 수 있습니다</translation>
     </message>
     <message>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
         <translation>키보드 레이아웃을 선택하면 입력 시 올바른 문자를 생성합니다. 수도 선택에 따라 자동으로 추천되지만, 다른 레이아웃을 사용하는 경우 변경할 수 있습니다</translation>
     </message>
     <message>
-        <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation>라즈베리 파이 이미저가 이미지를 기록하려면 디스크에 접근해야 합니다</translation>
-    </message>
-    <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MacFile</name>
+    <message>
+        <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
+        <translation type="unfinished">ZimaOS USB Creator가 이미지를 기록하려면 디스크에 접근해야 합니다</translation>
+    </message>
+</context>
+<context>
+    <name>NativeFileDialog</name>
+    <message>
+        <source>File type:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1852,10 +1728,6 @@ Technical details: %1</source>
     <message>
         <source>Choose operating system</source>
         <translation>운영 체제 선택</translation>
-    </message>
-    <message>
-        <source>Select the ZimaOS version you want to install</source>
-        <translation>라즈베리 파이에 설치할 운영 체제를 선택하세요</translation>
     </message>
     <message>
         <source>Operating system list</source>
@@ -1936,36 +1808,40 @@ Technical details: %1</source>
 <context>
     <name>PiConnectCustomizationStep</name>
     <message>
-        <source>Customisation: Raspberry Pi Connect</source>
-        <translation>사용자 지정: 라즈베리 파이 커넥트</translation>
+        <source>Customisation: ZimaOS Connect</source>
+        <translation>사용자 지정: ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Enable Raspberry Pi Connect</source>
-        <translation>라즈베리 파이 커넥트 활성화</translation>
+        <source>Enable ZimaOS Connect</source>
+        <translation>ZimaOS Connect 활성화</translation>
     </message>
     <message>
-        <source>What is Raspberry Pi Connect?</source>
-        <translation>라즈베리 파이 커넥트란?</translation>
+        <source>What is ZimaOS Connect?</source>
+        <translation>ZimaOS Connect란?</translation>
     </message>
     <message>
-        <source>Open Raspberry Pi Connect</source>
-        <translation>라즈베리 파이 커넥트 열기</translation>
+        <source>Open ZimaOS Connect</source>
+        <translation>ZimaOS Connect 열기</translation>
     </message>
     <message>
         <source>Token received from browser</source>
         <translation>브라우저에서 받은 토큰</translation>
     </message>
     <message>
-        <source>Open the Raspberry Pi Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>브라우저에서 라즈베리 파이 커넥트 웹사이트를 열어 로그인하고 인증 토큰을 수신합니다</translation>
+        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
+        <translation>브라우저에서 ZimaOS Connect 웹사이트를 열어 로그인하고 인증 토큰을 수신합니다</translation>
     </message>
     <message>
-        <source>Enable secure remote access to your Raspberry Pi through the Raspberry Pi Connect cloud service</source>
-        <translation>라즈베리 파이 커넥트 클라우드 서비스를 통해 라즈베리 파이에 안전한 원격 액세스를 활성화합니다</translation>
+        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
+        <translation>ZimaOS Connect 클라우드 서비스를 통해 ZimaOS에 안전한 원격 액세스를 활성화합니다</translation>
     </message>
     <message>
-        <source>Save Raspberry Pi Connect settings and continue to next customisation step</source>
-        <translation>라즈베리 파이 커넥트 설정을 저장하고 다음 사용자 지정 단계로 진행합니다</translation>
+        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
+        <translation>ZimaOS Connect 설정을 저장하고 다음 사용자 지정 단계로 진행합니다</translation>
+    </message>
+    <message>
+        <source>Register this device with your ZimaOS Connect organisation</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Return to previous step</source>
@@ -1976,24 +1852,72 @@ Technical details: %1</source>
         <translation>모든 사용자 지정을 건너뛰고 바로 이미지를 기록합니다</translation>
     </message>
     <message>
-        <source>Enter or paste the authentication token from Raspberry Pi Connect. The token will be automatically filled if you use the &apos;Open Raspberry Pi Connect&apos; button to sign in.</source>
-        <translation>라즈베리 파이 커넥트에서 인증 토큰을 입력하거나 붙여 넣으세요. ‘라즈베리 파이 커넥트 열기’ 버튼을 사용해 로그인하면 토큰이 자동으로 채워집니다</translation>
+        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Organisation API Key:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste your ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved — type to replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auth key description:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description for the auth key shown in the Connect organisation UI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>e.g. Factory-A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear saved key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove the saved ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
+        <translation>ZimaOS Connect에서 인증 토큰을 입력하거나 붙여 넣으세요. ‘ZimaOS Connect 열기’ 버튼을 사용해 로그인하면 토큰이 자동으로 채워집니다</translation>
     </message>
     <message>
         <source>Waiting for token (%1s)</source>
-        <translation>토큰 대기 중 (%1초)</translation>
+        <translation>토큰 대기 중 (%1s)</translation>
     </message>
     <message>
         <source>Paste token here</source>
         <translation>토큰을 여기에 붙여 넣으세요</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Invalid Token</source>
         <translation>잘못된 토큰</translation>
     </message>
     <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open Raspberry Pi Connect&apos; button to get a valid token.</source>
-        <translation>입력한 토큰이 유효하지 않습니다. 토큰을 확인하고 다시 시도하거나 ‘라즈베리 파이 커넥트 열기’ 버튼을 사용해 유효한 토큰을 받으세요</translation>
+        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
+        <translation>입력한 토큰이 유효하지 않습니다. 토큰을 확인하고 다시 시도하거나 ‘ZimaOS Connect 열기’ 버튼을 사용해 유효한 토큰을 받으세요</translation>
     </message>
     <message>
         <source>OK</source>
@@ -2004,19 +1928,31 @@ Technical details: %1</source>
         <translation>이 대화 상자를 닫고 토큰 필드로 돌아갑니다</translation>
     </message>
     <message>
+        <source>Could not create auth key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close this dialog and return to the organisation API key field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Authentication token:</source>
         <translation>인증 토큰:</translation>
     </message>
     <message>
-        <source>Sign in to receive a token and enable Raspberry Pi Connect</source>
-        <translation>토큰을 수신하고 라즈베리 파이 커넥트를 활성화하려면 로그인하세요</translation>
+        <source>Sign in to receive a token and enable ZimaOS Connect</source>
+        <translation>토큰을 수신하고 ZimaOS Connect를 활성화하려면 로그인하세요</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>ZimaOS USB Creator requires elevated privileges to write to storage devices.</source>
-        <translation>라즈베리 파이 이미저는 저장 장치에 기록하려면 관리자 권한이 필요합니다</translation>
+        <translation>ZimaOS USB Creator는 저장 장치에 기록하려면 관리자 권한이 필요합니다</translation>
     </message>
     <message>
         <source>Without this, you will encounter permission errors when writing images.</source>
@@ -2045,38 +1981,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>root로 실행되지 않았습니다.
 
 자동 권한 상승을 설정하려면 &quot;권한 설치&quot;를 클릭하거나 수동으로 실행하십시오: sudo %1</translation>
-    </message>
-    <message>
-        <source>Invalid Windows physical drive path: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open disk for cleaning. Error code: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clear partition table. Error code: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to start disk cleanup utility. Please ensure you have administrator privileges.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disk cleaning operation timed out. The disk may be in use by another application.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clean disk. Error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clean disk after %1 attempts. %2</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2110,8 +2014,8 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>인증 방식:</translation>
     </message>
     <message>
-        <source>Enable secure shell access for remote command-line control of your Raspberry Pi</source>
-        <translation>라즈베리 파이를 원격 명령줄로 제어하기 위해 보안 셸(Shell) 접근을 활성화합니다</translation>
+        <source>Enable secure shell access for remote command-line control of your ZimaOS</source>
+        <translation>ZimaOS를 원격 명령줄로 제어하기 위해 보안 셸(Shell) 접근을 활성화합니다</translation>
     </message>
     <message>
         <source>Save SSH settings and continue to next customisation step</source>
@@ -2134,130 +2038,8 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>비밀번호 대신 암호화 키 쌍을 사용해 SSH 로그인을 허용합니다. 비밀번호 인증보다 안전합니다</translation>
     </message>
     <message>
-        <source>Choose how you will authenticate when connecting to your Raspberry Pi via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
-        <translation>SSH를 통해 라즈베리 파이에 연결할 때 인증 방식을 선택하세요. 비밀번호 인증은 구성한 계정 자격 증명을 사용하고, 공개 키 인증은 암호화 키 쌍을 사용해 더 안전합니다</translation>
-    </message>
-</context>
-<context>
-    <name>RepositoryDialog</name>
-    <message>
-        <source>Content Repository</source>
-        <translation>콘텐츠 저장소</translation>
-    </message>
-    <message>
-        <source>Repository source:</source>
-        <translation>저장소 소스:</translation>
-    </message>
-    <message>
-        <source>Use custom file</source>
-        <translation>사용자 정의 파일 사용</translation>
-    </message>
-    <message>
-        <source>Please select a custom repository json file</source>
-        <translation>사용자 정의 저장소 JSON 파일을 선택하세요</translation>
-    </message>
-    <message>
-        <source>Select Repository</source>
-        <translation>저장소 선택</translation>
-    </message>
-    <message>
-        <source>Apply &amp; Restart</source>
-        <translation>적용 &amp; 재시작</translation>
-    </message>
-    <message>
-        <source>Select custom repository</source>
-        <translation>사용자 정의 저장소 선택</translation>
-    </message>
-    <message>
-        <source>Use custom URL</source>
-        <translation>사용자 정의 URL 사용</translation>
-    </message>
-    <message>
-        <source>Select a custom repository JSON file from your computer</source>
-        <translation>컴퓨터에서 사용자 정의 저장소 JSON 파일을 선택하세요</translation>
-    </message>
-    <message>
-        <source>Close the repository dialog without changing the content source</source>
-        <translation>콘텐츠 소스를 변경하지 않고 저장소 대화 상자를 닫습니다</translation>
-    </message>
-    <message>
-        <source>Apply the new content repository and restart the wizard from the beginning</source>
-        <translation>새로운 콘텐츠 저장소를 적용하고 마법사를 처음부터 재시작합니다</translation>
-    </message>
-    <message>
-        <source>Choose the source for operating system images</source>
-        <translation>운영 체제 이미지 소스를 선택하세요</translation>
-    </message>
-    <message>
-        <source>Use the official Raspberry Pi operating system repository</source>
-        <translation>공식 라즈베리 파이 운영 체제 저장소를 사용합니다</translation>
-    </message>
-    <message>
-        <source>Load operating system list from a JSON file on your computer</source>
-        <translation>컴퓨터에 있는 JSON 파일에서 운영 체제 목록을 불러옵니다</translation>
-    </message>
-    <message>
-        <source>Download operating system list from a custom web address</source>
-        <translation>사용자 정의 웹 주소에서 운영 체제 목록을 다운로드합니다</translation>
-    </message>
-</context>
-<context>
-    <name>RpibootThread</name>
-    <message>
-        <source>Downloading firmware...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to obtain rpiboot firmware: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connecting to device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open USB device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>rpiboot protocol failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>USB error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to restart...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open USB device after re-enumeration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for fastboot device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timed out waiting for fastboot device to appear.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to disconnect (%1/%2)...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device disconnected, waiting for reconnect...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to reconnect (%1/%2s)...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timed out waiting for device to re-enumerate after bootcode upload (waited %1s).</source>
-        <translation type="unfinished"></translation>
+        <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
+        <translation>SSH를 통해 ZimaOS에 연결할 때 인증 방식을 선택하세요. 비밀번호 인증은 구성한 계정 자격 증명을 사용하고, 공개 키 인증은 암호화 키 쌍을 사용해 더 안전합니다</translation>
     </message>
 </context>
 <context>
@@ -2287,16 +2069,16 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>보안 부트 서명 활성화</translation>
     </message>
     <message>
-        <source>Sign the boot partition with your RSA key to enable secure boot verification on Raspberry Pi</source>
-        <translation>RSA 키로 부트 파티션을 서명해 라즈베리 파이에서 보안 부트 검증을 활성화합니다</translation>
+        <source>Sign the boot partition with your RSA key to enable secure boot verification on ZimaOS</source>
+        <translation>RSA 키로 부트 파티션을 서명해 ZimaOS에서 보안 부트 검증을 활성화합니다</translation>
     </message>
     <message>
         <source>Learn about Secure Boot</source>
         <translation>보안 부트 알아보기</translation>
     </message>
     <message>
-        <source>This will create boot.img and boot.sig files required for Raspberry Pi Secure Boot.</source>
-        <translation>이 작업은 라즈베리 파이 보안 부트를 위해 필요한 boot.img 및 boot.sig 파일을 생성합니다</translation>
+        <source>This will create boot.img and boot.sig files required for ZimaOS Secure Boot.</source>
+        <translation>이 작업은 ZimaOS 보안 부트를 위해 필요한 boot.img 및 boot.sig 파일을 생성합니다</translation>
     </message>
     <message>
         <source>Public Key Fingerprint: %1</source>
@@ -2353,26 +2135,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     <message>
         <source>All Files (*)</source>
         <translation>모든 파일 (*)</translation>
-    </message>
-    <message>
-        <source>OTP Secure Boot Provisioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Program the secure boot public key hash into the device&apos;s OTP memory. This is a permanent, irreversible operation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Provision Secure Boot OTP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2553,10 +2315,6 @@ to show system drives.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ready for USB boot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2568,20 +2326,20 @@ to show system drives.</source>
         <translation>업데이트 가능</translation>
     </message>
     <message>
+        <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
         <translation>Imager의 새 버전이 있습니다. 웹사이트를 방문해 다운로드하시겠습니까?</translation>
     </message>
     <message>
         <source>Continue using the current version of ZimaOS USB Creator</source>
-        <translation>현재 버전의 라즈베리 파이 이미저를 계속 사용합니다</translation>
+        <translation>현재 버전의 ZimaOS USB Creator를 계속 사용합니다</translation>
     </message>
     <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
-        <translation>라즈베리 파이 웹사이트를 열어 최신 버전을 다운로드합니다</translation>
-    </message>
-    <message>
-        <source>Imager version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>ZimaOS 웹사이트를 열어 최신 버전을 다운로드합니다</translation>
     </message>
     <message>
         <source>Update</source>
@@ -2623,8 +2381,8 @@ to show system drives.</source>
         <translation>비밀번호를 변경하려면 다시 입력하세요</translation>
     </message>
     <message>
-        <source>Create a user account for your Raspberry Pi</source>
-        <translation>라즈베리 파이 계정을 만듭니다</translation>
+        <source>Create a user account for your ZimaOS</source>
+        <translation>ZimaOS 계정을 만듭니다</translation>
     </message>
     <message>
         <source>Enter your username</source>
@@ -2643,8 +2401,8 @@ to show system drives.</source>
         <translation>모든 사용자 지정을 건너뛰고 바로 이미지를 기록합니다</translation>
     </message>
     <message>
-        <source>Enter a username for your Raspberry Pi account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
-        <translation>라즈베리 파이 계정에 사용할 사용자 이름을 입력하세요. 사용자는 소문자이며 영문자, 숫자, 밑줄 및 하이픈만 포함해야 합니다</translation>
+        <source>Enter a username for your ZimaOS account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
+        <translation>ZimaOS 계정에 사용할 사용자 이름을 입력하세요. 사용자는 소문자이며 영문자, 숫자, 밑줄 및 하이픈만 포함해야 합니다</translation>
     </message>
     <message>
         <source>Enter a new password for this account, or leave blank to keep the previously saved password.</source>
@@ -2661,6 +2419,10 @@ to show system drives.</source>
     <message>
         <source>Re-enter the password to confirm it matches.</source>
         <translation>비밀번호가 일치하는지 확인하려면 재입력하세요</translation>
+    </message>
+    <message>
+        <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
@@ -2817,10 +2579,6 @@ to show system drives.</source>
         <translation>완료</translation>
     </message>
     <message>
-        <source>Customisation</source>
-        <translation>사용자 지정</translation>
-    </message>
-    <message>
         <source>Hostname</source>
         <translation>호스트 이름</translation>
     </message>
@@ -2829,8 +2587,8 @@ to show system drives.</source>
         <translation>사용자</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect</source>
-        <translation>라즈베리 파이 커넥트</translation>
+        <source>ZimaOS Connect</source>
+        <translation>ZimaOS Connect</translation>
     </message>
     <message>
         <source>App Options</source>
@@ -2853,18 +2611,14 @@ to show system drives.</source>
         <translation>원격 접근</translation>
     </message>
     <message>
-        <source>Open application settings to configure sound alerts, auto-eject, telemetry, and content repository</source>
-        <translation>소리 알림, 자동 꺼내기, 원격 모니터링 및 콘텐츠 저장소를 구성하려면 애플리케이션 설정을 엽니다</translation>
+        <source>Replace existing ZimaOS Connect token?</source>
+        <translation>기존 ZimaOS Connect 토큰을 교체하시겠습니까?</translation>
     </message>
     <message>
-        <source>Replace existing Raspberry Pi Connect token?</source>
-        <translation>기존 라즈베리 파이 커넥트 토큰을 교체하시겠습니까?</translation>
-    </message>
-    <message>
-        <source>A new Raspberry Pi Connect token was received that differs from your current one.
+        <source>A new ZimaOS Connect token was received that differs from your current one.
 
 </source>
-        <translation>새로운 라즈베리 파이 커넥트 토큰이 기존 토큰과 다릅니다</translation>
+        <translation>새로운 ZimaOS Connect 토큰이 기존 토큰과 다릅니다</translation>
     </message>
     <message>
         <source>Do you want to overwrite the existing token?
@@ -2889,12 +2643,16 @@ to show system drives.</source>
         <translation>기존 유지</translation>
     </message>
     <message>
-        <source>Keep your current Raspberry Pi Connect token</source>
-        <translation>현재 라즈베리 파이 커넥트 토큰을 유지합니다</translation>
+        <source>Keep your current ZimaOS Connect token</source>
+        <translation>현재 ZimaOS Connect 토큰을 유지합니다</translation>
     </message>
     <message>
         <source>Secure Boot</source>
         <translation>보안 부트</translation>
+    </message>
+    <message>
+        <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Warning: Only overwrite the token if you initiated this action.</source>
@@ -2902,10 +2660,6 @@ to show system drives.</source>
     </message>
     <message>
         <source>Wi‑Fi</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sidebar resize handle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2917,11 +2671,11 @@ to show system drives.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You are opening a local Raspberry Pi Imager manifest file. This will replace the current OS list with the contents of this file.</source>
+        <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A website is requesting to switch Raspberry Pi Imager to use a custom OS repository.
+        <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
         <translation type="unfinished"></translation>
@@ -3004,6 +2758,18 @@ Please check your storage device and try again.</source>
     <message>
         <source>Starting write process...</source>
         <translation>쓰기 프로세스를 시작합니다...</translation>
+    </message>
+    <message>
+        <source>Limited by download speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>You are about to ERASE all data on: %1</source>
@@ -3102,20 +2868,12 @@ Please check your storage device and try again.</source>
         <translation>마무리 중...</translation>
     </message>
     <message>
-        <source>Write complete</source>
-        <translation>쓰기 완료</translation>
-    </message>
-    <message>
         <source>customization</source>
         <translation>사용자 지정</translation>
     </message>
     <message>
         <source>customizations</source>
         <translation>사용자 지정 항목</translation>
-    </message>
-    <message>
-        <source>Writing in progress — do not disconnect the storage device</source>
-        <translation>쓰기 진행 중입니다. 저장 장치를 분리하지 마세요</translation>
     </message>
     <message>
         <source>Please wait... %1</source>
@@ -3154,7 +2912,7 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
-        <translation>라즈베리 파이 이미저가 아직 실행 중입니다. 정말 종료하시겠습니까?</translation>
+        <translation>ZimaOS USB Creator가 아직 실행 중입니다. 정말 종료하시겠습니까?</translation>
     </message>
     <message>
         <source>Storage device removed</source>
@@ -3178,15 +2936,11 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Return to ZimaOS USB Creator and continue the current operation</source>
-        <translation>라즈베리 파이 이미저로 돌아가 현재 작업을 계속합니다</translation>
+        <translation>ZimaOS USB Creator로 돌아가 현재 작업을 계속합니다</translation>
     </message>
     <message>
         <source>Force quit ZimaOS USB Creator and cancel the current write operation</source>
-        <translation>라즈베리 파이 이미저를 강제 종료하고 현재 쓰기 작업을 취소합니다</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator %1</source>
-        <translation>라즈베리 파이 이미저 %1</translation>
+        <translation>ZimaOS USB Creator를 강제 종료하고 현재 쓰기 작업을 취소합니다</translation>
     </message>
     <message>
         <source>Insufficient Permissions</source>
@@ -3202,15 +2956,19 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Exit ZimaOS USB Creator - you must restart with elevated privileges to write images</source>
-        <translation>라즈베리 파이 이미저를 종료합니다. 이미지 기록을 위해 관리자 권한으로 실행해야 합니다</translation>
+        <translation>ZimaOS USB Creator를 종료합니다. 이미지 기록을 위해 관리자 권한으로 실행해야 합니다</translation>
     </message>
     <message>
         <source>Install Authorization</source>
         <translation>권한 설치</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>
-        <translation>라즈베리 파이 이미저가 관리자 권한으로 실행될 수 있도록 시스템 권한을 설치합니다</translation>
+        <translation>ZimaOS USB Creator가 관리자 권한으로 실행될 수 있도록 시스템 권한을 설치합니다</translation>
     </message>
     <message>
         <source>Save Performance Data</source>

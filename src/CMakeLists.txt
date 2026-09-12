@@ -326,7 +326,7 @@ set(SOURCES ${SOURCES} "${CMAKE_CURRENT_BINARY_DIR}/translations.qrc" ${QM_FILES
 # Generate timezone list from IANA data
 # To disable automatic timezone generation, set -DGENERATE_TIMEZONES_FROM_IANA=OFF
 # To update timezone data version, change TZDATA_VERSION below
-option(GENERATE_TIMEZONES_FROM_IANA "Generate timezone list from latest IANA data" ON)
+option(GENERATE_TIMEZONES_FROM_IANA "Generate timezone list from latest IANA data" OFF)
 
 if(GENERATE_TIMEZONES_FROM_IANA)
     set(TZDATA_VERSION "2025c") # Update this to get newer timezone data
@@ -343,9 +343,12 @@ if(GENERATE_TIMEZONES_FROM_IANA)
             -DTZDATA_DIR=${CMAKE_CURRENT_BINARY_DIR}/tzdata
     )
     list(APPEND SOURCES "${GENERATED_TZ_QRC}")
+else()
+    # ZimaOS keeps a bundled timezone list so builds do not depend on IANA.
+    list(APPEND SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/timezones.qrc")
 endif()
 
-option(GENERATE_COUNTRIES_FROM_REGDB "Generate countries list from latest wireless-regdb" ON)
+option(GENERATE_COUNTRIES_FROM_REGDB "Generate countries list from latest wireless-regdb" OFF)
 
 if(GENERATE_COUNTRIES_FROM_REGDB)
     set(REGDB_URL "https://git.kernel.org/pub/scm/linux/kernel/git/wens/wireless-regdb.git/plain/db.txt")
@@ -359,6 +362,11 @@ if(GENERATE_COUNTRIES_FROM_REGDB)
         EXTRA_CMAKE_ARGS -DREGDB_URL=${REGDB_URL}
     )
     list(APPEND SOURCES "${GENERATED_COUNTRIES_QRC}")
+else()
+    # ZimaOS does not need a live regulatory database during its build. Keep
+    # the bundled list available for the locale/Wi-Fi customization code
+    # without introducing a build-time network dependency.
+    list(APPEND SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/countries.qrc")
 endif()
 
 # Create the application target before tools reference it

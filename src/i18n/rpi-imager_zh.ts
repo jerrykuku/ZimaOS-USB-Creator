@@ -12,16 +12,12 @@
         <translation>在完成后播放提示音</translation>
     </message>
     <message>
+        <source>Audio notification unavailable - no viable audio player found on this system</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Eject media when finished</source>
         <translation>在完成后弹出存储设备</translation>
-    </message>
-    <message>
-        <source>Enable anonymous statistics (telemetry)</source>
-        <translation>启用匿名统计信息（遥测）</translation>
-    </message>
-    <message>
-        <source>What is this?</source>
-        <translation>这是什么？</translation>
     </message>
     <message>
         <source>Disable warnings</source>
@@ -38,14 +34,6 @@
     <message>
         <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
         <translation>如果你禁用警告，ZimaOS USB Creator 将&lt;b&gt;不会在写入镜像前显示确认提示&lt;/b&gt;。在选择系统盘时，你仍需要&lt;b&gt;输入完全一致的名称&lt;/b&gt;。</translation>
-    </message>
-    <message>
-        <source>Content Repository</source>
-        <translation>内容仓库</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>编辑</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -72,16 +60,8 @@
         <translation>写入成功完成后自动弹出存储设备</translation>
     </message>
     <message>
-        <source>Send anonymous usage statistics to help improve ZimaOS USB Creator</source>
-        <translation>发送匿名使用统计信息以帮助改进 ZimaOS USB Creator</translation>
-    </message>
-    <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>写入镜像前跳过确认对话框（仅限高级用户）</translation>
-    </message>
-    <message>
-        <source>Change the source of operating system images between official Raspberry Pi repository and custom sources</source>
-        <translation>在官方 Raspberry Pi 仓库与自定义来源之间切换系统镜像来源</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -106,6 +86,10 @@
     <message>
         <source>PEM Files (*.pem);;All Files (*)</source>
         <translation>PEM 文件 (*.pem);;所有文件 (*)</translation>
+    </message>
+    <message>
+        <source>Version: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>PEM Files (*.pem)</source>
@@ -144,10 +128,6 @@
     <message>
         <source>Image files (%1)</source>
         <translation>镜像文件（%1）</translation>
-    </message>
-    <message>
-        <source>Imager Repository Files (*.json)</source>
-        <translation>Imager 仓库文件 (*.json)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -226,8 +206,8 @@
         <translation>已配置 Wi‑Fi</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect enabled</source>
-        <translation>已启用 Raspberry Pi Connect</translation>
+        <source>ZimaOS Connect enabled</source>
+        <translation>已启用 ZimaOS Connect</translation>
     </message>
     <message>
         <source>I2C enabled</source>
@@ -240,6 +220,10 @@
     <message>
         <source>USB Gadget mode enabled</source>
         <translation>已启用 USB Gadget 模式</translation>
+    </message>
+    <message>
+        <source>Repository Manifest Files (*.json *.%1)</source>
+        <translation>仓库清单文件 (*.json *.%1)</translation>
     </message>
     <message>
         <source>1-Wire enabled</source>
@@ -256,6 +240,65 @@
     <message>
         <source>Authorized keys files (authorized_keys)</source>
         <translation>授权密钥文件（authorized_keys）</translation>
+    </message>
+</context>
+<context>
+    <name>ConfirmOtpProgramDialog</name>
+    <message>
+        <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Device: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Key fingerprint: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Also lock JTAG debug port (additional irreversible action)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To confirm, type the device serial number below:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Serial to type: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type device serial number exactly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirmation input. Type exactly: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CANCEL</source>
+        <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <source>Cancel OTP programming and return to previous screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>PROGRAM OTP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Permanently program the secure boot key into device OTP memory</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -333,10 +376,163 @@
     </message>
 </context>
 <context>
+    <name>DebugOptionsDialog</name>
+    <message>
+        <source>Debug Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>I/O Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable Async I/O</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Queue Depth:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Async queue depth: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignore Device I/O Limits</source>
+        <translation>忽略设备 I/O 限制</translation>
+    </message>
+    <message>
+        <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
+        <translation>忽略设备报告的队列深度和传输大小限制。适用于低报其能力的 USB-NVMe 外置盒。</translation>
+    </message>
+    <message>
+        <source>Enable Periodic Sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Debugging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verbose Performance Logging</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force IPv4-only Downloads</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Workarounds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Counterfeit Card Mode (skip end-of-device checks)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced Features</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Secure Boot</source>
+        <translation type="unfinished">安全启动</translation>
+    </message>
+    <message>
+        <source>Force Secure Boot Available</source>
+        <translation>强制启用安全启动</translation>
+    </message>
+    <message>
+        <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
+        <translation>无论操作系统功能如何都显示安全启动自定义选项。等同于 --enable-secure-boot 命令行参数。</translation>
+    </message>
+    <message>
+        <source>Current Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close the debug options dialog without saving any changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply the selected debug options</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
         <translation>选择你的设备</translation>
+    </message>
+    <message>
+        <source>Unable to load device list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry downloading the device list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading device types...</source>
+        <translation>正在加载设备类型...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -366,12 +562,28 @@
         <translation>你的选择：</translation>
     </message>
     <message>
+        <source>Ejecting the storage device — do not remove it yet…</source>
+        <translation>正在弹出存储设备，请暂时不要移除……</translation>
+    </message>
+    <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
         <translation>存储设备已自动弹出。现在可以安全移除。</translation>
     </message>
     <message>
+        <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
+        <translation>无法弹出存储设备。请关闭仍在使用它的应用，然后点击“弹出”。</translation>
+    </message>
+    <message>
         <source>Please eject the storage device before removing it from your computer.</source>
         <translation>从电脑移除前请先弹出存储设备。</translation>
+    </message>
+    <message>
+        <source>Eject</source>
+        <translation>弹出</translation>
+    </message>
+    <message>
+        <source>Eject the storage device so it can be removed safely</source>
+        <translation>弹出存储设备，以便安全移除</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -467,7 +679,7 @@ Please check your network connection and try again.</source>
     <name>DownloadThread</name>
     <message>
         <source>Please verify if &apos;ZimaOS USB Creator&apos; is allowed access to &apos;removable volumes&apos; in privacy settings (under &apos;files and folders&apos; or alternatively give it &apos;full disk access&apos;).</source>
-        <translation>请检查，在隐私设置中是否允许树莓派启动盘制作工具（ZimaOS USB Creator）访问“可移除的宗卷”（位于“文件和文件夹”下），或为其授予“完全磁盘访问权限”。</translation>
+        <translation>请检查，在隐私设置中是否允许 ZimaOS USB Creator 访问“可移除的宗卷”（位于“文件和文件夹”下），或为其授予“完全磁盘访问权限”。</translation>
     </message>
     <message>
         <source>Cannot open storage device &apos;%1&apos;.</source>
@@ -538,10 +750,6 @@ Please check your network connection and try again.</source>
         <translation>打开磁盘设备 “%1” 时出错</translation>
     </message>
     <message>
-        <source>Error getting device size</source>
-        <translation>获取设备容量失败</translation>
-    </message>
-    <message>
         <source>Error writing to storage device. Please check if the device is writable, has sufficient space, and is not write-protected.</source>
         <translation>写入存储设备时出错。请检查设备是否可写、空间是否充足，以及是否未被写保护。</translation>
     </message>
@@ -552,10 +760,6 @@ Please check your network connection and try again.</source>
     <message>
         <source>Opening drive...</source>
         <translation>正在打开驱动器...</translation>
-    </message>
-    <message>
-        <source>Discarding existing data on drive...</source>
-        <translation>正在丢弃驱动器上的现有数据...</translation>
     </message>
     <message>
         <source>Zero&apos;ing out first and last MB of drive...</source>
@@ -576,6 +780,206 @@ Please check your network connection and try again.</source>
     <message>
         <source>Cannot open storage device &apos;%1&apos;. Please run with elevated privileges (sudo).</source>
         <translation>无法打开存储设备 “%1”。请使用提升的权限运行（sudo）。</translation>
+    </message>
+    <message>
+        <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for drive to become available... (%1s)</source>
+        <translation>等待驱动器可用……（%1s）</translation>
+    </message>
+    <message>
+        <source>getting device size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to allocate buffer for MBR zeroing.
+
+The system may be low on memory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>preparing storage device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zero&apos;ing out end of drive...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout writing to end of storage device.
+
+This may indicate a counterfeit SD card with fake capacity.
+
+Please try a different storage device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write error while trying to zero out last part of card.
+
+This could indicate the card is advertising wrong capacity (possible counterfeit).
+
+Please try a different storage device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Storage device responding slowly. Restarting in compatibility mode...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>storage operation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to open storage device.
+
+The device may be in use by another application, or you may not have permission to access it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error writing to storage device during %1.
+
+This could be caused by:
+• Device disconnected or became unresponsive
+• Device is full or write-protected
+• Hardware failure or bad sectors
+
+Please check the device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error reading from storage device during %1.
+
+The device may have been disconnected or is malfunctioning.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error seeking on storage device during %1.
+
+The device may be malfunctioning or disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error getting storage device size.
+
+The device may not be properly recognized.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error closing storage device.
+
+The device may have been disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to lock storage device.
+
+The device may be in use by another application. Please close any applications using this device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error syncing data to storage device.
+
+The device may have been disconnected or is not responding. Data may not have been fully written.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error flushing data to storage device.
+
+The device may have been disconnected or is not responding.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Storage device timed out during %1.
+
+The device is not responding. This may indicate:
+• Device was disconnected
+• Device has failed
+• Driver or system issue
+
+Please disconnect and reconnect the device, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown storage error during %1.
+
+Please try again or use a different storage device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The storage device is not responding. This may indicate:
+• The device was disconnected
+• The device has failed
+• A driver or system issue
+
+Please disconnect and reconnect the device, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error writing to storage device.
+
+Some writes failed to complete. This could be caused by:
+• Storage device disconnected during write
+• Device is full or write-protected
+• Hardware failure
+
+Please check the device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>flush</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>flushing image before writing partition table</source>
+        <translation>正在刷新镜像，然后写入分区表</translation>
+    </message>
+    <message>
+        <source>writing partition table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
+        <translation>写入验证失败。存储设备上的分区表与写入内容不同。</translation>
+    </message>
+    <message>
+        <source>final flush</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>final sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verifying OS customisation...</source>
+        <translation>正在验证操作系统自定义设置……</translation>
+    </message>
+    <message>
+        <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
+
+The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to allocate memory for verification.</source>
+        <translation>无法为验证分配内存。</translation>
+    </message>
+    <message>
+        <source>seeking storage for verification</source>
+        <translation>正在查找用于验证的存储位置</translation>
+    </message>
+    <message>
+        <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -665,13 +1069,17 @@ Please check your network connection and try again.</source>
         <source>Writing customization files...</source>
         <translation>正在写入自定义文件...</translation>
     </message>
-    <message>
-        <source>Failed to allocate buffer for MBR zeroing</source>
-        <translation>为 MBR 清零分配缓冲区失败</translation>
-    </message>
 </context>
 <context>
     <name>DriveFormatThread</name>
+    <message>
+        <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Error opening device for formatting</source>
         <translation>格式化时设备打开失败</translation>
@@ -723,8 +1131,8 @@ Please check your network connection and try again.</source>
 <context>
     <name>HostnameCustomizationStep</name>
     <message>
-        <source>A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.</source>
-        <translation>主机名是在网络中标识你的 Raspberry Pi 的唯一名称，只能包含字母、数字和连字符。</translation>
+        <source>A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.</source>
+        <translation>主机名是在网络中标识你的 ZimaOS 设备的唯一名称，只能包含字母、数字和连字符。</translation>
     </message>
     <message>
         <source>Customisation: Choose hostname</source>
@@ -822,8 +1230,8 @@ Please check your network connection and try again.</source>
         <translation>启用 1-Wire 接口，以连接温度传感器及其他 Dallas/Maxim 设备</translation>
     </message>
     <message>
-        <source>Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage</source>
-        <translation>启用 USB 设备模式，将 Raspberry Pi 作为 USB 外设用于网络和存储</translation>
+        <source>Enable USB device mode to use your ZimaOS as a USB peripheral for networking and storage</source>
+        <translation>启用 USB 设备模式，将 ZimaOS 设备作为 USB 外设用于网络和存储</translation>
     </message>
     <message>
         <source>Save interface and feature settings and continue to writing step</source>
@@ -865,12 +1273,16 @@ Please check your network connection and try again.</source>
 <context>
     <name>ImComboBox</name>
     <message>
-        <source>Type to search: &quot;%1&quot;</source>
-        <translation>键入以搜索：“%1”</translation>
+        <source>Search: &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>(press again to cycle)</source>
-        <translation>（再次按下可切换）</translation>
+        <source>%1 of %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No matches</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -922,6 +1334,10 @@ Please check your network connection and try again.</source>
     <message>
         <source>Home</source>
         <translation>主文件夹</translation>
+    </message>
+    <message>
+        <source>Enter folder or file path…</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>File name:</source>
@@ -984,13 +1400,6 @@ or type a path in the address bar above.</source>
     </message>
 </context>
 <context>
-    <name>ImPopup</name>
-    <message>
-        <source>Dialog</source>
-        <translation>对话框</translation>
-    </message>
-</context>
-<context>
     <name>ImSaveFileDialog</name>
     <message>
         <source>Save File</source>
@@ -1025,10 +1434,6 @@ or type a path in the address bar above.</source>
     <message>
         <source>STP is enabled on your Ethernet switch. Getting IP will take long time.</source>
         <translation>您的以太网交换机启用了 STP。获取 IP 地址可能需要较长时间。</translation>
-    </message>
-    <message>
-        <source>Storage capacity is not large enough.&lt;br&gt;Needs to be at least %1.</source>
-        <translation>存储容量不足。&lt;br&gt;至少需要 %1。</translation>
     </message>
     <message>
         <source>B</source>
@@ -1097,6 +1502,32 @@ or type a path in the address bar above.</source>
     <message>
         <source> or </source>
         <translation>或</translation>
+    </message>
+    <message>
+        <source>Storage capacity is not large enough.
+
+The image requires at least %1 of storage.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to start write operation: insufficient memory.
+
+The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
+
+Technical details: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Failed to start write operation: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No organisation API key is configured.</source>
+        <translation>未配置组织 API 密钥。</translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect returned an unexpected response.</source>
+        <translation>ZimaOS Connect 返回了意外响应。</translation>
     </message>
     <message>
         <source>Save Performance Data</source>
@@ -1231,16 +1662,27 @@ or type a path in the address bar above.</source>
         <translation>选择离您最近的首都/主要城市。系统将自动推荐适合您所在地区的时区和键盘布局，并根据您所在国家/地区的 Wi-Fi 法规设置无线管制域。</translation>
     </message>
     <message>
-        <source>Choose your time zone so your Raspberry Pi displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
-        <translation>选择您的时区，以便 Raspberry Pi 显示正确的本地时间。系统会根据您选择的城市自动推荐，但如果建议不正确，您可以更改。</translation>
+        <source>Why am I being asked this?</source>
+        <translation>为什么需要此操作？</translation>
+    </message>
+    <message>
+        <source>This also sets the Wi-Fi regulatory domain for your region.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
+        <translation>选择您的时区，以便 ZimaOS 设备显示正确的本地时间。系统会根据您选择的城市自动推荐，但如果建议不正确，您可以更改。</translation>
     </message>
     <message>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
         <translation>选择您的键盘布局，以便按键产生正确的字符。系统会根据您选择的城市自动推荐，但如果您使用不同的键盘布局，可以更改。</translation>
     </message>
+</context>
+<context>
+    <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation>ZimaOS USB Creator 需要访问磁盘以写入镜像。</translation>
+        <translation type="unfinished">ZimaOS USB Creator 需要访问磁盘以写入镜像。</translation>
     </message>
 </context>
 <context>
@@ -1288,8 +1730,16 @@ or type a path in the address bar above.</source>
         <translation>选择操作系统</translation>
     </message>
     <message>
-        <source>Select the ZimaOS version you want to install</source>
-        <translation>选择你想要安装的 ZimaOS 版本</translation>
+        <source>Unable to download OS list. You can still use a local image file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Retry downloading the OS list</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Operating system list</source>
@@ -1325,38 +1775,73 @@ or type a path in the address bar above.</source>
     </message>
 </context>
 <context>
+    <name>PasswordlessSudoWarningDialog</name>
+    <message>
+        <source>Passwordless Sudo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CANCEL</source>
+        <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <source>Cancel and keep sudo requiring a password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ENABLE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable passwordless sudo for this user account</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PiConnectCustomizationStep</name>
     <message>
-        <source>Customisation: Raspberry Pi Connect</source>
-        <translation>自定义：Raspberry Pi Connect</translation>
+        <source>Customisation: ZimaOS Connect</source>
+        <translation>自定义：ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Enable Raspberry Pi Connect</source>
-        <translation>启用 Raspberry Pi Connect</translation>
+        <source>Enable ZimaOS Connect</source>
+        <translation>启用 ZimaOS Connect</translation>
     </message>
     <message>
-        <source>What is Raspberry Pi Connect?</source>
-        <translation>什么是 Raspberry Pi Connect？</translation>
+        <source>What is ZimaOS Connect?</source>
+        <translation>什么是 ZimaOS Connect？</translation>
     </message>
     <message>
-        <source>Open Raspberry Pi Connect</source>
-        <translation>打开 Raspberry Pi Connect</translation>
+        <source>Open ZimaOS Connect</source>
+        <translation>打开 ZimaOS Connect</translation>
     </message>
     <message>
         <source>Token received from browser</source>
         <translation>已从浏览器接收令牌</translation>
     </message>
     <message>
-        <source>Open the Raspberry Pi Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>在浏览器中打开 Raspberry Pi Connect 网站以登录并获取身份验证令牌</translation>
+        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
+        <translation>在浏览器中打开 ZimaOS Connect 网站以登录并获取身份验证令牌</translation>
     </message>
     <message>
-        <source>Enable secure remote access to your Raspberry Pi through the Raspberry Pi Connect cloud service</source>
-        <translation>通过 Raspberry Pi Connect 云服务启用对 Raspberry Pi 的安全远程访问</translation>
+        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
+        <translation>通过 ZimaOS Connect 云服务启用对 ZimaOS 设备的安全远程访问</translation>
     </message>
     <message>
-        <source>Save Raspberry Pi Connect settings and continue to next customisation step</source>
-        <translation>保存 Raspberry Pi Connect 设置并继续下一步</translation>
+        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
+        <translation>保存 ZimaOS Connect 设置并继续下一步</translation>
+    </message>
+    <message>
+        <source>Register this device with your ZimaOS Connect organisation</source>
+        <translation>将此设备注册到您的 ZimaOS Connect 组织</translation>
     </message>
     <message>
         <source>Return to previous step</source>
@@ -1367,24 +1852,72 @@ or type a path in the address bar above.</source>
         <translation>跳过所有自定义并直接开始写入镜像</translation>
     </message>
     <message>
-        <source>Enter or paste the authentication token from Raspberry Pi Connect. The token will be automatically filled if you use the &apos;Open Raspberry Pi Connect&apos; button to sign in.</source>
-        <translation>输入或粘贴来自 Raspberry Pi Connect 的身份验证令牌。如果您使用"打开 Raspberry Pi Connect"按钮登录，令牌将自动填充。</translation>
+        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
+        <translation>镜像中将写入一次性身份验证密钥，使设备在首次启动时加入您的 Connect 组织。</translation>
+    </message>
+    <message>
+        <source>Organisation API Key:</source>
+        <translation>组织 API 密钥：</translation>
+    </message>
+    <message>
+        <source>Enter or paste your ZimaOS Connect organisation API key</source>
+        <translation>输入或粘贴您的 ZimaOS Connect 组织 API 密钥</translation>
+    </message>
+    <message>
+        <source>Saved — type to replace</source>
+        <translation>已保存，输入新内容以替换</translation>
+    </message>
+    <message>
+        <source>Paste organisation API key</source>
+        <translation>粘贴组织 API 密钥</translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
+        <translation>ZimaOS Connect 组织 API 密钥。保存后不会再次显示。</translation>
+    </message>
+    <message>
+        <source>Auth key description:</source>
+        <translation>身份验证密钥描述：</translation>
+    </message>
+    <message>
+        <source>Description for the auth key shown in the Connect organisation UI.</source>
+        <translation>在 Connect 组织界面中显示的身份验证密钥描述。</translation>
+    </message>
+    <message>
+        <source>e.g. Factory-A</source>
+        <translation>例如 Factory-A</translation>
+    </message>
+    <message>
+        <source>Clear saved key</source>
+        <translation>清除已保存的密钥</translation>
+    </message>
+    <message>
+        <source>Remove the saved ZimaOS Connect organisation API key</source>
+        <translation>移除已保存的 ZimaOS Connect 组织 API 密钥</translation>
+    </message>
+    <message>
+        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
+        <translation>输入或粘贴来自 ZimaOS Connect 的身份验证令牌。如果您使用“打开 ZimaOS Connect”按钮登录，令牌将自动填充。</translation>
     </message>
     <message>
         <source>Waiting for token (%1s)</source>
-        <translation>等待令牌（%1 秒）</translation>
+        <translation>等待令牌（%1s）</translation>
     </message>
     <message>
         <source>Paste token here</source>
         <translation>在此粘贴令牌</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Invalid Token</source>
         <translation>无效令牌</translation>
     </message>
     <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open Raspberry Pi Connect&apos; button to get a valid token.</source>
-        <translation>您输入的令牌无效。请检查令牌后重试，或使用"打开 Raspberry Pi Connect"按钮获取有效令牌。</translation>
+        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
+        <translation>您输入的令牌无效。请检查令牌后重试，或使用“打开 ZimaOS Connect”按钮获取有效令牌。</translation>
     </message>
     <message>
         <source>OK</source>
@@ -1395,12 +1928,24 @@ or type a path in the address bar above.</source>
         <translation>关闭此对话框并返回令牌输入框</translation>
     </message>
     <message>
+        <source>Could not create auth key</source>
+        <translation>无法创建身份验证密钥</translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
+        <translation>ZimaOS USB Creator 无法创建组织身份验证密钥。请检查组织 API 密钥是否有效且此电脑已联网，然后重试。</translation>
+    </message>
+    <message>
+        <source>Close this dialog and return to the organisation API key field</source>
+        <translation>关闭此对话框并返回组织 API 密钥字段</translation>
+    </message>
+    <message>
         <source>Authentication token:</source>
         <translation>身份验证令牌：</translation>
     </message>
     <message>
-        <source>Sign in to receive a token and enable Raspberry Pi Connect</source>
-        <translation>登录以获取令牌并启用 Raspberry Pi Connect</translation>
+        <source>Sign in to receive a token and enable ZimaOS Connect</source>
+        <translation>登录以获取令牌并启用 ZimaOS Connect</translation>
     </message>
 </context>
 <context>
@@ -1469,8 +2014,8 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>认证方式：</translation>
     </message>
     <message>
-        <source>Enable secure shell access for remote command-line control of your Raspberry Pi</source>
-        <translation>启用安全 Shell 访问以远程控制 Raspberry Pi 的命令行</translation>
+        <source>Enable secure shell access for remote command-line control of your ZimaOS</source>
+        <translation>启用安全 Shell 访问以远程控制 ZimaOS 设备的命令行</translation>
     </message>
     <message>
         <source>Save SSH settings and continue to next customisation step</source>
@@ -1493,71 +2038,8 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>允许使用加密密钥对代替密码通过 SSH 登录。比密码认证更安全。</translation>
     </message>
     <message>
-        <source>Choose how you will authenticate when connecting to your Raspberry Pi via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
-        <translation>选择通过 SSH 连接到 Raspberry Pi 时的认证方式。密码认证使用您配置的账户凭据。公钥认证使用加密密钥对，更加安全。</translation>
-    </message>
-</context>
-<context>
-    <name>RepositoryDialog</name>
-    <message>
-        <source>Content Repository</source>
-        <translation>内容仓库</translation>
-    </message>
-    <message>
-        <source>Repository source:</source>
-        <translation>仓库源：</translation>
-    </message>
-    <message>
-        <source>Use custom file</source>
-        <translation>使用自定义文件</translation>
-    </message>
-    <message>
-        <source>Please select a custom repository json file</source>
-        <translation>请选择自定义仓库 JSON 文件</translation>
-    </message>
-    <message>
-        <source>Select Repository</source>
-        <translation>选择仓库</translation>
-    </message>
-    <message>
-        <source>Apply &amp; Restart</source>
-        <translation>应用并重启</translation>
-    </message>
-    <message>
-        <source>Select custom repository</source>
-        <translation>选择自定义仓库</translation>
-    </message>
-    <message>
-        <source>Use custom URL</source>
-        <translation>使用自定义 URL</translation>
-    </message>
-    <message>
-        <source>Select a custom repository JSON file from your computer</source>
-        <translation>从您的计算机中选择自定义仓库 JSON 文件</translation>
-    </message>
-    <message>
-        <source>Close the repository dialog without changing the content source</source>
-        <translation>关闭仓库对话框，不更改内容源</translation>
-    </message>
-    <message>
-        <source>Apply the new content repository and restart the wizard from the beginning</source>
-        <translation>应用新的内容仓库并从头重新启动向导</translation>
-    </message>
-    <message>
-        <source>Choose the source for operating system images</source>
-        <translation>选择操作系统镜像的来源</translation>
-    </message>
-    <message>
-        <source>Use the official Raspberry Pi operating system repository</source>
-        <translation>使用官方 Raspberry Pi 操作系统仓库</translation>
-    </message>
-    <message>
-        <source>Load operating system list from a JSON file on your computer</source>
-        <translation>从您计算机上的 JSON 文件加载操作系统列表</translation>
-    </message>
-    <message>
-        <source>Download operating system list from a custom web address</source>
-        <translation>从自定义网址下载操作系统列表</translation>
+        <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
+        <translation>选择通过 SSH 连接到 ZimaOS 设备时的认证方式。密码认证使用您配置的账户凭据。公钥认证使用加密密钥对，更加安全。</translation>
     </message>
 </context>
 <context>
@@ -1587,16 +2069,16 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>启用安全启动签名</translation>
     </message>
     <message>
-        <source>Sign the boot partition with your RSA key to enable secure boot verification on Raspberry Pi</source>
-        <translation>使用您的 RSA 密钥签名启动分区，以在 Raspberry Pi 上启用安全启动验证</translation>
+        <source>Sign the boot partition with your RSA key to enable secure boot verification on ZimaOS</source>
+        <translation>使用您的 RSA 密钥签名启动分区，以在 ZimaOS 设备上启用安全启动验证</translation>
     </message>
     <message>
         <source>Learn about Secure Boot</source>
         <translation>了解安全启动</translation>
     </message>
     <message>
-        <source>This will create boot.img and boot.sig files required for Raspberry Pi Secure Boot.</source>
-        <translation>这将创建 Raspberry Pi 安全启动所需的 boot.img 和 boot.sig 文件。</translation>
+        <source>This will create boot.img and boot.sig files required for ZimaOS Secure Boot.</source>
+        <translation>这将创建 ZimaOS 安全启动所需的 boot.img 和 boot.sig 文件。</translation>
     </message>
     <message>
         <source>Public Key Fingerprint: %1</source>
@@ -1715,7 +2197,7 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Paste key or click BROWSE to select file</source>
-        <translation>粘贴密钥或点击"浏览"选择文件</translation>
+        <translation>粘贴密钥或点击&quot;浏览&quot;选择文件</translation>
     </message>
     <message>
         <source>SSH public key input</source>
@@ -1769,6 +2251,14 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>存储设备列表</translation>
     </message>
     <message>
+        <source>Could not list storage devices: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error: Could not list storage devices. %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>No devices</source>
         <translation>没有设备</translation>
     </message>
@@ -1811,6 +2301,10 @@ to show system drives.</source>
         <translation>勾选后，系统驱动器将从列表中隐藏。取消勾选可显示包括系统驱动器在内的所有驱动器。</translation>
     </message>
     <message>
+        <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>No storage devices found. Please connect a storage device to continue.</source>
         <translation>未找到存储设备。请连接存储设备以继续。</translation>
     </message>
@@ -1835,7 +2329,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation>Creator 版本 %1 已发布。是否要访问网站下载？</translation>
+        <translation>ZimaOS USB Creator %1 版本可用。是否访问网站下载？</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
@@ -1846,8 +2340,12 @@ to show system drives.</source>
         <translation>继续使用当前版本的 ZimaOS USB Creator</translation>
     </message>
     <message>
+        <source>Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
-        <translation>在浏览器中打开 Raspberry Pi 网站以下载最新版本</translation>
+        <translation>在浏览器中打开 ZimaOS 网站以下载最新版本</translation>
     </message>
 </context>
 <context>
@@ -1885,8 +2383,8 @@ to show system drives.</source>
         <translation>重新输入以更改密码</translation>
     </message>
     <message>
-        <source>Create a user account for your Raspberry Pi</source>
-        <translation>为您的 Raspberry Pi 创建用户账户</translation>
+        <source>Create a user account for your ZimaOS</source>
+        <translation>为您的 ZimaOS 设备创建用户账户</translation>
     </message>
     <message>
         <source>Enter your username</source>
@@ -1905,8 +2403,8 @@ to show system drives.</source>
         <translation>跳过所有自定义并直接开始写入镜像</translation>
     </message>
     <message>
-        <source>Enter a username for your Raspberry Pi account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
-        <translation>为您的 Raspberry Pi 账户输入用户名。用户名必须为小写，且只能包含字母、数字、下划线和连字符。</translation>
+        <source>Enter a username for your ZimaOS account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
+        <translation>为您的 ZimaOS 设备账户输入用户名。用户名必须为小写，且只能包含字母、数字、下划线和连字符。</translation>
     </message>
     <message>
         <source>Enter a new password for this account, or leave blank to keep the previously saved password.</source>
@@ -1923,6 +2421,26 @@ to show system drives.</source>
     <message>
         <source>Re-enter the password to confirm it matches.</source>
         <translation>重新输入密码以确认一致。</translation>
+    </message>
+    <message>
+        <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable passwordless sudo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow this user to run sudo commands without entering a password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Passwordless sudo information: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2063,10 +2581,6 @@ to show system drives.</source>
         <translation>完成</translation>
     </message>
     <message>
-        <source>Customisation</source>
-        <translation>自定义</translation>
-    </message>
-    <message>
         <source>Hostname</source>
         <translation>主机名</translation>
     </message>
@@ -2079,8 +2593,8 @@ to show system drives.</source>
         <translation>Wi‑Fi</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect</source>
-        <translation>Raspberry Pi Connect</translation>
+        <source>ZimaOS Connect</source>
+        <translation>ZimaOS Connect</translation>
     </message>
     <message>
         <source>App Options</source>
@@ -2103,18 +2617,14 @@ to show system drives.</source>
         <translation>远程访问</translation>
     </message>
     <message>
-        <source>Open application settings to configure sound alerts, auto-eject, telemetry, and content repository</source>
-        <translation>打开应用设置以配置声音提醒、自动弹出、遥测和内容仓库</translation>
+        <source>Replace existing ZimaOS Connect token?</source>
+        <translation>替换现有的 ZimaOS Connect 令牌？</translation>
     </message>
     <message>
-        <source>Replace existing Raspberry Pi Connect token?</source>
-        <translation>替换现有的 Raspberry Pi Connect 令牌？</translation>
-    </message>
-    <message>
-        <source>A new Raspberry Pi Connect token was received that differs from your current one.
+        <source>A new ZimaOS Connect token was received that differs from your current one.
 
 </source>
-        <translation>收到了与您当前令牌不同的新 Raspberry Pi Connect 令牌。
+        <translation>收到了与您当前令牌不同的新 ZimaOS Connect 令牌。
 
 </translation>
     </message>
@@ -2143,12 +2653,66 @@ to show system drives.</source>
         <translation>保留现有</translation>
     </message>
     <message>
-        <source>Keep your current Raspberry Pi Connect token</source>
-        <translation>保留您当前的 Raspberry Pi Connect 令牌</translation>
+        <source>Keep your current ZimaOS Connect token</source>
+        <translation>保留您当前的 ZimaOS Connect 令牌</translation>
+    </message>
+    <message>
+        <source>Open local repository file?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch to a custom repository?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Repository URL: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="unfinished">打开</translation>
+    </message>
+    <message>
+        <source>Switch repository</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open the local manifest file and use it as the OS repository</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switch to the custom repository from the link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">取消</translation>
+    </message>
+    <message>
+        <source>Keep your current repository settings</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Secure Boot</source>
         <translation>安全启动</translation>
+    </message>
+    <message>
+        <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
+        <translation>打开应用设置以配置声音提醒、自动弹出和警告提示</translation>
     </message>
     <message>
         <source>Warning: Only overwrite the token if you initiated this action.</source>
@@ -2164,6 +2728,23 @@ to show system drives.</source>
     <message>
         <source>Skip customisation</source>
         <translation>跳过自定义</translation>
+    </message>
+</context>
+<context>
+    <name>WriteProgressWatchdog</name>
+    <message>
+        <source>Switched to compatibility mode - write continuing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write stalled - no progress for %1 seconds.
+
+Please check your storage device and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Storage device not responding. Restarting in compatibility mode...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2185,6 +2766,18 @@ to show system drives.</source>
         <translation>正在开始写入...</translation>
     </message>
     <message>
+        <source>Limited by download speed</source>
+        <translation type="unfinished">受下载速度限制</translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation type="unfinished">受解压速度限制</translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation type="unfinished">受存储设备速度限制</translation>
+    </message>
+    <message>
         <source>You are about to ERASE all data on: %1</source>
         <translation>您即将擦除以下设备上的所有数据：%1</translation>
     </message>
@@ -2203,6 +2796,10 @@ to show system drives.</source>
     <message>
         <source>Please wait...</source>
         <translation>请稍候...</translation>
+    </message>
+    <message>
+        <source>Writing... %1 MB written</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2281,20 +2878,12 @@ to show system drives.</source>
         <translation>正在完成…</translation>
     </message>
     <message>
-        <source>Write complete</source>
-        <translation>写入完成</translation>
-    </message>
-    <message>
         <source>customization</source>
         <translation>自定义</translation>
     </message>
     <message>
         <source>customizations</source>
         <translation>自定义设置</translation>
-    </message>
-    <message>
-        <source>Writing in progress — do not disconnect the storage device</source>
-        <translation>正在写入中 — 请勿断开存储设备</translation>
     </message>
     <message>
         <source>Please wait... %1</source>
@@ -2360,10 +2949,6 @@ to show system drives.</source>
         <translation>强制退出 ZimaOS USB Creator 并取消当前写入操作</translation>
     </message>
     <message>
-        <source>ZimaOS USB Creator %1</source>
-        <translation>ZimaOS USB Creator %1</translation>
-    </message>
-    <message>
         <source>Insufficient Permissions</source>
         <translation>权限不足</translation>
     </message>
@@ -2382,6 +2967,18 @@ to show system drives.</source>
     <message>
         <source>Install Authorization</source>
         <translation>安装授权</translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
+        <source>Offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using data from %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>

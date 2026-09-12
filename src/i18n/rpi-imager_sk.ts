@@ -16,14 +16,6 @@
         <translation>Po skončení vysunúť médium</translation>
     </message>
     <message>
-        <source>Enable anonymous statistics (telemetry)</source>
-        <translation>Povoliť anonymné štatistiky (telemetria)</translation>
-    </message>
-    <message>
-        <source>What is this?</source>
-        <translation>Čo to je?</translation>
-    </message>
-    <message>
         <source>Disable warnings</source>
         <translation>Vypnúť varovania</translation>
     </message>
@@ -38,14 +30,6 @@
     <message>
         <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Content Repository</source>
-        <translation>Repozitár s obrazmi</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Upraviť</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -72,16 +56,8 @@
         <translation>Automaticky vysunúť úložné zariadenie po úspešnom dokončení zápisu</translation>
     </message>
     <message>
-        <source>Send anonymous usage statistics to help improve ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Preskočiť potvrdzovacie okná pred zápisom obrazov (iba pre pokročilých používateľov)</translation>
-    </message>
-    <message>
-        <source>Change the source of operating system images between official Raspberry Pi repository and custom sources</source>
-        <translation>Zmeniť zdroj obrazov operačného systému medzi oficiálnym úložiskom Raspberry Pi a vlastnými zdrojmi</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -120,35 +96,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Saved Customisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings such as hostname, WiFi, and user credentials</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved customisation?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This will remove all saved OS customisation settings such as hostname, WiFi, and user credentials.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Keep saved customisation settings and return to the options dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings permanently</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -180,6 +128,10 @@
     <message>
         <source>Image files (%1)</source>
         <translation>Súbory s obrazom (%1)</translation>
+    </message>
+    <message>
+        <source>Repository Manifest Files (*.json *.%1)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -258,8 +210,8 @@
         <translation>Sieť Wi‑Fi je nastavená</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect enabled</source>
-        <translation>Raspberry Pi Connect je povolené</translation>
+        <source>ZimaOS Connect enabled</source>
+        <translation>ZimaOS Connect je povolené</translation>
     </message>
     <message>
         <source>I2C enabled</source>
@@ -288,10 +240,6 @@
     <message>
         <source>Authorized keys files (authorized_keys)</source>
         <translation>Povolené súbory s kľúčmi (authorized_keys)</translation>
-    </message>
-    <message>
-        <source>Imager Repository Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -470,6 +418,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Ignore Device I/O Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable Periodic Sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -522,48 +478,16 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enable Rpiboot/Fastboot Support</source>
+        <source>Secure Boot</source>
+        <translation type="unfinished">Secure Boot</translation>
+    </message>
+    <message>
+        <source>Force Secure Boot Available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.</source>
+        <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Custom Fastboot Gadget:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>(default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Browse...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a local fastboot gadget boot.img file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Revert to the default fastboot gadget from GitHub</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Fastboot Gadget Image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Boot images (*.img *.bin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All files (*)</source>
-        <translation type="unfinished">Všetky súbory (*)</translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -586,6 +510,10 @@
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading device types...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -626,10 +554,6 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
         <source>Retry downloading the device list</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Connected via USB</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DoneStep</name>
@@ -638,12 +562,28 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
         <translation>Váš výber:</translation>
     </message>
     <message>
+        <source>Ejecting the storage device — do not remove it yet…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
         <translation>Úložné zariadenie bolo automaticky vysunuté. Teraz ho môžete bezpečne odobrať.</translation>
     </message>
     <message>
+        <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Please eject the storage device before removing it from your computer.</source>
         <translation>Pred odobratím úložného zariadenia z počítača ho, prosím, vysuňte.</translation>
+    </message>
+    <message>
+        <source>Eject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Eject the storage device so it can be removed safely</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -842,6 +782,28 @@ Please check your network connection and try again.</source>
         <translation>Nepodarilo sa otvoriť úložné zariadenie &apos;%1&apos;. Prosím, spustite aplikáciu s vyššími oprávneniami (sudo).</translation>
     </message>
     <message>
+        <source>Verifying OS customisation...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
+
+The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to allocate memory for verification.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seeking storage for verification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Creating signed boot image...</source>
         <translation>Vytváram podpísaný spúšťací obraz…</translation>
     </message>
@@ -935,6 +897,10 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for drive to become available... (%1s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1084,7 +1050,15 @@ Please check the device and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>flushing image before writing partition table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>writing partition table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1148,105 +1122,6 @@ Please check the device and try again.</source>
     </message>
 </context>
 <context>
-    <name>FastbootFlashThread</name>
-    <message>
-        <source>Applying OS customisation...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to mount boot partition: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to read config.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write config.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write firstrun.sh: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write meta-data: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write user-data: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write network-config: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to read cmdline.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to write cmdline.txt: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to initialize curl</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No entries in image archive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot error: unexpected internal error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connecting to fastboot device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open fastboot device: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Downloading and flashing OS image...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fetching block map...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot download failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fastboot flash failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Decompression failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancelled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Image hash mismatch. Expected: %1 Got: %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>HWListModel</name>
     <message>
         <source>CHOOSE DEVICE</source>
@@ -1256,8 +1131,8 @@ Please check the device and try again.</source>
 <context>
     <name>HostnameCustomizationStep</name>
     <message>
-        <source>A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.</source>
-        <translation>Názov počítača je jedinečný názov, ktorý identifikuje váš Raspberry Pi v sieti. Mal by obsahovať iba písmená, číslice a pomlčky.</translation>
+        <source>A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.</source>
+        <translation>Názov počítača je jedinečný názov, ktorý identifikuje váš ZimaOS v sieti. Mal by obsahovať iba písmená, číslice a pomlčky.</translation>
     </message>
     <message>
         <source>Customisation: Choose hostname</source>
@@ -1355,8 +1230,8 @@ Please check the device and try again.</source>
         <translation>Povoliť rozhranie 1-Wire pre pripojenie teplotných senzorov a ďalších zariadení značky Dallas/Maxim</translation>
     </message>
     <message>
-        <source>Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage</source>
-        <translation>Povoliť režim USB zariadenia, aby ste mohli svoj Raspberry Pi používať ako USB zariadenie pre sieťové pripojenie a úložisko</translation>
+        <source>Enable USB device mode to use your ZimaOS as a USB peripheral for networking and storage</source>
+        <translation>Povoliť režim USB zariadenia, aby ste mohli svoj ZimaOS používať ako USB zariadenie pre sieťové pripojenie a úložisko</translation>
     </message>
     <message>
         <source>Save interface and feature settings and continue to writing step</source>
@@ -1525,13 +1400,6 @@ alebo zadajte cestu do adresného riadka hore.</translation>
     </message>
 </context>
 <context>
-    <name>ImPopup</name>
-    <message>
-        <source>Dialog</source>
-        <translation>Dialógové okno</translation>
-    </message>
-</context>
-<context>
     <name>ImSaveFileDialog</name>
     <message>
         <source>Save File</source>
@@ -1636,6 +1504,14 @@ alebo zadajte cestu do adresného riadka hore.</translation>
         <translation> alebo </translation>
     </message>
     <message>
+        <source>No organisation API key is configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect returned an unexpected response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Save Performance Data</source>
         <translation>Uložiť údaje o výkone</translation>
     </message>
@@ -1644,23 +1520,9 @@ alebo zadajte cestu do adresného riadka hore.</translation>
         <translation>JSON súbory (*.json);;Všetky súbory (*)</translation>
     </message>
     <message>
-        <source>Starting fastboot flash...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preparing device for imaging...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input file is not a valid disk image.
-
-File size %1 bytes is not a multiple of 512 bytes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1800,8 +1662,12 @@ Technical details: %1</source>
         <translation>Vyberte najbližšie hlavné mesto. Toto automaticky navrhne príslušné časové pásmo a rozloženie klávesnice pre vašu oblasť a nastaví sa bezdrôtová regulačná oblasť podľa platných predpisov vašej krajiny.</translation>
     </message>
     <message>
-        <source>Choose your time zone so your Raspberry Pi displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
-        <translation>Vyberte časové pásmo tak, aby váš Raspberry Pi zobrazoval správny miestny čas. Predvolené pásmo je navrhnuté podľa vami vybraného hlavného mesta, ale môžete ho zmeniť, ak nie je návrh správny.</translation>
+        <source>This also sets the Wi-Fi regulatory domain for your region.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
+        <translation>Vyberte časové pásmo tak, aby váš ZimaOS zobrazoval správny miestny čas. Predvolené pásmo je navrhnuté podľa vami vybraného hlavného mesta, ale môžete ho zmeniť, ak nie je návrh správny.</translation>
     </message>
     <message>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
@@ -1811,6 +1677,9 @@ Technical details: %1</source>
         <source>Why am I being asked this?</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
         <translation type="unfinished"></translation>
@@ -1859,10 +1728,6 @@ Technical details: %1</source>
     <message>
         <source>Choose operating system</source>
         <translation>Vyberte operačný systém</translation>
-    </message>
-    <message>
-        <source>Select the ZimaOS version you want to install</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Operating system list</source>
@@ -1943,36 +1808,40 @@ Technical details: %1</source>
 <context>
     <name>PiConnectCustomizationStep</name>
     <message>
-        <source>Customisation: Raspberry Pi Connect</source>
-        <translation>Úpravy: Raspberry Pi Connect</translation>
+        <source>Customisation: ZimaOS Connect</source>
+        <translation>Úpravy: ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Enable Raspberry Pi Connect</source>
-        <translation>Povoliť Raspberry Pi Connect</translation>
+        <source>Enable ZimaOS Connect</source>
+        <translation>Povoliť ZimaOS Connect</translation>
     </message>
     <message>
-        <source>What is Raspberry Pi Connect?</source>
-        <translation>Čo je Raspberry Pi Connect?</translation>
+        <source>What is ZimaOS Connect?</source>
+        <translation>Čo je ZimaOS Connect?</translation>
     </message>
     <message>
-        <source>Open Raspberry Pi Connect</source>
-        <translation>Spustiť Raspberry Pi Connect</translation>
+        <source>Open ZimaOS Connect</source>
+        <translation>Spustiť ZimaOS Connect</translation>
     </message>
     <message>
         <source>Token received from browser</source>
         <translation>Token získaný z&#x202f;prehliadača</translation>
     </message>
     <message>
-        <source>Open the Raspberry Pi Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Otvorte webovú stránku Raspberry Pi Connect vo vašom prehliadači, prihláste sa a získajte prihlasovací token</translation>
+        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
+        <translation>Otvorte webovú stránku ZimaOS Connect vo vašom prehliadači, prihláste sa a získajte prihlasovací token</translation>
     </message>
     <message>
-        <source>Enable secure remote access to your Raspberry Pi through the Raspberry Pi Connect cloud service</source>
-        <translation>Povoliť bezpečný vzdialený prístup k vášmu Raspberry Pi prostredníctvom cloudovej služby Raspberry Pi Connect</translation>
+        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
+        <translation>Povoliť bezpečný vzdialený prístup k vášmu ZimaOS prostredníctvom cloudovej služby ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Save Raspberry Pi Connect settings and continue to next customisation step</source>
-        <translation>Uložiť nastavenia Raspberry Pi Connect a pokračovať na ďalší krok</translation>
+        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
+        <translation>Uložiť nastavenia ZimaOS Connect a pokračovať na ďalší krok</translation>
+    </message>
+    <message>
+        <source>Register this device with your ZimaOS Connect organisation</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Return to previous step</source>
@@ -1983,8 +1852,52 @@ Technical details: %1</source>
         <translation>Vynechať všetky úpravy a pokračovať priamo k zápisu obrazu</translation>
     </message>
     <message>
-        <source>Enter or paste the authentication token from Raspberry Pi Connect. The token will be automatically filled if you use the &apos;Open Raspberry Pi Connect&apos; button to sign in.</source>
-        <translation>Zadajte alebo vložte prihlasovací token z Raspberry Pi Connect. Token sa vyplní automaticky, keď na prihlásenie použijete tlačidlo „Spustiť Raspberry Pi Connect“.</translation>
+        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Organisation API Key:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste your ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved — type to replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auth key description:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description for the auth key shown in the Connect organisation UI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>e.g. Factory-A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear saved key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove the saved ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
+        <translation>Zadajte alebo vložte prihlasovací token z ZimaOS Connect. Token sa vyplní automaticky, keď na prihlásenie použijete tlačidlo „Spustiť ZimaOS Connect“.</translation>
     </message>
     <message>
         <source>Waiting for token (%1s)</source>
@@ -1995,12 +1908,16 @@ Technical details: %1</source>
         <translation>Sem vložte token</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Invalid Token</source>
         <translation>Neplatný token</translation>
     </message>
     <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open Raspberry Pi Connect&apos; button to get a valid token.</source>
-        <translation>Zadaný token je neplatný. Skontrolujte token a skúste to znova alebo použite tlačidlo „Spustiť Raspberry Pi Connect“ pre získanie platného tokenu.</translation>
+        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
+        <translation>Zadaný token je neplatný. Skontrolujte token a skúste to znova alebo použite tlačidlo „Spustiť ZimaOS Connect“ pre získanie platného tokenu.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -2011,12 +1928,24 @@ Technical details: %1</source>
         <translation>Zatvoriť toto dialógové okno a vrátiť sa do poľa pre token</translation>
     </message>
     <message>
+        <source>Could not create auth key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close this dialog and return to the organisation API key field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Authentication token:</source>
         <translation>Prihlasovací token:</translation>
     </message>
     <message>
-        <source>Sign in to receive a token and enable Raspberry Pi Connect</source>
-        <translation>Prihláste sa, aby ste získali token a mohli tak povoliť Raspberry Pi Connect</translation>
+        <source>Sign in to receive a token and enable ZimaOS Connect</source>
+        <translation>Prihláste sa, aby ste získali token a mohli tak povoliť ZimaOS Connect</translation>
     </message>
 </context>
 <context>
@@ -2053,38 +1982,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
 
 Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšších oprávnení alebo spustite program ručne pomocou: sudo %1</translation>
     </message>
-    <message>
-        <source>Invalid Windows physical drive path: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open disk for cleaning. Error code: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clear partition table. Error code: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to start disk cleanup utility. Please ensure you have administrator privileges.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disk cleaning operation timed out. The disk may be in use by another application.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clean disk. Error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to clean disk after %1 attempts. %2</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>RemoteAccessStep</name>
@@ -2117,8 +2014,8 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
         <translation>Metóda overenia:</translation>
     </message>
     <message>
-        <source>Enable secure shell access for remote command-line control of your Raspberry Pi</source>
-        <translation>Povoliť prístup cez SSH pre vzdialené ovládanie príkazového riadka vášho Raspberry Pi</translation>
+        <source>Enable secure shell access for remote command-line control of your ZimaOS</source>
+        <translation>Povoliť prístup cez SSH pre vzdialené ovládanie príkazového riadka vášho ZimaOS</translation>
     </message>
     <message>
         <source>Save SSH settings and continue to next customisation step</source>
@@ -2141,130 +2038,8 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
         <translation>Povoliť prihlásenie cez SSH pomocou kryptografického páru kľúčov miesto hesla. Bezpečnejšie ako prihlásenie heslom.</translation>
     </message>
     <message>
-        <source>Choose how you will authenticate when connecting to your Raspberry Pi via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
-        <translation>Vyberte, ako budete overovať vaše pripojenie k Raspberry Pi cez SSH. Overenie pomocou hesla používa prihlasovacie údaje vami nastaveného účtu. Overenie pomocou verejného kľúča využíva kryptografický pár kľúčov a je bezpečnejšie.</translation>
-    </message>
-</context>
-<context>
-    <name>RepositoryDialog</name>
-    <message>
-        <source>Content Repository</source>
-        <translation>Repozitár s obrazmi</translation>
-    </message>
-    <message>
-        <source>Repository source:</source>
-        <translation>Zdroj repozitára:</translation>
-    </message>
-    <message>
-        <source>Use custom file</source>
-        <translation>Použiť vlastný súbor</translation>
-    </message>
-    <message>
-        <source>Please select a custom repository json file</source>
-        <translation>Vyberte, prosím, JSON súbor s vlastným repozitárom</translation>
-    </message>
-    <message>
-        <source>Select Repository</source>
-        <translation>Vyberte repozitár</translation>
-    </message>
-    <message>
-        <source>Apply &amp; Restart</source>
-        <translation>Použiť a reštartovať</translation>
-    </message>
-    <message>
-        <source>Select custom repository</source>
-        <translation>Vyberte vlastný repozitár</translation>
-    </message>
-    <message>
-        <source>Use custom URL</source>
-        <translation>Použiť vlastnú adresu URL</translation>
-    </message>
-    <message>
-        <source>Select a custom repository JSON file from your computer</source>
-        <translation>Vyberte vlastný JSON súbor repozitára z vášho počítača</translation>
-    </message>
-    <message>
-        <source>Close the repository dialog without changing the content source</source>
-        <translation>Zatvoriť dialógové okno repozitára bez toho, aby sa zmenil zdroj obsahu</translation>
-    </message>
-    <message>
-        <source>Apply the new content repository and restart the wizard from the beginning</source>
-        <translation>Použiť nový repozitár s obrazmi a spustiť sprievodcu od začiatku</translation>
-    </message>
-    <message>
-        <source>Choose the source for operating system images</source>
-        <translation>Vyberte zdroj pre obrazy operačného systému</translation>
-    </message>
-    <message>
-        <source>Use the official Raspberry Pi operating system repository</source>
-        <translation>Použiť oficiálny repozitár operačných systémov Raspberry Pi</translation>
-    </message>
-    <message>
-        <source>Load operating system list from a JSON file on your computer</source>
-        <translation>Načítať zoznam operačných systémov zo súboru JSON vo vašom počítači</translation>
-    </message>
-    <message>
-        <source>Download operating system list from a custom web address</source>
-        <translation>Stiahnuť zoznam operačných systémov z vlastnej webovej adresy</translation>
-    </message>
-</context>
-<context>
-    <name>RpibootThread</name>
-    <message>
-        <source>Downloading firmware...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to obtain rpiboot firmware: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connecting to device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open USB device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>rpiboot protocol failed: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>USB error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to restart...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Failed to open USB device after re-enumeration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for fastboot device...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timed out waiting for fastboot device to appear.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to disconnect (%1/%2)...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Device disconnected, waiting for reconnect...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Waiting for device to reconnect (%1/%2s)...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Timed out waiting for device to re-enumerate after bootcode upload (waited %1s).</source>
-        <translation type="unfinished"></translation>
+        <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
+        <translation>Vyberte, ako budete overovať vaše pripojenie k ZimaOS cez SSH. Overenie pomocou hesla používa prihlasovacie údaje vami nastaveného účtu. Overenie pomocou verejného kľúča využíva kryptografický pár kľúčov a je bezpečnejšie.</translation>
     </message>
 </context>
 <context>
@@ -2294,16 +2069,16 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
         <translation>Povoliť podpisovanie Secure Boot</translation>
     </message>
     <message>
-        <source>Sign the boot partition with your RSA key to enable secure boot verification on Raspberry Pi</source>
-        <translation>Podpíšte spúšťací oddiel vašim RSA kľúčom pre povolenie overovania Secure Boot na Raspberry Pi</translation>
+        <source>Sign the boot partition with your RSA key to enable secure boot verification on ZimaOS</source>
+        <translation>Podpíšte spúšťací oddiel vašim RSA kľúčom pre povolenie overovania Secure Boot na ZimaOS</translation>
     </message>
     <message>
         <source>Learn about Secure Boot</source>
         <translation>Zistiť viac o Secure Boot</translation>
     </message>
     <message>
-        <source>This will create boot.img and boot.sig files required for Raspberry Pi Secure Boot.</source>
-        <translation>Toto vytvorí súbory boot.img a boot.sig potrebné pre Secure Boot na Raspberry Pi.</translation>
+        <source>This will create boot.img and boot.sig files required for ZimaOS Secure Boot.</source>
+        <translation>Toto vytvorí súbory boot.img a boot.sig potrebné pre Secure Boot na ZimaOS.</translation>
     </message>
     <message>
         <source>Public Key Fingerprint: %1</source>
@@ -2360,26 +2135,6 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
     <message>
         <source>All Files (*)</source>
         <translation>Všetky súbory (*)</translation>
-    </message>
-    <message>
-        <source>OTP Secure Boot Provisioning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Program the secure boot public key hash into the device&apos;s OTP memory. This is a permanent, irreversible operation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Provision Secure Boot OTP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2562,10 +2317,6 @@ pre zobrazenie systémových diskov.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Ready for USB boot</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2577,11 +2328,19 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Je dostupná aktualizácia</translation>
     </message>
     <message>
+        <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Continue using the current version of ZimaOS USB Creator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2624,8 +2383,8 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Zadajte znova pre zmenu hesla</translation>
     </message>
     <message>
-        <source>Create a user account for your Raspberry Pi</source>
-        <translation>Vytvorte používateľský účet pre váš Raspberry Pi</translation>
+        <source>Create a user account for your ZimaOS</source>
+        <translation>Vytvorte používateľský účet pre váš ZimaOS</translation>
     </message>
     <message>
         <source>Enter your username</source>
@@ -2644,8 +2403,8 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Vynechať všetky úpravy a pokračovať priamo k zápisu obrazu</translation>
     </message>
     <message>
-        <source>Enter a username for your Raspberry Pi account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
-        <translation>Zadajte meno používateľa pre váš účet na Raspberry Pi. Meno používateľa musí byť písané malými písmenami a môže obsahovať iba písmená, číslice, znak podčiarknutia a pomlčky.</translation>
+        <source>Enter a username for your ZimaOS account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
+        <translation>Zadajte meno používateľa pre váš účet na ZimaOS. Meno používateľa musí byť písané malými písmenami a môže obsahovať iba písmená, číslice, znak podčiarknutia a pomlčky.</translation>
     </message>
     <message>
         <source>Enter a new password for this account, or leave blank to keep the previously saved password.</source>
@@ -2662,6 +2421,10 @@ pre zobrazenie systémových diskov.</translation>
     <message>
         <source>Re-enter the password to confirm it matches.</source>
         <translation>Zadajte heslo znova pre potvrdenie, že sa zhoduje.</translation>
+    </message>
+    <message>
+        <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
@@ -2818,10 +2581,6 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Hotovo</translation>
     </message>
     <message>
-        <source>Customisation</source>
-        <translation>Úpravy</translation>
-    </message>
-    <message>
         <source>Hostname</source>
         <translation>Názov počítača</translation>
     </message>
@@ -2834,8 +2593,8 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Sieť Wi‑Fi</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect</source>
-        <translation>Raspberry Pi Connect</translation>
+        <source>ZimaOS Connect</source>
+        <translation>ZimaOS Connect</translation>
     </message>
     <message>
         <source>App Options</source>
@@ -2858,18 +2617,14 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Vzdialený prístup</translation>
     </message>
     <message>
-        <source>Open application settings to configure sound alerts, auto-eject, telemetry, and content repository</source>
-        <translation>Otvoriť nastavenia aplikácie pre konfiguráciu zvukových upozornení, automatického vysunutia, telemetrie a repozitára s obrazmi</translation>
+        <source>Replace existing ZimaOS Connect token?</source>
+        <translation>Nahradiť existujúci ZimaOS Connect token?</translation>
     </message>
     <message>
-        <source>Replace existing Raspberry Pi Connect token?</source>
-        <translation>Nahradiť existujúci Raspberry Pi Connect token?</translation>
-    </message>
-    <message>
-        <source>A new Raspberry Pi Connect token was received that differs from your current one.
+        <source>A new ZimaOS Connect token was received that differs from your current one.
 
 </source>
-        <translation>Bol prijatý nový token Raspberry Pi Connect, ktorý sa líši od aktuálneho.
+        <translation>Bol prijatý nový token ZimaOS Connect, ktorý sa líši od aktuálneho.
 
 </translation>
     </message>
@@ -2898,20 +2653,20 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Ponechať súčasný</translation>
     </message>
     <message>
-        <source>Keep your current Raspberry Pi Connect token</source>
-        <translation>Ponechať súčasný token Raspberry Pi Connect</translation>
+        <source>Keep your current ZimaOS Connect token</source>
+        <translation>Ponechať súčasný token ZimaOS Connect</translation>
     </message>
     <message>
         <source>Secure Boot</source>
         <translation>Secure Boot</translation>
     </message>
     <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Upozornenie: Token prepíšte iba vtedy, ak ste túto akciu sami iniciovali.</translation>
+        <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sidebar resize handle</source>
-        <translation type="unfinished"></translation>
+        <source>Warning: Only overwrite the token if you initiated this action.</source>
+        <translation>Upozornenie: Token prepíšte iba vtedy, ak ste túto akciu sami iniciovali.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -2922,11 +2677,11 @@ pre zobrazenie systémových diskov.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>You are opening a local Raspberry Pi Imager manifest file. This will replace the current OS list with the contents of this file.</source>
+        <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>A website is requesting to switch Raspberry Pi Imager to use a custom OS repository.
+        <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
         <translation type="unfinished"></translation>
@@ -3009,6 +2764,18 @@ Please check your storage device and try again.</source>
     <message>
         <source>Starting write process...</source>
         <translation>Spúšťam proces zápisu…</translation>
+    </message>
+    <message>
+        <source>Limited by download speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>You are about to ERASE all data on: %1</source>
@@ -3107,20 +2874,12 @@ Please check your storage device and try again.</source>
         <translation>Dokončujem…</translation>
     </message>
     <message>
-        <source>Write complete</source>
-        <translation>Zápis bol dokončený</translation>
-    </message>
-    <message>
         <source>customization</source>
         <translation>úprava</translation>
     </message>
     <message>
         <source>customizations</source>
         <translation>úpravy</translation>
-    </message>
-    <message>
-        <source>Writing in progress — do not disconnect the storage device</source>
-        <translation>Prebieha zápis — neodpájajte úložné zariadenie</translation>
     </message>
     <message>
         <source>Please wait... %1</source>
@@ -3190,10 +2949,6 @@ Please check your storage device and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS USB Creator %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Insufficient Permissions</source>
         <translation>Nedostatočné oprávnenia</translation>
     </message>
@@ -3212,6 +2967,10 @@ Please check your storage device and try again.</source>
     <message>
         <source>Install Authorization</source>
         <translation>Nainštalovať oprávnenia</translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>

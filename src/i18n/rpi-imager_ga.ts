@@ -16,14 +16,6 @@
         <translation>Díbirt na meáin nuair a bheidh siad críochnaithe</translation>
     </message>
     <message>
-        <source>Enable anonymous statistics (telemetry)</source>
-        <translation>Cumasaigh staitisticí gan ainm (teileiméadracht)</translation>
-    </message>
-    <message>
-        <source>What is this?</source>
-        <translation>Cad é seo?</translation>
-    </message>
-    <message>
         <source>Disable warnings</source>
         <translation>Díchumasaigh rabhaidh</translation>
     </message>
@@ -38,14 +30,6 @@
     <message>
         <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Content Repository</source>
-        <translation>Stór Ábhair</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Eagar</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -72,16 +56,8 @@
         <translation>Díbirt an gléas stórála go huathoibríoch nuair a bheidh an próiseas scríbhneoireachta críochnaithe go rathúil</translation>
     </message>
     <message>
-        <source>Send anonymous usage statistics to help improve ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
-        <translation>Seachain dialóga deimhnithe sula scríobhtar íomhánna (d'úsáideoirí ardleibhéil amháin)</translation>
-    </message>
-    <message>
-        <source>Change the source of operating system images between official Raspberry Pi repository and custom sources</source>
-        <translation>Athraigh foinse íomhánna an chórais oibriúcháin idir stór oifigiúil Raspberry Pi agus foinsí saincheaptha</translation>
+        <translation>Seachain dialóga deimhnithe sula scríobhtar íomhánna (d&apos;úsáideoirí ardleibhéil amháin)</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -120,36 +96,8 @@
         <translation>Fógra fuaime ar fáil - ní bhfuarthas aon seinnteoir fuaime inúsáidte ar an gcóras seo</translation>
     </message>
     <message>
-        <source>Saved Customisation</source>
-        <translation>Saincheapadh Sábháilte</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Glan</translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings such as hostname, WiFi, and user credentials</source>
-        <translation>Bain gach socrú saincheaptha OS sábháilte amhail ainm óstach, Wi-Fi, agus dintiúir úsáideora</translation>
-    </message>
-    <message>
         <source>Version: %1</source>
         <translation>Leagan: %1</translation>
-    </message>
-    <message>
-        <source>Clear saved customisation?</source>
-        <translation>Glan an saincheapadh sábháilte?</translation>
-    </message>
-    <message>
-        <source>This will remove all saved OS customisation settings such as hostname, WiFi, and user credentials.</source>
-        <translation>Bainfidh sé seo gach socrú saincheaptha OS atá sábháilte amhail ainm óstach, Wi-Fi, agus dintiúir úsáideora.</translation>
-    </message>
-    <message>
-        <source>Keep saved customisation settings and return to the options dialog</source>
-        <translation>Coinnigh na socruithe saincheaptha sábháilte agus fill ar an dialóg roghanna</translation>
-    </message>
-    <message>
-        <source>Remove all saved OS customisation settings permanently</source>
-        <translation>Bain gach socrú saincheaptha OS sábháilte go buan</translation>
     </message>
 </context>
 <context>
@@ -180,6 +128,10 @@
     <message>
         <source>Image files (%1)</source>
         <translation>Comhaid íomhá (%1)</translation>
+    </message>
+    <message>
+        <source>Repository Manifest Files (*.json *.%1)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -258,8 +210,8 @@
         <translation>Wi-Fi cumraithe</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect enabled</source>
-        <translation>Cumasaithe Ceangail Raspberry Pi</translation>
+        <source>ZimaOS Connect enabled</source>
+        <translation>Cumasaithe Ceangail ZimaOS</translation>
     </message>
     <message>
         <source>I2C enabled</source>
@@ -289,10 +241,6 @@
         <source>Authorized keys files (authorized_keys)</source>
         <translation>Comhaid eochracha údaraithe (authorized_keys)</translation>
     </message>
-    <message>
-        <source>Imager Repository Files (*.json *.%1)</source>
-        <translation>Comhaid Stórála Íomháitheora (*.json *.%1)</translation>
-    </message>
 </context>
 <context>
     <name>ConfirmOtpProgramDialog</name>
@@ -301,7 +249,7 @@
         <translation>RABHADH: Tá clársceidealú OTP BUAN agus NÍ FÉIDIR AISGHEARRADH</translation>
     </message>
     <message>
-        <source>This operation will permanently program the secure boot public key hash into the device's one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
+        <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
         <translation>Déanfaidh an oibríocht seo an hais eochrach phoiblí tosaithe slán a chlárú go buan i gcuimhne in-ríomhchláraithe aonuaire (OTP) an ghléis. Nuair a bheidh sé cláraithe, ní dhéanfaidh an gléas seo ach íomhánna a thosú atá sínithe leis an eochair phríobháideach chomhfhreagrach. Ní féidir an gníomh seo a chealú.</translation>
     </message>
     <message>
@@ -470,6 +418,14 @@
         <translation>Cuimhne maolánach: ~%1-%2 MB (athraíonn sé ag brath ar RAM an chórais)</translation>
     </message>
     <message>
+        <source>Ignore Device I/O Limits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable Periodic Sync</source>
         <translation>Cumasaigh Sioncrónú Tréimhsiúil</translation>
     </message>
@@ -510,60 +466,28 @@
         <translation>Mód Cárta Bréige (seiceálacha deireadh gléis a scipeáil)</translation>
     </message>
     <message>
-        <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card's real capacity.</source>
+        <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
         <translation>Seachain oibríochtaí ag deireadh an fheiste stórála. Cumasaigh é seo le haghaidh cártaí SD góchumtha a thuairiscíonn acmhainn níos mó bréige. Ní mór don íomhá a bheith níos lú ná fíoracmhainn an chárta.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card's real capacity!</source>
-        <translation>⚠️ Ná cumasaigh é seo ach amháin má thuairiscíonn do chárta SD acmhainn níos mó ná mar atá aige i ndáiríre. Déan cinnte go bhfuil d'íomhá níos lú ná fíoracmhainn an chárta!</translation>
+        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>⚠️ Ná cumasaigh é seo ach amháin má thuairiscíonn do chárta SD acmhainn níos mó ná mar atá aige i ndáiríre. Déan cinnte go bhfuil d&apos;íomhá níos lú ná fíoracmhainn an chárta!</translation>
     </message>
     <message>
         <source>Advanced Features</source>
         <translation>Gnéithe Ardleibhéil</translation>
     </message>
     <message>
-        <source>Enable Rpiboot/Fastboot Support</source>
-        <translation>Cumasaigh Tacaíocht Rpiboot/Fastboot</translation>
+        <source>Secure Boot</source>
+        <translation type="unfinished">Tosaithe Slán</translation>
     </message>
     <message>
-        <source>Scan for Raspberry Pi devices in USB boot mode (rpiboot). Requires libusb.</source>
-        <translation>Scanadh le haghaidh gléasanna Raspberry Pi i mód tosaithe USB (rpiboot). Éilíonn libusb.</translation>
+        <source>Force Secure Boot Available</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Custom Fastboot Gadget:</source>
-        <translation>Gléas Fastboot Saincheaptha:</translation>
-    </message>
-    <message>
-        <source>(default)</source>
-        <translation>(réamhshocraithe)</translation>
-    </message>
-    <message>
-        <source>Browse...</source>
-        <translation>Brabhsáil...</translation>
-    </message>
-    <message>
-        <source>Select a local fastboot gadget boot.img file</source>
-        <translation>Roghnaigh comhad boot.img de ghléas fastboot áitiúil</translation>
-    </message>
-    <message>
-        <source>Clear</source>
-        <translation>Clear</translation>
-    </message>
-    <message>
-        <source>Revert to the default fastboot gadget from GitHub</source>
-        <translation>Fill ar ais chuig an ngléas tosaithe tapa réamhshocraithe ó GitHub</translation>
-    </message>
-    <message>
-        <source>Select Fastboot Gadget Image</source>
-        <translation>Roghnaigh Íomhá Gléas Fastboot</translation>
-    </message>
-    <message>
-        <source>Boot images (*.img *.bin)</source>
-        <translation>Íomhánna tosaithe (*.img *.bin)</translation>
-    </message>
-    <message>
-        <source>All files (*)</source>
-        <translation>Gach comhad (*)</translation>
+        <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -586,6 +510,10 @@
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading device types...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -615,10 +543,10 @@
     <message>
         <source>The device list could not be downloaded. Please check your internet connection and try again.
 
-You can still write a local image file by pressing Next and selecting 'Use custom' on the following screen.</source>
+You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
         <translation>Níorbh fhéidir an liosta gléasanna a íoslódáil. Seiceáil do nasc idirlín agus déan iarracht eile.
 
-Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaidh agus 'Úsáid saincheaptha' a roghnú ar an scáileán seo a leanas.</translation>
+Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaidh agus &apos;Úsáid saincheaptha&apos; a roghnú ar an scáileán seo a leanas.</translation>
     </message>
     <message>
         <source>Retry</source>
@@ -628,10 +556,6 @@ Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaid
         <source>Retry downloading the device list</source>
         <translation>Déan iarracht an liosta gléasanna a íoslódáil arís</translation>
     </message>
-    <message>
-        <source>Connected via USB</source>
-        <translation>Ceangailte trí USB</translation>
-    </message>
 </context>
 <context>
     <name>DoneStep</name>
@@ -640,12 +564,28 @@ Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaid
         <translation>Do roghanna:</translation>
     </message>
     <message>
+        <source>Ejecting the storage device — do not remove it yet…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
         <translation>Díbríodh an gléas stórála go huathoibríoch. Is féidir leat é a bhaint go sábháilte anois.</translation>
     </message>
     <message>
+        <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Please eject the storage device before removing it from your computer.</source>
         <translation>Díbirt an gléas stórála sula mbaintear as do ríomhaire é.</translation>
+    </message>
+    <message>
+        <source>Eject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Eject the storage device so it can be removed safely</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -707,8 +647,8 @@ Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaid
         <translation>Níor fheistiú an córas oibriúcháin an chuid FAT32</translation>
     </message>
     <message>
-        <source>Error changing to directory '%1'</source>
-        <translation>Earráid ag athrú go dtí an eolaire '%1'</translation>
+        <source>Error changing to directory &apos;%1&apos;</source>
+        <translation>Earráid ag athrú go dtí an eolaire &apos;%1&apos;</translation>
     </message>
     <message>
         <source>The write operation has stalled.
@@ -758,8 +698,8 @@ Seiceáil do nasc líonra agus déan iarracht arís.</translation>
         <translation>Deimhnigh le do thoil an bhfuil cead ag &apos;ZimaOS USB Creator&apos; rochtain a fháil ar &apos;imleabhair inbhainte&apos; i socruithe príobháideachta (faoi &apos;comhaid agus fillteáin&apos; nó tabhair &apos;rochtain iomlán ar dhiosca&apos; dó.</translation>
     </message>
     <message>
-        <source>Cannot open storage device '%1'.</source>
-        <translation>Ní féidir gléas stórála '%1' a oscailt.</translation>
+        <source>Cannot open storage device &apos;%1&apos;.</source>
+        <translation>Ní féidir gléas stórála &apos;%1&apos; a oscailt.</translation>
     </message>
     <message>
         <source>Error downloading: %1</source>
@@ -822,8 +762,8 @@ Seiceáil do nasc líonra agus déan iarracht arís.</translation>
         <translation>Earráid gléas ionchuir/aschur. B’fhéidir go bhfuil an gléas stórála dícheangailte nó go bhfuil sé ag mífheidhmiú.</translation>
     </message>
     <message>
-        <source>Error opening disk device '%1'</source>
-        <translation>Earráid ag oscailt gléas diosca '%1'</translation>
+        <source>Error opening disk device &apos;%1&apos;</source>
+        <translation>Earráid ag oscailt gléas diosca &apos;%1&apos;</translation>
     </message>
     <message>
         <source>Error writing to storage device. Please check if the device is writable, has sufficient space, and is not write-protected.</source>
@@ -838,7 +778,7 @@ Seiceáil do nasc líonra agus déan iarracht arís.</translation>
         <translation>Tiomántán á oscailt...</translation>
     </message>
     <message>
-        <source>Zero'ing out first and last MB of drive...</source>
+        <source>Zero&apos;ing out first and last MB of drive...</source>
         <translation>Ag baint an chéad MB agus an MB deireanach den tiomántán as an áireamh...</translation>
     </message>
     <message>
@@ -854,8 +794,30 @@ Seiceáil do nasc líonra agus déan iarracht arís.</translation>
         <translation>Ag saincheapadh an chórais oibriúcháin...</translation>
     </message>
     <message>
-        <source>Cannot open storage device '%1'. Please run with elevated privileges (sudo).</source>
-        <translation>Ní féidir gléas stórála '%1' a oscailt. Rith le ceadanna ardaithe (sudo) le do thoil.</translation>
+        <source>Cannot open storage device &apos;%1&apos;. Please run with elevated privileges (sudo).</source>
+        <translation>Ní féidir gléas stórála &apos;%1&apos; a oscailt. Rith le ceadanna ardaithe (sudo) le do thoil.</translation>
+    </message>
+    <message>
+        <source>Verifying OS customisation...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
+
+The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unable to allocate memory for verification.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>seeking storage for verification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -946,12 +908,16 @@ Seiceáil do nasc líonra agus déan iarracht arís.</translation>
         <translation>Comhaid saincheaptha á scríobh...</translation>
     </message>
     <message>
-        <source>Failed to unmount disk '%1'. Please close any applications using the disk and try again.</source>
-        <translation>Theip ar dhíshuiteáil diosca '%1'. Dún aon fheidhmchláir a úsáideann an diosca agus déan iarracht arís.</translation>
+        <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
+        <translation>Theip ar dhíshuiteáil diosca &apos;%1&apos;. Dún aon fheidhmchláir a úsáideann an diosca agus déan iarracht arís.</translation>
     </message>
     <message>
-        <source>Failed to unmount disk '%1'.</source>
-        <translation>Theip ar dhíshuiteáil diosca '%1'.</translation>
+        <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation>Theip ar dhíshuiteáil diosca &apos;%1&apos;.</translation>
+    </message>
+    <message>
+        <source>Waiting for drive to become available... (%1s)</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>getting device size</source>
@@ -970,7 +936,7 @@ B’fhéidir go bhfuil easpa cuimhne sa chóras.</translation>
         <translation>gléas stórála á ullmhú</translation>
     </message>
     <message>
-        <source>Zero'ing out end of drive...</source>
+        <source>Zero&apos;ing out end of drive...</source>
         <translation>Ag nialas amach deireadh an tiomána...</translation>
     </message>
     <message>
@@ -1154,8 +1120,16 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
         <translation>sioncrónú</translation>
     </message>
     <message>
+        <source>flushing image before writing partition table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>writing partition table</source>
         <translation>tábla deighilte scríbhneoireachta</translation>
+    </message>
+    <message>
+        <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>final flush</source>
@@ -1209,111 +1183,12 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
         <translation>Ní féidir an gléas a fhormáidiú: ceadanna neamhleor. Rith le ceadanna ardaithe (sudo) le do thoil.</translation>
     </message>
     <message>
-        <source>Failed to unmount disk '%1'. Please close any applications using the disk and try again.</source>
-        <translation>Theip ar dhíshuiteáil diosca '%1'. Dún aon fheidhmchláir a úsáideann an diosca agus déan iarracht arís.</translation>
+        <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
+        <translation>Theip ar dhíshuiteáil diosca &apos;%1&apos;. Dún aon fheidhmchláir a úsáideann an diosca agus déan iarracht arís.</translation>
     </message>
     <message>
-        <source>Failed to unmount disk '%1'.</source>
-        <translation>Theip ar dhíshuiteáil diosca '%1'.</translation>
-    </message>
-</context>
-<context>
-    <name>FastbootFlashThread</name>
-    <message>
-        <source>Applying OS customisation...</source>
-        <translation>Saincheapadh OS á chur i bhfeidhm...</translation>
-    </message>
-    <message>
-        <source>Failed to mount boot partition: %1</source>
-        <translation>Theip ar an deighilt tosaithe a fheistiú: %1</translation>
-    </message>
-    <message>
-        <source>Failed to read config.txt: %1</source>
-        <translation>Theip ar léamh config.txt: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write config.txt: %1</source>
-        <translation>Theip ar scríobh config.txt: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write firstrun.sh: %1</source>
-        <translation>Theip ar firstrun.sh a scríobh: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write meta-data: %1</source>
-        <translation>Theip ar scríobh meiteashonraí: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write user-data: %1</source>
-        <translation>Theip ar shonraí úsáideora a scríobh: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write network-config: %1</source>
-        <translation>Theip ar chumraíocht líonra a scríobh: %1</translation>
-    </message>
-    <message>
-        <source>Failed to read cmdline.txt: %1</source>
-        <translation>Theip ar cmdline.txt a léamh: %1</translation>
-    </message>
-    <message>
-        <source>Failed to write cmdline.txt: %1</source>
-        <translation>Theip ar cmdline.txt a scríobh: %1</translation>
-    </message>
-    <message>
-        <source>Failed to initialize curl</source>
-        <translation>Theip ar an gcuar a thosú</translation>
-    </message>
-    <message>
-        <source>No entries in image archive</source>
-        <translation>Gan aon iontrálacha sa chartlann íomhánna</translation>
-    </message>
-    <message>
-        <source>Fastboot error: %1</source>
-        <translation>Earráid tosaithe tapa: %1</translation>
-    </message>
-    <message>
-        <source>Fastboot error: unexpected internal error</source>
-        <translation>Earráid Fastboot: earráid inmheánach gan choinne</translation>
-    </message>
-    <message>
-        <source>Connecting to fastboot device...</source>
-        <translation>Ag ceangal le gléas tosaithe tapa...</translation>
-    </message>
-    <message>
-        <source>Failed to open fastboot device: %1</source>
-        <translation>Theip ar oscailt an fheiste tosaithe tapa: %1</translation>
-    </message>
-    <message>
-        <source>Downloading and flashing OS image...</source>
-        <translation>Íomhá an chórais oibriúcháin á íoslódáil agus á splancadh...</translation>
-    </message>
-    <message>
-        <source>Fetching block map...</source>
-        <translation>Ag fáil léarscáil bhloc...</translation>
-    </message>
-    <message>
-        <source>Fastboot download failed: %1</source>
-        <translation>Theip ar íoslódáil Fastboot: %1</translation>
-    </message>
-    <message>
-        <source>Fastboot flash failed: %1</source>
-        <translation>Theip ar an bhflash Fastboot: %1</translation>
-    </message>
-    <message>
-        <source>Download failed: %1</source>
-        <translation>Theip ar an íoslódáil: %1</translation>
-    </message>
-    <message>
-        <source>Decompression failed: %1</source>
-        <translation>Theip ar dhí-chomhbhrú: %1</translation>
-    </message>
-    <message>
-        <source>Cancelled</source>
-        <translation>Cealaithe</translation>
-    </message>
-    <message>
-        <source>Image hash mismatch. Expected: %1 Got: %2</source>
-        <translation>Mí-oiriúnacht haise íomhá. Bhíothas ag súil leis: %1 Fuarthas: %2</translation>
+        <source>Failed to unmount disk &apos;%1&apos;.</source>
+        <translation>Theip ar dhíshuiteáil diosca &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -1326,8 +1201,8 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
 <context>
     <name>HostnameCustomizationStep</name>
     <message>
-        <source>A hostname is a unique name that identifies your Raspberry Pi on the network. It should contain only letters, numbers, and hyphens.</source>
-        <translation>Is ainm uathúil é ainm óstach a shainaithníonn do Raspberry Pi ar an líonra. Níor cheart go mbeadh ann ach litreacha, uimhreacha agus fleiscíní.</translation>
+        <source>A hostname is a unique name that identifies your ZimaOS on the network. It should contain only letters, numbers, and hyphens.</source>
+        <translation>Is ainm uathúil é ainm óstach a shainaithníonn do ZimaOS ar an líonra. Níor cheart go mbeadh ann ach litreacha, uimhreacha agus fleiscíní.</translation>
     </message>
     <message>
         <source>Customisation: Choose hostname</source>
@@ -1335,7 +1210,7 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>Enter your hostname</source>
-        <translation>Cuir isteach d'ainm óstach</translation>
+        <translation>Cuir isteach d&apos;ainm óstach</translation>
     </message>
     <message>
         <source>Save hostname and continue to next customisation step</source>
@@ -1389,8 +1264,8 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
         <translation>Is féidir le Mód Gléas USB athrú a dhéanamh ar iompar do ghléis agus d’fhéadfadh tionchar a bheith aige ar nascacht agus ar idirghníomhaíocht an óstach.</translation>
     </message>
     <message>
-        <source>Please review the &lt;a href='%1'&gt;documentation&lt;/a&gt; before proceeding.</source>
-        <translation>Léigh an &lt;a href='%1'&gt;doiciméadú&lt;/a&gt; le do thoil sula leanann tú ar aghaidh.</translation>
+        <source>Please review the &lt;a href=&apos;%1&apos;&gt;documentation&lt;/a&gt; before proceeding.</source>
+        <translation>Léigh an &lt;a href=&apos;%1&apos;&gt;doiciméadú&lt;/a&gt; le do thoil sula leanann tú ar aghaidh.</translation>
     </message>
     <message>
         <source>Only continue if you are sure you know what you are doing.</source>
@@ -1425,8 +1300,8 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
         <translation>Cumasaigh an comhéadan 1-Wire chun braiteoirí teochta agus gléasanna Dallas/Maxim eile a nascadh</translation>
     </message>
     <message>
-        <source>Enable USB device mode to use your Raspberry Pi as a USB peripheral for networking and storage</source>
-        <translation>Cumasaigh mód gléas USB chun do Raspberry Pi a úsáid mar imeallach USB le haghaidh líonrú agus stórála</translation>
+        <source>Enable USB device mode to use your ZimaOS as a USB peripheral for networking and storage</source>
+        <translation>Cumasaigh mód gléas USB chun do ZimaOS a úsáid mar imeallach USB le haghaidh líonrú agus stórála</translation>
     </message>
     <message>
         <source>Save interface and feature settings and continue to writing step</source>
@@ -1468,8 +1343,8 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
 <context>
     <name>ImComboBox</name>
     <message>
-        <source>Search: "%1"</source>
-        <translation>Cuardaigh: "%1"</translation>
+        <source>Search: &quot;%1&quot;</source>
+        <translation>Cuardaigh: &quot;%1&quot;</translation>
     </message>
     <message>
         <source>%1 of %2</source>
@@ -1595,13 +1470,6 @@ nó clóscríobh cosán sa bharra seoltaí thuas.</translation>
     </message>
 </context>
 <context>
-    <name>ImPopup</name>
-    <message>
-        <source>Dialog</source>
-        <translation>Dialóg</translation>
-    </message>
-</context>
-<context>
     <name>ImSaveFileDialog</name>
     <message>
         <source>Save File</source>
@@ -1706,6 +1574,14 @@ nó clóscríobh cosán sa bharra seoltaí thuas.</translation>
         <translation> nó </translation>
     </message>
     <message>
+        <source>No organisation API key is configured.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect returned an unexpected response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Save Performance Data</source>
         <translation>Sábháil Sonraí Feidhmíochta</translation>
     </message>
@@ -1714,28 +1590,12 @@ nó clóscríobh cosán sa bharra seoltaí thuas.</translation>
         <translation>Comhaid JSON (*.json);;Gach comhad (*)</translation>
     </message>
     <message>
-        <source>Starting fastboot flash...</source>
-        <translation>Ag tosú flash tosaithe tapa...</translation>
-    </message>
-    <message>
-        <source>Preparing device for imaging...</source>
-        <translation>Gléas á ullmhú le haghaidh íomháithe...</translation>
-    </message>
-    <message>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
         <translation>Níl an cumas stórála mór go leor.
 
 Teastaíonn %1 ar a laghad den stóráil don íomhá.</translation>
-    </message>
-    <message>
-        <source>Input file is not a valid disk image.
-
-File size %1 bytes is not a multiple of 512 bytes.</source>
-        <translation>Ní íomhá diosca bailí é an comhad ionchuir.
-
-Ní iolraí de 512 beart é méid an chomhaid %1 beart.</translation>
     </message>
     <message>
         <source>Failed to start write operation: insufficient memory.
@@ -1874,24 +1734,38 @@ Sonraí teicniúla: %1</translation>
         <translation>Seachain an saincheapadh go léir agus téigh ar aghaidh go díreach chuig scríobh na híomhá</translation>
     </message>
     <message>
-        <source>Choose your nearest capital city. This will automatically recommend the correct time zone and keyboard layout for your region, and set the wireless regulatory domain for your country's Wi-Fi regulations.</source>
+        <source>Choose your nearest capital city. This will automatically recommend the correct time zone and keyboard layout for your region, and set the wireless regulatory domain for your country&apos;s Wi-Fi regulations.</source>
         <translation>Roghnaigh an phríomhchathair is gaire duit. Molfaidh sé seo go huathoibríoch an crios ama agus leagan amach an mhéarchláir cheart do do réigiún, agus socróidh sé an fearann ​​rialála gan sreang do rialacháin Wi-Fi do thíre.</translation>
     </message>
     <message>
-        <source>Choose your time zone so your Raspberry Pi displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
-        <translation>Roghnaigh do chrios ama ionas go dtaispeánfaidh do Raspberry Pi an t-am áitiúil ceart. Moltar é seo go huathoibríoch bunaithe ar do rogha príomhchathrach, ach is féidir leat é a athrú mura bhfuil an moladh ceart.</translation>
+        <source>Why am I being asked this?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
+        <translation>Roghnaigh do chrios ama ionas go dtaispeánfaidh do ZimaOS an t-am áitiúil ceart. Moltar é seo go huathoibríoch bunaithe ar do rogha príomhchathrach, ach is féidir leat é a athrú mura bhfuil an moladh ceart.</translation>
     </message>
     <message>
         <source>Choose your keyboard layout so keys produce the correct characters when typing. This is automatically recommended based on your capital city selection, but you can change it if you use a different keyboard layout.</source>
         <translation>Roghnaigh leagan amach do mhéarchláir ionas go dtáirgfidh na heochracha na carachtair chearta agus tú ag clóscríobh. Moltar é seo go huathoibríoch bunaithe ar do rogha príomhchathair, ach is féidir leat é a athrú má úsáideann tú leagan amach méarchláir difriúil.</translation>
     </message>
     <message>
+        <source>This also sets the Wi-Fi regulatory domain for your region.</source>
+        <translation>Socraíonn sé seo an fearann ​​rialála Wi-Fi do do réigiún freisin.</translation>
+    </message>
+</context>
+<context>
+    <name>MacFile</name>
+    <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>NativeFileDialog</name>
     <message>
-        <source>This also sets the Wi-Fi regulatory domain for your region.</source>
-        <translation>Socraíonn sé seo an fearann ​​rialála Wi-Fi do do réigiún freisin.</translation>
+        <source>File type:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1930,10 +1804,6 @@ Sonraí teicniúla: %1</translation>
     <message>
         <source>Choose operating system</source>
         <translation>Roghnaigh córas oibriúcháin</translation>
-    </message>
-    <message>
-        <source>Select the ZimaOS version you want to install</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Operating system list</source>
@@ -2014,36 +1884,40 @@ Sonraí teicniúla: %1</translation>
 <context>
     <name>PiConnectCustomizationStep</name>
     <message>
-        <source>Customisation: Raspberry Pi Connect</source>
-        <translation>Saincheapadh: Ceangail Raspberry Pi</translation>
+        <source>Customisation: ZimaOS Connect</source>
+        <translation>Saincheapadh: Ceangail ZimaOS</translation>
     </message>
     <message>
-        <source>Enable Raspberry Pi Connect</source>
-        <translation>Cumasaigh Ceangal Raspberry Pi</translation>
+        <source>Enable ZimaOS Connect</source>
+        <translation>Cumasaigh Ceangal ZimaOS</translation>
     </message>
     <message>
-        <source>What is Raspberry Pi Connect?</source>
-        <translation>Cad é Ceangal Raspberry Pi?</translation>
+        <source>What is ZimaOS Connect?</source>
+        <translation>Cad é Ceangal ZimaOS?</translation>
     </message>
     <message>
-        <source>Open Raspberry Pi Connect</source>
-        <translation>Oscail Raspberry Pi Connect</translation>
+        <source>Open ZimaOS Connect</source>
+        <translation>Oscail ZimaOS Connect</translation>
     </message>
     <message>
         <source>Token received from browser</source>
         <translation>Fuarthas comhartha ón mbrabhsálaí</translation>
     </message>
     <message>
-        <source>Open the Raspberry Pi Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Oscail suíomh Gréasáin Raspberry Pi Connect i do bhrabhsálaí chun síniú isteach agus comhartha fíordheimhnithe a fháil</translation>
+        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
+        <translation>Oscail suíomh Gréasáin ZimaOS Connect i do bhrabhsálaí chun síniú isteach agus comhartha fíordheimhnithe a fháil</translation>
     </message>
     <message>
-        <source>Enable secure remote access to your Raspberry Pi through the Raspberry Pi Connect cloud service</source>
-        <translation>Cumasaigh rochtain iargúlta slán ar do Raspberry Pi tríd an tseirbhís scamall Raspberry Pi Connect</translation>
+        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
+        <translation>Cumasaigh rochtain iargúlta slán ar do ZimaOS tríd an tseirbhís scamall ZimaOS Connect</translation>
     </message>
     <message>
-        <source>Save Raspberry Pi Connect settings and continue to next customisation step</source>
-        <translation>Sábháil socruithe Raspberry Pi Connect agus lean ar aghaidh go dtí an chéad chéim saincheaptha eile</translation>
+        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
+        <translation>Sábháil socruithe ZimaOS Connect agus lean ar aghaidh go dtí an chéad chéim saincheaptha eile</translation>
+    </message>
+    <message>
+        <source>Register this device with your ZimaOS Connect organisation</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Return to previous step</source>
@@ -2054,8 +1928,52 @@ Sonraí teicniúla: %1</translation>
         <translation>Seachain an saincheapadh go léir agus téigh ar aghaidh go díreach chuig scríobh na híomhá</translation>
     </message>
     <message>
-        <source>Enter or paste the authentication token from Raspberry Pi Connect. The token will be automatically filled if you use the 'Open Raspberry Pi Connect' button to sign in.</source>
-        <translation>Cuir isteach nó greamaigh an comhartha fíordheimhnithe ó Raspberry Pi Connect. Líonfar an comhartha go huathoibríoch má úsáideann tú an cnaipe 'Oscail Raspberry Pi Connect' chun síniú isteach.</translation>
+        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Organisation API Key:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste your ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved — type to replace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paste organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auth key description:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description for the auth key shown in the Connect organisation UI.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>e.g. Factory-A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear saved key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove the saved ZimaOS Connect organisation API key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
+        <translation>Cuir isteach nó greamaigh an comhartha fíordheimhnithe ó ZimaOS Connect. Líonfar an comhartha go huathoibríoch má úsáideann tú an cnaipe &apos;Oscail ZimaOS Connect&apos; chun síniú isteach.</translation>
     </message>
     <message>
         <source>Waiting for token (%1s)</source>
@@ -2066,12 +1984,16 @@ Sonraí teicniúla: %1</translation>
         <translation>Greamaigh an comhartha anseo</translation>
     </message>
     <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
+    </message>
+    <message>
         <source>Invalid Token</source>
         <translation>Comhartha Neamhbhailí</translation>
     </message>
     <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the 'Open Raspberry Pi Connect' button to get a valid token.</source>
-        <translation>Níl an comhartha a chuir tú isteach bailí. Seiceáil an comhartha agus déan iarracht arís, nó bain úsáid as an gcnaipe 'Oscail Raspberry Pi Connect' chun comhartha bailí a fháil.</translation>
+        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
+        <translation>Níl an comhartha a chuir tú isteach bailí. Seiceáil an comhartha agus déan iarracht arís, nó bain úsáid as an gcnaipe &apos;Oscail ZimaOS Connect&apos; chun comhartha bailí a fháil.</translation>
     </message>
     <message>
         <source>OK</source>
@@ -2082,12 +2004,24 @@ Sonraí teicniúla: %1</translation>
         <translation>Dún an dialóg seo agus fill ar ais chuig an réimse comharthaí</translation>
     </message>
     <message>
+        <source>Could not create auth key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close this dialog and return to the organisation API key field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Authentication token:</source>
         <translation>Authentication token:</translation>
     </message>
     <message>
-        <source>Sign in to receive a token and enable Raspberry Pi Connect</source>
-        <translation>Sínigh isteach chun comhartha a fháil agus Raspberry Pi Connect a chumasú</translation>
+        <source>Sign in to receive a token and enable ZimaOS Connect</source>
+        <translation>Sínigh isteach chun comhartha a fháil agus ZimaOS Connect a chumasú</translation>
     </message>
 </context>
 <context>
@@ -2119,42 +2053,10 @@ Rith le ceadanna ardaithe le do thoil: sudo %1</translation>
     <message>
         <source>You are not running as root.
 
-Click "Install Authorization" to set up automatic privilege elevation, or run manually with: sudo %1</source>
+Click &quot;Install Authorization&quot; to set up automatic privilege elevation, or run manually with: sudo %1</source>
         <translation>Níl tú ag rith mar fhréamh.
 
-Cliceáil "Suiteáil Údarú" chun ardú uathoibríoch pribhléide a shocrú, nó rith de láimh le: sudo %1</translation>
-    </message>
-    <message>
-        <source>Invalid Windows physical drive path: %1</source>
-        <translation>Cosán tiomántán fisiciúil Windows neamhbhailí: %1</translation>
-    </message>
-    <message>
-        <source>Failed to open disk for cleaning. Error code: %1</source>
-        <translation>Theip ar an diosca a oscailt le haghaidh glanadh. Cód earráide: %1</translation>
-    </message>
-    <message>
-        <source>Failed to clear partition table. Error code: %1</source>
-        <translation>Theip ar an tábla deighilte a ghlanadh. Cód earráide: %1</translation>
-    </message>
-    <message>
-        <source>Failed to start disk cleanup utility. Please ensure you have administrator privileges.</source>
-        <translation>Theip ar thosú an fheidhmchláir glantacháin diosca. Cinntigh go bhfuil ceadanna riarthóra agat.</translation>
-    </message>
-    <message>
-        <source>Disk cleaning operation timed out. The disk may be in use by another application.</source>
-        <translation>Tá an t-am caite don oibríocht glantacháin diosca. B’fhéidir go bhfuil an diosca in úsáid ag feidhmchlár eile.</translation>
-    </message>
-    <message>
-        <source>Failed to clean disk. Error: %1</source>
-        <translation>Theip ar an diosca a ghlanadh. Earráid: %1</translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation>Earráid anaithnid</translation>
-    </message>
-    <message>
-        <source>Failed to clean disk after %1 attempts. %2</source>
-        <translation>Theip ar an diosca a ghlanadh tar éis %1 iarracht. %2</translation>
+Cliceáil &quot;Suiteáil Údarú&quot; chun ardú uathoibríoch pribhléide a shocrú, nó rith de láimh le: sudo %1</translation>
     </message>
 </context>
 <context>
@@ -2188,8 +2090,8 @@ Cliceáil "Suiteáil Údarú" chun ardú uathoibríoch pribhléide a shocrú, n�
         <translation>Sásra fíordheimhnithe:</translation>
     </message>
     <message>
-        <source>Enable secure shell access for remote command-line control of your Raspberry Pi</source>
-        <translation>Cumasaigh rochtain shlán ar an sliogán le haghaidh rialú iargúlta ar líne ordaithe ar do Raspberry Pi</translation>
+        <source>Enable secure shell access for remote command-line control of your ZimaOS</source>
+        <translation>Cumasaigh rochtain shlán ar an sliogán le haghaidh rialú iargúlta ar líne ordaithe ar do ZimaOS</translation>
     </message>
     <message>
         <source>Save SSH settings and continue to next customisation step</source>
@@ -2212,130 +2114,8 @@ Cliceáil "Suiteáil Údarú" chun ardú uathoibríoch pribhléide a shocrú, n�
         <translation>Ceadaigh logáil isteach SSH ag baint úsáide as péire eochracha cripteagrafacha in ionad pasfhocail. Níos sláine ná fíordheimhniú pasfhocail.</translation>
     </message>
     <message>
-        <source>Choose how you will authenticate when connecting to your Raspberry Pi via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
-        <translation>Roghnaigh conas a dhéanfaidh tú fíordheimhniú agus tú ag ceangal le do Raspberry Pi trí SSH. Úsáideann fíordheimhniú pasfhocail dintiúir an chuntais a chumraigh tú. Úsáideann fíordheimhniú eochrach poiblí péire eochrach cripteagrafach agus tá sé níos sláine.</translation>
-    </message>
-</context>
-<context>
-    <name>RepositoryDialog</name>
-    <message>
-        <source>Content Repository</source>
-        <translation>Stór Ábhair</translation>
-    </message>
-    <message>
-        <source>Repository source:</source>
-        <translation>Foinse an stórais:</translation>
-    </message>
-    <message>
-        <source>Use custom file</source>
-        <translation>Úsáid comhad saincheaptha</translation>
-    </message>
-    <message>
-        <source>Please select a custom repository json file</source>
-        <translation>Roghnaigh comhad json stórtha saincheaptha le do thoil</translation>
-    </message>
-    <message>
-        <source>Select Repository</source>
-        <translation>Roghnaigh Stór</translation>
-    </message>
-    <message>
-        <source>Apply &amp; Restart</source>
-        <translation>Cuir i bhFeidhm &amp; Atosaigh</translation>
-    </message>
-    <message>
-        <source>Select custom repository</source>
-        <translation>Roghnaigh stórlann saincheaptha</translation>
-    </message>
-    <message>
-        <source>Use custom URL</source>
-        <translation>Úsáid URL saincheaptha</translation>
-    </message>
-    <message>
-        <source>Select a custom repository JSON file from your computer</source>
-        <translation>Roghnaigh comhad JSON stórtha saincheaptha ó do ríomhaire</translation>
-    </message>
-    <message>
-        <source>Close the repository dialog without changing the content source</source>
-        <translation>Close the repository dialog without changing the content source</translation>
-    </message>
-    <message>
-        <source>Apply the new content repository and restart the wizard from the beginning</source>
-        <translation>Cuir an stór ábhair nua i bhfeidhm agus atosú an draoi ón tús</translation>
-    </message>
-    <message>
-        <source>Choose the source for operating system images</source>
-        <translation>Roghnaigh an fhoinse le haghaidh íomhánna an chórais oibriúcháin</translation>
-    </message>
-    <message>
-        <source>Use the official Raspberry Pi operating system repository</source>
-        <translation>Bain úsáid as stór oifigiúil chóras oibriúcháin Raspberry Pi</translation>
-    </message>
-    <message>
-        <source>Load operating system list from a JSON file on your computer</source>
-        <translation>Luchtaigh liosta córas oibriúcháin ó chomhad JSON ar do ríomhaire</translation>
-    </message>
-    <message>
-        <source>Download operating system list from a custom web address</source>
-        <translation>Íoslódáil liosta córas oibriúcháin ó sheoladh gréasáin saincheaptha</translation>
-    </message>
-</context>
-<context>
-    <name>RpibootThread</name>
-    <message>
-        <source>Downloading firmware...</source>
-        <translation>Ag íoslódáil dochtearraí...</translation>
-    </message>
-    <message>
-        <source>Failed to obtain rpiboot firmware: %1</source>
-        <translation>Theip ar dochtearraí rpiboot a fháil: %1</translation>
-    </message>
-    <message>
-        <source>Connecting to device...</source>
-        <translation>Ag ceangal le gléas...</translation>
-    </message>
-    <message>
-        <source>Failed to open USB device</source>
-        <translation>Theip ar oscailt gléas USB</translation>
-    </message>
-    <message>
-        <source>rpiboot protocol failed: %1</source>
-        <translation>Theip ar phrótacal rpiboot: %1</translation>
-    </message>
-    <message>
-        <source>USB error: %1</source>
-        <translation>Earráid USB: %1</translation>
-    </message>
-    <message>
-        <source>Waiting for device to restart...</source>
-        <translation>Ag fanacht go n-atosóidh an gléas...</translation>
-    </message>
-    <message>
-        <source>Failed to open USB device after re-enumeration</source>
-        <translation>Theip ar oscailt gléas USB tar éis ath-áireamh</translation>
-    </message>
-    <message>
-        <source>Waiting for fastboot device...</source>
-        <translation>Ag fanacht le gléas fastboot...</translation>
-    </message>
-    <message>
-        <source>Timed out waiting for fastboot device to appear.</source>
-        <translation>Chuaigh an t-am amach ag fanacht le feiste fastboot a bheith le feiceáil.</translation>
-    </message>
-    <message>
-        <source>Waiting for device to disconnect (%1/%2)...</source>
-        <translation>Ag fanacht go ndícheanglóidh an gléas (%1/%2...</translation>
-    </message>
-    <message>
-        <source>Device disconnected, waiting for reconnect...</source>
-        <translation>Gléas dícheangailte, ag fanacht le hathcheangal...</translation>
-    </message>
-    <message>
-        <source>Waiting for device to reconnect (%1/%2s)...</source>
-        <translation>Ag fanacht go n-athcheanglóidh an gléas (%1/%2s...</translation>
-    </message>
-    <message>
-        <source>Timed out waiting for device to re-enumerate after bootcode upload (waited %1s).</source>
-        <translation>Chuaigh an t-am amach ag fanacht leis an ngléas a ath-liostadh tar éis uaslódála an chóid tosaithe (fanadh %1s).</translation>
+        <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
+        <translation>Roghnaigh conas a dhéanfaidh tú fíordheimhniú agus tú ag ceangal le do ZimaOS trí SSH. Úsáideann fíordheimhniú pasfhocail dintiúir an chuntais a chumraigh tú. Úsáideann fíordheimhniú eochrach poiblí péire eochrach cripteagrafach agus tá sé níos sláine.</translation>
     </message>
 </context>
 <context>
@@ -2365,16 +2145,16 @@ Cliceáil "Suiteáil Údarú" chun ardú uathoibríoch pribhléide a shocrú, n�
         <translation>Cumasaigh Síniú Tosaithe Slán</translation>
     </message>
     <message>
-        <source>Sign the boot partition with your RSA key to enable secure boot verification on Raspberry Pi</source>
-        <translation>Sínigh an deighilt tosaithe le d'eochair RSA chun fíorú tosaithe slán a chumasú ar Raspberry Pi</translation>
+        <source>Sign the boot partition with your RSA key to enable secure boot verification on ZimaOS</source>
+        <translation>Sínigh an deighilt tosaithe le d&apos;eochair RSA chun fíorú tosaithe slán a chumasú ar ZimaOS</translation>
     </message>
     <message>
         <source>Learn about Secure Boot</source>
         <translation>Foghlaim faoi Tosaithe Slán</translation>
     </message>
     <message>
-        <source>This will create boot.img and boot.sig files required for Raspberry Pi Secure Boot.</source>
-        <translation>Cruthóidh sé seo comhaid boot.img agus boot.sig atá riachtanach le haghaidh Tosaithe Slán Raspberry Pi.</translation>
+        <source>This will create boot.img and boot.sig files required for ZimaOS Secure Boot.</source>
+        <translation>Cruthóidh sé seo comhaid boot.img agus boot.sig atá riachtanach le haghaidh Tosaithe Slán ZimaOS.</translation>
     </message>
     <message>
         <source>Public Key Fingerprint: %1</source>
@@ -2431,26 +2211,6 @@ Cliceáil "Suiteáil Údarú" chun ardú uathoibríoch pribhléide a shocrú, n�
     <message>
         <source>All Files (*)</source>
         <translation>Gach Comhad (*)</translation>
-    </message>
-    <message>
-        <source>OTP Secure Boot Provisioning</source>
-        <translation>Soláthar Tosaithe Slán OTP</translation>
-    </message>
-    <message>
-        <source>Program the secure boot public key hash into the device's OTP memory. This is a permanent, irreversible operation.</source>
-        <translation>Cláraigh an hais eochrach phoiblí don tosaithe slán i gcuimhne OTP an ghléis. Is oibríocht bhuan, neamh-inchúlghairthe í seo.</translation>
-    </message>
-    <message>
-        <source>Provision Secure Boot OTP</source>
-        <translation>Soláthar OTP Tosaithe Slán</translation>
-    </message>
-    <message>
-        <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation>Cláraigh an eochair tosaithe slán go buan i gcuimhne OTP an ghléis</translation>
-    </message>
-    <message>
-        <source>WARNING: After OTP provisioning, this device will ONLY boot images signed with the selected key. This cannot be undone.</source>
-        <translation>RABHADH: Tar éis soláthar OTP, ní dhéanfaidh an gléas seo ach íomhánna atá sínithe leis an eochair roghnaithe a thosú. Ní féidir é seo a chealú.</translation>
     </message>
 </context>
 <context>
@@ -2585,10 +2345,10 @@ Cliceáil "Suiteáil Údarú" chun ardú uathoibríoch pribhléide a shocrú, n�
     <message>
         <source>All visible devices are read-only.
 Try connecting a new device, or uncheck
-'Exclude system drives' below.</source>
+&apos;Exclude system drives&apos; below.</source>
         <translation>Is féidir gach gléas atá le feiceáil a léamh amháin.
 Bain triail as gléas nua a nascadh, nó díthiceáil
-'Eisiamh tiomántáin chórais' thíos.</translation>
+&apos;Eisiamh tiomántáin chórais&apos; thíos.</translation>
     </message>
     <message>
         <source>All devices are read-only.
@@ -2598,10 +2358,10 @@ Ceangail gléas stórála inscríofa le do thoil.</translation>
     </message>
     <message>
         <source>All devices are hidden by the filter.
-Uncheck 'Exclude system drives' below
+Uncheck &apos;Exclude system drives&apos; below
 to show system drives.</source>
         <translation>Tá gach gléas i bhfolach ag an scagaire.
-Díthiceáil 'Eisiamh tiomántáin chórais' thíos
+Díthiceáil &apos;Eisiamh tiomántáin chórais&apos; thíos
 chun tiomántáin chórais a thaispeáint.</translation>
     </message>
     <message>
@@ -2613,16 +2373,16 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Níor aimsíodh aon fheistí stórála. Ceangail gléas stórála le leanúint ar aghaidh.</translation>
     </message>
     <message>
-        <source>No valid storage devices are currently available. All visible devices are read-only. Try connecting a new storage device, or uncheck 'Exclude system drives' to show hidden system drives.</source>
-        <translation>Níl aon fheistí stórála bailí ar fáil faoi láthair. Is féidir gach feiste infheicthe a léamh amháin. Bain triail as gléas stórála nua a nascadh, nó díthiceáil 'Eisiamh tiomántáin chórais' chun tiomántáin chórais i bhfolach a thaispeáint.</translation>
+        <source>No valid storage devices are currently available. All visible devices are read-only. Try connecting a new storage device, or uncheck &apos;Exclude system drives&apos; to show hidden system drives.</source>
+        <translation>Níl aon fheistí stórála bailí ar fáil faoi láthair. Is féidir gach feiste infheicthe a léamh amháin. Bain triail as gléas stórála nua a nascadh, nó díthiceáil &apos;Eisiamh tiomántáin chórais&apos; chun tiomántáin chórais i bhfolach a thaispeáint.</translation>
     </message>
     <message>
         <source>No valid storage devices are currently available. All devices are read-only. Please connect a writable storage device to continue.</source>
         <translation>Níl aon fheistí stórála bailí ar fáil faoi láthair. Is gléasanna inléite amháin iad na feistí uile. Ceangail gléas stórála inscríofa le leanúint ar aghaidh.</translation>
     </message>
     <message>
-        <source>No valid storage devices are currently available. Uncheck 'Exclude system drives' to show hidden system drives, or connect a new storage device.</source>
-        <translation>Níl aon fheistí stórála bailí ar fáil faoi láthair. Díthiceáil 'Eisiamh tiomántáin chórais' chun tiomántáin chórais i bhfolach a thaispeáint, nó ceangail gléas stórála nua.</translation>
+        <source>No valid storage devices are currently available. Uncheck &apos;Exclude system drives&apos; to show hidden system drives, or connect a new storage device.</source>
+        <translation>Níl aon fheistí stórála bailí ar fáil faoi láthair. Díthiceáil &apos;Eisiamh tiomántáin chórais&apos; chun tiomántáin chórais i bhfolach a thaispeáint, nó ceangail gléas stórála nua.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1</source>
@@ -2631,10 +2391,6 @@ chun tiomántáin chórais a thaispeáint.</translation>
     <message>
         <source>Error: Could not list storage devices. %1</source>
         <translation>Earráid: Níorbh fhéidir gléasanna stórála a liostáil. %1</translation>
-    </message>
-    <message>
-        <source>Ready for USB boot</source>
-        <translation>Réidh le haghaidh tosaithe USB</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
@@ -2648,11 +2404,19 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Nuashonrú ar fáil</translation>
     </message>
     <message>
+        <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Continue using the current version of ZimaOS USB Creator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2695,12 +2459,12 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Athiontráil chun an focal faire a athrú</translation>
     </message>
     <message>
-        <source>Create a user account for your Raspberry Pi</source>
-        <translation>Cruthaigh cuntas úsáideora do do Raspberry Pi</translation>
+        <source>Create a user account for your ZimaOS</source>
+        <translation>Cruthaigh cuntas úsáideora do do ZimaOS</translation>
     </message>
     <message>
         <source>Enter your username</source>
-        <translation>Cuir isteach d'ainm úsáideora</translation>
+        <translation>Cuir isteach d&apos;ainm úsáideora</translation>
     </message>
     <message>
         <source>Save user account settings and continue to next customisation step</source>
@@ -2715,8 +2479,8 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Seachain an saincheapadh go léir agus téigh ar aghaidh go díreach chuig scríobh na híomhá</translation>
     </message>
     <message>
-        <source>Enter a username for your Raspberry Pi account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
-        <translation>Cuir isteach ainm úsáideora do do chuntas Raspberry Pi. Ní mór don ainm úsáideora a bheith i litreacha beaga agus gan ach litreacha, uimhreacha, fo-línte agus fleiscíní a bheith ann.</translation>
+        <source>Enter a username for your ZimaOS account. The username must be lowercase and contain only letters, numbers, underscores, and hyphens.</source>
+        <translation>Cuir isteach ainm úsáideora do do chuntas ZimaOS. Ní mór don ainm úsáideora a bheith i litreacha beaga agus gan ach litreacha, uimhreacha, fo-línte agus fleiscíní a bheith ann.</translation>
     </message>
     <message>
         <source>Enter a new password for this account, or leave blank to keep the previously saved password.</source>
@@ -2735,6 +2499,10 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Athiontráil an focal faire chun a dheimhniú go bhfuil sé ag teacht leis.</translation>
     </message>
     <message>
+        <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable passwordless sudo</source>
         <translation>Cumasaigh sudo gan focal faire</translation>
     </message>
@@ -2744,7 +2512,7 @@ chun tiomántáin chórais a thaispeáint.</translation>
     </message>
     <message>
         <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
-        <translation>Ceadaíonn sé seo d'aon phróiseas atá ag rith mar an úsáideoir seo pribhléidí fréimhe iomlána a fháil gan focal faire. Ná cumasaigh é seo ach amháin má tá riachtanas ar leith agat, amhail scripteanna uathoibrithe nó oibríocht gan cheann.</translation>
+        <translation>Ceadaíonn sé seo d&apos;aon phróiseas atá ag rith mar an úsáideoir seo pribhléidí fréimhe iomlána a fháil gan focal faire. Ná cumasaigh é seo ach amháin má tá riachtanas ar leith agat, amhail scripteanna uathoibrithe nó oibríocht gan cheann.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
@@ -2858,7 +2626,7 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Seiceáil seo mura gcraolann do líonra Wi-Fi a ainm agus má theastaíonn iontráil SSID de láimh chun ceangal.</translation>
     </message>
     <message>
-        <source>Passwords don't match</source>
+        <source>Passwords don&apos;t match</source>
         <translation>Ní hionann na pasfhocail</translation>
     </message>
     <message>
@@ -2889,10 +2657,6 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Déanta</translation>
     </message>
     <message>
-        <source>Customisation</source>
-        <translation>Saincheapadh</translation>
-    </message>
-    <message>
         <source>Hostname</source>
         <translation>Ainm óstach</translation>
     </message>
@@ -2905,8 +2669,8 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Wi‑Fi</translation>
     </message>
     <message>
-        <source>Raspberry Pi Connect</source>
-        <translation>Ceangal Raspberry Pi</translation>
+        <source>ZimaOS Connect</source>
+        <translation>Ceangal ZimaOS</translation>
     </message>
     <message>
         <source>App Options</source>
@@ -2929,18 +2693,14 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Rochtain iargúlta</translation>
     </message>
     <message>
-        <source>Open application settings to configure sound alerts, auto-eject, telemetry, and content repository</source>
-        <translation>Oscail socruithe an fheidhmchláir chun foláirimh fuaime, uath-díbirt, teileamaitríocht agus stór ábhair a chumrú</translation>
+        <source>Replace existing ZimaOS Connect token?</source>
+        <translation>An bhfuil sé i gceist an comhartha ZimaOS Connect atá ann cheana a athsholáthar?</translation>
     </message>
     <message>
-        <source>Replace existing Raspberry Pi Connect token?</source>
-        <translation>An bhfuil sé i gceist an comhartha Raspberry Pi Connect atá ann cheana a athsholáthar?</translation>
-    </message>
-    <message>
-        <source>A new Raspberry Pi Connect token was received that differs from your current one.
+        <source>A new ZimaOS Connect token was received that differs from your current one.
 
 </source>
-        <translation>Fuarthas comhartha nua Raspberry Pi Connect atá difriúil ón gceann atá agat faoi láthair.
+        <translation>Fuarthas comhartha nua ZimaOS Connect atá difriúil ón gceann atá agat faoi láthair.
 
 </translation>
     </message>
@@ -2969,20 +2729,20 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Coinnigh atá ann cheana féin</translation>
     </message>
     <message>
-        <source>Keep your current Raspberry Pi Connect token</source>
-        <translation>Coinnigh do chomhartha Raspberry Pi Connect reatha</translation>
+        <source>Keep your current ZimaOS Connect token</source>
+        <translation>Coinnigh do chomhartha ZimaOS Connect reatha</translation>
     </message>
     <message>
         <source>Secure Boot</source>
         <translation>Tosaithe Slán</translation>
     </message>
     <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Rabhadh: Ná scríobh an comhartha arís ach amháin má thionscain tú an gníomh seo.</translation>
+        <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sidebar resize handle</source>
-        <translation>Láimhseáil athraithe méide barra taoibh</translation>
+        <source>Warning: Only overwrite the token if you initiated this action.</source>
+        <translation>Rabhadh: Ná scríobh an comhartha arís ach amháin má thionscain tú an gníomh seo.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -2993,20 +2753,20 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Athraigh go stórlann saincheaptha?</translation>
     </message>
     <message>
-        <source>You are opening a local Raspberry Pi Imager manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation>Tá comhad manifíse áitiúil Raspberry Pi Imager á oscailt agat. Cuirfidh sé seo ábhar an chomhaid seo in ionad an liosta OS reatha.</translation>
+        <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
+        <translation>Tá comhad manifíse áitiúil ZimaOS USB Creator á oscailt agat. Cuirfidh sé seo ábhar an chomhaid seo in ionad an liosta OS reatha.</translation>
     </message>
     <message>
-        <source>A website is requesting to switch Raspberry Pi Imager to use a custom OS repository.
+        <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation>Tá suíomh Gréasáin ag iarraidh Raspberry Pi Imager a athrú chun stórlann oibriúcháin saincheaptha a úsáid.
+        <translation>Tá suíomh Gréasáin ag iarraidh ZimaOS USB Creator a athrú chun stórlann oibriúcháin saincheaptha a úsáid.
 
 </translation>
     </message>
     <message>
         <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
-        <translation>Glac leis ach amháin má tá muinín agat as an bhfoinse seo agus má chliceáil tú d'aon ghnó ar nasc chun an stórlann seo a oscailt.</translation>
+        <translation>Glac leis ach amháin má tá muinín agat as an bhfoinse seo agus má chliceáil tú d&apos;aon ghnó ar nasc chun an stórlann seo a oscailt.</translation>
     </message>
     <message>
         <source>Repository URL: %1</source>
@@ -3084,6 +2844,18 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     <message>
         <source>Starting write process...</source>
         <translation>Ag tosú an phróisis scríbhneoireachta...</translation>
+    </message>
+    <message>
+        <source>Limited by download speed</source>
+        <translation type="unfinished">Teoranta ag luas íoslódála</translation>
+    </message>
+    <message>
+        <source>Limited by decompression speed</source>
+        <translation type="unfinished">Teoranta ag luas dí-chomhbhrúite</translation>
+    </message>
+    <message>
+        <source>Limited by storage device speed</source>
+        <translation type="unfinished">Teoranta ag luas an fheiste stórála</translation>
     </message>
     <message>
         <source>You are about to ERASE all data on: %1</source>
@@ -3182,20 +2954,12 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
         <translation>Ag críochnú…</translation>
     </message>
     <message>
-        <source>Write complete</source>
-        <translation>Scríobh críochnaithe</translation>
-    </message>
-    <message>
         <source>customization</source>
         <translation>saincheapadh</translation>
     </message>
     <message>
         <source>customizations</source>
         <translation>saincheaptha</translation>
-    </message>
-    <message>
-        <source>Writing in progress — do not disconnect the storage device</source>
-        <translation>Scríbhneoireacht ar siúl — ná dícheangail an gléas stórála</translation>
     </message>
     <message>
         <source>Please wait... %1</source>
@@ -3265,10 +3029,6 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS USB Creator %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Insufficient Permissions</source>
         <translation>Ceadanna Easpa</translation>
     </message>
@@ -3287,6 +3047,10 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     <message>
         <source>Install Authorization</source>
         <translation>Údarú Suiteála</translation>
+    </message>
+    <message>
+        <source>ZimaOS USB Creator</source>
+        <translation>ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>
