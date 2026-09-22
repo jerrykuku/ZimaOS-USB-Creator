@@ -156,6 +156,7 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             checked: pill.checked
             activeFocusOnTab: true
+            padding: 0
             implicitWidth: indicator.implicitWidth
             implicitHeight: indicator.implicitHeight
             

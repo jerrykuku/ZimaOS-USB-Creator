@@ -99,6 +99,14 @@
         <source>All Files (*)</source>
         <translation>所有文件 (*)</translation>
     </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>内容仓库</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>编辑</translation>
+    </message>
 </context>
 <context>
     <name>AsyncCacheWriter</name>
@@ -2995,6 +3003,69 @@ Please check your storage device and try again.</source>
     <message>
         <source>All files (*)</source>
         <translation>所有文件 (*)</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>内容仓库</translation>
+    </message>
+    <message>
+        <source>Repository source:</source>
+        <translation>仓库源：</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>使用自定义文件</translation>
+    </message>
+    <message>
+        <source>Please select a custom repository json file</source>
+        <translation>请选择自定义仓库 JSON 文件</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>选择仓库</translation>
+    </message>
+    <message>
+        <source>Apply &amp; Restart</source>
+        <translation>应用并重启</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>选择自定义仓库</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>使用自定义 URL</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>从您的计算机中选择自定义仓库 JSON 文件</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>关闭仓库对话框，不更改内容源</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>应用新的内容仓库并从头重新启动向导</translation>
+    </message>
+    <message>
+        <source>Choose the source for operating system images</source>
+        <translation>选择操作系统镜像的来源</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>从您计算机上的 JSON 文件加载操作系统列表</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>从自定义网址下载操作系统列表</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS（默认）</translation>
     </message>
 </context>
 </TS>

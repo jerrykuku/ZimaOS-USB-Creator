@@ -50,7 +50,8 @@ BaseDialog {
     implicitWidth: Math.max(
         chkBeep.naturalWidth,
         chkEject.naturalWidth,
-        chkDisableWarnings.naturalWidth
+        chkDisableWarnings.naturalWidth,
+        editRepoButton.naturalWidth
     ) + Style.spacingPopupInset * 4  // Dialog and options layout margins
     
     // Register focus groups when component is ready
@@ -64,7 +65,7 @@ BaseDialog {
             return []
         }, 0)
         registerFocusGroup("options", function(){ 
-            var items = [chkBeep.focusItem, chkEject.focusItem, chkDisableWarnings.focusItem]
+            var items = [chkBeep.focusItem, chkEject.focusItem, chkDisableWarnings.focusItem, editRepoButton.focusItem]
             // Only include secure boot key button if visible
             if (secureBootKeyButton.visible)
                 items.push(secureBootKeyButton.focusItem)
@@ -146,6 +147,31 @@ BaseDialog {
                     } else if (popup.wizardContainer) {
                         popup.wizardContainer.disableWarnings = false;
                     }
+                }
+            }
+
+            ImOptionButton {
+                id: editRepoButton
+                text: qsTr("Content Repository")
+                btnText: qsTr("Edit")
+                accessibleDescription: qsTr("Change the source of operating system images between official ZimaOS repository and custom sources")
+                Layout.fillWidth: true
+                // Disable while write is in progress to prevent changing source during write
+                enabled: imageWriter.writeState === ImageWriterSingleton.Idle ||
+                         imageWriter.writeState === ImageWriterSingleton.Succeeded ||
+                         imageWriter.writeState === ImageWriterSingleton.Failed ||
+                         imageWriter.writeState === ImageWriterSingleton.Cancelled
+                Component.onCompleted: {
+                    focusItem.activeFocusOnTab = true
+                }
+                onClicked: {
+                    if (!repoDialog.wizardContainer) {
+                        repoDialog.wizardContainer = popup.wizardContainer
+                    }
+                    popup.close()
+                    Qt.callLater(function () {
+                        repoDialog.open()
+                    });
                 }
             }
 
@@ -252,6 +278,13 @@ BaseDialog {
                 }
             }
         }
+    }
+
+    RepositoryDialog {
+        id: repoDialog
+        parent: popup.parent
+        imageWriter: popup.imageWriter
+        wizardContainer: popup.wizardContainer
     }
 
     // File dialog for RSA key selection (embedded mode)

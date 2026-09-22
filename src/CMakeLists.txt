@@ -447,6 +447,7 @@ if(NOT BUILD_CLI_ONLY)
         wizard/dialogs/KeychainPermissionDialog.qml
         wizard/dialogs/UpdateAvailableDialog.qml
         wizard/dialogs/AppOptionsDialog.qml
+        wizard/dialogs/RepositoryDialog.qml
         wizard/dialogs/DebugOptionsDialog.qml
         wizard/dialogs/ConfirmOtpProgramDialog.qml
         wizard/dialogs/PasswordlessSudoWarningDialog.qml

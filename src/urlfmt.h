@@ -12,5 +12,6 @@ class UrlFmt : public QObject {
     QML_SINGLETON
 #endif
 public:
+    Q_INVOKABLE QUrl fromLocalFile(const QString &path) const;
     Q_INVOKABLE QString display(const QUrl &u) const;
 };

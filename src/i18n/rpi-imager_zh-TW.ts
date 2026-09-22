@@ -99,6 +99,14 @@
         <source>Version: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Content Repository</source>
+        <translation />
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation />
+    </message>
 </context>
 <context>
     <name>AsyncCacheWriter</name>
@@ -2979,6 +2987,69 @@ Please check your storage device and try again.</source>
     <message>
         <source>Using data from %1</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation />
+    </message>
+    <message>
+        <source>Repository source:</source>
+        <translation />
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation />
+    </message>
+    <message>
+        <source>Please select a custom repository json file</source>
+        <translation />
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation />
+    </message>
+    <message>
+        <source>Apply &amp; Restart</source>
+        <translation />
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation />
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation />
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation />
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation />
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation />
+    </message>
+    <message>
+        <source>Choose the source for operating system images</source>
+        <translation />
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation />
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation />
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS（預設）</translation>
     </message>
 </context>
 </TS>
