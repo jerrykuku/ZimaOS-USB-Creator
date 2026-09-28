@@ -93,8 +93,8 @@ fi
 SOURCE_DIR="src/"
 CMAKE_FILE="${SOURCE_DIR}CMakeLists.txt"
 
-# Get version from git tag (same approach as CMake)
-GIT_VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "0.0.0-unknown")
+# Match the build-time version: use the nearest tag without commit or dirty suffixes.
+GIT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git describe --tags --always 2>/dev/null || echo "0.0.0-unknown")
 
 # Extract numeric version components for compatibility
 # Match versions like: v1.2.3, 1.2.3, v1.2.3-extra, etc.

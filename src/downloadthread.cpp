@@ -1623,6 +1623,13 @@ void DownloadThread::_onWriteError()
     if (_cancelled)
         return;
 
+#ifdef Q_OS_LINUX
+    const int writeErrno = _file->GetLastErrorCode();
+    qWarning() << "Device write failed: errno" << writeErrno << strerror(writeErrno)
+               << "bytes written:" << _bytesWritten.load()
+               << "direct I/O:" << _file->IsDirectIOEnabled();
+#endif
+
     switch (_file->ClassifyLastWriteError())
     {
         case rpi_imager::WriteErrorClass::kAccessDeniedControlledFolderAccess:

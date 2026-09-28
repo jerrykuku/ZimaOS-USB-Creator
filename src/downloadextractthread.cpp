@@ -316,6 +316,14 @@ size_t DownloadExtractThread::_writeData(const char *buf, size_t len)
             }
             _rawWritePending.remove(0, alignedLength);
         }
+#elif defined(Q_OS_LINUX)
+        if (!_rawWriteBuffer.Append(buf, len, [this](const char* data, size_t size) {
+                return _writeFile(data, size) == size;
+            })) {
+            if (!_cancelled)
+                _onWriteError();
+            return 0;
+        }
 #else
         const size_t written = _writeFile(buf, len);
         if (written != len) {
@@ -368,6 +376,14 @@ void DownloadExtractThread::_onDownloadSuccess()
                 return;
             }
             _rawWritePending.clear();
+        }
+#elif defined(Q_OS_LINUX)
+        if (!_rawWriteBuffer.Flush([this](const char* data, size_t size) {
+                return _writeFile(data, size) == size;
+            })) {
+            if (!_cancelled)
+                _onWriteError();
+            return;
         }
 #endif
         _writeComplete();

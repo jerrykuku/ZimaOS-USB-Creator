@@ -3,8 +3,9 @@
 Every Linux artifact — the desktop and CLI AppImages, the `.deb` packages that
 wrap them, and the embedded (netboot) package — is produced by one pipeline
 driven from `debian/release.sh`. It builds each architecture inside its own
-rootless `mmdebstrap` chroot, needs no `sudo`, and produces amd64, arm64 and
-armhf output from a single machine of any of those three architectures.
+`mmdebstrap` chroot. It normally runs without `sudo`; hosts that block the
+required user namespace can use sudo mode. It produces amd64, arm64 and armhf
+output from a single machine of any of those three architectures.
 
 This document is the reference for that pipeline. For the app itself, see
 [CONTRIBUTING.md](../CONTRIBUTING.md); for the Qt builds it drives, see
@@ -29,7 +30,7 @@ we ship and `liburing` 2.2+, yet old enough that the resulting AppImages and
 On the build host:
 
 ```sh
-sudo apt install mmdebstrap dpkg-dev git curl file xz-utils
+sudo apt install mmdebstrap uidmap dpkg-dev git curl file xz-utils
 ```
 
 (`dput` as well, if you set `DPUT_HOST`. Everything else the build needs is
@@ -41,16 +42,22 @@ For any architecture that is not the host's, also:
 sudo apt install qemu-user-static binfmt-support
 ```
 
-`debian/mmdebstrap-ensure-chroot.sh` refuses to bootstrap a foreign-arch chroot
-without both. `arch-test` is optional — when absent, mmdebstrap's `check/qemu`
+On Ubuntu releases where `qemu-user-static` is virtual, install
+`qemu-user-binfmt` instead. `./build-linux.sh install` selects the available
+package automatically. `debian/mmdebstrap-ensure-chroot.sh` requires a QEMU
+user-mode binfmt package and `binfmt-support` for foreign-arch chroots.
+`arch-test` is optional — when absent, mmdebstrap's `check/qemu`
 step is skipped rather than failed.
 
 Unprivileged user namespaces must be available (`MMDEBSTRAP_MODE=auto` picks
-`unshare` whenever you are not root). Nothing in the pipeline calls `sudo` on
-the host.
+`unshare` whenever you are not root). That mode needs `newuidmap` and
+`newgidmap` from `uidmap`, plus entries for your user in `/etc/subuid` and
+`/etc/subgid`. If the host blocks the build chroot's user namespace, set
+`MMDEBSTRAP_MODE=sudo` for the release command. This uses sudo to enter the
+chroot and restores ownership of generated files before host-side packaging.
 
-Clone with full history and no `--depth 1`: AppImage version strings come from
-`git describe --tags --always --dirty`, and `debian/fetch-vendor-deps.sh`
+Clone with full history and no `--depth 1`: AppImage file names use the nearest
+Git tag (`git describe --tags --abbrev=0`), and `debian/fetch-vendor-deps.sh`
 initialises the vendored third-party submodules under `src/dependencies/vendor/`
 and verifies each is at its pinned tag.
 
@@ -155,7 +162,8 @@ Relative paths resolve against the repository root.
 ### 1. Keyrings
 
 `debian/fetch-archive-keyrings.sh` populates `.debian/archive-keyrings/` with
-the Debian, Raspbian and Raspberry Pi archive keys. Host copies from
+the keys needed by the target architecture: Debian only for amd64, Debian and
+Raspberry Pi for arm64, and all three for armhf. Host copies from
 `/usr/share/keyrings` are reused when present; otherwise the keyring `.deb` is
 downloaded from the archive and unpacked, or the ASCII key is dearmoured. The
 Debian keyring is additionally checked for the trixie signing key and refreshed
@@ -253,7 +261,7 @@ flags any whose ELF header is the wrong architecture.
 `linuxdeploy` has no armhf build, so armhf always goes through `appimagetool`.
 
 `debian/sync-appimages.sh` then copies the versioned
-`ZimaOS_USB_Creator-<git-describe>-{desktop,cli}-<arch>.AppImage` into
+`ZimaOS_USB_Creator-<tag>-{desktop,cli}-<arch>.AppImage` into
 `.debian/appimages/<arch>/` and points the stable `zimaos-usb-creator-<arch>.AppImage`
 symlinks at them.
 
@@ -265,8 +273,8 @@ the names `debian/*.install` expects, then runs
 
 `debian/chroot-exec.sh` provides the chroot environment: it bind-mounts `$TOP`,
 `$QT_CACHE` and `$APPIMAGE_ROOT`, rbind-mounts `/dev`, `/proc` and `/sys`, and
-runs the command under `unshare --user --map-root-user` when not root, then
-restores file ownership on the way out.
+runs the command under `unshare --user --map-root-user` when allowed, or through
+sudo when `MMDEBSTRAP_MODE=sudo`. It unmounts before restoring file ownership.
 
 One consequence is easy to trip over: `dpkg-buildpackage` writes its output to
 `$TOP/..`, and only `$TOP` is bind-mounted — so the artifacts land inside the
@@ -359,6 +367,40 @@ With rootless chroots working there is rarely a reason to use it.
 
 ## Troubleshooting
 
+**Ubuntu shows a generic gear icon for the AppImage file.** The embedded
+`Zima.svg`, `.DirIcon`, and desktop entry are used by desktop integration tools;
+embedding them does not ensure that Ubuntu's desktop displays that icon for the
+AppImage file itself. GNOME also supports a per-file custom icon, stored in the
+current user's GVFS metadata.
+
+To set it, open a terminal in the directory containing the AppImage **on the
+Ubuntu desktop machine**, and run the following as your desktop user (without
+`sudo`). Adjust the filename if needed. This extracts the bundled icon to a
+persistent location and associates it with that specific AppImage file:
+
+```sh
+(
+    set -eu
+    app=$(realpath ./ZimaOS_USB_Creator-v0.0.1-desktop-x86_64.AppImage)
+    tmp=$(mktemp -d)
+    trap 'rm -rf "$tmp"' EXIT
+    cd "$tmp"
+    "$app" --appimage-extract usr/share/icons/hicolor/scalable/apps/Zima.svg
+    icon="$HOME/.local/share/icons/zimaos-usb-creator.svg"
+    install -Dm644 squashfs-root/usr/share/icons/hicolor/scalable/apps/Zima.svg "$icon"
+    uri=$(python3 -c 'from pathlib import Path; import sys; print(Path(sys.argv[1]).as_uri())' "$icon")
+    gio set "$app" metadata::custom-icon "$uri"
+)
+```
+
+If the display does not refresh, reopen the file manager or log out and back in.
+Alternatively, open the AppImage's Properties in Files, click its icon, and
+select `~/.local/share/icons/zimaos-usb-creator.svg`. Keep that SVG in place.
+The association is local to the user and file; copying the AppImage to another
+machine does not carry it along. If `gio` reports that `metadata::custom-icon`
+is unsupported, run this in a GNOME desktop session with the GVFS metadata
+service available, rather than on the build server.
+
 **`release.sh status` shows `!!` against a staged AppImage.** Its embedded
 runtime is the wrong architecture. Confirm with `file .debian/appimages/<arch>/*.AppImage`
 and rebuild; do not ship it. Check that `appimage-tools/runtime-<arch>` exists
@@ -366,9 +408,15 @@ and is non-empty.
 
 **`mmdebstrap not installed`.** `sudo apt install mmdebstrap`.
 
-**`install qemu-user-static on the host for <arch> builds`.** Install
-`qemu-user-static` and `binfmt-support`; foreign-arch chroots cannot be
-bootstrapped without them.
+**`cannot find newuidmap` (or `newgidmap`).** `sudo apt install uidmap`.
+
+**`unshare: write failed /proc/self/uid_map: Operation not permitted`.** The
+host blocks the build chroot's user namespace. Reuse the existing chroot with
+`MMDEBSTRAP_MODE=sudo ./build-linux.sh release --target=appimages --arch=amd64 --unsigned`.
+
+**`install qemu-user-static or qemu-user-binfmt on the host for <arch> builds`.**
+Install the QEMU package available on your host and `binfmt-support`;
+foreign-arch chroots cannot be bootstrapped without them.
 
 **Unresolved libraries at the end of a closure pass.** Read the list it prints.
 Either the providing `-dev`/runtime package is missing from

@@ -6,7 +6,7 @@
 # from the official Debian / Raspbian / Raspberry Pi archives.
 #
 # Usage:
-#   debian/fetch-archive-keyrings.sh [debian|raspbian|raspberrypi|all]
+#   debian/fetch-archive-keyrings.sh [amd64|arm64|armhf|debian|raspbian|raspberrypi|all]
 set -eu
 
 TOP=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
@@ -215,6 +215,16 @@ fetch_raspberrypi() {
 }
 
 case "$TARGET" in
+	amd64) fetch_debian ;;
+	arm64)
+		fetch_debian
+		fetch_raspberrypi
+		;;
+	armhf)
+		fetch_debian
+		fetch_raspbian
+		fetch_raspberrypi
+		;;
 	debian) fetch_debian ;;
 	raspbian) fetch_raspbian ;;
 	raspberrypi) fetch_raspberrypi ;;

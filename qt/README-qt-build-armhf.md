@@ -43,6 +43,9 @@ sudo apt-get install build-essential perl python3 git cmake ninja-build pkg-conf
 sudo apt-get install bison flex gperf qt6-base-dev-tools qt6-declarative-dev-tools qemu-user-static
 ```
 
+If `qemu-user-static` is virtual on your Ubuntu release, install
+`qemu-user-binfmt` instead.
+
 ## Sysroot Setup
 
 A sysroot containing the target system's libraries is required for cross-compilation. You have several options:

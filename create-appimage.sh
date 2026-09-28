@@ -91,8 +91,8 @@ fi
 SOURCE_DIR="src/"
 CMAKE_FILE="${SOURCE_DIR}CMakeLists.txt"
 
-# Get version from git tag (same approach as CMake)
-GIT_VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "0.0.0-unknown")
+# Match the build-time version: use the nearest tag without commit or dirty suffixes.
+GIT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || git describe --tags --always 2>/dev/null || echo "0.0.0-unknown")
 
 # Extract numeric version components for compatibility
 # Match versions like: v1.2.3, 1.2.3, v1.2.3-extra, etc.
@@ -315,6 +315,14 @@ echo "Deploying Qt dependencies using $QT_DIR..."
 export QML_SOURCES_PATHS="$QML_SOURCES_PATH"
 export LD_LIBRARY_PATH="$QT_DIR/lib:$LD_LIBRARY_PATH"
 
+# The release build stage runs in a chroot, then the host only wraps its
+# AppDir. Deploy Qt's runtime plugins and QML here; appimagetool cannot add
+# them during the pack stage.
+if [ "$APPIMAGE_PACKAGING" = build ] || [ -z "$LINUXDEPLOY" ] || \
+   [ ! -f "$LINUXDEPLOY" ] || [ "$ARCH" != "$TOOL_ARCH" ]; then
+    appimage_deploy_desktop_qt_runtime "$QT_DIR" "$APPDIR" || exit 1
+fi
+
 if [ -n "$LINUXDEPLOY" ] && [ -f "$LINUXDEPLOY" ] && [ "$ARCH" = "$TOOL_ARCH" ] && [ "$APPIMAGE_PACKAGING" = all ]; then
 export APPIMAGE_EXTRACT_AND_RUN=1
 export QMAKE="$QT_DIR/bin/qmake"
@@ -337,6 +345,7 @@ rm -f "$APPDIR/usr/lib/libcap"*
 rm -rf "$APPDIR/usr/share/doc/libsystemd"*
 rm -rf "$APPDIR/usr/share/doc/libdbus"*
 rm -rf "$APPDIR/usr/share/doc/libcap"*
+fi
 
 # Prune the QML tree, style libraries and tooling to what the UI imports.
 # Shared with the embedded packaging path -- see prune_qml_to_imports() in
@@ -361,17 +370,18 @@ rm -f "$APPDIR/usr/plugins/imageformats/libqjp2.so"
 # AppImage relies on the host for ICU, PCRE2, zstd and friends -- ICU in
 # particular is soname-pinned per Debian release (libicu72 on bookworm), which
 # would tie the package to a single distro version.
-if [ "$APPIMAGE_PACKAGING" != pack ]; then
-    appimage_deploy_lib_closure "$APPDIR" "$QT_DIR/lib" || exit 1
-fi
+appimage_deploy_lib_closure "$APPDIR" "$QT_DIR/lib" || exit 1
+appimage_verify_desktop_appdir "$APPDIR" || exit 1
 
 if [ "$APPIMAGE_PACKAGING" = build ]; then
     prepare_appdir_for_appimagetool "$APPDIR" com.icewhaletech.zimaos-usb-creator
     echo "create-appimage: build stage complete (AppDir at $APPDIR)"
     exit 0
 fi
+fi
 
 # Create the AppImage
+appimage_verify_desktop_appdir "$APPDIR" || exit 1
 echo "Creating AppImage..."
 # Remove old symlinks for this variant only
 rm -f "$PWD/zimaos-usb-creator-desktop-$ARCH.AppImage"
@@ -406,15 +416,11 @@ else
     exit 1
 fi
 
-# End of the pack/all packaging branch.
-fi
-
-echo "AppImage created at $OUTPUT_FILE"
-
 if [ ! -f "$OUTPUT_FILE" ]; then
     echo "Error: AppImage was not created at $OUTPUT_FILE" >&2
     exit 1
 fi
+echo "AppImage created at $OUTPUT_FILE"
 
 # Create symlinks for debian packaging and user convenience
 # Primary symlink matches debian/zimaos-usb-creator.install expectations
@@ -434,5 +440,3 @@ ln -s "$(basename "$OUTPUT_FILE")" "$DESCRIPTIVE_SYMLINK"
 echo "Created symlink: $DESCRIPTIVE_SYMLINK -> $(basename "$OUTPUT_FILE")"
 
 echo "Build completed successfully for $ARCH architecture."
-# End of the APPIMAGE_PACKAGING selector.
-fi

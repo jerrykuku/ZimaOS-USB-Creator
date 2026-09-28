@@ -438,9 +438,18 @@ apply_exclusions() {
 # ENVIRONMENT AND TOOLCHAIN FILE GENERATION
 # =============================================================================
 
+# Install generated files with the same privileges used for the Qt installation.
+install_qt_generated_file() {
+    if [ "$UNPRIVILEGED" -eq 1 ]; then
+        install -m "$1" "$2" "$3"
+    else
+        sudo install -m "$1" "$2" "$3"
+    fi
+}
+
 # Function to create environment setup script
 # Usage: create_qt_env_script [script_suffix] [additional_vars_function]
-create_qt_env_script() {
+create_qt_env_script() (
     script_suffix="${1:-}"
     additional_vars_function="${2:-}"
     env_script_name="qtenv"
@@ -449,10 +458,12 @@ create_qt_env_script() {
         env_script_name="qtenv-$script_suffix"
     fi
     
-    # Ensure the bin directory exists
-    mkdir -p "$PREFIX/bin"
-    
     env_script="$PREFIX/bin/${env_script_name}.sh"
+    if [ "$UNPRIVILEGED" -eq 1 ]; then
+        mkdir -p "$PREFIX/bin"
+    else
+        sudo install -d "$PREFIX/bin"
+    fi
     
     # Use appropriate library path variable for platform
     if [ "$IS_MACOS" -eq 1 ]; then
@@ -461,7 +472,9 @@ create_qt_env_script() {
         lib_path_var="LD_LIBRARY_PATH"
     fi
     
-    cat > "$env_script" << EOF
+    env_script_tmp=$(mktemp "${TMPDIR:-/tmp}/qtenv.XXXXXX")
+    trap 'rm -f "$env_script_tmp"' EXIT
+    cat > "$env_script_tmp" << EOF
 #!/bin/sh
 # Source this file to set up the Qt environment
 export PATH="$PREFIX/bin:\$PATH"
@@ -475,22 +488,22 @@ EOF
 
     # Add additional environment variables if function provided
     if [ -n "$additional_vars_function" ] && type "$additional_vars_function" >/dev/null 2>&1; then
-        "$additional_vars_function" >> "$env_script"
+        "$additional_vars_function" >> "$env_script_tmp"
     fi
 
     # Add final echo
-    cat >> "$env_script" << EOF
+    cat >> "$env_script_tmp" << EOF
 echo "Qt $QT_VERSION environment initialized"
 EOF
 
-    chmod +x "$env_script"
+    install_qt_generated_file 755 "$env_script_tmp" "$env_script"
     echo "Created environment setup script at $env_script"
     echo "Source it with: source $env_script"
-}
+)
 
 # Function to create CMake toolchain file
 # Usage: create_cmake_toolchain [toolchain_suffix] [additional_cmake_function]
-create_cmake_toolchain() {
+create_cmake_toolchain() (
     toolchain_suffix="${1:-}"
     additional_cmake_function="${2:-}"
     toolchain_name="qt$QT_MAJOR_VERSION"
@@ -500,8 +513,10 @@ create_cmake_toolchain() {
     fi
     
     toolchain_file="$PREFIX/${toolchain_name}-toolchain.cmake"
+    toolchain_tmp=$(mktemp "${TMPDIR:-/tmp}/qt-toolchain.XXXXXX")
+    trap 'rm -f "$toolchain_tmp"' EXIT
     
-    cat > "$toolchain_file" << EOF
+    cat > "$toolchain_tmp" << EOF
 # CMake toolchain file for Qt $QT_VERSION
 set(CMAKE_PREFIX_PATH "${PREFIX}" \${CMAKE_PREFIX_PATH})
 set(QT_QMAKE_EXECUTABLE "${PREFIX}/bin/qmake")
@@ -514,13 +529,13 @@ EOF
         # Qt 6.11 requires macOS 13.0 as its minimum deployment target.
         # Keep this in sync with setup_macos_flags and src/CMakeLists.txt.
         _deploy_target="13.0"
-        cat >> "$toolchain_file" << EOF
+        cat >> "$toolchain_tmp" << EOF
 
 # macOS specific settings
 set(CMAKE_OSX_DEPLOYMENT_TARGET "$_deploy_target")
 EOF
         if [ "$UNIVERSAL_BUILD" -eq 1 ]; then
-            cat >> "$toolchain_file" << EOF
+            cat >> "$toolchain_tmp" << EOF
 set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 EOF
         fi
@@ -528,12 +543,13 @@ EOF
 
     # Add additional CMake settings if function provided
     if [ -n "$additional_cmake_function" ] && type "$additional_cmake_function" >/dev/null 2>&1; then
-        "$additional_cmake_function" >> "$toolchain_file"
+        "$additional_cmake_function" >> "$toolchain_tmp"
     fi
 
+    install_qt_generated_file 644 "$toolchain_tmp" "$toolchain_file"
     echo "Created CMake toolchain file at $toolchain_file"
     echo "Use with: cmake -DCMAKE_TOOLCHAIN_FILE=$toolchain_file ..."
-}
+)
 
 # =============================================================================
 # BUILD FUNCTIONS

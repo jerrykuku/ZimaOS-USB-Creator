@@ -30,6 +30,14 @@ function(rpi_discover_tests target)
     catch_discover_tests(${target} PROPERTIES SKIP_RETURN_CODE 4)
 endfunction()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # Runs against temporary files only; never opens a physical storage device.
+    add_executable(raw_image_write_buffer_test raw_image_write_buffer_test.cpp)
+    target_include_directories(raw_image_write_buffer_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    target_compile_features(raw_image_write_buffer_test PRIVATE cxx_std_17)
+    add_test(NAME raw_image_write_buffer COMMAND raw_image_write_buffer_test)
+endif()
+
 # Add the customization generator test executable
 # Includes the bundled crypto sources the generator now depends on for
 # credential derivation (yescrypt/sha256crypt password hashing).

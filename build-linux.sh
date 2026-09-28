@@ -102,10 +102,21 @@ install_tools() {
     [ "$(id -u)" -eq 0 ] || { have sudo || die "run as root or install sudo"; APT="sudo apt-get"; }
     # shellcheck disable=SC2086
     $APT update
+    # Newer Ubuntu releases expose qemu-user-static only as a virtual package.
+    # Choose the standard provider explicitly; it pulls in qemu-user binaries.
+    if apt-cache show qemu-user-static 2>/dev/null | grep -q '^Package: qemu-user-static$'; then
+        QEMU_PACKAGE=qemu-user-static
+    elif apt-cache show qemu-user-binfmt 2>/dev/null | grep -q '^Package: qemu-user-binfmt$'; then
+        QEMU_PACKAGE=qemu-user-binfmt
+    elif apt-cache show qemu-user-binfmt-hwe 2>/dev/null | grep -q '^Package: qemu-user-binfmt-hwe$'; then
+        QEMU_PACKAGE=qemu-user-binfmt-hwe
+    else
+        die "no QEMU user-mode binfmt package is available from the configured apt repositories"
+    fi
     # shellcheck disable=SC2086
     $APT install -y --no-install-recommends \
         build-essential cmake ninja-build git curl file xz-utils pkg-config \
-        libgnutls28-dev mmdebstrap qemu-user-static binfmt-support \
+        libgnutls28-dev mmdebstrap uidmap "$QEMU_PACKAGE" binfmt-support \
         dpkg-dev debhelper devscripts dput
     if [ "$WITH_QT" -eq 1 ]; then
         QT_VERSION=$(sed -n 's/^QT_VERSION_DEFAULT="\([^"]*\)".*/\1/p' "$SCRIPT_DIR/qt/qt-build-common.sh" | head -1)

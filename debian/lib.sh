@@ -490,9 +490,14 @@ prepare_appdir_for_appimagetool() {
 		return 1
 	fi
 
-	if [ -e "$_appdir/${_icon}.png" ] || [ -e "$_appdir/${_icon}.svg" ] || [ -e "$_appdir/${_icon}.xpm" ]; then
-		return 0
-	fi
+	# Refresh .DirIcon on incremental builds too: the desktop entry may now
+	# select a different icon from the one used by the previous package.
+	for _ext in png svg xpm; do
+		if [ -e "$_appdir/${_icon}.${_ext}" ]; then
+			ln -sfn "${_icon}.${_ext}" "$_appdir/.DirIcon"
+			return 0
+		fi
+	done
 
 	for _candidate in \
 		"$_appdir/usr/share/icons/hicolor/scalable/apps/${_icon}.svg" \
@@ -502,6 +507,7 @@ prepare_appdir_for_appimagetool() {
 		if [ -f "$_candidate" ]; then
 			_ext=${_candidate##*.}
 			ln -sf "${_candidate#$_appdir/}" "$_appdir/${_icon}.${_ext}"
+			ln -sfn "${_icon}.${_ext}" "$_appdir/.DirIcon"
 			return 0
 		fi
 	done
@@ -706,6 +712,61 @@ appimage_deploy_lib_closure() {
 		"$_appdir" appimage_lib_excluded "$(deploy_lib_search_dirs "${2:-}")"
 }
 
+# The build stage must include Qt's dynamically loaded plugins and QML modules.
+# The host-side appimagetool pack stage cannot discover or add these files.
+appimage_deploy_desktop_qt_runtime() {
+	_desktop_qt_root=$1
+	_desktop_appdir=$2
+	_desktop_qml_dir="$_desktop_qt_root/qml"
+	_desktop_plugins_dir="$_desktop_qt_root/plugins"
+	if [ ! -d "$_desktop_qml_dir" ] && [ -x "$_desktop_qt_root/bin/qmake" ]; then
+		_desktop_qml_dir=$("$_desktop_qt_root/bin/qmake" -query QT_INSTALL_QML) || return 1
+		_desktop_plugins_dir=$("$_desktop_qt_root/bin/qmake" -query QT_INSTALL_PLUGINS) || return 1
+	fi
+	if [ ! -d "$_desktop_qml_dir/QtQuick" ] || [ ! -d "$_desktop_plugins_dir/platforms" ]; then
+		echo "Error: Qt runtime QML or platform plugins missing under $_desktop_qt_root" >&2
+		return 1
+	fi
+
+	echo "Deploying Qt QML modules and desktop plugins..."
+	mkdir -p "$_desktop_appdir/usr/qml/Qt/labs" "$_desktop_appdir/usr/plugins/platforms" || return 1
+	for _desktop_module in QtQuick QtQml QtCore; do
+		cp -a "$_desktop_qml_dir/$_desktop_module" "$_desktop_appdir/usr/qml/" || return 1
+	done
+	cp -a "$_desktop_qml_dir/Qt/labs/folderlistmodel" "$_desktop_appdir/usr/qml/Qt/labs/" || return 1
+	for _desktop_plugin in libqxcb.so libqwayland.so libqoffscreen.so; do
+		if [ -f "$_desktop_plugins_dir/platforms/$_desktop_plugin" ]; then
+			cp -a "$_desktop_plugins_dir/platforms/$_desktop_plugin" \
+				"$_desktop_appdir/usr/plugins/platforms/" || return 1
+		fi
+	done
+	for _desktop_category in xcbglintegrations wayland-graphics-integration-client \
+		wayland-shell-integration wayland-decoration-client \
+		platforminputcontexts platformthemes imageformats iconengines tls; do
+		if [ -d "$_desktop_plugins_dir/$_desktop_category" ]; then
+			cp -a "$_desktop_plugins_dir/$_desktop_category" \
+				"$_desktop_appdir/usr/plugins/" || return 1
+		fi
+	done
+}
+
+appimage_verify_desktop_appdir() {
+	_desktop_appdir=$1
+	if [ ! -f "$_desktop_appdir/usr/plugins/platforms/libqxcb.so" ] && \
+	   [ ! -f "$_desktop_appdir/usr/plugins/platforms/libqwayland.so" ]; then
+		echo "Error: AppDir has no Qt desktop platform plugin (xcb or wayland): $_desktop_appdir" >&2
+		return 1
+	fi
+	for _desktop_module in QtQuick QtQuick/Window QtQuick/Controls \
+		QtQuick/Controls/Material QtQuick/Effects QtQuick/Layouts \
+		QtQml QtCore Qt/labs/folderlistmodel; do
+		if [ ! -f "$_desktop_appdir/usr/qml/$_desktop_module/qmldir" ]; then
+			echo "Error: AppDir is missing Qt QML module $_desktop_module: $_desktop_appdir" >&2
+			return 1
+		fi
+	done
+}
+
 # Complete the closure of the vendored /opt tree.
 #
 # The explicit cp -d list in create-embedded.sh is deliberately curated: this
@@ -767,8 +828,8 @@ embedded_deploy_lib_closure() {
 # them to disagree about which modules the app needs.
 #
 # Imager's QML imports, and nothing more, are:
-#   QtQuick, QtQuick.Controls, QtQuick.Controls.Material, QtQuick.Layouts,
-#   QtQuick.Window, QtCore, QtQml, Qt.labs.folderlistmodel
+#   QtQuick, QtQuick.Controls, QtQuick.Controls.Material, QtQuick.Effects,
+#   QtQuick.Layouts, QtQuick.Window, QtCore, QtQml, Qt.labs.folderlistmodel
 # Re-derive with:
 #   grep -rhoE '^\s*import\s+[A-Za-z0-9_.]+' --include='*.qml' src/ | sort -u
 #
@@ -792,7 +853,7 @@ prune_qml_to_imports() {
 	rm -f "$_libdir/libQt6QuickControls2WindowsStyleImpl.so"*
 
 	# Modules the UI never imports.
-	for _mod in QtQuick/Effects QtQuick/Particles QtQuick/Shapes \
+	for _mod in QtQuick/Particles QtQuick/Shapes \
 		QtQuick/Timeline QtQuick/VectorImage \
 		QtQml/WorkerScript QtQml/XmlListModel
 	do
@@ -808,7 +869,7 @@ prune_qml_to_imports() {
 	# libQt6QmlWorkerScript is deliberately NOT in this list: libQt6QmlMeta
 	# links it directly, so it is required even though QtQml/WorkerScript is
 	# not imported. Re-run the check above before adding anything here.
-	for _lib in QuickEffects QuickParticles \
+	for _lib in QuickParticles \
 		QuickShapes QuickShapesDesignHelpers \
 		QuickTimeline QuickTimelineBlendTrees \
 		QuickVectorImage QuickVectorImageGenerator QuickVectorImageHelpers \

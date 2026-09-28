@@ -21,8 +21,9 @@ installed inside the chroot:
 ./build-linux.sh install
 ```
 
-To build an architecture other than your own, also install `qemu-user-static`
-and `binfmt-support`.
+To build an architecture other than your own, install `qemu-user-static`
+(or `qemu-user-binfmt` where `qemu-user-static` is virtual) and
+`binfmt-support`. The install command above selects the QEMU package for you.
 
 #### Get the source
 

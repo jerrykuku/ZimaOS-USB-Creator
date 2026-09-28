@@ -1779,7 +1779,7 @@ bool registerUriScheme() {
         "Type=Application\n"
         "Name=Raspberry Pi Imager\n"
         "Exec=%1 %u\n"
-        "Icon=rpi-imager\n"
+        "Icon=Zima\n"
         "Terminal=false\n"
         "NoDisplay=true\n"
         "MimeType=x-scheme-handler/rpi-imager;\n").arg(execPath);

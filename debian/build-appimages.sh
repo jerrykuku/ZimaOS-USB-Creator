@@ -31,8 +31,7 @@ run_in_build_context() {
 	_backend=$(chroot_backend_for "$ARCH")
 	if [ "$_backend" != none ]; then
 		if ! chroot_run "$ARCH" test -d "$TOP"; then
-			echo "build-appimages: $TOP not visible inside $(chroot_name "$ARCH")" >&2
-			echo "build-appimages: re-run: debian/mmdebstrap-ensure-chroot.sh $ARCH" >&2
+			echo "build-appimages: cannot enter $(chroot_name "$ARCH") or access $TOP" >&2
 			exit 1
 		fi
 		chroot_run "$ARCH" bash -lc \

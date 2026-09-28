@@ -72,7 +72,7 @@ ProcessScopedSuspendInhibitor::ProcessScopedSuspendInhibitor(const char *fileNam
     //   and can inhibit power management activity such as sleeping as long as that
     //   process runs.
     //
-    // Action: Run fileName with args, and have it wrap: cat /run/fifo
+    // Action: Run fileName with args, and have it wrap cat with FIFO stdin.
     //
     // This inner command opens and reads from the supplied temporary FIFO.
     // We connect to the FIFO by opening it on our end, and we can then
@@ -133,6 +133,17 @@ ProcessScopedSuspendInhibitor::ProcessScopedSuspendInhibitor(const char *fileNam
     else if (forkResult == 0)
     {
         // If we get here, we're the child process.
+
+        // Open the read end while still privileged and pass it as stdin.
+        // The FIFO is root-owned and mode 0600, so opening it by pathname
+        // after dropping privileges would fail. O_NONBLOCK also avoids a
+        // startup race if the parent closes its end before this child runs.
+        int readFd = open(_fifoName, O_RDONLY | O_NONBLOCK);
+        if (readFd < 0 || dup2(readFd, STDIN_FILENO) < 0 ||
+            fcntl(STDIN_FILENO, F_SETFL, 0) < 0)
+        {
+            _exit(126);
+        }
         
         // Close all file descriptors except stdin/stdout/stderr to prevent
         // the exec'd program from accessing disk devices or other resources.
@@ -192,9 +203,9 @@ ProcessScopedSuspendInhibitor::ProcessScopedSuspendInhibitor(const char *fileNam
         // Clear AppImage environment before running external tools
         PlatformQuirks::clearAppImageEnvironment();
 
-        // Run the inhibitor tool, and have it wrap cat reading from the FIFO.
+        // Run the inhibitor tool, and have it wrap cat reading from stdin.
         // We avoid using shell to prevent any potential command injection issues.
-        // Build argument vector: [fileName, ...args, "cat", _fifoName, NULL]
+        // Build argument vector: [fileName, ...args, "cat", NULL]
         std::vector<const char*> argv;
         argv.push_back(fileName);
         for (const auto& arg : args)
@@ -202,7 +213,6 @@ ProcessScopedSuspendInhibitor::ProcessScopedSuspendInhibitor(const char *fileNam
             argv.push_back(arg.c_str());
         }
         argv.push_back("cat");
-        argv.push_back(_fifoName);
         argv.push_back(NULL);
         
         // Resolve to absolute path to prevent PATH hijack when running

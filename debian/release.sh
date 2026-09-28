@@ -85,7 +85,7 @@ cmd_status() {
 	echo "output dir:    $OUTPUT_DIR"
 	echo "appimage root: $APPIMAGE_ROOT"
 	echo "qt cache:      $QT_CACHE (Qt $QT_VERSION, QT_BUILD=$QT_BUILD)"
-	echo "builder:       rootless mmdebstrap chroot (all arches)"
+	echo "builder:       mmdebstrap chroot (mode=$(mmdebstrap_run_mode), all arches)"
 	echo "appimage build: $APPIMAGE_BUILD"
 	if git -C "$TOP" diff --quiet && git -C "$TOP" diff --cached --quiet; then
 		echo "git:           clean"

@@ -8,6 +8,9 @@
 
 #include "downloadthread.h"
 #include "ringbuffer.h"
+#ifdef Q_OS_LINUX
+#include "raw_image_write_buffer.h"
+#endif
 #include <condition_variable>
 #include <memory>
 
@@ -61,10 +64,15 @@ protected:
     RingBuffer::Slot* _currentWriteSlot;  // Current slot being written
     
     bool _ethreadStarted, _isImage, _rawImage;
+#ifdef Q_OS_LINUX
+    // Linux O_DIRECT requires aligned addresses and write boundaries.
+    rpi_imager::RawImageWriteBuffer _rawWriteBuffer;
+#else
     // Windows raw-disk WriteFile calls must be sector aligned.  Network
     // callbacks have arbitrary boundaries, so retain the incomplete tail and
     // prepend it to the next callback instead of padding between callbacks.
     QByteArray _rawWritePending;
+#endif
     AcceleratedCryptographicHash _inputHash;
     bool _progressStarted;
     qint64 _lastProgressTime;

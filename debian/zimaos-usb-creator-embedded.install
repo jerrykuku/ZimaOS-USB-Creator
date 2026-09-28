@@ -5,6 +5,6 @@
 
 debian/embedded-imager.service        lib/systemd/system/
 
-src/linux/icon/rpi-imager.svg /usr/share/icons/hicolor/scalable/apps/
+src/linux/icon/Zima.svg /usr/share/icons/hicolor/scalable/apps/
 
 debian/com.icewhaletech.zimaos-usb-creator-embedded.desktop /usr/share/applications/

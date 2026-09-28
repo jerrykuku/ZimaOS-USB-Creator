@@ -115,7 +115,17 @@ if [ "$SKIP_DEPENDENCIES" -eq 0 ]; then
     install_linux_basic_deps
     
     sudo apt-get install -y crossbuild-essential-armhf
-    sudo apt-get install -y qt6-base-dev-tools qt6-declarative-dev-tools qemu-user-static
+    if apt-cache show qemu-user-static 2>/dev/null | grep -q '^Package: qemu-user-static$'; then
+        QEMU_PACKAGE=qemu-user-static
+    elif apt-cache show qemu-user-binfmt 2>/dev/null | grep -q '^Package: qemu-user-binfmt$'; then
+        QEMU_PACKAGE=qemu-user-binfmt
+    elif apt-cache show qemu-user-binfmt-hwe 2>/dev/null | grep -q '^Package: qemu-user-binfmt-hwe$'; then
+        QEMU_PACKAGE=qemu-user-binfmt-hwe
+    else
+        echo "No QEMU user-mode binfmt package is available from the configured apt repositories" >&2
+        exit 1
+    fi
+    sudo apt-get install -y qt6-base-dev-tools qt6-declarative-dev-tools "$QEMU_PACKAGE"
         
     echo "Cross-compilation dependencies installed"
 else

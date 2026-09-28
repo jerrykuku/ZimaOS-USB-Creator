@@ -43,13 +43,31 @@ if ! command -v mmdebstrap >/dev/null 2>&1; then
 	exit 1
 fi
 
-if [ "$ARCH" != "$HOST_ARCH" ]; then
-	for _pkg in qemu-user-static binfmt-support; do
-		if ! dpkg -s "$_pkg" >/dev/null 2>&1; then
-			echo "mmdebstrap-ensure: install $_pkg on the host for $ARCH builds" >&2
+if [ "$MODE" = unshare ]; then
+	for _helper in newuidmap newgidmap; do
+		if ! command -v "$_helper" >/dev/null 2>&1; then
+			echo "mmdebstrap-ensure: $_helper is missing; install uidmap on the host (sudo apt install uidmap)" >&2
 			exit 1
 		fi
 	done
+fi
+
+if [ "$ARCH" != "$HOST_ARCH" ]; then
+	_QEMU_INSTALLED=0
+	for _pkg in qemu-user-static qemu-user-binfmt qemu-user-binfmt-hwe; do
+		if [ "$(dpkg-query -W -f='${Status}' "$_pkg" 2>/dev/null || true)" = 'install ok installed' ]; then
+			_QEMU_INSTALLED=1
+			break
+		fi
+	done
+	if [ "$_QEMU_INSTALLED" -ne 1 ]; then
+		echo "mmdebstrap-ensure: install qemu-user-static or qemu-user-binfmt on the host for $ARCH builds" >&2
+		exit 1
+	fi
+	if [ "$(dpkg-query -W -f='${Status}' binfmt-support 2>/dev/null || true)" != 'install ok installed' ]; then
+		echo "mmdebstrap-ensure: install binfmt-support on the host for $ARCH builds" >&2
+		exit 1
+	fi
 fi
 
 ensure_chroot_dirs

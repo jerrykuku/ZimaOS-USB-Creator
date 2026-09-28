@@ -87,11 +87,6 @@ mmdebstrap_keyring_cached() {
 	_arch=$1
 	_cache=$(keyring_cache_dir)
 
-	install -d "$_cache"
-	fetch_archive_keyrings all
-	chown -R "$(id -u):$(id -g)" "$_cache" 2>/dev/null || true
-	chmod -R a+rX "$_cache"
-
 	case "$_arch" in
 		armhf) _name=raspbian-archive-keyring.gpg ;;
 		arm64|amd64) _name=debian-archive-keyring.gpg ;;
@@ -100,6 +95,11 @@ mmdebstrap_keyring_cached() {
 			return 1
 			;;
 	esac
+
+	install -d "$_cache"
+	fetch_archive_keyrings "$_arch"
+	chown -R "$(id -u):$(id -g)" "$_cache" 2>/dev/null || true
+	chmod -R a+rX "$_cache"
 
 	_file="$_cache/$_name"
 	[ -f "$_file" ] || {

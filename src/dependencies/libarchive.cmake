@@ -36,8 +36,15 @@ rpi_imager_fetch_git_or_vendor(libarchive
 FetchContent_GetProperties(libarchive)
 if(NOT libarchive_POPULATED)
     FetchContent_Populate(libarchive)
-    rpi_imager_patch_libarchive("${libarchive_SOURCE_DIR}")
+    # The bundled static zstd archive does not exist until build time. Preseed
+    # libarchive's function checks so configure does not try to link against it.
+    set(HAVE_LIBZSTD 1)
+    set(HAVE_ZSTD_compressStream 1)
+    set(HAVE_ZSTD_minCLevel 1)
     add_subdirectory(${libarchive_SOURCE_DIR} ${libarchive_BINARY_DIR} EXCLUDE_FROM_ALL)
+    unset(HAVE_LIBZSTD)
+    unset(HAVE_ZSTD_compressStream)
+    unset(HAVE_ZSTD_minCLevel)
 endif()
 
 if (TARGET archive_static AND TARGET ZLIB::ZLIB)
@@ -71,4 +78,3 @@ set(LibArchive_FOUND true CACHE BOOL "" FORCE)
 set(LibArchive_LIBRARIES archive_static CACHE FILEPATH "" FORCE)
 set(LibArchive_INCLUDE_DIR ${libarchive_SOURCE_DIR}/libarchive CACHE PATH "" FORCE)
 set(LibArchive_INCLUDE_DIRS ${libarchive_SOURCE_DIR}/libarchive CACHE PATH "" FORCE)
-
