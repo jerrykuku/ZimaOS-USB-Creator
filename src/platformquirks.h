@@ -97,8 +97,7 @@ namespace PlatformQuirks {
 
     /**
      * Register this application as the handler for the rpi-imager:// URL
-     * scheme, so the Raspberry Pi Connect sign-in flow can hand the auth token
-     * back by redirecting the browser to an rpi-imager:// URL.
+     * scheme, so custom repository links can open in the application.
      *
      * Platform mechanics differ, but all live behind this one call:
      *   - Linux: writes a user-level .desktop entry pointing at this

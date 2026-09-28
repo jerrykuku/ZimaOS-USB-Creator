@@ -32,10 +32,7 @@ TextField {
     // `value` cannot be bound directly to `text`. QML re-evaluates a binding
     // only after every handler connected to the same change signal has run, so
     // an `onTextChanged` at the use site would read the *previous* contents.
-    // That silently discarded the Connect token the browser fills in, because
-    // the field's own handler saw an empty `value` and cleared the token it had
-    // just been given (issue: Next stays disabled on the Pi Connect step). The
-    // scrubber below runs before any use-site handler, so refreshing the
+    // The scrubber below runs before any use-site handler, so refreshing the
     // backing property from there keeps `value` in step with `text` for every
     // reader. Bindings *on* `value` still work: assigning `_value` notifies
     // synchronously.

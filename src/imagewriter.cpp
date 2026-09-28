@@ -61,7 +61,6 @@
 #include <QDateTime>
 #include "curlfetcher.h"
 #include "curlnetworkconfig.h"
-#include "connect_auth_key_client.h"
 #include <QDebug>
 #include <QJsonObject>
 #include <QTranslator>
@@ -139,14 +138,15 @@ ImageWriter::ImageWriter(QObject *parent)
       _refreshIntervalOverrideMinutes(-1),
       _refreshJitterOverrideMinutes(-1),
 #ifndef CLI_ONLY_BUILD
-      _piConnectToken(),
       _mainWindow(nullptr),
-#else
-      _piConnectToken(),
 #endif
       _progressWatchdog(nullptr),
       _forceSyncMode(false)
 {
+    // Remove credentials left by the retired Raspberry Pi Connect integration.
+    _settings.remove(QStringLiteral("connect_org_api_key"));
+    _settings.remove(QStringLiteral("connect_org_description"));
+
     // Load the last complete manifest immediately. Network refresh continues
     // in the background and replaces it when a newer response arrives.
     loadCachedOsList();
@@ -414,7 +414,7 @@ void ImageWriter::bringWindowToForeground()
     void* windowHandle = reinterpret_cast<void*>(_mainWindow->winId());
     if (windowHandle) {
         PlatformQuirks::bringWindowToForeground(windowHandle);
-        qDebug() << "Requested window to be brought to foreground for rpi-connect token";
+        qDebug() << "Requested window to be brought to foreground";
     }
 #endif
 }
@@ -2354,9 +2354,6 @@ void ImageWriter::onSuccess()
     // End performance stats session
     _performanceStats->endSession(true);
 
-    // Clear Pi Connect token on successful write completion
-    clearConnectToken();
-
     emit success();
 
     if (_settings.value("beep").toBool()) {
@@ -3157,117 +3154,7 @@ bool ImageWriter::getBoolSetting(const QString &key)
 
 QString ImageWriter::getStringSetting(const QString &key)
 {
-    // The Connect organisation API key is a persisted secret: the
-    // UI is never allowed to read it back.  Use hasConnectOrgRegistration()
-    // / clearConnectOrgRegistration() from QML instead.
-    if (key == QLatin1String("connect_org_api_key"))
-        return QString();
     return _settings.value(key).toString();
-}
-
-void ImageWriter::setConnectOrgRegistration(const QString &apiKey,
-                                              const QString &descriptionPrefix)
-{
-    const QString trimmedKey = apiKey.trimmed();
-    const QString trimmedDesc = descriptionPrefix.trimmed();
-    if (trimmedKey.isEmpty()) {
-        // Leave any existing stored key intact; only update description.
-        setConnectOrgDescription(trimmedDesc);
-        return;
-    }
-    // The key is concatenated into "Authorization: Bearer <key>" before
-    // hitting curl_slist_append.  Any control character (CR, LF, NUL,
-    // etc.) would let a pasted value split the request and inject extra
-    // headers — reject up front rather than rely on the receiver.
-    for (QChar ch : trimmedKey) {
-        if (ch.unicode() < 0x20 || ch.unicode() == 0x7F) {
-            qWarning() << "Connect: refusing organisation API key with control characters";
-            return;
-        }
-    }
-    _settings.setValue(QStringLiteral("connect_org_api_key"), trimmedKey);
-    _settings.setValue(QStringLiteral("connect_org_description"), trimmedDesc);
-    _settings.sync();
-}
-
-void ImageWriter::setConnectOrgDescription(const QString &descriptionPrefix)
-{
-    _settings.setValue(QStringLiteral("connect_org_description"),
-                       descriptionPrefix.trimmed());
-    _settings.sync();
-}
-
-void ImageWriter::clearConnectOrgRegistration()
-{
-    _settings.remove(QStringLiteral("connect_org_api_key"));
-    _settings.remove(QStringLiteral("connect_org_description"));
-    _settings.sync();
-}
-
-bool ImageWriter::hasConnectOrgRegistration() const
-{
-    return !_settings.value(QStringLiteral("connect_org_api_key"))
-                     .toString().isEmpty();
-}
-
-QString ImageWriter::getConnectOrgDescription() const
-{
-    return _settings.value(QStringLiteral("connect_org_description")).toString();
-}
-
-QVariantMap ImageWriter::requestOrgAuthKey(const QString &description, int ttlDays)
-{
-    QVariantMap out;
-    out.insert(QStringLiteral("ok"), false);
-
-    const QString apiKey =
-        _settings.value(QStringLiteral("connect_org_api_key")).toString();
-    if (apiKey.isEmpty()) {
-        qWarning() << "Connect: cannot mint auth key — no organisation API key set";
-        out.insert(QStringLiteral("error"),
-                   tr("No organisation API key is configured."));
-        return out;
-    }
-
-    // Clamp the TTL.  The signature is Q_INVOKABLE so any QML caller
-    // (including a future bug) could ask for a 10-year key; cap it
-    // server-independently to a sensible window.  <= 0 falls through
-    // to the registrar's "omit field" path so the server picks its
-    // own default.
-    constexpr int kMaxTtlDays = 30;
-    if (ttlDays > kMaxTtlDays)
-        ttlDays = kMaxTtlDays;
-
-    ConnectAuthKeyClient client(apiKey);
-    auto result = client.requestAuthKey(description, ttlDays);
-    if (!result.ok) {
-        qWarning() << "Connect: auth-key request failed:" << result.errorMessage;
-        out.insert(QStringLiteral("error"), result.errorMessage);
-        return out;
-    }
-    // Defence-in-depth: the secret is about to be written into a
-    // shell heredoc / cloud-init runcmd as a Pi Connect token.  An
-    // attacker who can MITM (or compromise) the Connect API could
-    // return a "secret" containing newlines / shell metacharacters,
-    // closing the heredoc early and gaining root execution at first
-    // boot.  Reject anything that doesn't look like a real auth key.
-    if (!verifyAuthKey(result.secret, /*strict=*/false)) {
-        qWarning() << "Connect: API returned a secret that does not match the "
-                      "expected auth-key format; refusing to use it";
-        out.insert(QStringLiteral("error"),
-                   tr("ZimaOS Connect returned an unexpected response."));
-        return out;
-    }
-    qDebug() << "Connect: minted auth key id=" << result.id;
-    // Stash the secret directly in _piConnectToken (and emit the
-    // received signal so QML reflects the new token) instead of
-    // returning it to QML — keeps the secret off the QML stack and
-    // lets discardOrgMintedConnectToken() recognise it later.
-    _piConnectToken = result.secret;
-    _piConnectTokenIsOrgMinted = true;
-    emit connectTokenReceived(result.secret);
-    out.insert(QStringLiteral("ok"), true);
-    return out;
 }
 
 // Debug options implementation (secret menu: Cmd+Option+S on macOS, Ctrl+Alt+S on others)
@@ -3496,7 +3383,7 @@ void ImageWriter::applyCustomisationFromSettings(const QVariantMap &settings)
 void ImageWriter::_applySystemdCustomisationFromSettings(const QVariantMap &s)
 {
     // Use CustomisationGenerator for script generation
-    QByteArray script = rpi_imager::CustomisationGenerator::generateSystemdScript(s, _piConnectToken);
+    QByteArray script = rpi_imager::CustomisationGenerator::generateSystemdScript(s);
 
     QByteArray cmdlineAppend;
     ImageOptions::AdvancedOptions advOpts = NoAdvancedOptions;
@@ -3528,7 +3415,7 @@ void ImageWriter::_applyCloudInitCustomisationFromSettings(const QVariantMap &s)
     const bool hasCcRpi = imageSupportsCcRpi();
     
     QByteArray cloud = rpi_imager::CustomisationGenerator::generateCloudInitUserData(
-        s, _piConnectToken, hasCcRpi, sshEnabled, getCurrentUser());
+        s, hasCcRpi, sshEnabled, getCurrentUser());
     
     QByteArray netcfg = rpi_imager::CustomisationGenerator::generateCloudInitNetworkConfig(
         s, hasCcRpi);
@@ -3567,7 +3454,7 @@ void ImageWriter::_applyRpiPreseedCustomisationFromSettings(const QVariantMap &s
     const bool hasCcRpi = imageSupportsCcRpi();
 
     QByteArray toml = rpi_imager::CustomisationGenerator::generateRpiPreseedToml(
-        s, _piConnectToken, hasCcRpi, sshEnabled, getCurrentUser());
+        s, hasCcRpi, sshEnabled, getCurrentUser());
 
     QByteArray cmdlineAppend;
     ImageOptions::AdvancedOptions advOpts = NoAdvancedOptions;
@@ -4519,49 +4406,6 @@ void ImageWriter::openUrl(const QUrl &url)
 #endif
 }
 
-bool ImageWriter::verifyAuthKey(const QString &s, bool strict) const
-{
-    // Base58 (no 0 O I l)
-    static const QRegularExpression base58OnlyRe(QStringLiteral("^[1-9A-HJ-NP-Za-km-z]+$"));
-
-    // Required prefix
-    bool hasPrefix = s.startsWith(QStringLiteral("rpuak_")) || s.startsWith(QStringLiteral("rpoak_"));
-    if (!hasPrefix)
-        return false;
-
-    const QString payload = s.mid(6);
-    bool base58Match = base58OnlyRe.match(payload).hasMatch();
-    
-    if (payload.isEmpty() || !base58Match)
-        return false;
-
-    if (strict) {
-        // Exactly 24 Base58 chars today → total length 30
-        return payload.size() == 24;
-    } else {
-        // Future-proof: accept >=24 Base58 chars
-        return payload.size() >= 24;
-    }
-}
-
-QString ImageWriter::parseTokenFromUrl(const QUrl &url, bool strictAuthKey) const {
-    // Handle QUrl or string, accept auth_key
-    if (!url.isValid())
-        return {};
-
-    QUrlQuery q(url);
-    const QString val = q.queryItemValue(QStringLiteral("auth_key"), QUrl::FullyDecoded);
-    if (!val.isEmpty()) {
-        if (verifyAuthKey(val, strictAuthKey)) {
-            return val;
-        }
-
-        qWarning() << "Ignoring auth_key with invalid format/length:" << val;
-    }
-
-    return {};
-}
-
 void ImageWriter::handleIncomingUrl(const QUrl &url)
 {
     qDebug() << "Incoming URL:" << url;
@@ -4596,56 +4440,6 @@ void ImageWriter::handleIncomingUrl(const QUrl &url)
             qWarning() << "Ignoring invalid repository URL format:" << repoVal;
         }
     }
-
-    // Check for auth_key token (existing behavior)
-    auto token = parseTokenFromUrl(url);
-    if (!token.isEmpty()) {
-        if (!_piConnectToken.isEmpty()) {
-            if (_piConnectToken != token) {
-                // Let QML decide whether to overwrite
-                emit connectTokenConflictDetected(token);
-            }
-
-            return;
-        }
-
-        overwriteConnectToken(token);
-    }
-}
-
-void ImageWriter::overwriteConnectToken(const QString &token)
-{
-    // Ephemeral session-only Connect token (never persisted)
-    _piConnectToken = token;
-    // User-supplied (typed / pasted / browser-callback) — clear the
-    // org-minted bit so discardOrgMintedConnectToken() leaves it alone.
-    _piConnectTokenIsOrgMinted = false;
-    emit connectTokenReceived(token);
-
-    // Bring the window to the foreground on Windows when token is received
-    bringWindowToForeground();
-}
-
-QString ImageWriter::getRuntimeConnectToken() const
-{
-    return _piConnectToken;
-}
-
-void ImageWriter::clearConnectToken()
-{
-    _piConnectToken.clear();
-    _piConnectTokenIsOrgMinted = false;
-    emit connectTokenCleared();
-}
-
-void ImageWriter::discardOrgMintedConnectToken()
-{
-    if (!_piConnectTokenIsOrgMinted)
-        return;
-    qDebug() << "Connect: discarding org-minted auth key (storage / OS changed)";
-    _piConnectToken.clear();
-    _piConnectTokenIsOrgMinted = false;
-    emit connectTokenCleared();
 }
 
 bool ImageWriter::isElevatableBundle()

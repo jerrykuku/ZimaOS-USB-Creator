@@ -293,7 +293,7 @@ void applyQuirks() {
     const QByteArray fontPlatform = ensureWindowsFreeTypeFontEngine();
     qputenv("QT_QPA_PLATFORM", fontPlatform);
 
-    // make imager single instance because of rpi-connect callback server
+    // Keep a single instance so incoming repository links reach the existing window.
     // will be automatically released once the process exits cleanly or crashes
     HANDLE hMutex = CreateMutexW(nullptr, TRUE, L"Global\\RaspberryPiImagerMutex");
     if (GetLastError() == ERROR_ALREADY_EXISTS) {

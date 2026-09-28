@@ -210,10 +210,6 @@
         <translation>Wi‑Fi configurada</translation>
     </message>
     <message>
-        <source>ZimaOS Connect enabled</source>
-        <translation>ZimaOS Connect activat</translation>
-    </message>
-    <message>
         <source>I2C enabled</source>
         <translation>I2C activat</translation>
     </message>
@@ -1510,10 +1506,6 @@ or type a path in the address bar above.</source>
         <translation>No s'ha configurat cap clau API d'organització.</translation>
     </message>
     <message>
-        <source>ZimaOS Connect returned an unexpected response.</source>
-        <translation>El ZimaOS Connect ha enviat una resposta inesperada.</translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Desa les dades de rendiment</translation>
     </message>
@@ -1805,149 +1797,6 @@ Technical details: %1</source>
     <message>
         <source>Enable passwordless sudo for this user account</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PiConnectCustomizationStep</name>
-    <message>
-        <source>Customisation: ZimaOS Connect</source>
-        <translation>Personalització: ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Enable ZimaOS Connect</source>
-        <translation>Activa ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>What is ZimaOS Connect?</source>
-        <translation>Què és ZimaOS Connect?</translation>
-    </message>
-    <message>
-        <source>Open ZimaOS Connect</source>
-        <translation>Obre ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Token received from browser</source>
-        <translation>Token rebut del navegador</translation>
-    </message>
-    <message>
-        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Obriu el lloc web de ZimaOS Connect al navegador per iniciar la sessió i rebre un token d&apos;autenticació</translation>
-    </message>
-    <message>
-        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
-        <translation>Activeu l&apos;accés remot segur al vostre ZimaOS mitjançant el servei al núvol de ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
-        <translation>Desa la configuració de ZimaOS Connect i continua al següent pas de personalització</translation>
-    </message>
-    <message>
-        <source>Register this device with your ZimaOS Connect organisation</source>
-        <translation>Registra aquest dispositiu amb la teva organització ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Return to previous step</source>
-        <translation>Torna al pas anterior</translation>
-    </message>
-    <message>
-        <source>Skip all customisation and proceed directly to writing the image</source>
-        <translation>Omet tota la personalització i continua directament a escriure la imatge</translation>
-    </message>
-    <message>
-        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
-        <translation>S'escriurà una clau d'autenticació d'un sol ús a la imatge perquè el dispositiu s'uneixi a la teva organització Connect al primer arrencada.</translation>
-    </message>
-    <message>
-        <source>Organisation API Key:</source>
-        <translation>Clau API de l'organització:</translation>
-    </message>
-    <message>
-        <source>Enter or paste your ZimaOS Connect organisation API key</source>
-        <translation>Introduïu o enganxeu la vostra clau API d'organització ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Saved — type to replace</source>
-        <translation>Desat — tipus a reemplaçar</translation>
-    </message>
-    <message>
-        <source>Paste organisation API key</source>
-        <translation>Enganxa la clau API d'organització</translation>
-    </message>
-    <message>
-        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
-        <translation>Clau API d'organització ZimaOS Connect. Un cop desat, el valor no es torna a mostrar mai.</translation>
-    </message>
-    <message>
-        <source>Auth key description:</source>
-        <translation>Descripció de la clau d'autenticitat:</translation>
-    </message>
-    <message>
-        <source>Description for the auth key shown in the Connect organisation UI.</source>
-        <translation>Descripció de la clau d'autenticació que es mostra a la interfície d'usuari de l'organització Connect.</translation>
-    </message>
-    <message>
-        <source>e.g. Factory-A</source>
-        <translation>per exemple, la fàbrica A</translation>
-    </message>
-    <message>
-        <source>Clear saved key</source>
-        <translation>Esborra la clau desada</translation>
-    </message>
-    <message>
-        <source>Remove the saved ZimaOS Connect organisation API key</source>
-        <translation>Elimina la clau API d'organització ZimaOS Connect desada</translation>
-    </message>
-    <message>
-        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
-        <translation>Introduïu o enganxeu el token d&apos;autenticació de ZimaOS Connect. El token s&apos;emplenarà automàticament si utilitzeu el botó &apos;Obre ZimaOS Connect&apos; per iniciar la sessió.</translation>
-    </message>
-    <message>
-        <source>Waiting for token (%1s)</source>
-        <translation>S&apos;està esperant el token (%1s)</translation>
-    </message>
-    <message>
-        <source>Paste token here</source>
-        <translation>Enganxeu el token aquí</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator</translation>
-    </message>
-    <message>
-        <source>Invalid Token</source>
-        <translation>Token no vàlid</translation>
-    </message>
-    <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
-        <translation>El token que heu introduït no és vàlid. Comproveu el token i torneu-ho a provar, o utilitzeu el botó &apos;Obre ZimaOS Connect&apos; per obtenir un token vàlid.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>D&apos;acord</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the token field</source>
-        <translation>Tanca aquest diàleg i torna al camp del token</translation>
-    </message>
-    <message>
-        <source>Could not create auth key</source>
-        <translation>No s'ha pogut crear la clau d'autorització</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
-        <translation>ZimaOS USB Creator no ha pogut crear una clau d'autorització d'organització. Comprova que la clau API de la teva organització és vàlida i que aquest ordinador està en línia i torna-ho a provar.</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the organisation API key field</source>
-        <translation>Tanca aquest diàleg i torna al camp de clau de l'API de l'organització</translation>
-    </message>
-    <message>
-        <source>Authentication token:</source>
-        <translation>Token d&apos;autenticació:</translation>
-    </message>
-    <message>
-        <source>Sign in to receive a token and enable ZimaOS Connect</source>
-        <translation>inicieu la sessió per rebre un token i activar ZimaOS Connect</translation>
     </message>
 </context>
 <context>
@@ -2592,10 +2441,6 @@ to show system drives.</source>
         <translation>Wi‑Fi</translation>
     </message>
     <message>
-        <source>ZimaOS Connect</source>
-        <translation>ZimaOS Connect</translation>
-    </message>
-    <message>
         <source>App Options</source>
         <translation>Opcions de l&apos;aplicació</translation>
     </message>
@@ -2616,42 +2461,12 @@ to show system drives.</source>
         <translation>Accés remot</translation>
     </message>
     <message>
-        <source>Replace existing ZimaOS Connect token?</source>
-        <translation>Voleu substituir el token de ZimaOS Connect existent?</translation>
-    </message>
-    <message>
-        <source>A new ZimaOS Connect token was received that differs from your current one.
-
-</source>
-        <translation>S&apos;ha rebut un nou token de ZimaOS Connect que difereix de l&apos;actual.
-</translation>
-    </message>
-    <message>
-        <source>Do you want to overwrite the existing token?
-
-</source>
-        <translation>Voleu sobreescriure el token existent?
-</translation>
-    </message>
-    <message>
-        <source>Replace token</source>
-        <translation>Substitueix el token</translation>
-    </message>
-    <message>
         <source>Please wait…</source>
         <translation>Espereu…</translation>
     </message>
     <message>
-        <source>Replace the current token with the newly received one</source>
-        <translation>Substitueix el token actual pel rebut recentment</translation>
-    </message>
-    <message>
         <source>Keep existing</source>
         <translation>Mantén l&apos;existent</translation>
-    </message>
-    <message>
-        <source>Keep your current ZimaOS Connect token</source>
-        <translation>Mantén el vostre token de ZimaOS Connect actual</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -2660,10 +2475,6 @@ to show system drives.</source>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
         <translation>Obre els paràmetres de l'aplicació per configurar les alertes de so, l'expulsió automàtica i les indicacions d'avís</translation>
-    </message>
-    <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Avís: Només sobreescriviu el token si heu iniciat aquesta acció.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>

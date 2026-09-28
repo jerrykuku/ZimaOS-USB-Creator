@@ -210,10 +210,6 @@
         <translation>Wi‑Fi가 설정되었습니다</translation>
     </message>
     <message>
-        <source>ZimaOS Connect enabled</source>
-        <translation>ZimaOS Connect가 활성화되었습니다</translation>
-    </message>
-    <message>
         <source>I2C enabled</source>
         <translation>I2C가 활성화되었습니다</translation>
     </message>
@@ -1508,10 +1504,6 @@ or type a path in the address bar above.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS Connect returned an unexpected response.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>성능 데이터 저장</translation>
     </message>
@@ -1803,149 +1795,6 @@ Technical details: %1</source>
     <message>
         <source>Enable passwordless sudo for this user account</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PiConnectCustomizationStep</name>
-    <message>
-        <source>Customisation: ZimaOS Connect</source>
-        <translation>사용자 지정: ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Enable ZimaOS Connect</source>
-        <translation>ZimaOS Connect 활성화</translation>
-    </message>
-    <message>
-        <source>What is ZimaOS Connect?</source>
-        <translation>ZimaOS Connect란?</translation>
-    </message>
-    <message>
-        <source>Open ZimaOS Connect</source>
-        <translation>ZimaOS Connect 열기</translation>
-    </message>
-    <message>
-        <source>Token received from browser</source>
-        <translation>브라우저에서 받은 토큰</translation>
-    </message>
-    <message>
-        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>브라우저에서 ZimaOS Connect 웹사이트를 열어 로그인하고 인증 토큰을 수신합니다</translation>
-    </message>
-    <message>
-        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
-        <translation>ZimaOS Connect 클라우드 서비스를 통해 ZimaOS에 안전한 원격 액세스를 활성화합니다</translation>
-    </message>
-    <message>
-        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
-        <translation>ZimaOS Connect 설정을 저장하고 다음 사용자 지정 단계로 진행합니다</translation>
-    </message>
-    <message>
-        <source>Register this device with your ZimaOS Connect organisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return to previous step</source>
-        <translation>이전 단계로 돌아갑니다</translation>
-    </message>
-    <message>
-        <source>Skip all customisation and proceed directly to writing the image</source>
-        <translation>모든 사용자 지정을 건너뛰고 바로 이미지를 기록합니다</translation>
-    </message>
-    <message>
-        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Organisation API Key:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste your ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Saved — type to replace</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paste organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auth key description:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Description for the auth key shown in the Connect organisation UI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>e.g. Factory-A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove the saved ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
-        <translation>ZimaOS Connect에서 인증 토큰을 입력하거나 붙여 넣으세요. ‘ZimaOS Connect 열기’ 버튼을 사용해 로그인하면 토큰이 자동으로 채워집니다</translation>
-    </message>
-    <message>
-        <source>Waiting for token (%1s)</source>
-        <translation>토큰 대기 중 (%1s)</translation>
-    </message>
-    <message>
-        <source>Paste token here</source>
-        <translation>토큰을 여기에 붙여 넣으세요</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator</translation>
-    </message>
-    <message>
-        <source>Invalid Token</source>
-        <translation>잘못된 토큰</translation>
-    </message>
-    <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
-        <translation>입력한 토큰이 유효하지 않습니다. 토큰을 확인하고 다시 시도하거나 ‘ZimaOS Connect 열기’ 버튼을 사용해 유효한 토큰을 받으세요</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>확인</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the token field</source>
-        <translation>이 대화 상자를 닫고 토큰 필드로 돌아갑니다</translation>
-    </message>
-    <message>
-        <source>Could not create auth key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the organisation API key field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Authentication token:</source>
-        <translation>인증 토큰:</translation>
-    </message>
-    <message>
-        <source>Sign in to receive a token and enable ZimaOS Connect</source>
-        <translation>토큰을 수신하고 ZimaOS Connect를 활성화하려면 로그인하세요</translation>
     </message>
 </context>
 <context>
@@ -2587,10 +2436,6 @@ to show system drives.</source>
         <translation>사용자</translation>
     </message>
     <message>
-        <source>ZimaOS Connect</source>
-        <translation>ZimaOS Connect</translation>
-    </message>
-    <message>
         <source>App Options</source>
         <translation>앱 옵션</translation>
     </message>
@@ -2611,40 +2456,12 @@ to show system drives.</source>
         <translation>원격 접근</translation>
     </message>
     <message>
-        <source>Replace existing ZimaOS Connect token?</source>
-        <translation>기존 ZimaOS Connect 토큰을 교체하시겠습니까?</translation>
-    </message>
-    <message>
-        <source>A new ZimaOS Connect token was received that differs from your current one.
-
-</source>
-        <translation>새로운 ZimaOS Connect 토큰이 기존 토큰과 다릅니다</translation>
-    </message>
-    <message>
-        <source>Do you want to overwrite the existing token?
-
-</source>
-        <translation>기존 토큰을 덮어쓰시겠습니까?</translation>
-    </message>
-    <message>
-        <source>Replace token</source>
-        <translation>토큰 교체</translation>
-    </message>
-    <message>
         <source>Please wait…</source>
         <translation>잠시만 기다려 주세요</translation>
     </message>
     <message>
-        <source>Replace the current token with the newly received one</source>
-        <translation>새로 받은 토큰으로 현재 토큰을 교체합니다</translation>
-    </message>
-    <message>
         <source>Keep existing</source>
         <translation>기존 유지</translation>
-    </message>
-    <message>
-        <source>Keep your current ZimaOS Connect token</source>
-        <translation>현재 ZimaOS Connect 토큰을 유지합니다</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -2653,10 +2470,6 @@ to show system drives.</source>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>경고: 이 작업을 수행한 경우에만 토큰을 덮어쓰세요</translation>
     </message>
     <message>
         <source>Wi‑Fi</source>

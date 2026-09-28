@@ -47,7 +47,6 @@ The `--capabilities` option accepts one or more of the following values:
 | `i2c` | Enable I2C interface option |
 | `onewire` | Enable 1-Wire interface option |
 | `passwordless_sudo` | Enable passwordless sudo option in user setup |
-| `rpi_connect` | Enable Raspberry Pi Connect setup |
 | `secure_boot` | Enable secure boot signing |
 | `serial` | Enable serial interface option |
 | `spi` | Enable SPI interface option |
@@ -80,7 +79,7 @@ Enable multiple interface capabilities for locally downloaded images:
 ./create_local_json.py --capabilities usb_otg i2c spi --device-capabilities usb_otg i2c spi
 ```
 
-Enable only OS-level capabilities (like Raspberry Pi Connect) that don't require device support:
+Enable only OS-level capabilities (like secure boot) that don't require device support:
 ```
-./create_local_json.py --online --capabilities rpi_connect secure_boot
+./create_local_json.py --online --capabilities secure_boot
 ```

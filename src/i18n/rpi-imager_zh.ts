@@ -214,10 +214,6 @@
         <translation>已配置 Wi‑Fi</translation>
     </message>
     <message>
-        <source>ZimaOS Connect enabled</source>
-        <translation>已启用 ZimaOS Connect</translation>
-    </message>
-    <message>
         <source>I2C enabled</source>
         <translation>已启用 I2C</translation>
     </message>
@@ -1534,10 +1530,6 @@ Technical details: %1</source>
         <translation>未配置组织 API 密钥。</translation>
     </message>
     <message>
-        <source>ZimaOS Connect returned an unexpected response.</source>
-        <translation>ZimaOS Connect 返回了意外响应。</translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>保存性能数据</translation>
     </message>
@@ -1811,149 +1803,6 @@ Technical details: %1</source>
     <message>
         <source>Enable passwordless sudo for this user account</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PiConnectCustomizationStep</name>
-    <message>
-        <source>Customisation: ZimaOS Connect</source>
-        <translation>自定义：ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Enable ZimaOS Connect</source>
-        <translation>启用 ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>What is ZimaOS Connect?</source>
-        <translation>什么是 ZimaOS Connect？</translation>
-    </message>
-    <message>
-        <source>Open ZimaOS Connect</source>
-        <translation>打开 ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Token received from browser</source>
-        <translation>已从浏览器接收令牌</translation>
-    </message>
-    <message>
-        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>在浏览器中打开 ZimaOS Connect 网站以登录并获取身份验证令牌</translation>
-    </message>
-    <message>
-        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
-        <translation>通过 ZimaOS Connect 云服务启用对 ZimaOS 设备的安全远程访问</translation>
-    </message>
-    <message>
-        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
-        <translation>保存 ZimaOS Connect 设置并继续下一步</translation>
-    </message>
-    <message>
-        <source>Register this device with your ZimaOS Connect organisation</source>
-        <translation>将此设备注册到您的 ZimaOS Connect 组织</translation>
-    </message>
-    <message>
-        <source>Return to previous step</source>
-        <translation>返回上一步</translation>
-    </message>
-    <message>
-        <source>Skip all customisation and proceed directly to writing the image</source>
-        <translation>跳过所有自定义并直接开始写入镜像</translation>
-    </message>
-    <message>
-        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
-        <translation>镜像中将写入一次性身份验证密钥，使设备在首次启动时加入您的 Connect 组织。</translation>
-    </message>
-    <message>
-        <source>Organisation API Key:</source>
-        <translation>组织 API 密钥：</translation>
-    </message>
-    <message>
-        <source>Enter or paste your ZimaOS Connect organisation API key</source>
-        <translation>输入或粘贴您的 ZimaOS Connect 组织 API 密钥</translation>
-    </message>
-    <message>
-        <source>Saved — type to replace</source>
-        <translation>已保存，输入新内容以替换</translation>
-    </message>
-    <message>
-        <source>Paste organisation API key</source>
-        <translation>粘贴组织 API 密钥</translation>
-    </message>
-    <message>
-        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
-        <translation>ZimaOS Connect 组织 API 密钥。保存后不会再次显示。</translation>
-    </message>
-    <message>
-        <source>Auth key description:</source>
-        <translation>身份验证密钥描述：</translation>
-    </message>
-    <message>
-        <source>Description for the auth key shown in the Connect organisation UI.</source>
-        <translation>在 Connect 组织界面中显示的身份验证密钥描述。</translation>
-    </message>
-    <message>
-        <source>e.g. Factory-A</source>
-        <translation>例如 Factory-A</translation>
-    </message>
-    <message>
-        <source>Clear saved key</source>
-        <translation>清除已保存的密钥</translation>
-    </message>
-    <message>
-        <source>Remove the saved ZimaOS Connect organisation API key</source>
-        <translation>移除已保存的 ZimaOS Connect 组织 API 密钥</translation>
-    </message>
-    <message>
-        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
-        <translation>输入或粘贴来自 ZimaOS Connect 的身份验证令牌。如果您使用“打开 ZimaOS Connect”按钮登录，令牌将自动填充。</translation>
-    </message>
-    <message>
-        <source>Waiting for token (%1s)</source>
-        <translation>等待令牌（%1s）</translation>
-    </message>
-    <message>
-        <source>Paste token here</source>
-        <translation>在此粘贴令牌</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator</translation>
-    </message>
-    <message>
-        <source>Invalid Token</source>
-        <translation>无效令牌</translation>
-    </message>
-    <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
-        <translation>您输入的令牌无效。请检查令牌后重试，或使用“打开 ZimaOS Connect”按钮获取有效令牌。</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>确定</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the token field</source>
-        <translation>关闭此对话框并返回令牌输入框</translation>
-    </message>
-    <message>
-        <source>Could not create auth key</source>
-        <translation>无法创建身份验证密钥</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
-        <translation>ZimaOS USB Creator 无法创建组织身份验证密钥。请检查组织 API 密钥是否有效且此电脑已联网，然后重试。</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the organisation API key field</source>
-        <translation>关闭此对话框并返回组织 API 密钥字段</translation>
-    </message>
-    <message>
-        <source>Authentication token:</source>
-        <translation>身份验证令牌：</translation>
-    </message>
-    <message>
-        <source>Sign in to receive a token and enable ZimaOS Connect</source>
-        <translation>登录以获取令牌并启用 ZimaOS Connect</translation>
     </message>
 </context>
 <context>
@@ -2601,10 +2450,6 @@ to show system drives.</source>
         <translation>Wi‑Fi</translation>
     </message>
     <message>
-        <source>ZimaOS Connect</source>
-        <translation>ZimaOS Connect</translation>
-    </message>
-    <message>
         <source>App Options</source>
         <translation>应用选项</translation>
     </message>
@@ -2625,44 +2470,12 @@ to show system drives.</source>
         <translation>远程访问</translation>
     </message>
     <message>
-        <source>Replace existing ZimaOS Connect token?</source>
-        <translation>替换现有的 ZimaOS Connect 令牌？</translation>
-    </message>
-    <message>
-        <source>A new ZimaOS Connect token was received that differs from your current one.
-
-</source>
-        <translation>收到了与您当前令牌不同的新 ZimaOS Connect 令牌。
-
-</translation>
-    </message>
-    <message>
-        <source>Do you want to overwrite the existing token?
-
-</source>
-        <translation>是否要覆盖现有令牌？
-
-</translation>
-    </message>
-    <message>
-        <source>Replace token</source>
-        <translation>替换令牌</translation>
-    </message>
-    <message>
         <source>Please wait…</source>
         <translation>请稍候…</translation>
     </message>
     <message>
-        <source>Replace the current token with the newly received one</source>
-        <translation>将当前令牌替换为新收到的令牌</translation>
-    </message>
-    <message>
         <source>Keep existing</source>
         <translation>保留现有</translation>
-    </message>
-    <message>
-        <source>Keep your current ZimaOS Connect token</source>
-        <translation>保留您当前的 ZimaOS Connect 令牌</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -2721,10 +2534,6 @@ to show system drives.</source>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
         <translation>打开应用设置以配置声音提醒、自动弹出和警告提示</translation>
-    </message>
-    <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>警告：仅在您主动发起此操作时才覆盖令牌。</translation>
     </message>
 </context>
 <context>

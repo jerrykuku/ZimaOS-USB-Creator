@@ -12,10 +12,6 @@
 
 namespace rpi_imager {
 
-// Raspberry Pi Connect configuration paths
-constexpr auto PI_CONNECT_CONFIG_PATH = ".config/com.raspberrypi.connect";
-constexpr auto PI_CONNECT_DEPLOY_KEY_FILENAME = "auth.key";
-
 /**
  * @brief Generates firstrun.sh and cloud-init customisation scripts for Raspberry Pi images
  * 
@@ -30,24 +26,20 @@ public:
      * @brief Generate a firstrun.sh script from settings
      * 
      * @param settings Map containing customisation settings
-     * @param piConnectToken Optional Raspberry Pi Connect token
      * @return QByteArray containing the generated script
      */
-    static QByteArray generateSystemdScript(const QVariantMap& settings, 
-                                           const QString& piConnectToken = QString());
+    static QByteArray generateSystemdScript(const QVariantMap& settings);
     
     /**
      * @brief Generate cloud-init user-data YAML from settings
      * 
      * @param settings Map containing customisation settings
-     * @param piConnectToken Optional Raspberry Pi Connect token
      * @param hasCcRpi Whether the OS supports the cc_raspberry_pi cloud-init module
      * @param sshEnabled Whether SSH is enabled
      * @param getCurrentUser Function to get current user name
      * @return QByteArray containing the generated user-data YAML
      */
     static QByteArray generateCloudInitUserData(const QVariantMap& settings,
-                                               const QString& piConnectToken = QString(),
                                                bool hasCcRpi = false,
                                                bool sshEnabled = false,
                                                const QString& currentUser = QString());
@@ -66,21 +58,19 @@ public:
      * @brief Generate an rpi-preseed.toml file from settings
      *
      * Produces the TOML customisation file consumed by rpi-preseed on first
-     * boot (system/user/ssh/wlan/locale/connect/interfaces sections). The
+     * boot (system/user/ssh/wlan/locale/interfaces sections). The
      * output is restricted to the TOML subset rpi-preseed's own POSIX-sh parser
      * understands (basic "" strings escaping only \\ and \", bare booleans and
      * single-/multi-line arrays of strings). Returns an empty QByteArray when
      * nothing was configured, so no file is written.
      *
      * @param settings Map containing customisation settings
-     * @param piConnectToken Optional Raspberry Pi Connect token
      * @param hasCcRpi Unused (interfaces are always supported by rpi-preseed)
      * @param sshEnabled Whether SSH is enabled
      * @param currentUser Fallback user name when none is configured
      * @return QByteArray containing the generated rpi-preseed.toml
      */
     static QByteArray generateRpiPreseedToml(const QVariantMap& settings,
-                                             const QString& piConnectToken = QString(),
                                              bool hasCcRpi = false,
                                              bool sshEnabled = false,
                                              const QString& currentUser = QString());

@@ -395,37 +395,6 @@ TEST_CASE("CustomisationGenerator WiFi country only (no SSID)", "[customization]
     // in imagewriter.cpp (_applySystemdCustomizationFromSettings), not in the firstrun.sh script itself
 }
 
-TEST_CASE("CustomisationGenerator Raspberry Pi Connect", "[customization]") {
-    QVariantMap settings;
-    settings["sshUserName"] = "testuser";
-    settings["piConnectEnabled"] = true;
-    
-    QString token = "test-token-12345";
-    
-    QByteArray script = CustomisationGenerator::generateSystemdScript(settings, token);
-    QString scriptStr = QString::fromUtf8(script);
-    
-    // Check deploy key is written
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring(PI_CONNECT_CONFIG_PATH));
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring(PI_CONNECT_DEPLOY_KEY_FILENAME));
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("test-token-12345"));
-    
-    // Check systemd unit directories are created
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("SYSTEMD_USER_BASE="));
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("default.target.wants"));
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("paths.target.wants"));
-    
-    // Check all three systemd units are enabled
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("rpi-connect.service"));
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("rpi-connect-signin.path"));
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("rpi-connect-wayvnc.service"));
-    
-    // Check systemd linger is set up for auto-start
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("/var/lib/systemd/linger"));
-    REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("install -m 0644 /dev/null \"/var/lib/systemd/linger/$TARGET_USER\""));
-}
-
-// Negative Tests - Testing resilience to invalid/malicious inputs
 TEST_CASE("CustomisationGenerator handles empty settings gracefully", "[customization][negative]") {
     QVariantMap settings;  // Completely empty
     
@@ -977,7 +946,7 @@ TEST_CASE("CustomisationGenerator cloud-init handles SSH public key only (no use
     settings["sshPublicKey"] = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITestPublicKey user@host";
     // Note: NO sshUserName or sshUserPassword set
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // Should generate users section even without explicit username
@@ -1018,7 +987,7 @@ TEST_CASE("CustomisationGenerator cloud-init handles multiple SSH keys in .pub f
     QVariantMap settings;
     settings["sshPublicKey"] = "ssh-rsa AAAAB3...key1 user@host1\nssh-ed25519 AAAAC3...key2 user@host2";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // Both keys should be in separate YAML list items
@@ -1034,7 +1003,7 @@ TEST_CASE("CustomisationGenerator cloud-init quotes SSH keys with YAML-special c
     QVariantMap settings;
     settings["sshPublicKey"] = "sk-ssh-ed25519@openssh.com AAAAGnNr...DMtkAAAABHNzaDo= ssh:";
 
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "pi");
     QString yaml = QString::fromUtf8(userdata);
 
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("ssh_authorized_keys:"));
@@ -1053,21 +1022,6 @@ TEST_CASE("CustomisationGenerator handles very long hostname", "[customization][
     // Should still generate script without crashing
     REQUIRE_THAT(scriptStr.toStdString(), ContainsSubstring("set_hostname"));
     REQUIRE(scriptStr.endsWith("exit 0\n"));
-}
-
-TEST_CASE("CustomisationGenerator handles null/empty piConnect token", "[customization][negative]") {
-    QVariantMap settings;
-    settings["sshUserName"] = "testuser";
-    settings["piConnectEnabled"] = true;
-    
-    QString emptyToken = "";  // Empty token
-    
-    QByteArray script = CustomisationGenerator::generateSystemdScript(settings, emptyToken);
-    QString scriptStr = QString::fromUtf8(script);
-    
-    // Should not include Pi Connect setup if token is empty
-    REQUIRE_FALSE(scriptStr.contains(PI_CONNECT_CONFIG_PATH));
-    REQUIRE_FALSE(scriptStr.contains(PI_CONNECT_DEPLOY_KEY_FILENAME));
 }
 
 TEST_CASE("CustomisationGenerator handles invalid keyboard layout", "[customization][negative]") {
@@ -1154,7 +1108,7 @@ TEST_CASE("CustomisationGenerator generates cloud-init user-data with SSH user",
     settings["sshUserName"] = "testuser";
     settings["sshUserPassword"] = "$5$fakesalt$fakehash123";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "testuser");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "testuser");
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("[ systemctl, enable, --now, ssh ]"));
@@ -1174,7 +1128,7 @@ TEST_CASE("CustomisationGenerator generates cloud-init user-data with user crede
     settings["sshUserPassword"] = "$5$fakesalt$fakehash456";
     // Note: sshEnabled is NOT set (defaults to false)
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // User configuration MUST be generated even without SSH
@@ -1195,7 +1149,7 @@ TEST_CASE("CustomisationGenerator generates cloud-init user-data with SSH keys",
     settings["sshUserName"] = "testuser";
     settings["sshAuthorizedKeys"] = "ssh-rsa AAAAB3...key1\nssh-rsa AAAAB3...key2";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "testuser");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "testuser");
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("[ systemctl, enable, --now, ssh ]"));
@@ -1216,7 +1170,7 @@ TEST_CASE("CustomisationGenerator cloud-init passwordless sudo when explicitly e
     settings["sshUserPassword"] = "$y$j9T$test$hash";
     settings["passwordlessSudo"] = true;
 
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "testuser");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "testuser");
     QString yaml = QString::fromUtf8(userdata);
 
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("  name: testuser"));
@@ -1236,7 +1190,7 @@ TEST_CASE("CustomisationGenerator cloud-init no passwordless sudo by default", "
     settings["sshUserName"] = "testuser";
     settings["sshUserPassword"] = "$y$j9T$test$hash";
 
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "testuser");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "testuser");
     QString yaml = QString::fromUtf8(userdata);
 
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("  name: testuser"));
@@ -1279,7 +1233,7 @@ TEST_CASE("CustomisationGenerator generates cloud-init user-data with password a
     QVariantMap settings;
     settings["sshPasswordAuth"] = true;
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "testuser");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "testuser");
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("ssh_pwauth: true"));
@@ -1291,7 +1245,7 @@ TEST_CASE("CustomisationGenerator generates cloud-init user-data with password a
     settings["sshPasswordAuth"] = true;
     settings["sshAuthorizedKeys"] = "ssh-rsa AAAAB3...key1";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "testuser");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "testuser");
     QString yaml = QString::fromUtf8(userdata);
     
     // Both SSH keys and password auth enabled - password auth takes precedence
@@ -1308,7 +1262,7 @@ TEST_CASE("CustomisationGenerator generates cloud-init user-data with Raspberry 
     settings["enableSerial"] = "Console & Hardware";
     settings["enableUsbGadget"] = true;
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, QString());
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, QString());
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi:"));
@@ -1319,51 +1273,6 @@ TEST_CASE("CustomisationGenerator generates cloud-init user-data with Raspberry 
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("serial:"));
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("console: true"));
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("hardware: true"));
-}
-
-TEST_CASE("CustomisationGenerator generates cloud-init user-data with Pi Connect token", "[cloudinit][userdata][piconnect]") {
-    QVariantMap settings;
-    settings["sshUserName"] = "testuser";
-    settings["piConnectEnabled"] = true;
-    
-    QString token = "test-token-abcd-1234";
-    
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, token, false, true, "testuser");
-    QString yaml = QString::fromUtf8(userdata);
-    
-    // Check runcmd section exists (Pi Connect uses runcmd to ensure user exists first)
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("runcmd:"));
-    
-    // Check config directory is created
-    QString expectedInstallDir = QString("install -o testuser -m 700 -d /home/testuser/") + PI_CONNECT_CONFIG_PATH;
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring(expectedInstallDir.toStdString()));
-    
-    // Check deploy key file is written via printf in runcmd (not write_files)
-    // This approach is used because cloud-init tries to resolve user/group at parse time
-    // with write_files defer:true, which fails if the user doesn't exist yet
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("printf"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("test-token-abcd-1234"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring(PI_CONNECT_DEPLOY_KEY_FILENAME));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("chmod 600"));
-    
-    // Check systemd unit directories are created
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring(".config/systemd/user/default.target.wants"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring(".config/systemd/user/paths.target.wants"));
-    
-    // Check all three systemd units are enabled via symlinks with fallback logic
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("UNIT_SRC=/usr/lib/systemd/user/rpi-connect.service"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("UNIT_SRC=/lib/systemd/user/rpi-connect.service"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("ln -sf $UNIT_SRC"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi-connect.service"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi-connect-signin.path"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi-connect-wayvnc.service"));
-    
-    // Check ownership is set correctly
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("chown -R testuser:testuser"));
-    
-    // Check systemd linger is set up for auto-start
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("/var/lib/systemd/linger"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("install -m 0644 /dev/null /var/lib/systemd/linger/testuser"));
 }
 
 TEST_CASE("CustomisationGenerator generates cloud-init network-config with WiFi", "[cloudinit][network]") {
@@ -1453,7 +1362,7 @@ TEST_CASE("CustomisationGenerator cloud-init WiFi country only (no SSID)", "[clo
     // Set country code FR without SSID - tests regulatory domain configuration
     settings["recommendedWifiCountry"] = "FR";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, "", false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // Should include runcmd to unblock WiFi
@@ -1546,7 +1455,7 @@ TEST_CASE("Independent step: Hostname only", "[cloudinit][independent][hostname]
     QVariantMap settings;
     settings["hostname"] = "mypi";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString yaml = QString::fromUtf8(userdata);
     
@@ -1579,7 +1488,7 @@ TEST_CASE("Independent step: Timezone only", "[cloudinit][independent][locale]")
     QVariantMap settings;
     settings["timezone"] = "America/New_York";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString yaml = QString::fromUtf8(userdata);
     
@@ -1604,7 +1513,7 @@ TEST_CASE("Independent step: Keyboard only", "[cloudinit][independent][locale]")
     QVariantMap settings;
     settings["keyboard"] = "de";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString yaml = QString::fromUtf8(userdata);
     
@@ -1632,7 +1541,7 @@ TEST_CASE("Independent step: Locale (timezone + keyboard)", "[cloudinit][indepen
     settings["timezone"] = "Europe/Paris";
     settings["keyboard"] = "fr";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // Both locale settings MUST be generated
@@ -1653,7 +1562,7 @@ TEST_CASE("Independent step: User credentials only (no SSH)", "[cloudinit][indep
     settings["sshUserName"] = "alice";
     settings["sshUserPassword"] = "$6$rounds=4096$salt$hashvalue";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString yaml = QString::fromUtf8(userdata);
     
@@ -1689,7 +1598,7 @@ TEST_CASE("Independent step: WiFi only", "[cloudinit][independent][wifi]") {
     settings["wifiPasswordCrypt"] = "hashedwifipassword123";
     settings["recommendedWifiCountry"] = "GB";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString userdataYaml = QString::fromUtf8(userdata);
     QString netcfgYaml = QString::fromUtf8(netcfg);
@@ -1723,7 +1632,7 @@ TEST_CASE("Independent step: SSH with password auth only", "[cloudinit][independ
     QVariantMap settings;
     settings["sshPasswordAuth"] = true;
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString yaml = QString::fromUtf8(userdata);
     
@@ -1751,7 +1660,7 @@ TEST_CASE("Independent step: SSH with public keys only", "[cloudinit][independen
     QVariantMap settings;
     settings["sshAuthorizedKeys"] = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG... user@host";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, true, "defaultuser");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, true, "defaultuser");
     QString yaml = QString::fromUtf8(userdata);
     
     // SSH configuration MUST be generated
@@ -1778,7 +1687,7 @@ TEST_CASE("Independent step: Interfaces only (I2C)", "[cloudinit][independent][i
     settings["enableI2C"] = true;
     settings["enableSerial"] = "Disabled";  // Explicitly disable to test I2C in isolation
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString yaml = QString::fromUtf8(userdata);
     
@@ -1805,7 +1714,7 @@ TEST_CASE("Independent step: Interfaces only (SPI)", "[cloudinit][independent][i
     settings["enableSPI"] = true;
     settings["enableSerial"] = "Disabled";  // Explicitly disable to test SPI in isolation
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi:"));
@@ -1822,7 +1731,7 @@ TEST_CASE("Independent step: Interfaces only (1-Wire)", "[cloudinit][independent
     settings["enable1Wire"] = true;
     settings["enableSerial"] = "Disabled";  // Explicitly disable to test 1-Wire in isolation
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi:"));
@@ -1834,7 +1743,7 @@ TEST_CASE("Independent step: Interfaces only (Serial)", "[cloudinit][independent
     QVariantMap settings;
     settings["enableSerial"] = "Console";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi:"));
@@ -1850,7 +1759,7 @@ TEST_CASE("Independent step: USB Gadget only", "[cloudinit][independent][feature
     // Explicitly disable serial to avoid default behavior
     settings["enableSerial"] = "Disabled";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi:"));
@@ -1860,49 +1769,6 @@ TEST_CASE("Independent step: USB Gadget only", "[cloudinit][independent][feature
     REQUIRE_THAT(yaml.toStdString(), !ContainsSubstring("interfaces:"));
 }
 
-TEST_CASE("Independent step: Pi Connect only (with required user)", "[cloudinit][independent][piconnect]") {
-    // Pi Connect requires a user to be configured for the token file ownership
-    // But Pi Connect step itself should work without other steps
-    QVariantMap settings;
-    settings["sshUserName"] = "connectuser";
-    settings["sshUserPassword"] = "$5$salt$hash";
-    settings["piConnectEnabled"] = true;
-    
-    QString token = "pi-connect-deploy-token-xyz";
-    
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, token, false, false, "pi");
-    QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
-    QString yaml = QString::fromUtf8(userdata);
-    
-    // User configuration MUST be generated
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("user:"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("  name: connectuser"));
-    
-    // Pi Connect configuration MUST be generated
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("runcmd:"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("pi-connect-deploy-token-xyz"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring(PI_CONNECT_CONFIG_PATH));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("install -o connectuser"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("chown"));
-    REQUIRE_THAT(yaml.toStdString(), ContainsSubstring("rpi-connect.service"));
-    
-    // No other customization should be present
-    REQUIRE_THAT(yaml.toStdString(), !ContainsSubstring("hostname:"));
-    REQUIRE_THAT(yaml.toStdString(), !ContainsSubstring("enable_ssh:"));
-    REQUIRE_THAT(yaml.toStdString(), !ContainsSubstring("timezone:"));
-    REQUIRE_THAT(yaml.toStdString(), !ContainsSubstring("keyboard:"));
-    REQUIRE_THAT(yaml.toStdString(), !ContainsSubstring("rpi:"));
-    
-    // No Wi-Fi here, so no network-config is emitted at all. eth0 DHCP is only
-    // written alongside a wifis: block, because a network-config file replaces
-    // the distro default and would otherwise take wired ethernet with it.
-    REQUIRE(netcfg.isEmpty());
-}
-
-// =============================================================================
-// COMBINATION TESTS: Verify steps don't interfere with each other
-// =============================================================================
-
 TEST_CASE("Combined steps: User + Hostname (no SSH)", "[cloudinit][combined]") {
     // User and hostname configured together, but SSH disabled
     QVariantMap settings;
@@ -1910,7 +1776,7 @@ TEST_CASE("Combined steps: User + Hostname (no SSH)", "[cloudinit][combined]") {
     settings["sshUserName"] = "developer";
     settings["sshUserPassword"] = "$6$salt$hash";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // Both must be generated
@@ -1932,7 +1798,7 @@ TEST_CASE("Combined steps: User + WiFi (no SSH)", "[cloudinit][combined]") {
     settings["wifiSSID"] = "OfficeWiFi";
     settings["wifiPasswordCrypt"] = "wifihash";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString userdataYaml = QString::fromUtf8(userdata);
     QString netcfgYaml = QString::fromUtf8(netcfg);
@@ -1956,7 +1822,7 @@ TEST_CASE("Combined steps: All locale + User (no SSH)", "[cloudinit][combined]")
     settings["sshUserName"] = "jpuser";
     settings["sshUserPassword"] = "$6$salt$hash";
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), false, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, false, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // All must be generated
@@ -1977,7 +1843,7 @@ TEST_CASE("Combined steps: User + Interfaces (no SSH)", "[cloudinit][combined]")
     settings["enableI2C"] = true;
     settings["enableSPI"] = true;
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, "pi");
     QString yaml = QString::fromUtf8(userdata);
     
     // User must be generated
@@ -2007,7 +1873,7 @@ TEST_CASE("Combined steps: Full customization without SSH", "[cloudinit][combine
     settings["recommendedWifiCountry"] = "DE";
     settings["enableI2C"] = true;
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, false, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, false, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString userdataYaml = QString::fromUtf8(userdata);
     QString netcfgYaml = QString::fromUtf8(netcfg);
@@ -2045,7 +1911,7 @@ TEST_CASE("Combined steps: Full customization with SSH", "[cloudinit][combined]"
     settings["wifiPasswordCrypt"] = "wifihash";
     settings["enableSPI"] = true;
     
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, QString(), true, true, "pi");
+    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, true, true, "pi");
     QByteArray netcfg = CustomisationGenerator::generateCloudInitNetworkConfig(settings, false);
     QString userdataYaml = QString::fromUtf8(userdata);
     QString netcfgYaml = QString::fromUtf8(netcfg);
@@ -2086,25 +1952,6 @@ TEST_CASE("CustomisationGenerator handles empty cloud-init settings gracefully",
     REQUIRE(userdata.isEmpty());
     REQUIRE(netcfg.isEmpty());
 }
-
-TEST_CASE("CustomisationGenerator cloud-init handles empty Pi Connect token", "[cloudinit][negative]") {
-    QVariantMap settings;
-    settings["sshUserName"] = "testuser";
-    settings["piConnectEnabled"] = true;
-    
-    QString emptyToken = "";
-    
-    QByteArray userdata = CustomisationGenerator::generateCloudInitUserData(settings, emptyToken, false, true, "testuser");
-    QString yaml = QString::fromUtf8(userdata);
-    
-    // Should not include write_files or runcmd for Pi Connect
-    REQUIRE_FALSE(yaml.contains("write_files:"));
-    REQUIRE_FALSE(yaml.contains(PI_CONNECT_CONFIG_PATH));
-}
-
-// =============================================================================
-// rpi-preseed.toml serialiser
-// =============================================================================
 
 TEST_CASE("rpi-preseed empty settings produce no file", "[preseed][negative]") {
     QVariantMap settings;  // Nothing configured
@@ -2164,12 +2011,12 @@ TEST_CASE("rpi-preseed ssh section is gated on sshEnabled", "[preseed][ssh]") {
 
     // sshEnabled defaults to false -> no [ssh] section, keys not leaked.
     std::string off = QString::fromUtf8(
-        CustomisationGenerator::generateRpiPreseedToml(settings, QString(), false, false)).toStdString();
+        CustomisationGenerator::generateRpiPreseedToml(settings, false, false)).toStdString();
     REQUIRE(off.empty());
 
     // Enabled -> section present with the key in a multi-line array.
     std::string on = QString::fromUtf8(
-        CustomisationGenerator::generateRpiPreseedToml(settings, QString(), false, true)).toStdString();
+        CustomisationGenerator::generateRpiPreseedToml(settings, false, true)).toStdString();
     REQUIRE_THAT(on, ContainsSubstring("[ssh]"));
     REQUIRE_THAT(on, ContainsSubstring("enabled = true"));
     REQUIRE_THAT(on, ContainsSubstring("password_authentication = false"));
@@ -2184,7 +2031,7 @@ TEST_CASE("rpi-preseed ssh multiple keys and password auth", "[preseed][ssh]") {
     settings["sshAuthorizedKeys"] = "ssh-rsa KEY1 a@b\nssh-ed25519 KEY2 c@d";
 
     std::string s = QString::fromUtf8(
-        CustomisationGenerator::generateRpiPreseedToml(settings, QString(), false, true)).toStdString();
+        CustomisationGenerator::generateRpiPreseedToml(settings, false, true)).toStdString();
 
     REQUIRE_THAT(s, ContainsSubstring("password_authentication = true"));
     REQUIRE_THAT(s, ContainsSubstring("\"ssh-rsa KEY1 a@b\","));
@@ -2277,23 +2124,6 @@ TEST_CASE("rpi-preseed locale section", "[preseed][locale]") {
     REQUIRE_THAT(s, ContainsSubstring("timezone = \"Europe/London\""));
 }
 
-TEST_CASE("rpi-preseed connect with token uses token mode", "[preseed][connect]") {
-    QVariantMap settings;
-    settings["piConnectEnabled"] = true;
-
-    std::string withToken = QString::fromUtf8(
-        CustomisationGenerator::generateRpiPreseedToml(settings, "deploy-token-123")).toStdString();
-    REQUIRE_THAT(withToken, ContainsSubstring("[connect]"));
-    REQUIRE_THAT(withToken, ContainsSubstring("enabled = true"));
-    REQUIRE_THAT(withToken, ContainsSubstring("mode = \"token\""));
-    REQUIRE_THAT(withToken, ContainsSubstring("token = \"deploy-token-123\""));
-
-    std::string noToken = QString::fromUtf8(
-        CustomisationGenerator::generateRpiPreseedToml(settings)).toStdString();
-    REQUIRE_THAT(noToken, ContainsSubstring("mode = \"device-identity\""));
-    REQUIRE_THAT(noToken, !ContainsSubstring("token ="));
-}
-
 TEST_CASE("rpi-preseed interfaces map wizard values", "[preseed][interfaces]") {
     QVariantMap settings;
     settings["enableI2C"] = true;
@@ -2342,7 +2172,7 @@ TEST_CASE("rpi-preseed combined config orders sections", "[preseed]") {
     settings["timezone"] = "Europe/London";
 
     QByteArray toml = CustomisationGenerator::generateRpiPreseedToml(
-        settings, QString(), false, true);
+        settings, false, true);
     QString s = QString::fromUtf8(toml);
 
     // config_version must be first, sections follow in a stable order.
@@ -2488,3 +2318,28 @@ TEST_CASE("Generator passes through a pre-derived Wi-Fi PSK unchanged", "[custom
     REQUIRE_THAT(script.toStdString(), ContainsSubstring("psk=deadbeefcafef00d"));
 }
 
+
+TEST_CASE("Retired Connect settings do not provision remote access", "[customization][cloudinit][preseed]") {
+    QVariantMap settings;
+    settings["hostname"] = "zima-test";
+    settings["sshUserName"] = "testuser";
+    // Old settings must stay inert even when passed in by a caller.
+    settings["piConnectEnabled"] = true;
+
+    QByteArray output;
+    SECTION("systemd") {
+        output = CustomisationGenerator::generateSystemdScript(settings);
+    }
+    SECTION("cloud-init") {
+        output = CustomisationGenerator::generateCloudInitUserData(settings);
+    }
+    SECTION("rpi-preseed") {
+        output = CustomisationGenerator::generateRpiPreseedToml(settings);
+    }
+
+    REQUIRE(output.contains("zima-test"));
+    REQUIRE_FALSE(output.contains("com.raspberrypi.connect"));
+    REQUIRE_FALSE(output.contains("rpi-connect"));
+    REQUIRE_FALSE(output.contains("auth.key"));
+    REQUIRE_FALSE(output.contains("[connect]"));
+}

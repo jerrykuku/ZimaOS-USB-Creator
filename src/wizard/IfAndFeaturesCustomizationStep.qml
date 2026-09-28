@@ -456,7 +456,6 @@ WizardStepBase {
         wizardContainer.userConfigured = false
         wizardContainer.wifiConfigured = false
         wizardContainer.sshEnabled = false
-        wizardContainer.piConnectEnabled = false
         wizardContainer.ifI2cEnabled = false
         wizardContainer.ifSpiEnabled = false
         wizardContainer.ifSerial = "Disabled"

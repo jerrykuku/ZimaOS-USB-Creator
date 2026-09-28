@@ -210,10 +210,6 @@
         <translation>Wi-Fi настроен</translation>
     </message>
     <message>
-        <source>ZimaOS Connect enabled</source>
-        <translation>ZimaOS Connect включен</translation>
-    </message>
-    <message>
         <source>I2C enabled</source>
         <translation>I2C включен</translation>
     </message>
@@ -1508,10 +1504,6 @@ or type a path in the address bar above.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS Connect returned an unexpected response.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Сохранить данные о производительности</translation>
     </message>
@@ -1803,149 +1795,6 @@ Technical details: %1</source>
     <message>
         <source>Enable passwordless sudo for this user account</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PiConnectCustomizationStep</name>
-    <message>
-        <source>Customisation: ZimaOS Connect</source>
-        <translation>Настройка: ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Enable ZimaOS Connect</source>
-        <translation>Включить ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>What is ZimaOS Connect?</source>
-        <translation>Что такое ZimaOS Connect?</translation>
-    </message>
-    <message>
-        <source>Open ZimaOS Connect</source>
-        <translation>Открыть ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Token received from browser</source>
-        <translation>Токен получен от браузера</translation>
-    </message>
-    <message>
-        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Откройте веб-сайт ZimaOS Connect в вашем браузере, чтобы войти в систему и получить токен аутентификации</translation>
-    </message>
-    <message>
-        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
-        <translation>Включить безопасный удаленный доступ к вашему ZimaOS через облачный сервис ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
-        <translation>Сохраните настройки ZimaOS Connect и перейти к следующему шагу настройки</translation>
-    </message>
-    <message>
-        <source>Register this device with your ZimaOS Connect organisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return to previous step</source>
-        <translation>Вернуться к предыдущему шагу</translation>
-    </message>
-    <message>
-        <source>Skip all customisation and proceed directly to writing the image</source>
-        <translation>Пропустить все настройки и приступить непосредственно к записи образа</translation>
-    </message>
-    <message>
-        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Organisation API Key:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste your ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Saved — type to replace</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paste organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auth key description:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Description for the auth key shown in the Connect organisation UI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>e.g. Factory-A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove the saved ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
-        <translation>Введите или вставьте токен аутентификации из ZimaOS Connect. Токен будет заполнен автоматически, если вы нажмёте кнопку &apos;Открыть ZimaOS Connect&apos; для входа.</translation>
-    </message>
-    <message>
-        <source>Waiting for token (%1s)</source>
-        <translation>Ожидание токена (%1s)</translation>
-    </message>
-    <message>
-        <source>Paste token here</source>
-        <translation>Вставить токен здесь</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator</translation>
-    </message>
-    <message>
-        <source>Invalid Token</source>
-        <translation>Недействительный токен</translation>
-    </message>
-    <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
-        <translation>Введённый вами токен недействителен. Проверьте токен и повторите попытку или нажмите кнопку &apos;Открыть ZimaOS Connect&apos;, чтобы получить действительный токен.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the token field</source>
-        <translation>Закрыть это диалоговое окно и вернуться к полю ввода токена.</translation>
-    </message>
-    <message>
-        <source>Could not create auth key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the organisation API key field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Authentication token:</source>
-        <translation>Токен аутентификации:</translation>
-    </message>
-    <message>
-        <source>Sign in to receive a token and enable ZimaOS Connect</source>
-        <translation>Войдите в систему, чтобы получить токен и активировать ZimaOS Connect</translation>
     </message>
 </context>
 <context>
@@ -2593,10 +2442,6 @@ to show system drives.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS Connect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>App Options</source>
         <translation>Настройки</translation>
     </message>
@@ -2617,44 +2462,12 @@ to show system drives.</source>
         <translation>Удаленный доступ</translation>
     </message>
     <message>
-        <source>Replace existing ZimaOS Connect token?</source>
-        <translation>Заменить существующий токен ZimaOS Connect?</translation>
-    </message>
-    <message>
-        <source>A new ZimaOS Connect token was received that differs from your current one.
-
-</source>
-        <translation>Получен новый токен ZimaOS Connect, который отличается от вашего текущего.
-
-</translation>
-    </message>
-    <message>
-        <source>Do you want to overwrite the existing token?
-
-</source>
-        <translation>Вы хотите перезаписать существующий токен?
-
-</translation>
-    </message>
-    <message>
-        <source>Replace token</source>
-        <translation>Заменить токен</translation>
-    </message>
-    <message>
         <source>Please wait…</source>
         <translation>Пожалуйста, подождите…</translation>
     </message>
     <message>
-        <source>Replace the current token with the newly received one</source>
-        <translation>Замените текущий токен на только что полученный</translation>
-    </message>
-    <message>
         <source>Keep existing</source>
         <translation>Сохранить существующий</translation>
-    </message>
-    <message>
-        <source>Keep your current ZimaOS Connect token</source>
-        <translation>Сохраните ваш текущий токен ZimaOS Connect</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -2663,10 +2476,6 @@ to show system drives.</source>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Внимание: перезаписывайте токен только в том случае, если вы инициировали это действие.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>

@@ -241,7 +241,7 @@ ListView {
                     value = 0
                 } else if (roleName === "capabilities") {
                     value = []
-                } else if (roleName === "contains_multiple_files" || roleName === "random" || roleName === "enable_rpi_connect") {
+                } else if (roleName === "contains_multiple_files" || roleName === "random") {
                     value = false
                 }
             }

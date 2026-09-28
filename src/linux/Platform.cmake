@@ -52,7 +52,7 @@ set(PLATFORM_SOURCES
 # DBus-backed components. The embedded (linuxfb netboot) build has no session
 # bus and is built without QtDBus, so it uses the same stubs as the CLI build
 # for the WiFi-credential and suspend-inhibitor backends, and drops the
-# NetworkManager and Pi Connect URI-handler sources entirely. It keeps the
+# NetworkManager and repository URI-handler sources entirely. It keeps the
 # GUI file dialog (nativefiledialog_linux.cpp), whose DBus portal path is
 # QT_DBUS_LIB-guarded and compiles to a QML-only fallback without DBus.
 if(BUILD_CLI_ONLY)

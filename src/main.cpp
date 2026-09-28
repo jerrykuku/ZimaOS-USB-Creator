@@ -337,9 +337,8 @@ int main(int argc, char *argv[])
     // Create ImageWriter early to check embedded mode
     ImageWriter imageWriter(nullptr);
 
-    // Register as the handler for the rpi-imager:// URL scheme so the Raspberry
-    // Pi Connect sign-in callback can route back to us. Platform mechanics live
-    // in the PAL (desktop file on Linux, Launch Services on macOS, installer on
+    // Register as the handler for rpi-imager:// custom repository links.
+    // Platform mechanics live in the PAL (desktop file on Linux, Launch Services on macOS, installer on
     // Windows). Skipped in embedded mode, which has no desktop environment.
     if (!imageWriter.isEmbeddedMode())
     {

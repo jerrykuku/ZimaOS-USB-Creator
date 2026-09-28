@@ -210,10 +210,6 @@
         <translation>Wi-Fi yapılandırıldı</translation>
     </message>
     <message>
-        <source>ZimaOS Connect enabled</source>
-        <translation>ZimaOS Connect etkinleştirildi</translation>
-    </message>
-    <message>
         <source>I2C enabled</source>
         <translation>I2C etkinleştirildi</translation>
     </message>
@@ -1578,10 +1574,6 @@ veya yukarıdaki adres çubuğuna bir yol yazın.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS Connect returned an unexpected response.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Performans Verilerini Kaydet</translation>
     </message>
@@ -1879,149 +1871,6 @@ Teknik detaylar: %1</translation>
     <message>
         <source>Enable passwordless sudo for this user account</source>
         <translation>Bu kullanıcı hesabı için parolasız sudo&apos;yu etkinleştir</translation>
-    </message>
-</context>
-<context>
-    <name>PiConnectCustomizationStep</name>
-    <message>
-        <source>Customisation: ZimaOS Connect</source>
-        <translation>Özelleştirme: ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Enable ZimaOS Connect</source>
-        <translation>ZimaOS Connect&apos;i Etkinleştir</translation>
-    </message>
-    <message>
-        <source>What is ZimaOS Connect?</source>
-        <translation>ZimaOS Connect nedir?</translation>
-    </message>
-    <message>
-        <source>Open ZimaOS Connect</source>
-        <translation>ZimaOS Connect&apos;i Aç</translation>
-    </message>
-    <message>
-        <source>Token received from browser</source>
-        <translation>Tarayıcıdan alınan belirteç (token)</translation>
-    </message>
-    <message>
-        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Oturum açmak ve bir doğrulama belirteci almak için tarayıcınızda ZimaOS Connect web sitesini açın</translation>
-    </message>
-    <message>
-        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
-        <translation>ZimaOS Connect bulut hizmeti aracılığıyla ZimaOS&apos;nize güvenli uzaktan erişimi etkinleştirin</translation>
-    </message>
-    <message>
-        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
-        <translation>ZimaOS Connect ayarlarını kaydet ve sonraki özelleştirme adımına geç</translation>
-    </message>
-    <message>
-        <source>Register this device with your ZimaOS Connect organisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return to previous step</source>
-        <translation>Önceki adıma dön</translation>
-    </message>
-    <message>
-        <source>Skip all customisation and proceed directly to writing the image</source>
-        <translation>Tüm özelleştirmeleri atla ve doğrudan imaj yazma işlemine geç</translation>
-    </message>
-    <message>
-        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Organisation API Key:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste your ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Saved — type to replace</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paste organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auth key description:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Description for the auth key shown in the Connect organisation UI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>e.g. Factory-A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove the saved ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
-        <translation>ZimaOS Connect&apos;ten aldığınız doğrulama belirtecini girin veya yapıştırın. Oturum açmak için &apos;ZimaOS Connect&apos;i Aç&apos; butonunu kullanırsanız belirteç otomatik olarak doldurulacaktır.</translation>
-    </message>
-    <message>
-        <source>Waiting for token (%1s)</source>
-        <translation>Belirteç bekleniyor (%1sn)</translation>
-    </message>
-    <message>
-        <source>Paste token here</source>
-        <translation>Belirteci buraya yapıştırın</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator</translation>
-    </message>
-    <message>
-        <source>Invalid Token</source>
-        <translation>Geçersiz Belirteç</translation>
-    </message>
-    <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
-        <translation>Girdiğiniz belirteç geçerli değil. Lütfen belirteci kontrol edip tekrar deneyin veya geçerli bir belirteç almak için &apos;ZimaOS Connect&apos;i Aç&apos; butonunu kullanın.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Tamam</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the token field</source>
-        <translation>Bu iletişim kutusunu kapat ve belirteç alanına geri dön</translation>
-    </message>
-    <message>
-        <source>Could not create auth key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the organisation API key field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Authentication token:</source>
-        <translation>Doğrulama belirteci:</translation>
-    </message>
-    <message>
-        <source>Sign in to receive a token and enable ZimaOS Connect</source>
-        <translation>Belirteç almak ve ZimaOS Connect&apos;i etkinleştirmek için oturum açın</translation>
     </message>
 </context>
 <context>
@@ -2669,10 +2518,6 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Wi-Fi</translation>
     </message>
     <message>
-        <source>ZimaOS Connect</source>
-        <translation>ZimaOS Connect</translation>
-    </message>
-    <message>
         <source>App Options</source>
         <translation>Uygulama Seçenekleri</translation>
     </message>
@@ -2693,44 +2538,12 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Uzaktan erişim</translation>
     </message>
     <message>
-        <source>Replace existing ZimaOS Connect token?</source>
-        <translation>Mevcut ZimaOS Connect belirteci değiştirilsin mi?</translation>
-    </message>
-    <message>
-        <source>A new ZimaOS Connect token was received that differs from your current one.
-
-</source>
-        <translation>Mevcut olanınızdan farklı yeni bir ZimaOS Connect belirteci alındı.
-
-</translation>
-    </message>
-    <message>
-        <source>Do you want to overwrite the existing token?
-
-</source>
-        <translation>Mevcut belirtecin üzerine yazmak istiyor musunuz?
-
-</translation>
-    </message>
-    <message>
-        <source>Replace token</source>
-        <translation>Belirteci değiştir</translation>
-    </message>
-    <message>
         <source>Please wait…</source>
         <translation>Lütfen bekleyin…</translation>
     </message>
     <message>
-        <source>Replace the current token with the newly received one</source>
-        <translation>Mevcut belirteci yeni alınanla değiştir</translation>
-    </message>
-    <message>
         <source>Keep existing</source>
         <translation>Mevcut olanı koru</translation>
-    </message>
-    <message>
-        <source>Keep your current ZimaOS Connect token</source>
-        <translation>Mevcut ZimaOS Connect belirtecinizi koruyun</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -2739,10 +2552,6 @@ Sistem sürücülerini göstermek için aşağıdaki
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Uyarı: Belirtecin üzerine yalnızca bu işlemi siz başlattıysanız yazın.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>

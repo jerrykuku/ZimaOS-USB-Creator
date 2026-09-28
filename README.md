@@ -44,41 +44,20 @@ details are in [CONTRIBUTING.md](./CONTRIBUTING.md).
 If the application is started with "--repo [your own URL]" it will use a custom image repository.
 So can simply create another 'start menu shortcut' to the application with that parameter to use the application with your own images.
 
-### Anonymous metrics (telemetry)
+### Privacy and network access
 
-#### Why and what
+ZimaOS USB Creator does not send anonymous usage telemetry to Raspberry Pi.
+Raspberry Pi Connect integration has been removed: the application does not
+request Connect authorization keys, accept Connect sign-in tokens, or provision
+Connect credentials and services in OS images.
 
-ZimaOS USB Creator inherits the telemetry system from the original Raspberry Pi Imager.
-The telemetry data is sent to Raspberry Pi's servers, not ZimaOS servers.
+The application still uses the network to retrieve image repositories, download
+images and icons, and check for application updates. The default image repository
+is hosted at `https://release.zimaos.com/zimaos-manifest.json`; custom repositories
+and their images may use other servers.
 
-In order to understand usage of the application (e.g. uptake of ZimaOS USB Creator versions and which images and operating systems are most popular), the application collects anonymous metrics (telemetry) by default. These metrics contain the following information:
-
-- The URL of the OS you have selected
-- The category of the OS you have selected
-- The observed name of the OS you have selected
-- The version of ZimaOS USB Creator
-- A flag to say if the tool is being used on the Desktop or as part of the Network Installer
-- The host operating system version (e.g. Windows 11)
-- The host operating system architecture (e.g. arm64, x86_64)
-- The host operating system locale name (e.g. en-GB)
-
-#### Where is it stored
-
-This web service is hosted by [Heroku](https://www.heroku.com) and only stores an incrementing counter using a [Redis Sorted Set](https://redis.io/topics/data-types#sorted-sets) for each URL, operating system name and category per day in the `eu-west-1` region and does not associate any personal data with those counts. This allows us to query the number of downloads over time and nothing else.
-
-The last 1,500 requests to the service are logged for one week before expiring as this is the [minimum log retention period for Heroku](https://devcenter.heroku.com/articles/logging#log-history-limits).
-
-#### Viewing the data
-
-As the data is stored in aggregate form, only aggregate data is available to any viewer. See what we see at: [rpi-imager-stats](https://rpi-imager-stats.raspberrypi.com)
-
-#### Opting out
-
-The most convenient way to opt-out of anonymous metric collection is via the ZimaOS USB Creator UI:
-
-- Select "App Options"
-- Untoggle "Enable anonymous statistics (telemetry) collection"
-- Press "Save"
+Performance diagnostics can be exported to a local JSON file; they are not
+automatically uploaded.
 
 ## Acknowledgments
 

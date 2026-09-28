@@ -33,7 +33,7 @@ Item {
     // NOT a binding, so it won't auto-change when hasNetworkConnectivity changes.
     // The onOsListUnavailableChanged handler manages the offline→online transition.
     property int currentStep: 0
-    readonly property int totalSteps: 13
+    readonly property int totalSteps: 12
 
     // Track which steps have been made permissible/unlocked for navigation
     // Each bit represents a step: bit 0 = Device, bit 1 = OS, etc.
@@ -64,14 +64,6 @@ Item {
     property bool wifiConfigured: false
     property bool sshEnabled: false
     property bool secureBootEnabled: false
-    property bool piConnectEnabled: false
-    // Whether selected OS supports Raspberry Raspberry Pi Connect customization
-    property bool piConnectAvailable: false
-    // Raspberry Pi Connect for Organisations — session-only credentials.
-    // Held in the wizard container (never persisted) so they survive
-    // step navigation within a session.
-    property string connectOrgApiKey: ""
-    property string connectOrgDescription: ""
     // Whether selected OS supports Secure Boot signing
     property bool secureBootAvailable: false
     // Whether selected OS supports passwordless sudo configuration
@@ -100,7 +92,7 @@ Item {
     property var customizationSettings: ({})
 
     // Snapshot of customization flags captured when write completes, for display on completion screen
-    // This readonly snapshot preserves the state even after token/flags are cleared
+    // This readonly snapshot preserves the state even after flags are cleared
     property var completionSnapshot: ({
             customizationSupported: false,
             hostnameConfigured: false,
@@ -108,7 +100,6 @@ Item {
             userConfigured: false,
             wifiConfigured: false,
             sshEnabled: false,
-            piConnectEnabled: false,
             ifI2cEnabled: false,
             ifSpiEnabled: false,
             if1WireEnabled: false,
@@ -128,10 +119,9 @@ Item {
     readonly property int stepWifiCustomization: 6
     readonly property int stepRemoteAccess: 7
     readonly property int stepSecureBootCustomization: 8
-    readonly property int stepPiConnectCustomization: 9
-    readonly property int stepIfAndFeatures: 10
-    readonly property int stepWriting: 11
-    readonly property int stepDone: 12
+    readonly property int stepIfAndFeatures: 9
+    readonly property int stepWriting: 10
+    readonly property int stepDone: 11
 
     signal wizardCompleted
     signal appOptionsRequested
@@ -231,7 +221,7 @@ Item {
     }
 
     function getLastCustomizationStep() {
-        return (ccRpiAvailable && ifAndFeaturesAvailable) ? stepIfAndFeatures : piConnectAvailable ? stepPiConnectCustomization : secureBootAvailable ? stepSecureBootCustomization : stepRemoteAccess;
+        return (ccRpiAvailable && ifAndFeaturesAvailable) ? stepIfAndFeatures : secureBootAvailable ? stepSecureBootCustomization : stepRemoteAccess;
     }
 
     function getCustomizationSubstepLabels() {
@@ -243,9 +233,6 @@ Item {
         var labels = [qsTr("Hostname"), qsTr("Localisation"), qsTr("User"), qsTr("Wi‑Fi"), qsTr("Remote access")];
         if (secureBootAvailable) {
             labels.push(qsTr("Secure Boot"));
-        }
-        if (piConnectAvailable) {
-            labels.push(qsTr("ZimaOS Connect"));
         }
         if (ccRpiAvailable && ifAndFeaturesAvailable) {
             labels.push(qsTr("Interfaces & Features"));
@@ -273,8 +260,6 @@ Item {
             return sshEnabled;
         if (stepLabel === qsTr("Secure Boot"))
             return secureBootEnabled;
-        if (stepLabel === qsTr("ZimaOS Connect"))
-            return piConnectEnabled;
         if (stepLabel === qsTr("Interfaces & Features"))
             return (ifI2cEnabled || ifSpiEnabled || if1WireEnabled || ifSerial !== "" || featUsbGadgetEnabled);
 
@@ -314,8 +299,6 @@ Item {
         wifiConfigured = false;
         sshEnabled = false;
         secureBootEnabled = false;
-        piConnectEnabled = false;
-        piConnectAvailable = false;
         secureBootAvailable = false;
         ccRpiAvailable = false;
         ifI2cEnabled = false;
@@ -340,10 +323,8 @@ Item {
         userConfigured = false;
         wifiConfigured = false;
         sshEnabled = false;
-        piConnectEnabled = false;
 
         // Reset OS capability flags - these will be set correctly by OS selection
-        piConnectAvailable = false;
         secureBootAvailable = false;
         ccRpiAvailable = false;
         ifI2cEnabled = false;
@@ -581,8 +562,6 @@ Item {
                                                 currentStepLabel = qsTr("Wi‑Fi");
                                             else if (root.currentStep === root.stepRemoteAccess)
                                                 currentStepLabel = qsTr("Remote access");
-                                            else if (root.currentStep === root.stepPiConnectCustomization)
-                                                currentStepLabel = qsTr("ZimaOS Connect");
                                             else if (root.currentStep === root.stepIfAndFeatures)
                                                 currentStepLabel = qsTr("Interfaces & Features");
 
@@ -593,9 +572,9 @@ Item {
                                             // Allow navigation to any substep if we've reached customization
                                             root.currentStep >= root.firstCustomizationStep ||
                                             // Or if we've been to customization before (any substep configured)
-                                            root.hostnameConfigured || root.localeConfigured || root.userConfigured || root.wifiConfigured || root.sshEnabled || root.piConnectEnabled ||
+                                            root.hostnameConfigured || root.localeConfigured || root.userConfigured || root.wifiConfigured || root.sshEnabled ||
                                             // Or if any customization step has been made permissible
-                                            root.isStepPermissible(root.stepHostnameCustomization) || root.isStepPermissible(root.stepLocaleCustomization) || root.isStepPermissible(root.stepUserCustomization) || root.isStepPermissible(root.stepWifiCustomization) || root.isStepPermissible(root.stepRemoteAccess) || root.isStepPermissible(root.stepPiConnectCustomization) || root.isStepPermissible(root.stepIfAndFeatures))
+                                            root.isStepPermissible(root.stepHostnameCustomization) || root.isStepPermissible(root.stepLocaleCustomization) || root.isStepPermissible(root.stepUserCustomization) || root.isStepPermissible(root.stepWifiCustomization) || root.isStepPermissible(root.stepRemoteAccess) || root.isStepPermissible(root.stepIfAndFeatures))
 
                                         MouseArea {
                                             anchors.fill: parent
@@ -620,8 +599,6 @@ Item {
                                                     target = root.stepWifiCustomization;
                                                 else if (stepLabel === qsTr("Remote access"))
                                                     target = root.stepRemoteAccess;
-                                                else if (stepLabel === qsTr("ZimaOS Connect"))
-                                                    target = root.stepPiConnectCustomization;
                                                 else if (stepLabel === qsTr("Interfaces & Features"))
                                                     target = root.stepIfAndFeatures;
 
@@ -810,14 +787,12 @@ Item {
                     // Pass session flags so the generator can skip unconfigured sections
                     customizationSettings.wifiConfigured = wifiConfigured
                     // Pass the complete customizationSettings object directly to the generator
-                    // This includes both persistent settings (hostname, wifi, etc.) and
-                    // ephemeral settings (piConnectEnabled) from the current wizard session
                     imageWriter.applyCustomisationFromSettings(customizationSettings);
                 }
 
                 // Capture snapshot of customization flags at write summary stage
                 // This preserves the state for the completion screen, before any write operations
-                // or token clearing happens. This is the most reliable place to capture it.
+                // or state clearing happens. This is the most reliable place to capture it.
                 completionSnapshot = {
                     customizationSupported: customizationSupported,
                     hostnameConfigured: hostnameConfigured,
@@ -825,7 +800,6 @@ Item {
                     userConfigured: userConfigured,
                     wifiConfigured: wifiConfigured,
                     sshEnabled: sshEnabled,
-                    piConnectEnabled: piConnectEnabled,
                     ifI2cEnabled: ifI2cEnabled,
                     ifSpiEnabled: ifSpiEnabled,
                     if1WireEnabled: if1WireEnabled,
@@ -905,8 +879,6 @@ Item {
             return remoteAccessStep;
         case stepSecureBootCustomization:
             return secureBootCustomizationStep;
-        case stepPiConnectCustomization:
-            return piConnectCustomizationStep;
         case stepIfAndFeatures:
             return ifAndFeaturesStep;
         case stepWriting:
@@ -1051,25 +1023,6 @@ Item {
     }
 
     Component {
-        id: piConnectCustomizationStep
-        PiConnectCustomizationStep {
-            wizardContainer: root
-            appOptionsButton: optionsButton
-            onNextClicked: {
-                // Only advance if the step indicates it's ready
-                if (isValid) {
-                    root.nextStep();
-                }
-                // Otherwise, let the step handle the action internally (showing dialog, etc.)
-            }
-            onBackClicked: root.previousStep()
-            onSkipClicked: {
-                // Skip functionality is handled in the step itself
-            }
-        }
-    }
-
-    Component {
         id: ifAndFeaturesStep
         IfAndFeaturesCustomizationStep {
             wizardContainer: root
@@ -1117,136 +1070,8 @@ Item {
         }
     }
 
-    // Token conflict dialog — based on your BaseDialog pattern
-    BaseDialog {
-        id: tokenConflictDialog
-        parent: root
-        anchors.centerIn: parent
-
-        // carry the new token we just received
-        property string newToken: ""
-        property bool allowAccept: false
-
-        // small safety delay before enabling "Replace"
-        Timer {
-            id: acceptEnableDelay
-            interval: 1500
-            running: false
-            repeat: false
-            onTriggered: {
-                tokenConflictDialog.allowAccept = true;
-                // Rebuild focus order now that replace button is enabled
-                tokenConflictDialog.rebuildFocusOrder();
-            }
-        }
-
-        function openWithToken(tok) {
-            newToken = tok;
-            allowAccept = false;
-            acceptEnableDelay.start();
-            tokenConflictDialog.open();
-        }
-
-        // ESC closes
-        function escapePressed() {
-            tokenConflictDialog.close();
-        }
-
-        Component.onCompleted: {
-            // match your focus group style
-            registerFocusGroup("token_conflict_content", function () {
-                // Only include text elements when screen reader is active (otherwise they're not focusable)
-                if (tokenConflictDialog.imageWriter && tokenConflictDialog.imageWriter.isScreenReaderActive()) {
-                    return [titleText, bodyText];
-                }
-                return [];
-            }, 0);
-            registerFocusGroup("token_conflict_buttons", function () {
-                return [keepBtn, replaceBtn];
-            }, 1);
-        }
-
-        onClosed: {
-            acceptEnableDelay.stop();
-            allowAccept = false;
-            newToken = "";
-        }
-
-        // ----- CONTENT -----
-        FocusableHeading {
-            id: titleText
-            text: qsTr("Replace existing ZimaOS Connect token?")
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelColor
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Accessible.ignored: false
-        }
-
-        // Body / security note
-        FocusableText {
-            id: bodyText
-            text: qsTr("A new ZimaOS Connect token was received that differs from your current one.\n\n") + qsTr("Do you want to overwrite the existing token?\n\n") + qsTr("Warning: Only overwrite the token if you initiated this action.")
-            font.pixelSize: Style.fontSizeFormLabel
-            font.family: Style.fontFamily
-            color: Style.formLabelColor
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Accessible.ignored: false
-        }
-
-        // Buttons row
-        RowLayout {
-            id: btnRow
-            Layout.fillWidth: true
-            Layout.topMargin: Style.spacingSmall
-            Layout.bottomMargin: Style.spacingSmall
-            spacing: Style.spacingMedium
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            ImButton {
-                id: replaceBtn
-                text: tokenConflictDialog.allowAccept ? qsTr("Replace token") : qsTr("Please wait…")
-                accessibleDescription: qsTr("Replace the current token with the newly received one")
-                enabled: tokenConflictDialog.allowAccept
-                activeFocusOnTab: true
-                onClicked: {
-                    tokenConflictDialog.close();
-                    // Overwrite in C++ and re-emit to existing listeners
-                    root.imageWriter.overwriteConnectToken(tokenConflictDialog.newToken);
-                }
-            }
-
-            ImButtonRed {
-                id: keepBtn
-                text: qsTr("Keep existing")
-                accessibleDescription: qsTr("Keep your current ZimaOS Connect token")
-                activeFocusOnTab: true
-                onClicked: tokenConflictDialog.close()
-            }
-        }
-    }
-
     Connections {
         target: ImageWriterSingleton
-        function onConnectTokenConflictDetected(newToken) {
-            tokenConflictDialog.openWithToken(newToken);
-        }
-
-        // Handle token cleared signal at container level to ensure it's always processed
-        // even when PiConnectCustomizationStep component is not loaded
-        function onConnectTokenCleared() {
-            // Reset Pi Connect state when token is cleared (e.g., after write completes)
-            // Note: Snapshot is already captured when entering writing step, so no need to capture here
-            piConnectEnabled = false;
-            delete customizationSettings.piConnectEnabled;
-        }
-
         // Handle repository URL received from deep link (rpi-imager://open?repo=...)
         function onRepositoryUrlReceived(url) {
             repositoryUrlDialog.openWithUrl(url);
@@ -1482,8 +1307,6 @@ Item {
         userConfigured = false;
         wifiConfigured = false;
         sshEnabled = false;
-        piConnectEnabled = false;
-        piConnectAvailable = false;
 
         ccRpiAvailable = false;
         ifI2cEnabled = false;
@@ -1515,11 +1338,6 @@ Item {
         // Reset only the storage selection to allow choosing a new storage device
         // while preserving device, OS, and customization settings
         selectedStorageName = "";
-
-        // Reset ephemeral Pi Connect state (session-only, not preserved)
-        // The token is already cleared when write completes, but ensure the enabled flag is reset
-        piConnectEnabled = false;
-        delete customizationSettings.piConnectEnabled;
 
         // Keep all steps permissible - they've already been completed
         // This allows backward navigation if needed

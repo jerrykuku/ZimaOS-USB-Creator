@@ -74,7 +74,6 @@ WizardStepBase {
             wizardContainer.userConfigured ||
             wizardContainer.wifiConfigured ||
             wizardContainer.sshEnabled ||
-            wizardContainer.piConnectEnabled ||
             wizardContainer.featUsbGadgetEnabled
         )
     )
@@ -227,7 +226,6 @@ WizardStepBase {
                     if (root.wizardContainer.userConfigured) items.push(CommonStrings.userAccountConfigured)
                     if (root.wizardContainer.wifiConfigured) items.push(CommonStrings.wifiConfigured)
                     if (root.wizardContainer.sshEnabled) items.push(CommonStrings.sshEnabled)
-                    if (root.wizardContainer.piConnectEnabled) items.push(CommonStrings.piConnectEnabled)
                     if (root.wizardContainer.featUsbGadgetEnabled) items.push(CommonStrings.usbGadgetEnabled)
                     if (root.wizardContainer.ifI2cEnabled) items.push(CommonStrings.i2cEnabled)
                     if (root.wizardContainer.ifSpiEnabled) items.push(CommonStrings.spiEnabled)
@@ -263,7 +261,6 @@ WizardStepBase {
                         Text { text: "• " + CommonStrings.userAccountConfigured;   font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor;     visible: root.wizardContainer.userConfigured;             Accessible.role: Accessible.ListItem; Accessible.name: text }
                         Text { text: "• " + CommonStrings.wifiConfigured;          font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor;     visible: root.wizardContainer.wifiConfigured;             Accessible.role: Accessible.ListItem; Accessible.name: text }
                         Text { text: "• " + CommonStrings.sshEnabled;              font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor;     visible: root.wizardContainer.sshEnabled;                 Accessible.role: Accessible.ListItem; Accessible.name: text }
-                        Text { text: "• " + CommonStrings.piConnectEnabled;        font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor;     visible: root.wizardContainer.piConnectEnabled;           Accessible.role: Accessible.ListItem; Accessible.name: text }
                         Text { text: "• " + CommonStrings.usbGadgetEnabled;        font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor;     visible: root.wizardContainer.featUsbGadgetEnabled;       Accessible.role: Accessible.ListItem; Accessible.name: text }
                         Text { text: "• " + CommonStrings.i2cEnabled;              font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor;     visible: root.wizardContainer.ifI2cEnabled;               Accessible.role: Accessible.ListItem; Accessible.name: text }
                         Text { text: "• " + CommonStrings.spiEnabled;              font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor;     visible: root.wizardContainer.ifSpiEnabled;               Accessible.role: Accessible.ListItem; Accessible.name: text }

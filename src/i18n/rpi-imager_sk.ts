@@ -210,10 +210,6 @@
         <translation>Sieť Wi‑Fi je nastavená</translation>
     </message>
     <message>
-        <source>ZimaOS Connect enabled</source>
-        <translation>ZimaOS Connect je povolené</translation>
-    </message>
-    <message>
         <source>I2C enabled</source>
         <translation>Rozhranie I2C je povolené</translation>
     </message>
@@ -1508,10 +1504,6 @@ alebo zadajte cestu do adresného riadka hore.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS Connect returned an unexpected response.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Uložiť údaje o výkone</translation>
     </message>
@@ -1803,149 +1795,6 @@ Technical details: %1</source>
     <message>
         <source>Enable passwordless sudo for this user account</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PiConnectCustomizationStep</name>
-    <message>
-        <source>Customisation: ZimaOS Connect</source>
-        <translation>Úpravy: ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Enable ZimaOS Connect</source>
-        <translation>Povoliť ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>What is ZimaOS Connect?</source>
-        <translation>Čo je ZimaOS Connect?</translation>
-    </message>
-    <message>
-        <source>Open ZimaOS Connect</source>
-        <translation>Spustiť ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Token received from browser</source>
-        <translation>Token získaný z&#x202f;prehliadača</translation>
-    </message>
-    <message>
-        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Otvorte webovú stránku ZimaOS Connect vo vašom prehliadači, prihláste sa a získajte prihlasovací token</translation>
-    </message>
-    <message>
-        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
-        <translation>Povoliť bezpečný vzdialený prístup k vášmu ZimaOS prostredníctvom cloudovej služby ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
-        <translation>Uložiť nastavenia ZimaOS Connect a pokračovať na ďalší krok</translation>
-    </message>
-    <message>
-        <source>Register this device with your ZimaOS Connect organisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return to previous step</source>
-        <translation>Naspäť na predchádzajúci krok</translation>
-    </message>
-    <message>
-        <source>Skip all customisation and proceed directly to writing the image</source>
-        <translation>Vynechať všetky úpravy a pokračovať priamo k zápisu obrazu</translation>
-    </message>
-    <message>
-        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Organisation API Key:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste your ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Saved — type to replace</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paste organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auth key description:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Description for the auth key shown in the Connect organisation UI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>e.g. Factory-A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove the saved ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
-        <translation>Zadajte alebo vložte prihlasovací token z ZimaOS Connect. Token sa vyplní automaticky, keď na prihlásenie použijete tlačidlo „Spustiť ZimaOS Connect“.</translation>
-    </message>
-    <message>
-        <source>Waiting for token (%1s)</source>
-        <translation>Čakám na token (%1s)</translation>
-    </message>
-    <message>
-        <source>Paste token here</source>
-        <translation>Sem vložte token</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator</translation>
-    </message>
-    <message>
-        <source>Invalid Token</source>
-        <translation>Neplatný token</translation>
-    </message>
-    <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
-        <translation>Zadaný token je neplatný. Skontrolujte token a skúste to znova alebo použite tlačidlo „Spustiť ZimaOS Connect“ pre získanie platného tokenu.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the token field</source>
-        <translation>Zatvoriť toto dialógové okno a vrátiť sa do poľa pre token</translation>
-    </message>
-    <message>
-        <source>Could not create auth key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the organisation API key field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Authentication token:</source>
-        <translation>Prihlasovací token:</translation>
-    </message>
-    <message>
-        <source>Sign in to receive a token and enable ZimaOS Connect</source>
-        <translation>Prihláste sa, aby ste získali token a mohli tak povoliť ZimaOS Connect</translation>
     </message>
 </context>
 <context>
@@ -2593,10 +2442,6 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Sieť Wi‑Fi</translation>
     </message>
     <message>
-        <source>ZimaOS Connect</source>
-        <translation>ZimaOS Connect</translation>
-    </message>
-    <message>
         <source>App Options</source>
         <translation>Nastavenia</translation>
     </message>
@@ -2617,44 +2462,12 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Vzdialený prístup</translation>
     </message>
     <message>
-        <source>Replace existing ZimaOS Connect token?</source>
-        <translation>Nahradiť existujúci ZimaOS Connect token?</translation>
-    </message>
-    <message>
-        <source>A new ZimaOS Connect token was received that differs from your current one.
-
-</source>
-        <translation>Bol prijatý nový token ZimaOS Connect, ktorý sa líši od aktuálneho.
-
-</translation>
-    </message>
-    <message>
-        <source>Do you want to overwrite the existing token?
-
-</source>
-        <translation>Chcete prepísať súčasný token?
-
-</translation>
-    </message>
-    <message>
-        <source>Replace token</source>
-        <translation>Nahradiť token</translation>
-    </message>
-    <message>
         <source>Please wait…</source>
         <translation>Čakajte, prosím…</translation>
     </message>
     <message>
-        <source>Replace the current token with the newly received one</source>
-        <translation>Nahradiť existujúci token novo prijatým</translation>
-    </message>
-    <message>
         <source>Keep existing</source>
         <translation>Ponechať súčasný</translation>
-    </message>
-    <message>
-        <source>Keep your current ZimaOS Connect token</source>
-        <translation>Ponechať súčasný token ZimaOS Connect</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -2663,10 +2476,6 @@ pre zobrazenie systémových diskov.</translation>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Upozornenie: Token prepíšte iba vtedy, ak ste túto akciu sami iniciovali.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>

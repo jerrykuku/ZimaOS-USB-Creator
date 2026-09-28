@@ -508,11 +508,6 @@ WizardStepBase {
         ImageWriterSingleton.setDst(dstitem.device, dstitem.size)
         selectedDeviceName = dstitem.description || dstitem.device
         root.wizardContainer.selectedStorageName = dstitem.description || dstitem.device
-        // Drop any auth key we minted for a previous target choice.
-        // No-op on first selection or if the runtime token came from
-        // the user-token flow.
-        if (typeof ImageWriterSingleton.discardOrgMintedConnectToken === "function")
-            ImageWriterSingleton.discardOrgMintedConnectToken()
 
         // Do not auto-advance; enable Next
         root.nextButtonEnabled = true
@@ -668,8 +663,6 @@ WizardStepBase {
             ImageWriterSingleton.setDst(systemDriveConfirm.device, systemDriveConfirm.deviceSize)
             root.selectedDeviceName = systemDriveConfirm.driveName || systemDriveConfirm.device
             root.wizardContainer.selectedStorageName = systemDriveConfirm.driveName || systemDriveConfirm.device
-            if (typeof ImageWriterSingleton.discardOrgMintedConnectToken === "function")
-                ImageWriterSingleton.discardOrgMintedConnectToken()
             // Re-enable filtering after selection via confirmation path
             filterSystemDrives.checked = true
             // updateStorageStatus will be called via onCheckedChanged

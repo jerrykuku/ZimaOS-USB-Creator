@@ -22,7 +22,7 @@ WizardStepBase {
     readonly property bool ejectInProgress: ejectState === ImageWriterSingleton.EjectInProgress
     readonly property bool ejectApplicable: true
     // Use snapshot of customization flags captured when write completed
-    // This preserves the state even after token/flags are cleared for security
+    // This preserves the state even after customization flags are cleared
     readonly property bool anyCustomizationsApplied: (
         wizardContainer.completionSnapshot.customizationSupported && (
             wizardContainer.completionSnapshot.hostnameConfigured ||
@@ -30,7 +30,6 @@ WizardStepBase {
             wizardContainer.completionSnapshot.userConfigured ||
             wizardContainer.completionSnapshot.wifiConfigured ||
             wizardContainer.completionSnapshot.sshEnabled ||
-            wizardContainer.completionSnapshot.piConnectEnabled ||
             wizardContainer.completionSnapshot.ifI2cEnabled ||
             wizardContainer.completionSnapshot.ifSpiEnabled ||
             wizardContainer.completionSnapshot.if1WireEnabled ||
@@ -190,7 +189,6 @@ WizardStepBase {
                     if (snapshot.userConfigured) items.push(CommonStrings.userAccountConfigured)
                     if (snapshot.wifiConfigured) items.push(CommonStrings.wifiConfigured)
                     if (snapshot.sshEnabled) items.push(CommonStrings.sshEnabled)
-                    if (snapshot.piConnectEnabled) items.push(CommonStrings.piConnectEnabled)
                     if (snapshot.featUsbGadgetEnabled) items.push(CommonStrings.usbGadgetEnabled)
                     if (snapshot.ifI2cEnabled) items.push(CommonStrings.i2cEnabled)
                     if (snapshot.ifSpiEnabled) items.push(CommonStrings.spiEnabled)
@@ -224,7 +222,6 @@ WizardStepBase {
                         Text { text: "✓ " + CommonStrings.userAccountConfigured; font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor; visible: customizationColumn.snapshot.userConfigured }
                         Text { text: "✓ " + CommonStrings.wifiConfigured; font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor; visible: customizationColumn.snapshot.wifiConfigured }
                         Text { text: "✓ " + CommonStrings.sshEnabled; font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor; visible: customizationColumn.snapshot.sshEnabled }
-                        Text { text: "✓ " + CommonStrings.piConnectEnabled; font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor; visible: customizationColumn.snapshot.piConnectEnabled }
                         Text { text: "✓ " + CommonStrings.usbGadgetEnabled; font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor; visible: customizationColumn.snapshot.featUsbGadgetEnabled }
                         Text { text: "✓ " + CommonStrings.i2cEnabled; font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor; visible: customizationColumn.snapshot.ifI2cEnabled }
                         Text { text: "✓ " + CommonStrings.spiEnabled; font.pointSize: Style.fontSizeDescription; font.family: Style.fontFamily; color: Style.formLabelColor; visible: customizationColumn.snapshot.ifSpiEnabled }

@@ -210,10 +210,6 @@
         <translation>Wi-Fi cumraithe</translation>
     </message>
     <message>
-        <source>ZimaOS Connect enabled</source>
-        <translation>Cumasaithe Ceangail ZimaOS</translation>
-    </message>
-    <message>
         <source>I2C enabled</source>
         <translation>I2C cumasaithe</translation>
     </message>
@@ -1578,10 +1574,6 @@ nó clóscríobh cosán sa bharra seoltaí thuas.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>ZimaOS Connect returned an unexpected response.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Sábháil Sonraí Feidhmíochta</translation>
     </message>
@@ -1879,149 +1871,6 @@ Sonraí teicniúla: %1</translation>
     <message>
         <source>Enable passwordless sudo for this user account</source>
         <translation>Cumasaigh sudo gan focal faire don chuntas úsáideora seo</translation>
-    </message>
-</context>
-<context>
-    <name>PiConnectCustomizationStep</name>
-    <message>
-        <source>Customisation: ZimaOS Connect</source>
-        <translation>Saincheapadh: Ceangail ZimaOS</translation>
-    </message>
-    <message>
-        <source>Enable ZimaOS Connect</source>
-        <translation>Cumasaigh Ceangal ZimaOS</translation>
-    </message>
-    <message>
-        <source>What is ZimaOS Connect?</source>
-        <translation>Cad é Ceangal ZimaOS?</translation>
-    </message>
-    <message>
-        <source>Open ZimaOS Connect</source>
-        <translation>Oscail ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Token received from browser</source>
-        <translation>Fuarthas comhartha ón mbrabhsálaí</translation>
-    </message>
-    <message>
-        <source>Open the ZimaOS Connect website in your browser to sign in and receive an authentication token</source>
-        <translation>Oscail suíomh Gréasáin ZimaOS Connect i do bhrabhsálaí chun síniú isteach agus comhartha fíordheimhnithe a fháil</translation>
-    </message>
-    <message>
-        <source>Enable secure remote access to your ZimaOS through the ZimaOS Connect cloud service</source>
-        <translation>Cumasaigh rochtain iargúlta slán ar do ZimaOS tríd an tseirbhís scamall ZimaOS Connect</translation>
-    </message>
-    <message>
-        <source>Save ZimaOS Connect settings and continue to next customisation step</source>
-        <translation>Sábháil socruithe ZimaOS Connect agus lean ar aghaidh go dtí an chéad chéim saincheaptha eile</translation>
-    </message>
-    <message>
-        <source>Register this device with your ZimaOS Connect organisation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Return to previous step</source>
-        <translation>Fill ar ais go dtí an chéim roimhe seo</translation>
-    </message>
-    <message>
-        <source>Skip all customisation and proceed directly to writing the image</source>
-        <translation>Seachain an saincheapadh go léir agus téigh ar aghaidh go díreach chuig scríobh na híomhá</translation>
-    </message>
-    <message>
-        <source>A single-use auth key will be written into the image so the device joins your Connect organisation on first boot.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Organisation API Key:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste your ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Saved — type to replace</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Paste organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS Connect organisation API key. Once saved the value is never redisplayed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auth key description:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Description for the auth key shown in the Connect organisation UI.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>e.g. Factory-A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Clear saved key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove the saved ZimaOS Connect organisation API key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter or paste the authentication token from ZimaOS Connect. The token will be automatically filled if you use the &apos;Open ZimaOS Connect&apos; button to sign in.</source>
-        <translation>Cuir isteach nó greamaigh an comhartha fíordheimhnithe ó ZimaOS Connect. Líonfar an comhartha go huathoibríoch má úsáideann tú an cnaipe &apos;Oscail ZimaOS Connect&apos; chun síniú isteach.</translation>
-    </message>
-    <message>
-        <source>Waiting for token (%1s)</source>
-        <translation>Ag fanacht leis an gcomhartha (%1s)</translation>
-    </message>
-    <message>
-        <source>Paste token here</source>
-        <translation>Greamaigh an comhartha anseo</translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator</source>
-        <translation>ZimaOS USB Creator</translation>
-    </message>
-    <message>
-        <source>Invalid Token</source>
-        <translation>Comhartha Neamhbhailí</translation>
-    </message>
-    <message>
-        <source>The token you entered is not valid. Please check the token and try again, or use the &apos;Open ZimaOS Connect&apos; button to get a valid token.</source>
-        <translation>Níl an comhartha a chuir tú isteach bailí. Seiceáil an comhartha agus déan iarracht arís, nó bain úsáid as an gcnaipe &apos;Oscail ZimaOS Connect&apos; chun comhartha bailí a fháil.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Ceart go leor</translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the token field</source>
-        <translation>Dún an dialóg seo agus fill ar ais chuig an réimse comharthaí</translation>
-    </message>
-    <message>
-        <source>Could not create auth key</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ZimaOS USB Creator could not create an organisation auth key. Check that your organisation API key is valid and that this computer is online, then try again.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close this dialog and return to the organisation API key field</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Authentication token:</source>
-        <translation>Authentication token:</translation>
-    </message>
-    <message>
-        <source>Sign in to receive a token and enable ZimaOS Connect</source>
-        <translation>Sínigh isteach chun comhartha a fháil agus ZimaOS Connect a chumasú</translation>
     </message>
 </context>
 <context>
@@ -2669,10 +2518,6 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Wi‑Fi</translation>
     </message>
     <message>
-        <source>ZimaOS Connect</source>
-        <translation>Ceangal ZimaOS</translation>
-    </message>
-    <message>
         <source>App Options</source>
         <translation>Roghanna Aipe</translation>
     </message>
@@ -2693,44 +2538,12 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Rochtain iargúlta</translation>
     </message>
     <message>
-        <source>Replace existing ZimaOS Connect token?</source>
-        <translation>An bhfuil sé i gceist an comhartha ZimaOS Connect atá ann cheana a athsholáthar?</translation>
-    </message>
-    <message>
-        <source>A new ZimaOS Connect token was received that differs from your current one.
-
-</source>
-        <translation>Fuarthas comhartha nua ZimaOS Connect atá difriúil ón gceann atá agat faoi láthair.
-
-</translation>
-    </message>
-    <message>
-        <source>Do you want to overwrite the existing token?
-
-</source>
-        <translation>Ar mhaith leat an comhartha atá ann cheana a athscríobh?
-
-</translation>
-    </message>
-    <message>
-        <source>Replace token</source>
-        <translation>Cuir comhartha in ionad</translation>
-    </message>
-    <message>
         <source>Please wait…</source>
         <translation>Fan le do thoil…</translation>
     </message>
     <message>
-        <source>Replace the current token with the newly received one</source>
-        <translation>Cuir an comhartha reatha in ionad an cheann nua a fuarthas</translation>
-    </message>
-    <message>
         <source>Keep existing</source>
         <translation>Coinnigh atá ann cheana féin</translation>
-    </message>
-    <message>
-        <source>Keep your current ZimaOS Connect token</source>
-        <translation>Coinnigh do chomhartha ZimaOS Connect reatha</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -2739,10 +2552,6 @@ chun tiomántáin chórais a thaispeáint.</translation>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Warning: Only overwrite the token if you initiated this action.</source>
-        <translation>Rabhadh: Ná scríobh an comhartha arís ach amháin má thionscain tú an gníomh seo.</translation>
     </message>
     <message>
         <source>Open local repository file?</source>

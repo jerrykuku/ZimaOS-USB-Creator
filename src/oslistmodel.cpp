@@ -346,7 +346,6 @@ bool OSListModel::reload()
         os.tooltip = obj["tooltip"].toString();
         os.website = obj["website"].toString();
         os.architecture = obj["architecture"].toString();
-        os.enableRPiConnect = obj.value("enable_rpi_connect").toBool(false);
 
         _osList.append(os);
     }
@@ -393,7 +392,6 @@ QHash<int, QByteArray> OSListModel::roleNames() const
         { TooltipRole, "tooltip" },
         { WebsiteRole, "website" },
         { ArchitectureRole, "architecture" },
-        { PiConnectRole, "enable_rpi_connect" }
     };
 }
 
@@ -437,8 +435,6 @@ QVariant OSListModel::data(const QModelIndex &index, int role) const {
             return os.website;
         case ArchitectureRole:
             return os.architecture;
-        case PiConnectRole:
-            return os.enableRPiConnect;
     }
 
     return {};

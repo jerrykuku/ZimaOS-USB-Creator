@@ -172,8 +172,6 @@ WizardStepBase {
                 root.wizardContainer.userConfigured = false;
                 root.wizardContainer.wifiConfigured = false;
                 root.wizardContainer.sshEnabled = false;
-                root.wizardContainer.piConnectEnabled = false;
-                root.wizardContainer.piConnectAvailable = false;
                 root.wizardContainer.secureBootAvailable = imageWriter.isSecureBootForcedByCliFlag();
             }
             root.customSelected = true;
@@ -693,7 +691,6 @@ WizardStepBase {
 
                 root.wizardContainer.selectedOsName = model.name;
                 root.wizardContainer.customizationSupported = imageWriter.imageSupportsCustomization();
-                root.wizardContainer.piConnectAvailable = false;
                 root.wizardContainer.secureBootAvailable = imageWriter.isSecureBootForcedByCliFlag();
                 root.wizardContainer.ccRpiAvailable = false;
                 root.wizardContainer.ifAndFeaturesAvailable = false;
@@ -710,7 +707,6 @@ WizardStepBase {
 
                 root.wizardContainer.selectedOsName = model.name;
                 root.wizardContainer.customizationSupported = imageWriter.imageSupportsCustomization();
-                root.wizardContainer.piConnectAvailable = imageWriter.checkSWCapability("rpi_connect");
                 root.wizardContainer.secureBootAvailable = imageWriter.checkSWCapability("secure_boot") || imageWriter.isSecureBootForcedByCliFlag();
                 root.wizardContainer.ccRpiAvailable = imageWriter.imageSupportsCcRpi();
 
@@ -743,10 +739,6 @@ WizardStepBase {
                 ImageWriterSingleton.removePersistedCustomisationSetting("enableUsbGadget")
 
                 // Clean up incompatible settings from customizationSettings based on OS capabilities
-                if (!root.wizardContainer.piConnectAvailable) {
-                    delete root.wizardContainer.customizationSettings.piConnectEnabled;
-                    root.wizardContainer.piConnectEnabled = false;
-                }
                 if (!root.wizardContainer.secureBootAvailable) {
                     delete root.wizardContainer.customizationSettings.secureBootEnabled;
                     root.wizardContainer.secureBootEnabled = false;
