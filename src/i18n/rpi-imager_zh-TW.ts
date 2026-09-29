@@ -360,14 +360,6 @@
         <translation>請按上方顯示內容精確輸入驅動器名稱</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>取消</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>繼續</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>取消操作並返回儲存選擇以選擇其他裝置</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>驅動器資訊</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>使用此系統磁碟？</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

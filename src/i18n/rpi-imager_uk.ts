@@ -360,14 +360,6 @@
         <translation>Назва диска типу точно як показано вище</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>СКАСУВАТИ</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>ПРОДОВЖИТИ</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Відкласти операцію і повернутися до вибору сховища, щоб вибрати інше пристрої</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Інформація про диск</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Використати цей системний диск?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

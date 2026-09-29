@@ -360,14 +360,6 @@
         <translation>Sürücü adını yukarıda gösterildiği gibi yazın</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>İPTAL</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>DEVAM ET</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>İşlemi iptal et ve farklı bir cihaz seçmek için depolama seçimine dön</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Sürücü bilgisi</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Bu sistem sürücüsü kullanılsın mı?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

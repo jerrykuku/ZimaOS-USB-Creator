@@ -207,3 +207,9 @@
 - 原 alpha=0 测试只验证透明，不证明按钮显示；旧方案删除。新探针必须验证桌面合成后的三个图标，并通过实际鼠标输入驱动 Qt 窗口按钮。
 - Qt 的按钮字色读取应用 colorScheme；应用当前固定浅色页面，需要在 Windows GUI 初始化时明确浅色方案，避免系统暗色造成白色图标叠在浅色背景。
 - 参考：https://www.qt.io/blog/expanded-client-areas-and-safe-areas-in-qt-6.9；https://github.com/qt/qtbase/blob/v6.10.3/src/plugins/platforms/windows/qwindowswindow.cpp。code.qt.io 原始源码经 web 工具访问失败，改用 Qt 官方 GitHub 镜像。
+
+## 系统盘确认弹窗样式
+- 目标为 ConfirmSystemDriveDialog.qml，由 StorageSelectionStep.selectDstItem 在 isSystem=true 时打开；确认后只选择目标并进入下一步，不直接刷写。
+- 当前没有明确标题，大段 StyledText 警示、未换行的设备名称/挂载信息、默认 TextField 和按钮堆叠，且没有高度约束与滚动区。已有 ConfirmUnfilterDialog / WriteConfirmationDialog 提供可复用视觉规范。
+- 保留精确名称匹配与现有禁止快捷键/鼠标粘贴处理；采用白色圆角面板、警示图标、设备卡片、焦点明确的输入框和固定操作区。
+- 最终标准弹窗宽 520，高度中文 353、英文/德文 360（680×450 预览窗口）；内容正常状态无需滚动。大字/长文本时保持标题与操作区固定，中间滚动；设备标识不再省略。

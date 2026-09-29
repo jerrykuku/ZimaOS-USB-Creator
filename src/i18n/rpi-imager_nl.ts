@@ -360,14 +360,6 @@
         <translation>Type de schijvennaam precies zoals hierboven weergegeven</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULEREN</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>DOORGAAN</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Operatie annuleren en terugkeren naar opslag selectie om een ander apparaat te kiezen</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Voertuiginformatie</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Dit systeemstation gebruiken?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

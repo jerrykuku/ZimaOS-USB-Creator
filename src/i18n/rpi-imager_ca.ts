@@ -360,14 +360,6 @@
         <translation>Escriviu el nom de la unitat exactament com es mostra a dalt</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCEL·LA</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>CONTINUA</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Cancel·la l&apos;operació i torna a la selecció d&apos;emmagatzematge per triar un dispositiu diferent</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Informació de la unitat</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Voleu utilitzar aquesta unitat del sistema?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

@@ -360,14 +360,6 @@
         <translation>Saisir le nom du disque exactement comme indiqué ci-dessus</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULER</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>CONTINUER</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Annuler l&apos;opération et revenir à la sélection pour choisir un autre disque</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Infos du disque</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Utiliser ce disque système ?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

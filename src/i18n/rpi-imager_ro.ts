@@ -360,14 +360,6 @@
         <translation>Introdu numele drive-ului exact cum este afișat mai sus</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANULEAZĂ</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>CONTINUĂ</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Anulează operația și revino la selecția de stocare pentru a alege un alt dispozitiv</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Informații drive</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Utilizați această unitate de sistem?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

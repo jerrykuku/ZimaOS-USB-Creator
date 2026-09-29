@@ -360,14 +360,6 @@
         <translation>上記のようにドライブ名を入力します</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>キャンセル</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>続行</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>操作をキャンセルし,別のデバイスを選択するためにストレージ選択に戻る</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>ドライブ情報</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>このシステムドライブを使用しますか？</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

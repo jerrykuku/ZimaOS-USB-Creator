@@ -360,14 +360,6 @@
         <translation>Введите имя диска точно так, как указано выше.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ОТМЕНА</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>ПРОДОЛЖИТЬ</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Отменить операцию и вернуться к выбору хранилища, чтобы выбрать другое устройство.</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Информация о диске</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Использовать этот системный диск?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

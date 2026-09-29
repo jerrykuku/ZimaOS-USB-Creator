@@ -360,14 +360,6 @@
         <translation>Digite o nome da unidade exatamente como exibido acima</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCELAR</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>CONTINUAR</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Cancelar a operação e voltar à seleção de armazenamento para escolher um dispositivo diferente</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Informações sobre a unidade</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Usar esta unidade do sistema?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

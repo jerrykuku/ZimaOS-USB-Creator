@@ -360,14 +360,6 @@
         <translation>Geben Sie den Laufwerksnamen genau wie oben angezeigt ein</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ABBRECHEN</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>WEITER</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Vorgang abbrechen und zur Speicherauswahl zurückkehren, um ein anderes Gerät auszuwählen</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Laufwerksinformationen</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Dieses Systemlaufwerk verwenden?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

@@ -360,14 +360,6 @@
         <translation>აკრიფეთ დისკის სახელი ზუსტად ისე, როგორც ზემოთაა ნაჩვენები</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ᲒᲐᲣᲥᲛᲔᲑᲐ</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>ᲒᲐᲒᲠᲫᲔᲚᲔᲑᲐ</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>გააუქმეთ ოპერაცია და დაუბრუნდით შენახვის შერჩევაზე სხვა მოწყობილობის შესარჩევად</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>დრაივის ინფორმაცია</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>გამოვიყენოთ ეს სისტემური დისკი?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

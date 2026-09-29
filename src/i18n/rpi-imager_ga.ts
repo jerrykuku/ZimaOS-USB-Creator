@@ -360,14 +360,6 @@
         <translation>Clóscríobh ainm an tiomántáin díreach mar a thaispeántar thuas</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CEALAIGH</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>LEAN AR AGHAIDH</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Cealaigh an oibríocht agus fill ar ais chuig an rogha stórála chun gléas eile a roghnú</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Faisnéis tiomána</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>An bhfuil fonn ort an tiomántán córais seo a úsáid?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

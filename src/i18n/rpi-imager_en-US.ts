@@ -360,14 +360,6 @@
         <translation>Type drive name exactly as shown above</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCEL</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>CONTINUE</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Cancel operation and return to storage selection to choose a different device</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Drive information</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Use this system drive?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

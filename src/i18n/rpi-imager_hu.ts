@@ -360,14 +360,6 @@
         <translation>Írja be a meghajtó nevét pontosan a fentiek szerint</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>MÉGSE</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>FOLYTATÁS</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Törölje a műveletet, és térjen vissza a tároló kiválasztásához, hogy más eszközöket válasszon.</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>A vezetési információ</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Használja ezt a rendszermeghajtót?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

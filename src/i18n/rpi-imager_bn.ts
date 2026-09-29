@@ -360,14 +360,6 @@
         <translation>ড্রাইভের নাম ঠিক উপরে দেখানো মত টাইপ করুন</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>বাতিল</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>চালিয়ে যান</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>অপারেশন বাতিল করুন এবং অন্য ডিভাইস নির্বাচন করতে স্টোরেজ নির্বাচন করুন</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>ড্রাইভ তথ্য</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>এই সিস্টেম ড্রাইভটি ব্যবহার করবেন?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

@@ -360,14 +360,6 @@
         <translation>Zadejte název disku přesně tak, jak je uvedeno výše</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ZRUŠIT</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>POKRAČOVAT</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Zrušit operaci a vrátit se na seznam úložišť pro výběr jiného zařízení</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Informace o disku</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Použít tento systémový disk?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

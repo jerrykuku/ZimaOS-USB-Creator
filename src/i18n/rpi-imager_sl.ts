@@ -360,14 +360,6 @@
         <translation>Ime pogona vnaprej prikazano</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>PREKLIČI</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>NADALJUJ</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>Preklic operacije in se vrnite na izbiro shranjevanja, da izberete drugo napravo</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>Informacije o vozilu</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>Želite uporabiti ta sistemski pogon?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

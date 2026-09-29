@@ -360,14 +360,6 @@
         <translation>위에 표시된 대로 드라이브 이름을 정확히 입력하세요</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>취소</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>계속</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>작업을 취소하고 다른 장치를 선택하기 위해 저장소 선택으로 돌아갑니다</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>드라이브 정보</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>이 시스템 드라이브를 사용하시겠습니까?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>

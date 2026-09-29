@@ -360,14 +360,6 @@
         <translation>נא להקליד את שם הכונן בדיוק כמו שמופיע לעיל</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ביטול</translation>
-    </message>
-    <message>
-        <source>CONTINUE</source>
-        <translation>המשך</translation>
-    </message>
-    <message>
         <source>Cancel operation and return to storage selection to choose a different device</source>
         <translation>ביטל את הפעולה וחזור לאחסן כדי לבחור מכשיר אחר</translation>
     </message>
@@ -378,6 +370,10 @@
     <message>
         <source>Drive information</source>
         <translation>מידע על הכונן</translation>
+    </message>
+    <message>
+        <source>Use this system drive?</source>
+        <translation>להשתמש בכונן המערכת הזה?</translation>
     </message>
     <message>
         <source>Drive name to type: %1</source>
