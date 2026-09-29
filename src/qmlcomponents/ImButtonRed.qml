@@ -28,13 +28,18 @@ Button {
     
     // Allow instances to provide a custom accessibility description
     property string accessibleDescription: ""
+    property bool destructive: false
     
     background: Rectangle {
-        color: control.enabled
-               ? (control.activeFocus
-                   ? Style.button2HoveredBackgroundColor
-                   : (control.hovered ? Style.button2HoveredBackgroundColor : Style.button2BackgroundColor))
-               : Style.buttonDisabledBackgroundColor
+        color: !control.enabled ? Style.buttonDisabledBackgroundColor
+               : control.destructive
+                   ? (control.down ? Qt.darker(Style.colorTextErrorStrong, 1.25)
+                      : control.hovered ? Qt.darker(Style.colorTextErrorStrong, 1.1)
+                      : Style.colorTextErrorStrong)
+                   : (control.activeFocus || control.hovered
+                      ? Style.button2HoveredBackgroundColor : Style.button2BackgroundColor)
+        border.width: control.destructive && control.visualFocus ? Style.focusOutlineWidth : 0
+        border.color: Style.colorTextOnAccent
         radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : Style.radiusButton
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors

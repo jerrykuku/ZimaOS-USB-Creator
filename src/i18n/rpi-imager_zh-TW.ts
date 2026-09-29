@@ -97,7 +97,7 @@
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>版本：%1</translation>
     </message>
     <message>
         <source>Content Repository</source>
@@ -106,6 +106,38 @@
     <message>
         <source>Edit</source>
         <translation />
+    </message>
+    <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>管理寫入偏好與映像來源。</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>寫入前不再顯示裝置清除確認。</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS（預設）</translation>
+    </message>
+    <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>停用後，寫入映像前將不再顯示確認提示。</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>系統磁碟保護仍然有效</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>選擇系統磁碟時，仍需輸入完全一致的裝置名稱。</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>保留警告</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>仍要停用</translation>
     </message>
 </context>
 <context>
@@ -2863,6 +2895,84 @@ Please check your storage device and try again.</source>
     <message>
         <source>ZimaOS (default)</source>
         <translation>ZimaOS（預設）</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>選擇作業系統映像的取得來源。</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>取得官方 ZimaOS 系統映像。</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>從本機檔案讀取映像清單。</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>從指定網址取得映像清單。</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>選擇倉庫檔案</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>自訂倉庫 URL</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>套用變更</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>更換來源後，將返回裝置選擇步驟。</translation>
+    </message>
+</context>
+<context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>確認清除裝置？</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>寫入映像會清除裝置上的所有資料。</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>目標儲存裝置</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>儲存裝置</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>此操作無法復原，請先備份重要檔案。</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>清除並寫入</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>清除並寫入（%1）</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>錯誤詳情</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>知道了</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>關閉錯誤詳情</translation>
     </message>
 </context>
 </TS>

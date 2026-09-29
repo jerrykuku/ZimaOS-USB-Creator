@@ -39,13 +39,13 @@ Button {
                    ? (control.activeFocus
                         ? Style.button2HoveredBackgroundColor
                         : (control.hovered ? Style.button2HoveredBackgroundColor : Style.button2BackgroundColor))
-                   : (control.activeFocus
-                        ? Style.buttonFocusedBackgroundColor
+                   : (control.down ? Style.colorSurfaceControlInactive
                         : (control.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor)))
               : Qt.rgba(0, 0, 0, 0.1)
         radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : 8
-        border.color: (control.enabled && !control.active) ? Style.colorBorderSubtle : "transparent"
-        border.width: control.active ? 0 : 1
+        border.color: control.enabled && control.visualFocus ? Style.focusOutlineColor
+                      : !control.active ? Style.colorBorderSubtle : Style.transparent
+        border.width: control.visualFocus ? Style.focusOutlineWidth : (control.active ? 0 : Style.borderWidthDefault)
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
     }
@@ -57,7 +57,7 @@ Button {
         lineHeight: Style.buttonLineHeight
         color: control.enabled
               ? (control.active
-                   ? ((control.activeFocus || control.hovered) ? Style.colorAccentPrimary : Style.button2ForegroundColor)
+                   ? Style.button2ForegroundColor
                    : Style.buttonForegroundColor)
               : Qt.rgba(0, 0, 0, 0.3)
         horizontalAlignment: Text.AlignHCenter

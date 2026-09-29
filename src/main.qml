@@ -328,71 +328,10 @@ ApplicationWindow {
         }
     }
 
-    // Modern error dialog (replaces legacy MsgPopup for error/info cases)
-    BaseDialog {
+    ErrorDialog {
         id: errorDialog
         parent: overlayRoot
         anchors.centerIn: parent
-
-        property string titleText: qsTr("Error")
-        property string message: ""
-
-        // Custom escape handling
-        function escapePressed() {
-            errorDialog.close()
-        }
-
-        // Register focus groups when component is ready
-        Component.onCompleted: {
-            registerFocusGroup("content", function(){ 
-                // Only include text elements when screen reader is active (otherwise they're not focusable)
-                if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                    return [errorTitle, errorMessage]
-                }
-                return []
-            }, 0)
-            registerFocusGroup("buttons", function(){ 
-                return [errorContinueButton] 
-            }, 1)
-        }
-
-        // Dialog content
-        FocusableHeading {
-            id: errorTitle
-            text: errorDialog.titleText
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelColor
-            Layout.fillWidth: true
-        }
-
-        FocusableText {
-            id: errorMessage
-            text: errorDialog.message
-            textFormat: Text.StyledText
-            wrapMode: Text.WordWrap
-            font.pointSize: Style.fontSizeDescription
-            font.family: Style.fontFamily
-            color: Style.colorTextPrimary
-            Layout.fillWidth: true
-            Accessible.name: text.replace(/<[^>]+>/g, '')  // Strip HTML tags for accessibility
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Style.spacingMedium
-            Item {
-                Layout.fillWidth: true
-            }
-            ImButton {
-                id: errorContinueButton
-                text: CommonStrings.continueText
-                accessibleDescription: qsTr("Close the error dialog and continue")
-                activeFocusOnTab: true
-                onClicked: errorDialog.close()
-            }
-        }
     }
 
     // Specific dialog for storage removal during write

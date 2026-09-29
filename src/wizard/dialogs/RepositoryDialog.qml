@@ -16,12 +16,19 @@ BaseDialog {
     id: popup
     popupType: Popup.Item
 
-    // Dynamic width based on widest radio button or button row
-    // Updates automatically when language/text changes
-    implicitWidth: Math.max(
-        Math.max(radioOfficial.naturalWidth, radioCustomFile.naturalWidth, radioCustomUri.naturalWidth),
-        cancelButton.implicitWidth + saveButton.implicitWidth + Style.spacingMedium * 2
-    ) + Style.spacingPopupInset * 2
+    title: qsTr("Content Repository")
+    header: null
+    width: Math.min(parent ? parent.width - Style.spacingPopupInset * 2 : Style.scaled(480), Style.scaled(480))
+    height: Math.min(parent ? parent.height - Style.spacingPopupInset * 2 : 600,
+                     contentLayout.implicitHeight + Style.spacingPopupInset * 2)
+
+    background: Rectangle {
+        color: Style.colorSurfacePanel
+        radius: Style.radiusPanel
+        border.color: Style.colorBorderSubtle
+        border.width: Style.sectionBorderWidth
+        antialiasing: true
+    }
 
     // imageWriter is inherited from BaseDialog
     property var wizardContainer: null
@@ -33,38 +40,67 @@ BaseDialog {
     // Compact radio rows without the Material ripple/selection background.
     component RepositoryRadioButton: ImRadioButton {
         id: radio
+        property string description: ""
+        font: Qt.font({ family: Style.fontFamily, pixelSize: Style.fontSizePixelSm })
         leftPadding: 0
         rightPadding: 0
-        topPadding: Style.spacingTiny
-        bottomPadding: Style.spacingTiny
-        spacing: Style.spacingTiny
+        topPadding: Style.spacingXSmall
+        bottomPadding: Style.spacingXSmall
+        spacing: Style.spacingSmallPlus
         implicitHeight: Math.max(Style.buttonHeightStandard, implicitContentHeight + topPadding + bottomPadding)
         background: Item {}
+        contentItem: Item {
+            implicitHeight: labels.implicitHeight
+            Column {
+                id: labels
+                x: radio.indicator.width + radio.spacing
+                width: parent.width - x
+                spacing: Style.spacingXSmall
+                Text {
+                    id: sourceLabel
+                    width: parent.width
+                    text: radio.text
+                    font: radio.font
+                    color: Style.colorTextPrimary
+                    wrapMode: Text.WordWrap
+                }
+                Text {
+                    width: parent.width
+                    text: radio.description
+                    font.family: Style.fontFamily
+                    font.pixelSize: Style.fontSizePixelXs
+                    color: Style.colorTextSecondary
+                    wrapMode: Text.WordWrap
+                }
+            }
+        }
         indicator: Rectangle {
-            implicitWidth: 20
-            implicitHeight: 20
+            implicitWidth: Style.scaled(20)
+            implicitHeight: Style.scaled(20)
             x: radio.leftPadding
-            y: (radio.height - height) / 2
+            y: radio.topPadding + (sourceLabel.implicitHeight - height) / 2
             radius: width / 2
             color: Style.transparent
-            border.width: 2
-            border.color: radio.checked ? Style.colorAccentPrimary : Style.colorControlBorderInactive
+            border.width: radio.visualFocus ? 3 : 2
+            border.color: radio.checked || radio.visualFocus ? Style.colorAccentPrimary : Style.colorControlBorderInactive
+            antialiasing: true
 
             Rectangle {
                 anchors.centerIn: parent
-                width: 10
+                width: Style.scaled(10)
                 height: width
                 radius: width / 2
                 color: Style.colorAccentPrimary
                 visible: radio.checked
+                antialiasing: true
             }
         }
     }
 
     component RepositoryTextField: ImTextField {
         id: field
-        implicitHeight: Style.buttonHeightStandard
-        font.pixelSize: Style.fontSizePixelSm
+        implicitHeight: Style.scaled(36)
+        font: Qt.font({ family: Style.fontFamily, pixelSize: Style.fontSizePixelSm })
         leftPadding: Style.spacingSmallPlus
         rightPadding: Style.spacingSmallPlus
         topPadding: 0
@@ -86,207 +122,239 @@ BaseDialog {
             }
             return []
         }, 0)
-        registerFocusGroup("sourceTypes", function(){
-            return [radioOfficial, radioCustomFile, radioCustomUri]
+        registerFocusGroup("sources", function(){
+            var items = [radioOfficial, radioCustomFile]
+            if (radioCustomFile.checked)
+                items.push(fieldCustomRepository, browseButton)
+            items.push(radioCustomUri)
+            if (radioCustomUri.checked)
+                items.push(fieldCustomUri)
+            return items
         }, 1)
-        registerFocusGroup("customFile", function(){
-            return radioCustomFile.checked ? [fieldCustomRepository, browseButton] : []
-        }, 2)
-        registerFocusGroup("customUri", function(){
-            return radioCustomUri.checked ? [fieldCustomUri] : []
-        }, 3)
         registerFocusGroup("buttons", function(){
             return [cancelButton, saveButton]
         }, 4)
     }
 
-    // Header
-    Text {
-        id: headerText
-        text: qsTr("Content Repository")
-        font.pixelSize: Style.fontSizeHeadingChrome
-        font.family: Style.fontFamilyBold
-        font.bold: true
-        color: Style.formLabelColor
+    ColumnLayout {
         Layout.fillWidth: true
-        horizontalAlignment: Text.AlignHCenter
-        Accessible.role: Accessible.Heading
-        Accessible.name: text + ", " + qsTr("Choose the source for operating system images")
-        Accessible.ignored: false
-        Accessible.focusable: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-    }
-
-    // Options section
-    Item {
-        Layout.fillWidth: true
-        Layout.preferredHeight: optionsLayout.implicitHeight
+        Layout.fillHeight: true
+        Layout.margins: Style.spacingTiny
+        spacing: Style.spacingSmallPlus
 
         ColumnLayout {
-            id: optionsLayout
-            anchors.fill: parent
-            anchors.margins: 0
-            spacing: Style.spacingMedium
-
-            WizardFormLabel {
-                text: qsTr("Repository source:")
-            }
-
-            ButtonGroup { id: repoGroup }
-
-            RepositoryRadioButton {
-                id: radioOfficial
-                text: qsTr("ZimaOS (default)")
-                accessibleDescription: qsTr("Use the official ZimaOS operating system repository")
-                checked: true
-                ButtonGroup.group: repoGroup
-                Layout.fillWidth: true  // Enable text wrapping for long translations
-            }
-
-            RepositoryRadioButton {
-                id: radioCustomFile
-                text: qsTr("Use custom file")
-                accessibleDescription: qsTr("Load operating system list from a JSON file on your computer")
-                checked: false
-                ButtonGroup.group: repoGroup
-                Layout.fillWidth: true  // Enable text wrapping for long translations
-                onCheckedChanged: {
-                    if (checked) {
-                        Qt.callLater(function() {
-                            fieldCustomRepository.forceActiveFocus()
-                        })
-                    }
-                }
-            }
-
-            RepositoryRadioButton {
-                id: radioCustomUri
-                text: qsTr("Use custom URL")
-                accessibleDescription: qsTr("Download operating system list from a custom web address")
-                checked: false
-                ButtonGroup.group: repoGroup
-                Layout.fillWidth: true  // Enable text wrapping for long translations
-                onCheckedChanged: {
-                    if (checked) {
-                        Qt.callLater(function() {
-                            fieldCustomUri.forceActiveFocus()
-                        })
-                    }
-                }
-            }
-
-            // One shared outline joins the path field and browse action.
-            Rectangle {
-                id: fileControlGroup
+            Layout.fillWidth: true
+            spacing: Style.spacingXSmall
+            FocusableHeading {
+                id: headerText
+                text: popup.title
+                font.pixelSize: Style.fontSizeHeadingChrome
+                font.family: Style.fontFamilyBold
+                font.bold: true
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
-                Layout.preferredHeight: Style.buttonHeightStandard
-                visible: radioCustomFile.checked
-                radius: Style.radiusButton
-                color: Style.colorSurfacePanel
-                border.width: Style.borderWidthDefault
-                border.color: fieldCustomRepository.activeFocus || browseButton.visualFocus
-                              ? Style.colorAccentPrimary : Style.colorBorderSubtle
+                wrapMode: Text.WordWrap
+            }
+            Text {
+                text: qsTr("Choose where to get your operating system images.")
+                font.family: Style.fontFamily
+                font.pixelSize: Style.fontSizePixelXs
+                color: Style.colorTextSecondary
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+        }
 
-                RowLayout {
+        ImScrollView {
+            id: sourcesScroll
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumHeight: 0
+            Layout.preferredHeight: sourcesCard.implicitHeight
+            contentWidth: availableWidth
+            contentHeight: sourcesCard.implicitHeight
+
+            Rectangle {
+                id: sourcesCard
+                width: sourcesScroll.availableWidth
+                height: implicitHeight
+                implicitHeight: optionsLayout.implicitHeight + 20
+                radius: Style.radiusCard
+                color: Style.colorSurfacePage
+                border.color: Style.colorBorderSubtle
+
+                ColumnLayout {
+                    id: optionsLayout
                     anchors.fill: parent
-                    anchors.margins: fileControlGroup.border.width
+                    anchors.margins: 10
                     spacing: 0
+                    ButtonGroup { id: repoGroup }
 
-                    RepositoryTextField {
-                        id: fieldCustomRepository
-                        text: popup.selectedRepo.toString() !== "" ? UrlFmt.display(popup.selectedRepo) : ""
+                    RepositoryRadioButton {
+                        id: radioOfficial
+                        objectName: "RepositoryDialogradioOfficial"
+                        text: qsTr("ZimaOS (default)")
+                        description: qsTr("Official ZimaOS images, ready to install.")
+                        accessibleDescription: qsTr("Use the official ZimaOS operating system repository")
+                        checked: true
+                        ButtonGroup.group: repoGroup
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.minimumWidth: 0
-                        placeholderText: qsTr("Please select a custom repository json file")
-                        readOnly: true
-                        background: Item {}
                     }
-
                     Rectangle {
-                        Layout.fillHeight: true
-                        Layout.preferredWidth: Style.borderWidthDefault
-                        color: fileControlGroup.border.color
+                        Layout.fillWidth: true
+                        Layout.topMargin: Style.spacingXSmall
+                        Layout.bottomMargin: Style.spacingXSmall
+                        implicitHeight: 1
+                        color: Style.colorBorderSubtle
+                        Accessible.ignored: true
                     }
-
-                    ImButton {
-                        id: browseButton
-                        text: CommonStrings.browse
-                        accessibleDescription: qsTr("Select a custom repository JSON file from your computer")
-                        Layout.fillHeight: true
-                        implicitWidth: Math.max(80, implicitContentWidth + leftPadding + rightPadding)
-                        background: Rectangle {
-                            color: browseButton.down ? Style.colorSurfaceControlInactive
-                                   : browseButton.hovered ? Style.colorSurfaceMuted : Style.colorSurfacePage
-                            radius: Math.max(0, Style.radiusButton - fileControlGroup.border.width)
-                            topLeftRadius: 0
-                            bottomLeftRadius: 0
+                    RepositoryRadioButton {
+                        id: radioCustomFile
+                        objectName: "RepositoryDialogradioCustomFile"
+                        text: qsTr("Use custom file")
+                        description: qsTr("Load an image list from a file on your computer.")
+                        accessibleDescription: qsTr("Load operating system list from a JSON file on your computer")
+                        ButtonGroup.group: repoGroup
+                        Layout.fillWidth: true
+                        onCheckedChanged: {
+                            if (checked && popup.opened)
+                                Qt.callLater(function() { fieldCustomRepository.forceActiveFocus() })
                         }
-                        onClicked: {
-                            // Prefer native file dialog via Imager's wrapper, but only if available
-                            if (imageWriter.nativeFileDialogAvailable()) {
-                                // Defer opening the native dialog until after the current event completes
-                                Qt.callLater(function () {
-                                    var path = popup.imageWriter.getNativeOpenFileName(
-                                        qsTr("Select Repository"), "", CommonStrings.repoFiltersString);
-                                    if (path) {
-                                        popup.selectedRepo = UrlFmt.fromLocalFile(path);
+                    }
+                    Rectangle {
+                        id: fileControlGroup
+                        Layout.fillWidth: true
+                        Layout.leftMargin: Style.scaled(20) + Style.spacingSmallPlus
+                        Layout.bottomMargin: Style.spacingXSmall
+                        Layout.preferredHeight: Style.scaled(36)
+                        visible: radioCustomFile.checked
+                        radius: Style.radiusButton
+                        color: Style.colorSurfacePanel
+                        border.width: Style.borderWidthDefault
+                        border.color: fieldCustomRepository.activeFocus || browseButton.visualFocus
+                                      ? Style.colorAccentPrimary : Style.colorBorderSubtle
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: fileControlGroup.border.width
+                            spacing: 0
+
+                            RepositoryTextField {
+                                id: fieldCustomRepository
+                                objectName: "RepositoryDialogfieldCustomRepository"
+                                text: popup.selectedRepo.toString() !== "" ? UrlFmt.display(popup.selectedRepo) : ""
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Layout.minimumWidth: 0
+                                placeholderText: qsTr("Select a repository file")
+                                readOnly: true
+                                background: Item {}
+                            }
+
+                            Rectangle {
+                                Layout.fillHeight: true
+                                Layout.preferredWidth: Style.borderWidthDefault
+                                color: fileControlGroup.border.color
+                            }
+
+                            ImButton {
+                                id: browseButton
+                                text: CommonStrings.browse
+                                accessibleDescription: qsTr("Select a custom repository JSON file from your computer")
+                                Layout.fillHeight: true
+                                implicitWidth: Math.max(Style.scaled(72), implicitContentWidth + leftPadding + rightPadding)
+                                background: Rectangle {
+                                    color: browseButton.down ? Style.colorSurfaceControlInactive
+                                           : browseButton.hovered ? Style.colorSurfaceMuted : Style.colorSurfacePage
+                                    radius: Math.max(0, Style.radiusButton - fileControlGroup.border.width)
+                                    topLeftRadius: 0
+                                    bottomLeftRadius: 0
+                                }
+                                onClicked: {
+                                    // Prefer native file dialog via Imager's wrapper, but only if available
+                                    if (imageWriter.nativeFileDialogAvailable()) {
+                                        // Defer opening the native dialog until after the current event completes
+                                        Qt.callLater(function () {
+                                            var path = popup.imageWriter.getNativeOpenFileName(
+                                                qsTr("Select Repository"), "", CommonStrings.repoFiltersString);
+                                            if (path) {
+                                                popup.selectedRepo = UrlFmt.fromLocalFile(path);
+                                            }
+                                        });
+                                    } else {
+                                        // Fallback to QML dialog (forced non-native)
+                                        repoFileDialog.open();
                                     }
-                                });
-                            } else {
-                                // Fallback to QML dialog (forced non-native)
-                                repoFileDialog.open();
+                                }
                             }
                         }
                     }
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.topMargin: Style.spacingXSmall
+                        Layout.bottomMargin: Style.spacingXSmall
+                        implicitHeight: 1
+                        color: Style.colorBorderSubtle
+                        Accessible.ignored: true
+                    }
+                    RepositoryRadioButton {
+                        id: radioCustomUri
+                        objectName: "RepositoryDialogradioCustomUri"
+                        text: qsTr("Use custom URL")
+                        description: qsTr("Load an image list from a web address.")
+                        accessibleDescription: qsTr("Download operating system list from a custom web address")
+                        ButtonGroup.group: repoGroup
+                        Layout.fillWidth: true
+                        onCheckedChanged: {
+                            if (checked && popup.opened)
+                                Qt.callLater(function() { fieldCustomUri.forceActiveFocus() })
+                        }
+                    }
+                    RepositoryTextField {
+                        id: fieldCustomUri
+                        objectName: "RepositoryDialogfieldCustomUri"
+                        visible: radioCustomUri.checked
+                        Layout.fillWidth: true
+                        Layout.leftMargin: Style.scaled(20) + Style.spacingSmallPlus
+                        trimWhitespace: true
+                        placeholderText: "https://example.com/repo.json"
+                        activeFocusOnTab: true
+                        inputMethodHints: Qt.ImhUrlCharactersOnly
+
+                        Accessible.name: qsTr("Custom repository URL")
+
+                        // Use ImageWriter's validation method for consistency
+                        property bool isValid: popup.imageWriter && popup.imageWriter.isValidRepoUrl(value)
+                    }
                 }
             }
-
-            RepositoryTextField {
-                id: fieldCustomUri
-                visible: radioCustomUri.checked
-                Layout.fillWidth: true
-                trimWhitespace: true
-                placeholderText: "https://example.com/repo.json"
-                font.pixelSize: Style.fontSizePixelSm
-                activeFocusOnTab: true
-                inputMethodHints: Qt.ImhUrlCharactersOnly
-
-                // Use ImageWriter's validation method for consistency
-                property bool isValid: popup.imageWriter && popup.imageWriter.isValidRepoUrl(value)
-            }
         }
-    }
 
-    // Spacer
-    Item {
-        Layout.fillHeight: true
-    }
-
-    // Buttons section with background
-    Rectangle {
-        Layout.fillWidth: true
-        // Ensure minimum width accommodates buttons
-        Layout.minimumWidth: cancelButton.implicitWidth + saveButton.implicitWidth + Style.spacingMedium * 2
-        Layout.preferredHeight: buttonRow.implicitHeight
-        color: Style.colorSurfacePage
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: 1
+            color: Style.colorBorderSubtle
+        }
 
         RowLayout {
-            id: buttonRow
-            anchors.fill: parent
-            anchors.margins: 0
-            spacing: Style.spacingMedium
-
-            Item {
+            Layout.fillWidth: true
+            spacing: Style.spacingSmallPlus
+            Text {
+                text: qsTr("Changing the source returns you to device selection.")
+                font.family: Style.fontFamily
+                font.pixelSize: Style.fontSizePixelXs
+                color: Style.colorTextSecondary
+                wrapMode: Text.Wrap
                 Layout.fillWidth: true
+                Layout.minimumWidth: 0
             }
-
             ImButton {
                 id: cancelButton
+                objectName: "RepositoryDialogcancelButton"
                 text: CommonStrings.cancel
                 accessibleDescription: qsTr("Close the repository dialog without changing the content source")
-                Layout.minimumWidth: Style.buttonWidthMinimum
+                Layout.preferredHeight: Style.buttonHeightStandard
+                Layout.preferredWidth: Math.max(Style.scaled(90), implicitWidth)
                 activeFocusOnTab: true
                 onClicked: {
                     popup.initialized = false
@@ -296,6 +364,7 @@ BaseDialog {
 
             ImButtonRed {
                 id: saveButton
+                objectName: "RepositoryDialogsaveButton"
                 enabled: (radioOfficial.checked
                          || (radioCustomFile.checked && popup.selectedRepo.toString() !== "")
                          || (radioCustomUri.checked && fieldCustomUri.isValid))
@@ -304,10 +373,10 @@ BaseDialog {
                              imageWriter.writeState === ImageWriterSingleton.Succeeded ||
                              imageWriter.writeState === ImageWriterSingleton.Failed ||
                              imageWriter.writeState === ImageWriterSingleton.Cancelled)
-                // TODO: only show or enable when settings changed
-                text: qsTr("Apply & Restart")
+                text: qsTr("Apply changes")
                 accessibleDescription: qsTr("Apply the new content repository and restart the wizard from the beginning")
-                Layout.minimumWidth: Style.buttonWidthMinimum
+                Layout.preferredHeight: Style.buttonHeightStandard
+                Layout.preferredWidth: Math.max(Style.scaled(90), implicitWidth)
                 // Allow button to grow to fit text
                 implicitWidth: Math.max(Style.buttonWidthMinimum, implicitContentWidth + leftPadding + rightPadding)
                 activeFocusOnTab: true
@@ -394,6 +463,8 @@ BaseDialog {
 
     onOpened: {
         initialize()
+        rebuildFocusOrder()
+        focusInitialItem()
     }
 
     property alias repoFileDialog: repoFileDialog

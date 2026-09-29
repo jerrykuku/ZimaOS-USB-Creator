@@ -42,34 +42,28 @@ RadioButton {
         width: control.availableWidth  // Constrain width so text wraps
     }
     
-    // Custom square indicator for embedded mode to avoid circular rendering artifacts
-    Component.onCompleted: {
-        if (ImageWriterSingleton && ImageWriterSingleton.isEmbeddedMode()) {
-            control.indicator = squareIndicatorComponent.createObject(control)
-        }
-    }
-    
-    Component {
-        id: squareIndicatorComponent
+    // Own the indicator so platform/Material hover and focus ripples cannot
+    // introduce a tinted background around the radio button.
+    background: Item {}
+    indicator: Rectangle {
+        implicitWidth: 20
+        implicitHeight: 20
+        x: control.leftPadding
+        y: control.height / 2 - height / 2
+        radius: (ImageWriterSingleton && ImageWriterSingleton.isEmbeddedMode()) ? 0 : width / 2
+        border.color: control.checked || control.visualFocus ? Style.colorAccentPrimary : Style.colorControlBorderInactive
+        border.width: control.visualFocus ? 3 : 2
+        color: Style.colorSurfacePage
+        antialiasing: true
+
         Rectangle {
-            implicitWidth: 20
-            implicitHeight: 20
-            x: control.leftPadding
-            y: control.height / 2 - height / 2
-            radius: 0  // Square instead of circle
-            border.color: control.checked ? Style.colorAccentPrimary : Style.colorControlBorderInactive
-            border.width: 2
-            color: Style.colorSurfacePage
-            
-            Rectangle {
-                width: 10
-                height: 10
-                x: 5
-                y: 5
-                radius: 0  // Square dot instead of circle
-                color: Style.colorAccentPrimary
-                visible: control.checked
-            }
+            anchors.centerIn: parent
+            width: 10
+            height: 10
+            radius: parent.radius > 0 ? width / 2 : 0
+            color: Style.colorAccentPrimary
+            visible: control.checked
+            antialiasing: true
         }
     }
     
@@ -80,17 +74,6 @@ RadioButton {
     Accessible.checkable: true
     Accessible.checked: checked
     Accessible.onPressAction: click()
-    
-    // Add visual focus indicator
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: Style.focusOutlineMargin
-        color: Style.transparent
-        border.color: control.activeFocus ? Style.focusOutlineColor : Style.transparent
-        border.width: Style.focusOutlineWidth
-        radius: Style.cornerRadius(Style.focusOutlineRadius)
-        z: -1
-    }
     
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Space) {

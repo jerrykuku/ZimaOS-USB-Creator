@@ -19,6 +19,7 @@ Item {
     property string btnText: ""
     // Allow custom accessibility description
     property string accessibleDescription: ""
+    property bool emphasized: true
     property alias enabled: optionButton.enabled
     signal clicked()
 
@@ -29,9 +30,9 @@ Item {
     
     // Single source of truth for label font (used by both label and TextMetrics)
     readonly property font labelFont: Qt.font({
-        family: Style.fontFamilyBold,
+        family: emphasized ? Style.fontFamilyBold : Style.fontFamily,
         pointSize: Style.fontSizeFormLabel,
-        bold: true
+        bold: emphasized
     })
     
     // Export the natural/desired width for dialog sizing calculations

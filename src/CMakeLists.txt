@@ -237,7 +237,7 @@ if( IS_BIG_ENDIAN )
 endif( IS_BIG_ENDIAN )
 
 # Base sources common to all builds
-set(SOURCES_BASE ${PLATFORM_SOURCES} "main.cpp"
+set(SOURCES_BASE ${PLATFORM_SOURCES} "main.cpp" "applicationidentity.cpp" "applicationidentity.h"
     "drivelistitem.cpp" "drivelistmodel.cpp" "drivelistmodelpollthread.cpp" "downloadthread.cpp" "downloadextractthread.cpp"
     "devicewrapper.cpp" "devicewrapperblockcacheentry.cpp" "devicewrapperpartition.cpp" "devicewrapperfatpartition.cpp"
     "driveformatthread.cpp" "localfileextractthread.cpp" "dependencies/sha256crypt/sha256crypt.c" "cli.cpp"
@@ -448,6 +448,8 @@ if(NOT BUILD_CLI_ONLY)
         wizard/dialogs/UpdateAvailableDialog.qml
         wizard/dialogs/AppOptionsDialog.qml
         wizard/dialogs/RepositoryDialog.qml
+        wizard/dialogs/WriteConfirmationDialog.qml
+        wizard/dialogs/ErrorDialog.qml
         wizard/dialogs/DebugOptionsDialog.qml
         wizard/dialogs/ConfirmOtpProgramDialog.qml
         wizard/dialogs/PasswordlessSudoWarningDialog.qml
@@ -466,6 +468,8 @@ if(NOT BUILD_CLI_ONLY)
         qmlcomponents/ImOptionButton.qml
         qmlcomponents/ImTextField.qml
         qmlcomponents/ImPasswordField.qml
+        qmlcomponents/ImProgressBar.qml
+        qmlcomponents/ImScrollView.qml
         qmlcomponents/ImToggleTab.qml
         qmlcomponents/MarqueeText.qml
         qmlcomponents/SelectionListView.qml

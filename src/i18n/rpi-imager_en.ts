@@ -99,6 +99,38 @@
         <source>Version: %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Manage writing preferences and image sources.</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Skip the confirmation before erasing a device.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (default)</translation>
+    </message>
+    <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>You will no longer be asked to confirm before writing an image.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>System drive protection stays on</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Selecting a system drive still requires its exact name.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Keep warnings</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Disable anyway</translation>
+    </message>
 </context>
 <context>
     <name>AsyncCacheWriter</name>
@@ -2794,6 +2826,87 @@ Please check your storage device and try again.</source>
     <message>
         <source>Using data from %1</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>Erase this device?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>Writing the image will erase all data on this device.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Target storage device</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Storage device</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>This action cannot be undone. Back up any important files before continuing.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Erase and write</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Erase and write (%1)</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>Choose where to get your operating system images.</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Official ZimaOS images, ready to install.</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Load an image list from a file on your computer.</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Load an image list from a web address.</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Select a repository file</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>Custom repository URL</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Apply changes</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Changing the source returns you to device selection.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Error details</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Got it</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Close the error details</translation>
     </message>
 </context>
 </TS>

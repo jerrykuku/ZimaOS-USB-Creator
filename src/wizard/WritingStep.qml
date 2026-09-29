@@ -7,10 +7,10 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Controls.Material
 import QtQuick.Layouts
 import QtQuick.Window
 import "../qmlcomponents"
+import "dialogs"
 
 import RpiImager
 
@@ -51,6 +51,7 @@ WizardStepBase {
     }
     backButtonAccessibleDescription: qsTr("Return to previous customization step")
     nextButtonEnabled: root.isWriting || root.isComplete || (!beginWriteDelay.running && ImageWriterSingleton.readyToWrite())
+    nextButtonDestructive: root.isWriting && !root.isVerifying
     showBackButton: true
 
     readonly property bool isWriting: {
@@ -296,7 +297,7 @@ WizardStepBase {
                 Accessible.role: Accessible.StatusBar
             }
 
-            ProgressBar {
+            ImProgressBar {
                 id: progressBar
                 Layout.fillWidth: true
                 Layout.preferredHeight: 10
@@ -304,23 +305,6 @@ WizardStepBase {
                 from: 0
                 to: 100
                 indeterminate: root.isIndeterminateProgress && !root.isVerifying && !root.isFinalising
-                               && !PlatformHelper.prefersReducedMotion
-
-                Material.accent: Style.colorAccentPrimary
-                Material.background: Style.progressBarTrackColor
-                background: Rectangle {
-                    implicitHeight: 8
-                    radius: height / 2
-                    color: Style.progressBarTrackColor
-                }
-                contentItem: Item {
-                    Rectangle {
-                        width: progressBar.visualPosition * parent.width
-                        height: parent.height
-                        radius: height / 2
-                        color: Style.colorAccentPrimary
-                    }
-                }
                 visible: root.isWriting
                 Accessible.role: Accessible.ProgressBar
                 Accessible.name: qsTr("Write progress")
@@ -401,156 +385,12 @@ WizardStepBase {
         progressBar.value = 100
     }
 
-    // Confirmation dialog
-    BaseDialog {
+    WriteConfirmationDialog {
         id: confirmDialog
         parent: root.Window.window ? root.Window.window.overlayRootItem : undefined
         anchors.centerIn: parent
-
-        // Override height with maximum constraint to prevent excessive height, but allow natural sizing
-        height: Math.min(400, contentLayout ? (contentLayout.implicitHeight + Style.cardPadding * 2) : 200)
-
-        property bool allowAccept: false
-        property int countdown: 2
-
-        // Custom escape handling
-        function escapePressed() {
-            confirmDialog.close()
-        }
-
-        // Register focus groups when component is ready
-        Component.onCompleted: {
-            registerFocusGroup("warning", function(){ 
-                // Only include warning texts when screen reader is active (otherwise they're not focusable)
-                if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                    return [warningText, permanentText]
-                }
-                return []
-            }, 0)
-            registerFocusGroup("buttons", function(){ 
-                // Only include buttons when they're visible (after allowAccept becomes true)
-                return confirmDialog.allowAccept ? [cancelButton, acceptBtn] : []
-            }, 1)
-        }
-
-        onOpened: {
-            // If a screen reader is active, bypass the timer - screen reader users
-            // need time to hear the content, not wait for a visual countdown
-            if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                allowAccept = true
-                countdown = 0
-                rebuildFocusOrder()
-                focusInitialItem()
-            } else {
-                allowAccept = false
-                countdown = 2
-                confirmDelay.start()
-            }
-        }
-        onClosed: {
-            confirmDelay.stop()
-            allowAccept = false
-            countdown = 2
-        }
-
-        // Dialog content - now using BaseDialog's contentLayout
-        FocusableHeading {
-            id: warningText
-            text: qsTr("You are about to ERASE all data on: %1").arg(root.wizardContainer.selectedStorageName || qsTr("the storage device"))
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelErrorColor
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Accessible.ignored: false
-        }
-
-        FocusableText {
-            id: permanentText
-            text: qsTr("This action is PERMANENT and CANNOT be undone.")
-            font.pointSize: Style.fontSizeFormLabel
-            font.family: Style.fontFamilyBold
-            color: Style.formLabelColor
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Accessible.ignored: false
-        }
-
-        Text {
-            id: waitText
-            text: qsTr("Please wait... %1").arg(confirmDialog.countdown)
-            font.pointSize: Style.fontSizeFormLabel
-            font.family: Style.fontFamily
-            color: Style.colorTextSecondary
-            horizontalAlignment: Text.AlignHCenter
-            Layout.fillWidth: true
-            Layout.topMargin: Style.spacingSmall
-            visible: !confirmDialog.allowAccept
-        }
-
-        // Spacer to push buttons to bottom
-        Item { Layout.fillHeight: true }
-
-        RowLayout {
-            id: confirmButtonRow
-            Layout.fillWidth: true
-            Layout.topMargin: Style.spacingSmall
-            spacing: Style.spacingMedium
-            visible: confirmDialog.allowAccept
-            Item { Layout.fillWidth: true }
-
-            ImButton {
-                id: cancelButton
-                text: CommonStrings.cancel
-                // Match the neutral Return button styling instead of the
-                // focused blue treatment used by generic action buttons.
-                background: Rectangle {
-                    color: Style.buttonBackgroundColor
-                    radius: Style.radiusButton
-                    border.color: Style.colorBorderSubtle
-                    border.width: 1
-                    antialiasing: true
-                }
-                accessibleDescription: qsTr("Cancel and return to the write summary without erasing the storage device")
-                activeFocusOnTab: true
-                onClicked: confirmDialog.close()
-            }
-
-            ImButtonRed {
-                id: acceptBtn
-                text: confirmDialog.allowAccept ? qsTr("I understand, erase and write") : qsTr("Please wait...")
-                accessibleDescription: qsTr("Confirm erasure and begin writing the image to the storage device")
-                enabled: confirmDialog.allowAccept
-                activeFocusOnTab: true
-                onClicked: {
-                    confirmDialog.close()
-                    beginWriteDelay.start()
-                }
-            }
-        }
-
-        // Bottom spacer to balance the dialog's internal top padding
-        // Item { Layout.preferredHeight: Style.cardPadding }
-    }
-
-    // Delay accept for 2 seconds - moved outside dialog content
-    Timer {
-        id: confirmDelay
-        interval: 1000
-        running: false
-        repeat: true
-        onTriggered: {
-            confirmDialog.countdown--
-            if (confirmDialog.countdown <= 0) {
-                confirmDelay.stop()
-                confirmDialog.allowAccept = true
-                // Rebuild focus order now that buttons are visible, then move
-                // focus onto Cancel so Tab/Enter work without a mouse click.
-                confirmDialog.rebuildFocusOrder()
-                confirmDialog.focusInitialItem()
-            }
-        }
+        storageName: root.wizardContainer.selectedStorageName
+        onConfirmed: beginWriteDelay.start()
     }
 
     // Defer starting the write slightly until after the dialog has fully closed,

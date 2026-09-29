@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>版本：%1</translation>
     </message>
     <message>
         <source>PEM Files (*.pem)</source>
@@ -106,6 +106,38 @@
     <message>
         <source>Edit</source>
         <translation>编辑</translation>
+    </message>
+    <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>管理写入偏好与镜像来源。</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>写入前不再显示设备擦除确认。</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS（默认）</translation>
+    </message>
+    <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>禁用后，写入镜像前将不再显示确认提示。</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>系统盘保护仍然有效</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>选择系统盘时，仍需输入完全一致的设备名称。</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>保留警告</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>仍要禁用</translation>
     </message>
 </context>
 <context>
@@ -2875,6 +2907,84 @@ Please check your storage device and try again.</source>
     <message>
         <source>ZimaOS (default)</source>
         <translation>ZimaOS（默认）</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>选择操作系统镜像的获取来源。</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>获取官方 ZimaOS 系统镜像。</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>从本地文件读取镜像列表。</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>从指定网址获取镜像列表。</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>选择仓库文件</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>自定义仓库 URL</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>应用更改</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>更换来源后，将返回设备选择步骤。</translation>
+    </message>
+</context>
+<context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>确认擦除设备？</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>写入镜像会清除设备上的全部数据。</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>目标存储设备</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>存储设备</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>此操作无法撤销，请先备份重要文件。</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>擦除并写入</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>擦除并写入（%1）</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>错误详情</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>知道了</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>关闭错误详情</translation>
     </message>
 </context>
 </TS>

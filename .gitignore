@@ -83,3 +83,4 @@ qt/language_filters.json
 # Debian release tooling (local paths; see debian/release.conf.example)
 /.debian/
 /out/
+/cf/

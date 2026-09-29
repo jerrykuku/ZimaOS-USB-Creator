@@ -665,10 +665,11 @@ Item {
                     padding: 4
                     activeFocusOnTab: true
                     background: Rectangle {
-                        color: optionsButton.activeFocus ? Style.buttonFocusedBackgroundColor : (optionsButton.hovered ? Style.buttonHoveredBackgroundColor : Style.transparent)
+                        color: optionsButton.down ? Style.colorSurfaceControlInactive
+                               : optionsButton.hovered ? Style.buttonHoveredBackgroundColor : Style.transparent
                         radius: Style.radiusButton
-                        border.color: Style.transparent
-                        border.width: 0
+                        border.color: Style.focusOutlineColor
+                        border.width: optionsButton.visualFocus ? Style.focusOutlineWidth : 0
                         antialiasing: true
                         clip: true
                     }

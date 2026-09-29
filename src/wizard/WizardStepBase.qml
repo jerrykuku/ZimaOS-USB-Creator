@@ -30,6 +30,7 @@ FocusScope {
     property string backButtonText: CommonStrings.back
     property string skipButtonText: qsTr("Skip customisation")
     property bool nextButtonEnabled: true
+    property bool nextButtonDestructive: false
     property bool backButtonEnabled: true
     property bool skipButtonEnabled: true
     property string nextButtonAccessibleDescription: ""
@@ -222,6 +223,7 @@ FocusScope {
                 text: root.nextButtonText
                 visible: customButtonArea.children.length === 0 && root.showNextButton
                 enabled: root.nextButtonEnabled
+                destructive: root.nextButtonDestructive
                 accessibleDescription: root.nextButtonAccessibleDescription
                 Layout.fillWidth: true
                 Layout.minimumWidth: Style.buttonWidthMinimum

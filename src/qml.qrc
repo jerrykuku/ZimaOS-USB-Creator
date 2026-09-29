@@ -8,6 +8,7 @@
     <file>icons/ic_chevron_right_40px.svg</file>
     <file>icons/ic_sd_storage_40px.svg</file>
     <file>icons/ic_storage_40px.svg</file>
+    <file>icons/ic_warning_24px.svg</file>
     <file>icons/ic_usb_40px.svg</file>
     <file>icons/use_custom.png</file>
     <file>icons/cat_raspberry_pi_os.png</file>
@@ -26,6 +27,7 @@
     <file>icons/cat_3d_printing.png</file>
     <file>icons/cat_digital_signage.png</file>
     <file>qmlcomponents/ImOptionPill.qml</file>
+    <file>qmlcomponents/ImScrollView.qml</file>
     <file>qmlcomponents/ImTextField.qml</file>
     <file>qmlcomponents/ImPasswordField.qml</file>
     <file>qmlcomponents/MarqueeText.qml</file>

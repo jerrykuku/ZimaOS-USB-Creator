@@ -21,7 +21,7 @@ BaseDialog {
 
     // Match the rounded application surface used by the main window.
     background: Rectangle {
-        color: Style.colorSurfacePage
+        color: Style.colorSurfacePanel
         radius: Style.radiusPanel
         border.color: Style.colorBorderSubtle
         border.width: Style.sectionBorderWidth
@@ -30,14 +30,15 @@ BaseDialog {
         layer.enabled: true
         layer.smooth: true
     }
-    
+
     // Override default height for this more complex dialog
-    height: Math.max(280, contentLayout ? (contentLayout.implicitHeight + Style.spacingPopupInset * 2) : 280)
-    
+    height: Math.min(parent ? parent.height - Style.spacingPopupInset * 2 : 600,
+                     contentLayout.implicitHeight + Style.spacingPopupInset * 2)
+
     // imageWriter is inherited from BaseDialog
     // Optional reference to the wizard container for ephemeral flags
     property var wizardContainer: null
-    
+
     property bool initialized: false
     property bool isInitializing: false
 
@@ -46,235 +47,304 @@ BaseDialog {
         popup.close()
     }
 
-    // Dynamic width that updates when language/text changes
-    implicitWidth: Math.max(
-        chkBeep.naturalWidth,
-        chkEject.naturalWidth,
-        chkDisableWarnings.naturalWidth,
-        editRepoButton.naturalWidth
-    ) + Style.spacingPopupInset * 4  // Dialog and options layout margins
-    
+    title: qsTr("App Options")
+    header: null
+    width: Math.min(parent ? parent.width - Style.spacingPopupInset * 2 : Style.scaled(480), Style.scaled(480))
+    property string repositorySummary: ""
+
+    component SettingsSwitch: ImOptionPill {
+        emphasized: false
+        Layout.preferredHeight: Style.scaled(32)
+    }
+
+    component SettingsButton: ImOptionButton {
+        emphasized: false
+        Layout.preferredHeight: Style.scaled(36)
+    }
+
+    component Divider: Rectangle {
+        Layout.fillWidth: true
+        Layout.topMargin: 4
+        Layout.bottomMargin: 4
+        implicitHeight: 1
+        color: Style.colorBorderSubtle
+        Accessible.ignored: true
+    }
+
     // Register focus groups when component is ready
     Component.onCompleted: {
         // Register focus groups
-        registerFocusGroup("header", function(){ 
+        registerFocusGroup("header", function(){
             // Only include header text when screen reader is active (otherwise it's not focusable)
             if (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) {
                 return [headerText]
             }
             return []
         }, 0)
-        registerFocusGroup("options", function(){ 
+        registerFocusGroup("options", function(){
             var items = [chkBeep.focusItem, chkEject.focusItem, chkDisableWarnings.focusItem, editRepoButton.focusItem]
             // Only include secure boot key button if visible
             if (secureBootKeyButton.visible)
                 items.push(secureBootKeyButton.focusItem)
             return items
         }, 1)
-        registerFocusGroup("buttons", function(){ 
+        registerFocusGroup("buttons", function(){
             return [cancelButton, saveButton]
         }, 2)
     }
 
-    // Header
-    Text {
-        id: headerText
-        text: qsTr("App Options")
-        font.pixelSize: Style.fontSizeHeadingChrome
-        font.family: Style.fontFamilyBold
-        font.bold: true
-        color: Style.formLabelColor
+    ColumnLayout {
         Layout.fillWidth: true
-        horizontalAlignment: Text.AlignHCenter
-        Accessible.role: Accessible.Heading
-        Accessible.name: text
-        Accessible.focusable: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-        focusPolicy: (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-        activeFocusOnTab: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-    }
-
-    // Options section
-    Item {
-        Layout.fillWidth: true
-        Layout.preferredHeight: optionsLayout.implicitHeight
+        Layout.fillHeight: true
+        Layout.margins: Style.spacingTiny
+        spacing: Style.spacingSmallPlus
 
         ColumnLayout {
-            id: optionsLayout
-            anchors.fill: parent
-            anchors.margins: 0
-            spacing: Style.spacingMedium
+            Layout.fillWidth: true
+            spacing: Style.spacingXSmall
 
-            ImOptionPill {
-                id: chkBeep
-                text: qsTr("Play sound when finished")
-                accessibleDescription: imageWriter.isBeepAvailable() 
-                    ? qsTr("Play an audio notification when the image write process completes")
-                    : qsTr("Audio notification unavailable - no viable audio player found on this system")
+            FocusableHeading {
+                id: headerText
+                text: popup.title
+                font.family: Style.fontFamilyBold
+                font.pixelSize: Style.fontSizeHeadingChrome
+                font.bold: true
+                color: Style.colorTextPrimary
                 Layout.fillWidth: true
-                enabled: imageWriter.isBeepAvailable()
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
+                wrapMode: Text.WordWrap
             }
 
-            ImOptionPill {
-                id: chkEject
-                text: qsTr("Eject media when finished")
-                accessibleDescription: qsTr("Automatically eject the storage device when the write process completes successfully")
+            Text {
+                text: qsTr("Manage writing preferences and image sources.")
+                font.family: Style.fontFamily
+                font.pixelSize: Style.fontSizePixelXs
+                color: Style.colorTextSecondary
+                wrapMode: Text.WordWrap
                 Layout.fillWidth: true
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
             }
+        }
 
-            ImOptionPill {
-                id: chkDisableWarnings
-                text: qsTr("Disable warnings")
-                accessibleDescription: qsTr("Skip confirmation dialogs before writing images (advanced users only)")
-                Layout.fillWidth: true
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
-                onCheckedChanged: {
-                    // Don't trigger confirmation dialog during initialization
-                    if (popup.isInitializing) {
-                        return;
-                    }
-                    
-                    if (checked) {
-                        // Confirm before enabling this risky setting
-                        confirmDisableWarnings.open();
-                    } else if (popup.wizardContainer) {
-                        popup.wizardContainer.disableWarnings = false;
-                    }
-                }
-            }
+        ImScrollView {
+            id: optionsScroll
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumHeight: 0
+            Layout.preferredHeight: optionsLayout.implicitHeight
+            contentWidth: availableWidth
+            contentHeight: optionsLayout.implicitHeight
 
-            ImOptionButton {
-                id: editRepoButton
-                text: qsTr("Content Repository")
-                btnText: qsTr("Edit")
-                accessibleDescription: qsTr("Change the source of operating system images between official ZimaOS repository and custom sources")
-                Layout.fillWidth: true
-                // Disable while write is in progress to prevent changing source during write
-                enabled: imageWriter.writeState === ImageWriterSingleton.Idle ||
-                         imageWriter.writeState === ImageWriterSingleton.Succeeded ||
-                         imageWriter.writeState === ImageWriterSingleton.Failed ||
-                         imageWriter.writeState === ImageWriterSingleton.Cancelled
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
-                onClicked: {
-                    if (!repoDialog.wizardContainer) {
-                        repoDialog.wizardContainer = popup.wizardContainer
-                    }
-                    popup.close()
-                    Qt.callLater(function () {
-                        repoDialog.open()
-                    });
-                }
-            }
+            ColumnLayout {
+                id: optionsLayout
+                width: optionsScroll.availableWidth
+                spacing: Style.spacingTiny
 
-            ImOptionButton {
-                id: secureBootKeyButton
-                text: qsTr("Secure Boot RSA Key")
-                btnText: rsaKeyPath.text ? qsTr("Change") : qsTr("Select")
-                accessibleDescription: qsTr("Select an RSA 2048-bit private key for signing boot images in secure boot mode")
-                Layout.fillWidth: true
-                // Only show if secure boot is available (via OS capabilities or CLI flag)
-                visible: (wizardContainer && wizardContainer.secureBootAvailable) ||
-                         imageWriter.isSecureBootForcedByCliFlag() ||
-                         imageWriter.checkSWCapability("secure_boot")
-                // Disable while write is in progress
-                enabled: imageWriter.writeState === ImageWriterSingleton.Idle ||
-                         imageWriter.writeState === ImageWriterSingleton.Succeeded ||
-                         imageWriter.writeState === ImageWriterSingleton.Failed ||
-                         imageWriter.writeState === ImageWriterSingleton.Cancelled
-                Component.onCompleted: {
-                    focusItem.activeFocusOnTab = true
-                }
-                onClicked: {
-                    // Prefer native file dialog via Imager's wrapper, but only if available
-                    if (imageWriter.nativeFileDialogAvailable()) {
-                        var keyPath = imageWriter.getNativeOpenFileName(
-                            qsTr("Select RSA Private Key"), 
-                            "", 
-                            qsTr("PEM Files (*.pem);;All Files (*)")
-                        );
-                        if (keyPath) {
-                            rsaKeyPath.text = keyPath;
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: preferencesLayout.implicitHeight + Style.spacingSmallPlus * 2
+                    radius: Style.radiusCard
+                    color: Style.colorSurfacePage
+                    border.color: Style.colorBorderSubtle
+
+                    ColumnLayout {
+                        id: preferencesLayout
+                        anchors.fill: parent
+                        anchors.margins: Style.spacingSmallPlus
+                        spacing: 0
+                        SettingsSwitch {
+                            id: chkBeep
+                            objectName: "AppOptionsDialogchkBeep"
+                            text: qsTr("Play sound when finished")
+                            accessibleDescription: imageWriter.isBeepAvailable()
+                                ? qsTr("Play an audio notification when the image write process completes")
+                                : qsTr("Audio notification unavailable - no viable audio player found on this system")
+                            Layout.fillWidth: true
+                            enabled: imageWriter.isBeepAvailable()
+                            Component.onCompleted: {
+                                focusItem.activeFocusOnTab = true
+                            }
                         }
-                    } else {
-                        // Fallback to QML dialog (forced non-native)
-                        rsaKeyFileDialog.open();
+                        Divider {}
+                        SettingsSwitch {
+                            id: chkEject
+                            objectName: "AppOptionsDialogchkEject"
+                            text: qsTr("Eject media when finished")
+                            accessibleDescription: qsTr("Automatically eject the storage device when the write process completes successfully")
+                            Layout.fillWidth: true
+                            Component.onCompleted: {
+                                focusItem.activeFocusOnTab = true
+                            }
+                        }
+                        Divider {}
+                        SettingsSwitch {
+                            id: chkDisableWarnings
+                            objectName: "AppOptionsDialogchkDisableWarnings"
+                            text: qsTr("Disable warnings")
+                            accessibleDescription: qsTr("Skip confirmation dialogs before writing images (advanced users only)")
+                            Layout.fillWidth: true
+                            Component.onCompleted: {
+                                focusItem.activeFocusOnTab = true
+                            }
+                            onCheckedChanged: {
+                                // Don't trigger confirmation dialog during initialization
+                                if (popup.isInitializing) {
+                                    return;
+                                }
+
+                                if (checked) {
+                                    // Confirm before enabling this risky setting
+                                    confirmDisableWarnings.open();
+                                } else if (popup.wizardContainer) {
+                                    popup.wizardContainer.disableWarnings = false;
+                                }
+                            }
+                        }
+                        Text {
+                            text: qsTr("Skip the confirmation before erasing a device.")
+                            font.family: Style.fontFamily
+                            font.pixelSize: Style.fontSizePixelXs
+                            color: Style.colorTextSecondary
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
+                            Layout.bottomMargin: Style.spacingXSmall
+                        }
                     }
                 }
-                
-                Text {
-                    id: rsaKeyPath
-                    text: ""
-                    visible: false
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: repositoryLayout.implicitHeight + Style.spacingSmallPlus * 2
+                    radius: Style.radiusCard
+                    color: Style.colorSurfacePage
+                    border.color: Style.colorBorderSubtle
+
+                    ColumnLayout {
+                        id: repositoryLayout
+                        anchors.fill: parent
+                        anchors.margins: Style.spacingSmallPlus
+                        spacing: 0
+                        SettingsButton {
+                            id: editRepoButton
+                            objectName: "AppOptionsDialogeditRepoButton"
+                            text: qsTr("Content Repository")
+                            btnText: qsTr("Edit")
+                            accessibleDescription: qsTr("Change the source of operating system images between official ZimaOS repository and custom sources")
+                            Layout.fillWidth: true
+                            // Disable while write is in progress to prevent changing source during write
+                            enabled: imageWriter.writeState === ImageWriterSingleton.Idle ||
+                                     imageWriter.writeState === ImageWriterSingleton.Succeeded ||
+                                     imageWriter.writeState === ImageWriterSingleton.Failed ||
+                                     imageWriter.writeState === ImageWriterSingleton.Cancelled
+                            Component.onCompleted: {
+                                focusItem.activeFocusOnTab = true
+                            }
+                            onClicked: {
+                                if (!repoDialog.wizardContainer) {
+                                    repoDialog.wizardContainer = popup.wizardContainer
+                                }
+                                popup.close()
+                                Qt.callLater(function () {
+                                    repoDialog.open()
+                                });
+                            }
+                        }
+                        Text {
+                            text: popup.repositorySummary
+                            textFormat: Text.PlainText
+                            font.family: Style.fontFamily
+                            font.pixelSize: Style.fontSizePixelXs
+                            color: Style.colorTextSecondary
+                            elide: Text.ElideMiddle
+                            Layout.fillWidth: true
+                        }
+                    }
+                }
+                SettingsButton {
+                    id: secureBootKeyButton
+                    text: qsTr("Secure Boot RSA Key")
+                    btnText: rsaKeyPath.text ? qsTr("Change") : qsTr("Select")
+                    accessibleDescription: qsTr("Select an RSA 2048-bit private key for signing boot images in secure boot mode")
+                    Layout.fillWidth: true
+                    // Only show if secure boot is available (via OS capabilities or CLI flag)
+                    visible: (wizardContainer && wizardContainer.secureBootAvailable) ||
+                             imageWriter.isSecureBootForcedByCliFlag() ||
+                             imageWriter.checkSWCapability("secure_boot")
+                    // Disable while write is in progress
+                    enabled: imageWriter.writeState === ImageWriterSingleton.Idle ||
+                             imageWriter.writeState === ImageWriterSingleton.Succeeded ||
+                             imageWriter.writeState === ImageWriterSingleton.Failed ||
+                             imageWriter.writeState === ImageWriterSingleton.Cancelled
+                    Component.onCompleted: {
+                        focusItem.activeFocusOnTab = true
+                    }
+                    onClicked: {
+                        // Prefer native file dialog via Imager's wrapper, but only if available
+                        if (imageWriter.nativeFileDialogAvailable()) {
+                            var keyPath = imageWriter.getNativeOpenFileName(
+                                qsTr("Select RSA Private Key"),
+                                "",
+                                qsTr("PEM Files (*.pem);;All Files (*)")
+                            );
+                            if (keyPath) {
+                                rsaKeyPath.text = keyPath;
+                            }
+                        } else {
+                            // Fallback to QML dialog (forced non-native)
+                            rsaKeyFileDialog.open();
+                        }
+                    }
+
+                    Text {
+                        id: rsaKeyPath
+                        text: ""
+                        visible: false
+                    }
                 }
             }
         }
-    }
 
-    // Spacer
-    Item {
-        Layout.fillHeight: true
-    }
-
-    // Version display - only shown when window has no decorations (no title bar)
-    Text {
-        id: versionText
-        text: qsTr("Version: %1").arg(imageWriter.constantVersion())
-        font.pixelSize: Style.fontSizePixelXs
-        font.family: Style.fontFamily
-        color: Style.colorTextPrimary
-        Layout.fillWidth: true
-        horizontalAlignment: Text.AlignHCenter
-        visible: !imageWriter.hasWindowDecorations()
-        Layout.bottomMargin: Style.spacingSmall
-    }
-
-    // Buttons section with background
-    Rectangle {
-        Layout.fillWidth: true
-        // Ensure minimum width accommodates buttons
-        Layout.minimumWidth: cancelButton.implicitWidth + saveButton.implicitWidth + Style.spacingMedium * 2
-        Layout.preferredHeight: buttonRow.implicitHeight
-        color: Style.colorSurfacePage
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: 1
+            color: Style.colorBorderSubtle
+        }
 
         RowLayout {
-            id: buttonRow
-            anchors.fill: parent
-            anchors.margins: 0
-            spacing: Style.spacingMedium
+            Layout.fillWidth: true
+            spacing: Style.spacingSmallPlus
 
-            Item {
+            Text {
+                id: versionText
+                text: qsTr("Version: %1").arg(imageWriter.constantVersion())
+                font.pixelSize: Style.fontSizePixelXs
+                font.family: Style.fontFamily
+                color: Style.colorTextSecondary
+                visible: !imageWriter.hasWindowDecorations()
                 Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                elide: Text.ElideRight
             }
+            Item { Layout.fillWidth: true; visible: !versionText.visible }
 
             ImButton {
                 id: cancelButton
+                objectName: "AppOptionsDialogcancelButton"
                 text: CommonStrings.cancel
                 accessibleDescription: qsTr("Close the options dialog without saving any changes")
-                Layout.minimumWidth: Style.buttonWidthMinimum
-                activeFocusOnTab: true
-                onClicked: {
-                    popup.close();
-                }
+                Layout.preferredHeight: Style.buttonHeightStandard
+                Layout.preferredWidth: Math.max(Style.scaled(90), implicitWidth)
+                onClicked: popup.close()
             }
 
             ImButtonRed {
                 id: saveButton
+                objectName: "AppOptionsDialogsaveButton"
                 text: qsTr("Save")
                 accessibleDescription: qsTr("Save the selected options and apply them to ZimaOS USB Creator")
-                Layout.minimumWidth: Style.buttonWidthMinimum
-                activeFocusOnTab: true
+                Layout.preferredHeight: Style.buttonHeightStandard
+                Layout.preferredWidth: Math.max(Style.scaled(90), implicitWidth)
                 onClicked: {
-                    popup.applySettings();
-                    popup.close();
+                    popup.applySettings()
+                    popup.close()
                 }
             }
         }
@@ -323,10 +393,11 @@ BaseDialog {
     }
 
     function initialize() {
+        repositorySummary = imageWriter.customRepo() ? imageWriter.customRepoHost() : qsTr("ZimaOS (default)")
         if (!initialized) {
             // Set flag to prevent onCheckedChanged handlers from triggering dialogs
             isInitializing = true;
-            
+
             // Load current settings from ImageWriter
             // Only enable beep if it's both saved as enabled AND available on this system
             chkBeep.checked = imageWriter.getBoolSetting("beep") && imageWriter.isBeepAvailable();
@@ -342,10 +413,7 @@ BaseDialog {
             initialized = true;
             // Clear initialization flag
             isInitializing = false;
-            
-            // Pre-compute final height before opening to avoid first-show reflow
-            var desired = contentLayout ? (contentLayout.implicitHeight + Style.spacingPopupInset * 2) : 280;
-            popup.height = Math.max(280, desired);
+
         }
     }
 
@@ -360,17 +428,35 @@ BaseDialog {
             popup.wizardContainer.disableWarnings = chkDisableWarnings.checked;
     }
 
+    onClosed: initialized = false
+
     onOpened: {
-        initialize();
-        // BaseDialog handles the focus management automatically
+        initialize()
+        rebuildFocusOrder()
+        focusInitialItem()
     }
 
     // Confirmation dialog for disabling warnings
     BaseDialog {
         id: confirmDisableWarnings
+        objectName: "disableWarningsDialog"
         imageWriter: popup.imageWriter
-        parent: popup.contentItem
+        parent: popup.parent
         anchors.centerIn: parent
+        popupType: Popup.Item
+        title: qsTr("Disable warnings?")
+        header: null
+        width: Math.min(parent ? parent.width - Style.spacingPopupInset * 2 : Style.scaled(460), Style.scaled(460))
+        height: Math.min(parent ? parent.height - Style.spacingPopupInset * 2 : 600,
+                         contentLayout.implicitHeight + Style.spacingPopupInset * 2)
+
+        background: Rectangle {
+            color: Style.colorSurfacePanel
+            radius: Style.radiusPanel
+            border.color: Style.colorBorderSubtle
+            border.width: Style.borderWidthDefault
+            antialiasing: true
+        }
 
         onClosed: {
             // If dialog was closed without confirming, revert the toggle
@@ -378,9 +464,18 @@ BaseDialog {
                 chkDisableWarnings.checked = false;
             }
             confirmAccepted = false;
+            chkDisableWarnings.focusItem.forceActiveFocus();
         }
 
         property bool confirmAccepted: false
+
+        onOpened: {
+            rebuildFocusOrder()
+            if (popup.imageWriter && popup.imageWriter.isScreenReaderActive())
+                confirmTitleText.forceActiveFocus()
+            else
+                confirmCancelButton.forceActiveFocus()
+        }
 
         // Custom escape handling
         function escapePressed() {
@@ -389,75 +484,157 @@ BaseDialog {
 
         // Register focus groups when component is ready
         Component.onCompleted: {
-            registerFocusGroup("content", function(){ 
+            registerFocusGroup("content", function(){
                 // Only include text elements when screen reader is active (otherwise they're not focusable)
                 if (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) {
-                    return [confirmTitleText, confirmDescriptionText]
+                    return [confirmTitleText, confirmDescriptionText, systemDriveProtectionText]
                 }
                 return []
             }, 0)
-            registerFocusGroup("buttons", function(){ 
-                return [confirmCancelButton, confirmDisableButton] 
+            registerFocusGroup("buttons", function(){
+                return [confirmCancelButton, confirmDisableButton]
             }, 1)
         }
 
-        // Dialog content
-        Text {
-            id: confirmTitleText
-            text: qsTr("Disable warnings?")
-            font.pixelSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelColor
+        ColumnLayout {
             Layout.fillWidth: true
-            Accessible.role: Accessible.Heading
-            Accessible.name: text
-            Accessible.focusable: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-            focusPolicy: (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-            activeFocusOnTab: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-        }
-
-        Text {
-            id: confirmDescriptionText
-            textFormat: Text.StyledText
-            wrapMode: Text.WordWrap
-            font.pixelSize: Style.fontSizeDescription
-            font.family: Style.fontFamily
-            color: Style.colorTextPrimary
-            Layout.fillWidth: true
-            text: qsTr("If you disable warnings, ZimaOS USB Creator will <b>not show confirmation prompts before writing images</b>. You will still be required to <b>type the exact name</b> when selecting a system drive.")
-            Accessible.role: Accessible.StaticText
-            Accessible.name: text.replace(/<[^>]+>/g, '')  // Strip HTML tags for accessibility
-            Accessible.focusable: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-            focusPolicy: (popup.imageWriter && popup.imageWriter.isScreenReaderActive()) ? Qt.TabFocus : Qt.NoFocus
-            activeFocusOnTab: popup.imageWriter ? popup.imageWriter.isScreenReaderActive() : false
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.margins: Style.spacingTiny
             spacing: Style.spacingMedium
-            Item {
+
+            RowLayout {
                 Layout.fillWidth: true
+                spacing: Style.spacingTiny
+
+                Image {
+                    Layout.preferredWidth: Style.scaled(24)
+                    Layout.preferredHeight: Style.scaled(24)
+                    source: "../../icons/ic_warning_24px.svg"
+                    sourceSize: Qt.size(width, height)
+                    Accessible.ignored: true
+                }
+
+                FocusableHeading {
+                    id: confirmTitleText
+                    text: confirmDisableWarnings.title
+                    font.family: Style.fontFamilyBold
+                    font.pixelSize: Style.fontSizeHeadingChrome
+                    font.bold: true
+                    color: Style.colorTextPrimary
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
             }
 
-            ImButton {
-                id: confirmCancelButton
-                text: CommonStrings.cancel
-                accessibleDescription: qsTr("Keep warnings enabled and return to the options dialog")
-                activeFocusOnTab: true
-                onClicked: confirmDisableWarnings.close()
+            ImScrollView {
+                id: warningScroll
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.minimumHeight: 0
+                Layout.preferredHeight: warningDetails.implicitHeight
+                contentWidth: availableWidth
+                contentHeight: warningDetails.implicitHeight
+
+                ColumnLayout {
+                    id: warningDetails
+                    width: warningScroll.availableWidth
+                    spacing: Style.spacingMedium
+
+                    FocusableText {
+                        id: confirmDescriptionText
+                        text: qsTr("You will no longer be asked to confirm before writing an image.")
+                        font.family: Style.fontFamily
+                        font.pixelSize: Style.fontSizePixelSm
+                        color: Style.colorTextSecondary
+                        wrapMode: Text.Wrap
+                        Layout.fillWidth: true
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        implicitHeight: protectionDetails.implicitHeight + Style.spacingSmallPlus * 2
+                        radius: Style.radiusCard
+                        color: Style.colorSurfacePage
+                        border.color: Style.colorBorderSubtle
+
+                        ColumnLayout {
+                            id: protectionDetails
+                            anchors.fill: parent
+                            anchors.margins: Style.spacingSmallPlus
+                            spacing: Style.spacingXSmall
+
+                            Text {
+                                text: qsTr("System drive protection stays on")
+                                font.family: Style.fontFamilyBold
+                                font.pixelSize: Style.fontSizePixelSm
+                                font.bold: true
+                                color: Style.colorTextPrimary
+                                wrapMode: Text.Wrap
+                                Layout.fillWidth: true
+                                Accessible.ignored: true
+                            }
+
+                            FocusableText {
+                                id: systemDriveProtectionText
+                                text: qsTr("Selecting a system drive still requires its exact name.")
+                                font.family: Style.fontFamily
+                                font.pixelSize: Style.fontSizePixelXs
+                                color: Style.colorTextSecondary
+                                wrapMode: Text.Wrap
+                                Layout.fillWidth: true
+                                Accessible.name: qsTr("System drive protection stays on") + ". " + text
+                            }
+                        }
+                    }
+                }
             }
 
-            ImButtonRed {
-                id: confirmDisableButton
-                text: qsTr("Disable warnings")
-                accessibleDescription: qsTr("Disable confirmation prompts before writing images, requiring only exact name entry for system drives")
-                activeFocusOnTab: true
-                onClicked: {
-                    confirmDisableWarnings.confirmAccepted = true;
-                    if (popup.wizardContainer)
-                        popup.wizardContainer.disableWarnings = true;
-                    confirmDisableWarnings.close();
+            Rectangle {
+                Layout.fillWidth: true
+                implicitHeight: Style.borderWidthDefault
+                color: Style.colorBorderSubtle
+                Accessible.ignored: true
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: Style.spacingSmallPlus
+                Item { Layout.fillWidth: true }
+
+                ImButton {
+                    id: confirmCancelButton
+                    objectName: "keepWarningsButton"
+                    text: qsTr("Keep warnings")
+                    accessibleDescription: qsTr("Keep warnings enabled and return to the options dialog")
+                    Layout.preferredHeight: Style.buttonHeightStandard
+                    Layout.preferredWidth: Math.max(Style.scaled(100), implicitWidth)
+                    onClicked: confirmDisableWarnings.close()
+                }
+
+                ImButtonRed {
+                    id: confirmDisableButton
+                    objectName: "disableWarningsButton"
+                    text: qsTr("Disable anyway")
+                    accessibleDescription: qsTr("Disable confirmation prompts before writing images, requiring only exact name entry for system drives")
+                    Layout.preferredHeight: Style.buttonHeightStandard
+                    Layout.preferredWidth: Math.max(Style.scaled(100), implicitWidth)
+
+                    background: Rectangle {
+                        radius: Style.radiusButton
+                        color: confirmDisableButton.down ? Qt.darker(Style.colorTextErrorStrong, 1.25)
+                               : confirmDisableButton.hovered ? Qt.darker(Style.colorTextErrorStrong, 1.1)
+                               : Style.colorTextErrorStrong
+                        border.width: confirmDisableButton.visualFocus ? Style.focusOutlineWidth : 0
+                        border.color: Style.colorTextOnAccent
+                        antialiasing: true
+                    }
+
+                    onClicked: {
+                        confirmDisableWarnings.confirmAccepted = true;
+                        if (popup.wizardContainer)
+                            popup.wizardContainer.disableWarnings = true;
+                        confirmDisableWarnings.close();
+                    }
                 }
             }
         }

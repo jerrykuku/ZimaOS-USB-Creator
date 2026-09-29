@@ -30,10 +30,13 @@ Button {
     property string accessibleDescription: ""
     
     background: Rectangle {
-        color: control.enabled ? (control.activeFocus ? Style.buttonFocusedBackgroundColor : (control.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor)) : Style.buttonDisabledBackgroundColor
+        color: !control.enabled ? Style.buttonDisabledBackgroundColor
+               : control.down ? Style.colorSurfaceControlInactive
+               : control.hovered ? Style.buttonHoveredBackgroundColor : Style.buttonBackgroundColor
         radius: (control.imageWriter && control.imageWriter.isEmbeddedMode()) ? Style.buttonBorderRadiusEmbedded : Style.radiusButton
-        border.color: control.enabled ? Style.colorBorderSubtle : Style.colorBorderDisabled
-        border.width: Style.borderWidthDefault
+        border.color: !control.enabled ? Style.colorBorderDisabled
+                      : control.visualFocus ? Style.focusOutlineColor : Style.colorBorderSubtle
+        border.width: control.visualFocus ? Style.focusOutlineWidth : Style.borderWidthDefault
         antialiasing: true  // Smooth edges at non-integer scale factors
         clip: true  // Prevent content overflow at non-integer scale factors
     }

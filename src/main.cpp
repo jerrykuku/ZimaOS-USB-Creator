@@ -16,6 +16,7 @@
 #include <unistd.h>
 #endif
 #include "cli.h"
+#include "applicationidentity.h"
 #include "curlnetworkconfig.h"
 
 #ifndef CLI_ONLY_BUILD
@@ -282,9 +283,7 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    app.setOrganizationName("Raspberry Pi");
-    app.setOrganizationDomain("raspberrypi.com");
-    app.setApplicationName("ZimaOS USB Creator");
+    initializeApplicationIdentity();
     app.setApplicationVersion(ImageWriter::staticVersion());
     app.setWindowIcon(QIcon(":/icons/zimaos.ico"));
 
