@@ -1,8 +1,5 @@
-/*
- * SPDX-License-Identifier: Apache-2.0
- */
+/* SPDX-License-Identifier: Apache-2.0 */
 
-#include "../../windows/windowchrome.h"
 #include <QDebug>
 #include <QEventLoop>
 #include <QGuiApplication>
@@ -10,16 +7,16 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QQuickWindow>
+#include <QStyleHints>
 #include <QTimer>
 #include <QVariant>
-#include <QWindow>
 #include <QtMath>
 #include <qt_windows.h>
 #include <windowsx.h>
 #include <dwmapi.h>
 
 // Capture the composed desktop, since QQuickWindow::grabWindow() excludes
-// DWM. A hit-test success alone cannot prove the native glyphs are visible.
+// Qt's separate caption layer. Hit tests cannot prove the glyphs are visible.
 static QImage captureScreen(const RECT &rect)
 {
     const int width = rect.right - rect.left, height = rect.bottom - rect.top;
@@ -54,6 +51,7 @@ int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
+    app.styleHints()->setColorScheme(Qt::ColorScheme::Light);
     QQuickStyle::setStyle("Basic");
     BOOL composition = FALSE;
     if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
@@ -68,44 +66,39 @@ int main(int argc, char **argv)
             visible: true
             width: 680; height: 450
             minimumWidth: 680; minimumHeight: 420
-            flags: Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+            // Same public platform flags as the Windows branch in main.qml.
+            flags: Qt.Window | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint
+                   | Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
                    | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
-            color: "transparent"
-            title: "Native window regression probe"
-            property real nativeTitleBarHeight: 0
-            property real nativeTitleBarInset: 0
-            property rect nativeCaptionButtonsRect: Qt.rect(0, 0, 0, 0)
-            readonly property color nativeTitleBarColor: "#f5f5f5"
+            color: "#f5f5f5"
+            background: Rectangle { color: "#f5f5f5" }
+            title: "Window regression probe"
             property bool dimmed: false
-            background: WindowFrameBackground {
-                surfaceColor: probeWindow.nativeTitleBarColor
-                nativeControlsRect: probeWindow.nativeCaptionButtonsRect
-            }
-            // Use the same background component as BaseDialog's modal dimmer.
-            WindowFrameBackground {
+            Rectangle {
                 parent: Overlay.overlay
                 anchors.fill: parent
                 visible: probeWindow.dimmed
-                surfaceColor: Qt.rgba(0, 0, 0, 0.3)
-                nativeControlsRect: probeWindow.nativeCaptionButtonsRect
+                color: Qt.rgba(0, 0, 0, 0.3)
             }
             property bool protectClose: true
             property bool closeAttempted: false
             onClosing: function(close) { closeAttempted = true; close.accepted = !protectClose }
-            header: Item {
-                height: probeWindow.nativeTitleBarHeight
-                Text { anchors.centerIn: parent; text: "Native window regression probe" }
+            header: WindowTitleBar {
+                targetWindow: probeWindow
+                height: probeWindow.visibility === Window.FullScreen ? 0 : probeWindow.SafeArea.margins.top
+                visible: height > 0
+                titleColor: "#646464"
+                titleFont.pixelSize: 14
             }
         }
     )", QUrl("qrc:/probe.qml"));
     if (engine.rootObjects().isEmpty())
         return 1;
     auto *window = qobject_cast<QQuickWindow *>(engine.rootObjects().first());
-    enableWindowsWindowChrome(window);
     const HWND hwnd = reinterpret_cast<HWND>(window->winId());
-    auto settle = [] {
+    auto settle = [](int ms = 350) {
         QEventLoop loop;
-        QTimer::singleShot(350, &loop, &QEventLoop::quit);
+        QTimer::singleShot(ms, &loop, &QEventLoop::quit);
         loop.exec();
     };
     bool passed = true;
@@ -114,52 +107,83 @@ int main(int argc, char **argv)
             qCritical() << "FAIL:" << description;
             passed = false;
         }
+        return ok;
     };
-    const bool software = app.arguments().contains("--software");
     settle();
     window->raise();
     window->requestActivate();
     settle();
     if (GetForegroundWindow() != hwnd) {
-        qWarning() << "No unobscured foreground test window; skipping desktop pixel checks";
+        qWarning() << "No foreground test window; an interactive desktop is required";
         return 77;
     }
-    check(software ? window->property("nativeTitleBarHeight").toReal() == 0
-                   : window->property("nativeTitleBarHeight").toReal() > 0,
-          "Accelerated rendering extends the title; software retains the system title");
-    check((GetWindowLongPtr(hwnd, GWL_STYLE) & (WS_CAPTION | WS_THICKFRAME | WS_SYSMENU))
-          == (WS_CAPTION | WS_THICKFRAME | WS_SYSMENU), "Native caption, resize and menu styles");
-    check(!(GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_LAYERED),
-          "Alpha surface retains a native non-layered frame for DWM corners/shadow");
-    auto hit = [&](POINT point) {
-        ClientToScreen(hwnd, &point);
-        return SendMessage(hwnd, WM_NCHITTEST, 0, MAKELPARAM(point.x, point.y));
-    };
-    const int titleHeight = qRound(window->property("nativeTitleBarHeight").toReal()
-                                  * window->devicePixelRatio());
-    if (!software) {
-        check(hit({200, titleHeight / 2}) == HTCAPTION, "Title text uses system caption hit testing");
-        check(hit({200, 1}) == HTTOP, "Top resize border retained");
-    }
-    check(hit({200, titleHeight + 40}) == HTCLIENT, "Body is not draggable");
 
-    auto checkPainting = [&](const char *state) {
-        RECT bounds{}, windowRect{};
-        if (FAILED(DwmGetWindowAttribute(hwnd, DWMWA_CAPTION_BUTTON_BOUNDS, &bounds, sizeof(bounds)))) {
-            check(false, "Native caption bounds available for painting check");
-            return;
+    // Test-only inspection of Qt's separate Windows caption rendering layer.
+    // The application itself uses only the public window flags and SafeArea.
+    HWND titlebar = nullptr;
+    EnumChildWindows(hwnd, [](HWND child, LPARAM data) -> BOOL {
+        wchar_t className[256]{};
+        GetClassNameW(child, className, 256);
+        if (QString::fromWCharArray(className).contains("_q_titlebar") && IsWindowVisible(child)) {
+            *reinterpret_cast<HWND *>(data) = child;
+            return FALSE;
         }
-        GetWindowRect(hwnd, &windowRect);
-        OffsetRect(&bounds, windowRect.left, windowRect.top);
+        return TRUE;
+    }, reinterpret_cast<LPARAM>(&titlebar));
+    if (!check(titlebar != nullptr, "Qt caption rendering window exists and is visible"))
+        return 1;
+    check(window->safeAreaMargins().top() > 0, "Title area reserved above the body");
+    check((GetWindowLongPtr(hwnd, GWL_STYLE) & (WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX))
+          == (WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX), "System resize and window commands retained");
+    check(!(GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_LAYERED),
+          "Main window retains a non-layered DWM frame");
+
+    struct CursorRestore {
+        POINT position{};
+        CursorRestore() { GetCursorPos(&position); }
+        ~CursorRestore() { SetCursorPos(position.x, position.y); }
+    } restoreCursor;
+    auto titleBounds = [&] {
+        RECT rect{};
+        GetWindowRect(titlebar, &rect);
+        return rect;
+    };
+    auto buttonPoint = [&](int index) {
+        const RECT rect = titleBounds();
+        const int height = rect.bottom - rect.top;
+        const int width = height * 3 / 2;
+        return POINT{rect.right - width * (3 - index) + width / 2, rect.top + height / 2};
+    };
+    // Real pointer input matters: Qt's platform code consults GetAsyncKeyState
+    // for these controls. Sending WM_SYSCOMMAND would bypass the buttons.
+    auto click = [&](POINT point) {
+        if (!check(GetForegroundWindow() == hwnd, "Probe owns foreground before pointer input"))
+            return;
+        SetCursorPos(point.x, point.y);
+        settle(40);
+        INPUT input{};
+        input.type = INPUT_MOUSE;
+        input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+        check(SendInput(1, &input, sizeof(input)) == 1, "Pointer down delivered");
+        settle(40);
+        input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+        check(SendInput(1, &input, sizeof(input)) == 1, "Pointer up delivered");
+        settle(40);
+    };
+    auto checkPainting = [&](const char *state) {
+        RECT bounds = titleBounds();
+        bounds.left = bounds.right - 3 * ((bounds.bottom - bounds.top) * 3 / 2);
+        // Keep the cursor out of the controls so the comparison includes no hover.
+        POINT body{100, 100};
+        ClientToScreen(hwnd, &body);
+        SetCursorPos(body.x, body.y);
+        settle();
         DwmFlush();
         const QImage desktop = captureScreen(bounds);
-        check(!desktop.isNull(), "Composed native caption screenshot exists");
-        if (desktop.isNull())
+        if (!check(!desktop.isNull(), "Composed caption screenshot exists"))
             return;
-        check(desktop.save(QString("windowchrome-%1-%2.png")
-                           .arg(software ? "software" : "native", state)), "Caption screenshot saved");
-        // Exclude edges/borders and inspect each glyph's central area. Both
-        // completely blank and completely dark rectangles must fail.
+        const QString backend = app.arguments().contains("--software") ? "software" : "default";
+        check(desktop.save(QString("windowchrome-%1-%2.png").arg(backend, state)), "Caption screenshot saved");
         for (int button = 0; button < 3; ++button) {
             const int cell = desktop.width() / 3;
             const QRect center(button * cell + cell / 4, desktop.height() / 4,
@@ -177,64 +201,62 @@ int main(int argc, char **argv)
                 if (qAbs(i - backgroundTone) >= 4)
                     contrasting += tones[i];
             check(contrasting >= 3 && contrasting < center.width() * center.height() / 2,
-                  "Each native caption glyph is visible on the desktop");
+                  "Each caption glyph is visible on the composed desktop");
         }
-        if (!software) {
-            const QRectF cutout = window->property("nativeCaptionButtonsRect").toRectF();
-            const QImage quick = window->grabWindow();
-            const QPoint point = (cutout.center() * window->devicePixelRatio()).toPoint();
-            check(!cutout.isEmpty() && quick.rect().contains(point)
-                  && quick.pixelColor(point).alpha() == 0,
-                  "Quick background and dimmer leave DWM pixels transparent");
-        }
+        const QImage quick = window->grabWindow();
+        const QPoint point(qRound((window->width() - 24) * window->devicePixelRatio()),
+                           qRound(window->safeAreaMargins().top() / 2.0 * window->devicePixelRatio()));
+        check(quick.rect().contains(point) && quick.pixelColor(point).alpha() == 255,
+              "Page remains opaque under Qt's separate caption layer (no cutout)");
     };
     checkPainting("normal");
     window->setProperty("dimmed", true);
     settle();
     checkPainting("dimmed");
     window->setProperty("dimmed", false);
-
-    RECT buttons{}, frame{};
-    check(SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_CAPTION_BUTTON_BOUNDS, &buttons, sizeof(buttons)))
-          && buttons.right > buttons.left, "DWM exposes native caption buttons");
-    GetWindowRect(hwnd, &frame);
-    // Caption button bounds are window-relative, not client-relative.
-    const LONG buttonWidth = (buttons.right - buttons.left) / 3;
-    const LONG buttonY = frame.top + (buttons.top + buttons.bottom) / 2;
-    for (int i = 0; i < 3; ++i) {
-        const LONG x = frame.left + buttons.left + buttonWidth * i + buttonWidth / 2;
-        const LRESULT expected[] = {HTMINBUTTON, HTMAXBUTTON, HTCLOSE};
-        check(SendMessage(hwnd, WM_NCHITTEST, 0, MAKELPARAM(x, buttonY)) == expected[i],
-              "Native caption button hit (including maximize hover for Snap)");
-    }
+    settle();
 
     const QSize normalSize = window->size();
-    // DWM bounds also provide a title-row point in standard-frame fallback.
-    POINT titlePoint{frame.left + 200, buttonY};
-    SendMessage(hwnd, WM_NCLBUTTONDBLCLK, HTCAPTION, MAKELPARAM(titlePoint.x, titlePoint.y));
+    click(buttonPoint(1));
     settle();
-    check(IsZoomed(hwnd), "Caption double-click maximizes");
+    check(IsZoomed(hwnd), "Qt maximize button");
     checkPainting("maximized");
-    GetWindowRect(hwnd, &frame);
-    DwmGetWindowAttribute(hwnd, DWMWA_CAPTION_BUTTON_BOUNDS, &buttons, sizeof(buttons));
-    titlePoint = {frame.left + 200, frame.top + (buttons.top + buttons.bottom) / 2};
-    SendMessage(hwnd, WM_NCLBUTTONDBLCLK, HTCAPTION, MAKELPARAM(titlePoint.x, titlePoint.y));
+    click(buttonPoint(1));
     settle();
+    check(!IsZoomed(hwnd) && window->size() == normalSize, "Qt maximize button restores original size");
+
+    auto doubleClickTitle = [&] {
+        const RECT rect = titleBounds();
+        const POINT point{(rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2};
+        click(point);
+        click(point);
+        settle();
+    };
+    doubleClickTitle();
+    check(IsZoomed(hwnd), "Double-click centered title maximizes");
+    doubleClickTitle();
     check(!IsZoomed(hwnd) && window->size() == normalSize, "Double-click restores original size");
-    SendMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+    POINT body{200, 150};
+    ClientToScreen(hwnd, &body);
+    click(body);
+    click(body);
     settle();
-    check(IsIconic(hwnd), "Native minimize command");
-    SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
+    check(!IsZoomed(hwnd), "Body double-click does not maximize");
+
+    click(buttonPoint(0));
     settle();
-    check(!IsIconic(hwnd), "Native restore command");
-    SendMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+    check(IsIconic(hwnd), "Qt minimize button");
+    window->showNormal();
+    window->requestActivate();
     settle();
-    check(window->isVisible() && window->property("closeAttempted").toBool(), "QML can veto native close");
+    click(buttonPoint(2));
+    settle();
+    check(window->isVisible() && window->property("closeAttempted").toBool(), "Qt close button preserves QML close veto");
     window->setProperty("protectClose", false);
-    SendMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+    click(buttonPoint(2));
     settle();
-    check(!window->isVisible(), "Native close accepted after guard clears");
+    check(!window->isVisible(), "Qt close button accepted after guard clears");
     if (passed)
-        qInfo() << "PASS: caption pixels, modal alpha, DWM hit testing, resize, maximize/restore, minimize and close guard";
+        qInfo() << "PASS: visible caption glyphs, opaque page, real button clicks, title double-click and close guard";
     return passed ? 0 : 1;
 }

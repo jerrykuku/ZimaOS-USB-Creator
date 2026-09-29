@@ -55,10 +55,8 @@ Dialog {
     default property alias contentData: contentLayout.data
     
     // Custom modal overlay background
-    Overlay.modal: WindowFrameBackground {
-        surfaceColor: Qt.rgba(0, 0, 0, 0.3)
-        nativeControlsRect: root.hostWindow && root.hostWindow.nativeCaptionButtonsRect !== undefined
-                            ? root.hostWindow.nativeCaptionButtonsRect : Qt.rect(0, 0, 0, 0)
+    Overlay.modal: Rectangle {
+        color: Qt.rgba(0, 0, 0, 0.3)
         radius: root.hostWindow && root.hostWindow.windowCornerRadius !== undefined
                 ? root.hostWindow.windowCornerRadius : Style.radiusPanel
         antialiasing: true

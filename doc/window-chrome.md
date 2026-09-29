@@ -1,14 +1,14 @@
 # Desktop window chrome
 
-macOS and Windows use system window controls. Linux uses an Ubuntu-style
-client-drawn frame. Embedded mode retains its existing frameless UI. The
+macOS uses AppKit window controls. Windows uses Qt's platform title-bar
+controls, drawn in the Windows style. Linux uses an Ubuntu-style client frame. Embedded mode retains its existing frameless UI. The
 application title remains set on `QWindow` for
 task switchers and accessibility, even where a centered QML label draws it.
 
 | Platform | Controls and behavior | Title/background/corners |
 | --- | --- | --- |
 | macOS | AppKit traffic lights; system move; double-click maximizes/restores | Transparent expanded title bar, centered label, system corners/shadow |
-| Windows | DWM caption buttons; caption hit testing for move, double-click, system menu and Snap | Page extends under controls; centered label; Windows 11 DWM corners/shadow |
+| Windows | Qt platform caption buttons; system move; double-click maximizes/restores | Transparent Qt title-bar background, centered QML label; DWM corners/shadow |
 | Linux | Client-drawn Yaru-style buttons; system move/resize; double-click maximizes/restores | Transparent title background, centered label, rounded surface and client shadow |
 
 “Transparent title bar” means the application's page background continues
@@ -34,31 +34,33 @@ Move & Resize menu. Rounded transparency requires a compositing desktop;
 the client shadow uses Qt Quick Effects and requires a graphics backend
 that supports shader effects.
 
-Windows deliberately does **not** use `Qt::ExpandedClientAreaHint`: Qt
-6.11.1 implements that mode with a separate Qt-painted title-bar window.
-Instead, `windows/windowchrome.cpp` retains the native caption and resize
-styles, extends the DWM frame, and removes only the top caption inset via
-`WM_NCCALCSIZE`. DWM gets first refusal for caption hit testing. Remaining
-title hits return `HTCAPTION`, while body hits remain `HTCLIENT`; QML does
-not compete with Windows for mouse presses or double-clicks. Qt captures
-the resulting non-client margins. Caption metrics follow monitor DPI and
-reserve equal space on both sides of the centered title.
+Windows uses the public `Qt::ExpandedClientAreaHint` and
+`Qt::NoTitleBarBackgroundHint` flags. `Qt::CustomizeWindowHint` and explicit
+minimize/maximize/close hints request all three controls without a second,
+left-aligned title/icon. `WindowTitleBar` draws the centered title, reserves
+symmetric button space and uses the window's `SafeArea` height. It starts
+system movement after the drag threshold and handles double-click maximize
+and restore. The application title remains available for the taskbar.
 
-The Quick window requests an alpha surface and clears to transparent. Its
-page background leaves a cutout at the DWM caption-button bounds, converted
-from window-relative native pixels to client-relative logical pixels.
-`WindowFrameBackground` applies the same cutout to dialog dimming. All other
-page pixels remain opaque. Without both the alpha surface and these cutouts,
-the Quick scene can cover the native buttons even though their hit tests work.
-On Windows 11 the native caption color matches the page underneath the controls.
+In Qt 6.10.3 and 6.11.1 the Windows platform plugin draws those controls in a
+separate caption window above the Quick scene. They are Windows-style Qt
+controls, **not DWM-rendered native caption buttons**. Native-only behavior,
+such as the Windows 11 maximize-hover Snap flyout, is not guaranteed by this
+Qt implementation. The page and modal dimmer remain opaque; there is no
+transparent hole under the buttons. Windows GUI startup requests a light
+application color scheme because the application's page palette is fixed
+light and the Qt caption glyphs use that scheme.
 
-Windows 10 retains its native square outer corners. Windows 11 may also
-use square corners when maximized, snapped, or running remotely/virtually.
-If DWM frame extension, a supported alpha graphics surface, or valid caption
-button bounds are unavailable, the ordinary system title bar is retained
-and the QML title row stays hidden. Software rendering uses this fallback.
-No window-region mask or `WS_EX_LAYERED` flag is used to force rounding;
-the caption and resize styles remain for native shadows and corners.
+The previous custom `WM_NCCALCSIZE`/DWM-button solution has been removed:
+Windows testing showed an empty rectangle even after the Quick surface left
+its button area transparent. Alpha-only tests did not establish visible
+controls. Qt now owns frame sizing, caption drawing and button input as one
+implementation, including software rendering.
+
+Qt retains the system resize frame and DWM shadow. Windows 11 normally adds
+rounded outer corners; maximized/snapped/remote windows may have square
+corners, and Windows 10 retains its native square corners. The application
+sets no window-region mask and does not make its main window layered.
 
 ## Validation
 
@@ -79,14 +81,16 @@ ctest --test-dir build-windowchrome --output-on-failure
 
 It checks **composed desktop pixels** for all three caption glyphs in normal,
 dimmed and maximized states, saves `windowchrome-*.png` in the test directory,
-and checks the Quick surface's alpha cutout. It also checks native caption
-button hit codes (including maximize hover), title/body/top-edge hit testing,
-maximize/restore geometry, minimize and native close veto. A second run checks
-the software-rendering fallback. Run these tests on an unobscured interactive
-desktop; missing DWM or an unavailable foreground window returns a CTest skip.
+and verifies that the page beneath remains opaque. It uses the actual
+`WindowTitleBar.qml` component and sends real pointer clicks to Qt's three
+buttons, then checks title double-click maximize/restore, body exclusion,
+minimize and the QML close veto. It exercises both the default renderer and
+software rendering. These tests move the mouse and restore its position on
+exit. Run them on an unobscured interactive desktop; missing DWM or an
+unavailable foreground window returns a CTest skip.
 
 Before release, also inspect on Windows 10/11 and GNOME/KDE under both X11
-and Wayland: native button hover and Snap menu, title/background continuity,
+and Wayland: button glyphs and hover, title/background continuity,
 ordinary/maximized corners, physical drag and restore-drag, double-click,
 edge/corner resize, title elision, 100/150/200% DPI and mixed-DPI monitors,
 taskbar bounds, system theme changes, and close confirmation during writing.
@@ -95,8 +99,7 @@ macOS development host. Linux client-frame layout and synthetic Qt mouse
 interaction can be checked there without claiming Linux compositor coverage.
 
 References: [Qt expanded client areas](https://www.qt.io/blog/expanded-client-areas-and-safe-areas-in-qt-6.9),
-[Microsoft custom DWM frame](https://learn.microsoft.com/en-us/windows/win32/dwm/customframe),
-[DwmDefWindowProc](https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/nf-dwmapi-dwmdefwindowproc),
+[Qt Windows caption implementation](https://github.com/qt/qtbase/blob/v6.10.3/src/plugins/platforms/windows/qwindowswindow.cpp),
 [Windows 11 rounded corners](https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-rounded-corners).
 
 Linux control styling reference: [Ubuntu Yaru title buttons](https://github.com/ubuntu/yaru/blob/master/gtk/src/default/gtk-3.0/_tweaks.scss).

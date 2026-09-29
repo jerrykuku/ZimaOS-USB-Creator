@@ -200,3 +200,10 @@
 - DWM 扩展框架要求其下方像素 alpha=0；此前窗口 clear color 和页面背景均不透明，原生命中成功不能证明按钮显示。参考：https://learn.microsoft.com/en-us/windows/win32/dwm/customframe。
 - Qt 官方 6.11.1 QWindowsWindow::setWindowLayered 在有原生框架、opacity=1 时不会仅因 alpha buffer 增加 WS_EX_LAYERED；保留系统阴影/圆角所需样式。QQuickWindow 的透明 clear color 请求 alpha buffer，D3D11 的 alpha swapchain 使用 DirectComposition。
 - 使用共享 WindowFrameBackground 为 DWM 实测按钮范围留空；弹窗遮罩同样留空；非 alpha/软件后端或缺少有效按钮范围时保留标准系统标题栏。
+
+## Windows 11 白块反馈后的方案调整
+- 用户明确选择 Qt 官方方案（Windows 风格按钮由 Qt 绘制），接受与纯 DWM 原生按钮的区别，要求保留融合背景和窗口动作。
+- 核对 Windows 构建默认 Qt 6.10.3 及官方 qwindowswindow.cpp：ExpandedClientAreaHint 创建并维护独立 layered 标题栏窗口，NoTitleBarBackgroundHint 清除其底色，CustomizeWindowHint 配合按钮 flags 可隐藏重复标题/图标。Qt 扩展路径自身维护 DWM 外框。
+- 原 alpha=0 测试只验证透明，不证明按钮显示；旧方案删除。新探针必须验证桌面合成后的三个图标，并通过实际鼠标输入驱动 Qt 窗口按钮。
+- Qt 的按钮字色读取应用 colorScheme；应用当前固定浅色页面，需要在 Windows GUI 初始化时明确浅色方案，避免系统暗色造成白色图标叠在浅色背景。
+- 参考：https://www.qt.io/blog/expanded-client-areas-and-safe-areas-in-qt-6.9；https://github.com/qt/qtbase/blob/v6.10.3/src/plugins/platforms/windows/qwindowswindow.cpp。code.qt.io 原始源码经 web 工具访问失败，改用 Qt 官方 GitHub 镜像。

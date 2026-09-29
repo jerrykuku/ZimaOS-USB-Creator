@@ -40,7 +40,7 @@
 #ifdef Q_OS_DARWIN
 #include "mac/windowchrome.h"
 #elif defined(Q_OS_WIN)
-#include "windows/windowchrome.h"
+#include <QStyleHints>
 #endif
 
 // In QML live mode, qt_add_qml_module types would otherwise resolve to the
@@ -287,6 +287,11 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
+#ifdef Q_OS_WIN
+    // The page palette is currently fixed to light. Qt's Windows title-bar
+    // glyphs use the application color scheme, so keep their contrast in sync.
+    app.styleHints()->setColorScheme(Qt::ColorScheme::Light);
+#endif
 
     initializeApplicationIdentity();
     app.setApplicationVersion(ImageWriter::staticVersion());
@@ -746,8 +751,6 @@ int main(int argc, char *argv[])
     QObject *qmlwindow = engine.rootObjects().value(0);
 #ifdef Q_OS_DARWIN
     enableMacTitleBarDragging(qobject_cast<QWindow *>(qmlwindow));
-#elif defined(Q_OS_WIN)
-    enableWindowsWindowChrome(qobject_cast<QWindow *>(qmlwindow));
 #endif
     qmlwindow->connect(&imageWriter, SIGNAL(downloadProgress(QVariant,QVariant)), qmlwindow, SLOT(onDownloadProgress(QVariant,QVariant)));
     qmlwindow->connect(&imageWriter, SIGNAL(writeProgress(QVariant,QVariant)), qmlwindow, SLOT(onWriteProgress(QVariant,QVariant)));

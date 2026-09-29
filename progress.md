@@ -401,3 +401,14 @@
 - macOS 完整构建通过。使用当前 main.qml 前缀和真实 BaseDialog 做隔离 QML 像素检查：Windows 普通/弹窗按钮预留区 alpha=0，正文 alpha=255；Linux 普通/弹窗外角 alpha=0 且阴影存在；macOS 页面仍不透明。三种预览均正常退出。
 - 临时测试 mock 首次在函数后写分号导致 QML 语法错误，修正 mock 后通过；字体相对路径缺失后补齐测试字体链接。产品构建无新增错误。
 - git diff --check 通过。未将本机 QML 模拟检查称为 Windows 原生可见性或 Linux 合成器验证。
+
+## Session: Windows 11 按钮区域空白
+- 基线 d1079880，工作区干净。用户截图显示透出区域为白块且三个按钮未绘制，证实上一轮 alpha 留空不能解决实际按钮显示。
+- 正在核对 Qt 官方 ExpandedClientAreaHint 的独立按钮绘制窗口和原生标题栏备选；已询问用户是否接受 Qt Windows 风格按钮，以明确原生性与融合外观的取舍。
+- 用户选择 Qt 官方方案，保留融合外观与窗口操作，接受按钮由 Qt 按 Windows 风格绘制。
+- Windows 切换 ExpandedClientAreaHint / NoTitleBarBackgroundHint / CustomizeWindowHint，保留三个按钮 hints，去掉原生标题 hint 避免重复标题。删除 Windows DWM helper、透明 cutout 组件及构建引用。
+- 新增共享 WindowTitleBar，用 Qt SafeArea 预留高度、标题左右对称避让，Windows 拖动超过阈值才开始，双击最大化/还原；macOS 继续由既有 AppKit helper 处理。Windows GUI 请求浅色应用方案，与固定浅色页面保持按钮对比度。
+- Windows 专用探针改为直接验证 Qt 独立标题栏绘制层及桌面三个 glyph，使用 SendInput 实际点击按钮、双击标题、验证关闭 veto，并覆盖默认和软件后端；不再用 alpha 留空断言冒充按钮可见验证。此探针未在 Windows 编译/运行。
+- macOS 完整构建成功；Windows 分支 QML flags、单标题行、背景不留空、标题居中、双击最大化/还原、正文排除、真实 BaseDialog 遮罩检查通过。普通/弹窗右上角背景与同一行左侧背景像素完全一致且 alpha=255。
+- macOS 原生交通灯、透明标题栏、标题与空白区双击最大化/还原、正文排除回归通过。Linux 普通/弹窗外角透明且阴影存在，正文 alpha=255。所有隔离预览正常退出。
+- 文档已改为准确描述 Qt 绘制按钮以及 Windows 11 Snap 悬浮菜单不保证的边界。git diff --check 通过，未提交。

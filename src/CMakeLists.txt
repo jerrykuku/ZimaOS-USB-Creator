@@ -455,7 +455,7 @@ if(NOT BUILD_CLI_ONLY)
         wizard/dialogs/PasswordlessSudoWarningDialog.qml
         wizard/LanguageSelectionStep.qml
         qmlcomponents/BaseDialog.qml
-        qmlcomponents/WindowFrameBackground.qml
+        qmlcomponents/WindowTitleBar.qml
         qmlcomponents/ImButton.qml
         qmlcomponents/ImButtonRed.qml
         qmlcomponents/ImCheckBox.qml

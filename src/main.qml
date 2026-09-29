@@ -20,65 +20,44 @@ import RpiImager
 ApplicationWindow {
     id: window
     visible: true
-    readonly property bool usesNativeWindowChrome: !ImageWriterSingleton.isEmbeddedMode()
+    readonly property bool usesPlatformWindowChrome: !ImageWriterSingleton.isEmbeddedMode()
             && (Qt.platform.os === "osx" || Qt.platform.os === "windows")
-    readonly property bool usesMacTitleBar: usesNativeWindowChrome && Qt.platform.os === "osx"
+    readonly property bool usesMacTitleBar: usesPlatformWindowChrome && Qt.platform.os === "osx"
     readonly property bool usesLinuxCustomChrome: Qt.platform.os === "linux" && !ImageWriterSingleton.isEmbeddedMode()
     readonly property bool fillsScreen: visibility === Window.Maximized || visibility === Window.FullScreen
     readonly property int customShadowInset: usesLinuxCustomChrome ? 12
-            : !usesNativeWindowChrome && Qt.platform.os === "windows" ? 8 : 0
+            : !usesPlatformWindowChrome && Qt.platform.os === "windows" ? 8 : 0
     readonly property int windowFrameInset: fillsScreen ? 0 : customShadowInset
-    readonly property real windowCornerRadius: usesNativeWindowChrome || fillsScreen ? 0 : Style.radiusPanel
-    // Windows supplies these metrics in logical pixels from its DWM frame.
-    // Zero means the ordinary system title bar is in use (e.g. a fallback).
-    property real nativeTitleBarHeight: 0
-    property real nativeTitleBarInset: 0
-    property rect nativeCaptionButtonsRect: Qt.rect(0, 0, 0, 0)
-    readonly property color nativeTitleBarColor: Style.colorSurfacePage
+    readonly property real windowCornerRadius: usesPlatformWindowChrome || fillsScreen ? 0 : Style.radiusPanel
     // Linux uses a client-drawn title bar with Ubuntu-style controls so its transparent
     // background and centered title do not depend on the desktop theme.
-    // On Windows, the native helper extends the DWM frame; Qt's expanded
-    // title-bar mode would instead draw its own caption buttons.
+    // Qt's Windows platform plugin draws the caption buttons above Quick.
+    // CustomizeWindowHint without WindowTitleHint suppresses its left-aligned
+    // title/icon; WindowTitleBar below supplies the centered title instead.
     flags: usesMacTitleBar ? Qt.Window | Qt.WindowFullscreenButtonHint
                              | Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
-           : usesNativeWindowChrome ? Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+           : usesPlatformWindowChrome ? Qt.Window | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint
+                                      | Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
                                       | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint
                                       | Qt.WindowCloseButtonHint
                                     : Qt.FramelessWindowHint | Qt.Window
 
-    background: WindowFrameBackground {
-        surfaceColor: window.usesNativeWindowChrome ? Style.colorSurfacePage : Style.transparent
-        nativeControlsRect: window.nativeCaptionButtonsRect
+    background: Rectangle {
+        color: window.usesPlatformWindowChrome ? Style.colorSurfacePage : Style.transparent
     }
 
-    // The header sits above ApplicationWindow's content control. A MouseArea
-    // in background cannot receive presses intercepted by that control.
-    // macOS uses Qt's safe area; Windows reserves the height of its DWM frame.
-    // Windows hit testing handles moving and double-clicking in native code.
-    header: MouseArea {
+    header: WindowTitleBar {
+        targetWindow: window
+        nativeMacTitleBar: window.usesMacTitleBar
         height: window.visibility === Window.FullScreen ? 0
-                : window.usesMacTitleBar ? window.SafeArea.margins.top : window.nativeTitleBarHeight
+                : window.usesPlatformWindowChrome ? window.SafeArea.margins.top : 0
         visible: height > 0
-        acceptedButtons: window.usesMacTitleBar ? Qt.LeftButton : Qt.NoButton
-        onPressed: window.startSystemMove()
-
-        Text {
-            anchors.centerIn: parent
-            // Symmetric space keeps the title centered in the window and
-            // clear of the native traffic-light buttons, even for long titles.
-            width: Math.max(0, parent.width - 2 * Math.max(100, window.nativeTitleBarInset))
-            text: window.title
-            color: Style.colorTextChromeMuted
-            font.family: Style.fontFamilyBold
-            font.pixelSize: Style.fontSizePixelSm
-            font.bold: true
-            horizontalAlignment: Text.AlignHCenter
-            elide: Text.ElideRight
-        }
+        titleColor: Style.colorTextChromeMuted
+        titleFont.family: Style.fontFamilyBold
+        titleFont.pixelSize: Style.fontSizePixelSm
+        titleFont.bold: true
     }
-    // Windows needs alpha in the swapchain as well as a cutout in the page
-    // background: an opaque clear color would still cover the DWM buttons.
-    color: usesMacTitleBar ? Style.colorSurfacePage : Style.transparent
+    color: usesPlatformWindowChrome ? Style.colorSurfacePage : Style.transparent
 
     function toggleMaximized() {
         if (visibility === Window.FullScreen)
@@ -152,7 +131,7 @@ ApplicationWindow {
         anchors.top: windowSurface.top
         anchors.left: windowSurface.left
         anchors.right: windowSurface.right
-        visible: !window.usesNativeWindowChrome && window.visibility !== Window.FullScreen
+        visible: !window.usesPlatformWindowChrome && window.visibility !== Window.FullScreen
         height: visible ? Style.titleBarHeight : 0
         color: Style.transparent
         clip: true
