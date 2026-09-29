@@ -7,6 +7,7 @@
 #define OSLISTMODEL_H
 
 #include <QAbstractItemModel>
+#include <QVariantMap>
 #ifndef CLI_ONLY_BUILD
 #include <QQmlEngine>
 #endif
@@ -46,6 +47,8 @@ public:
         TooltipRole,
         WebsiteRole,
         ArchitectureRole,
+        RecommendedRole,
+        PrereleaseRole,
     };
 
     struct OS {
@@ -68,6 +71,8 @@ public:
         quint64 extractSize = 0;
 
         bool random = false;
+        bool recommended = false;
+        bool prerelease = false;
     };
 
     explicit OSListModel(ImageWriter &);
@@ -76,8 +81,7 @@ public:
     // Emit dataChanged for all rows without resetting the model
     Q_INVOKABLE void softRefresh();
 
-    // Adds "(Recommended)" to the description of the first OS
-    Q_INVOKABLE void markFirstAsRecommended();
+    Q_INVOKABLE QVariantMap get(int row) const;
 
 signals:
     void eventOsListParse(quint32 durationMs, bool success);

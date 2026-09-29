@@ -24,12 +24,12 @@
         <translation>저장</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>경고를 비활성화하시겠습니까?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (기본값)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation>경고를 비활성화하면 ZimaOS USB Creator는 &lt;b&gt;이미지를 기록하기 전에 확인 프롬프트를 표시하지 않습니다&lt;/b&gt;. 시스템 드라이브를 선택할 때 여전히 &lt;b&gt;정확한 이름을 입력&lt;/b&gt;해야 합니다.</translation>
+        <source>Disable warnings?</source>
+        <translation>경고를 비활성화하시겠습니까?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -40,8 +40,28 @@
         <translation>선택한 옵션을 저장하고 ZimaOS USB Creator에 적용합니다</translation>
     </message>
     <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>이미지를 쓰기 전에 더 이상 확인을 요청하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>시스템 드라이브 보호는 계속 유지됩니다</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>시스템 드라이브를 선택하려면 여전히 정확한 이름을 입력해야 합니다.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>경고 유지</translation>
+    </message>
+    <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>경고를 유지하고 옵션 대화 상자로 돌아갑니다</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>그래도 비활성화</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>이미지 기록 프로세스가 완료되면 오디오 알림을 재생합니다</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>글쓰기 선호도 및 디스크 이미지 소스를 관리하십시오.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>쓰기 프로세스가 성공적으로 완료되면 저장 장치를 자동으로 꺼냅니다</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>이미지를 기록하기 전에 확인 대화 상자를 건너뛰기 (고급 사용자 전용)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>기기를 삭제하기 전에 확인을 건너뛰십시오.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>콘텐츠 저장소</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>편집</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>운영 체제 이미지 소스를 ZimaOS 공식 저장소와 사용자 지정 소스 간에 변경합니다</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -93,11 +133,11 @@
     </message>
     <message>
         <source>Audio notification unavailable - no viable audio player found on this system</source>
-        <translation type="unfinished"></translation>
+        <translation>오디오 알림이 없습니다 - 이 시스템에서 실행 가능한 오디오 플레이어가 없습니다</translation>
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>버전: %1</translation>
     </message>
 </context>
 <context>
@@ -131,7 +171,7 @@
     </message>
     <message>
         <source>Repository Manifest Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>저장소 표시 파일 (*.json *.%1)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -159,7 +199,7 @@
     </message>
     <message>
         <source>Back</source>
-        <translation>뒤로 가기</translation>
+        <translation>뒤로</translation>
     </message>
     <message>
         <source>Finish</source>
@@ -242,59 +282,59 @@
     <name>ConfirmOtpProgramDialog</name>
     <message>
         <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
-        <translation type="unfinished"></translation>
+        <translation>경고: OTP 프로그래밍은 영구적이고 돌이킬 수 없습니다</translation>
     </message>
     <message>
         <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>이 작업은 보안 부트 퍼블릭 키 해시를 장치의 일회성 프로그래밍 가능한 (OTP) 메모리에 영구적으로 프로그래밍합니다. 일단 프로그래밍되면 이 장치는 해당 개인 키로 서명된 이미지를만 부팅합니다. 이 행동은 되돌릴 수 없습니다.</translation>
     </message>
     <message>
         <source>Device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>장치: %1</translation>
     </message>
     <message>
         <source>Serial: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>순서: %1</translation>
     </message>
     <message>
         <source>Key fingerprint: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>키 발자국: %1</translation>
     </message>
     <message>
         <source>Also lock JTAG debug port (additional irreversible action)</source>
-        <translation type="unfinished"></translation>
+        <translation>또한 JTAG 디버그 포트를 잠금 (더 이상 돌이킬 수 없는 동작)</translation>
     </message>
     <message>
         <source>To confirm, type the device serial number below:</source>
-        <translation type="unfinished"></translation>
+        <translation>확인하려면 아래 장치의 일련 번호를 입력하십시오.</translation>
     </message>
     <message>
         <source>Serial to type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>일련의 유형: %1</translation>
     </message>
     <message>
         <source>Type device serial number exactly</source>
-        <translation type="unfinished"></translation>
+        <translation>기기의 정렬 번호를 정확히 입력합니다</translation>
     </message>
     <message>
         <source>Confirmation input. Type exactly: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>확인 입력 정확한 타입: %1</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
         <source>Cancel OTP programming and return to previous screen</source>
-        <translation type="unfinished"></translation>
+        <translation>OTP 프로그래밍을 취소하고 이전 화면으로 돌아가</translation>
     </message>
     <message>
         <source>PROGRAM OTP</source>
-        <translation type="unfinished"></translation>
+        <translation>프로그램 OTP</translation>
     </message>
     <message>
         <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
+        <translation>보안 부팅 키를 영구적으로 장치 OTP 메모리에 프로그래밍</translation>
     </message>
 </context>
 <context>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>시스템 드라이브 필터링을 비활성화하면 &lt;b&gt;시스템 드라이브가 목록에 표시됩니다&lt;/b&gt;</translation>
+        <source>Show system drives?</source>
+        <translation>시스템 드라이브를 표시할까요?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>필터 유지</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>시스템 드라이브는 운영 체제를 포함하고 개인 파일도 포함될 수 있습니다.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>시스템 드라이브 표시</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>잘못된 드라이브에 쓰면 해당 데이터가 영구적으로 삭제되며 컴퓨터가 부팅되지 않을 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>시스템 드라이브에 글을 쓰는 전에 기기를 선택하고 이름을 확인해야 합니다.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>숨김 유지</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>운영 체제에 무단 손상을 방지하기 위해 시스템 드라이브를 숨겨 두세요</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>시스템 드라이브 표시</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -375,131 +427,131 @@
     <name>DebugOptionsDialog</name>
     <message>
         <source>Debug Options</source>
-        <translation type="unfinished"></translation>
+        <translation>디버깅 옵션</translation>
     </message>
     <message>
         <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation type="unfinished"></translation>
+        <translation>️ 이 옵션은 디버깅 및 테스트를 위한 것입니다. 그 변경은 성능과 데이터의 무결성에 영향을 미칠 수 있습니다.</translation>
     </message>
     <message>
         <source>I/O Options</source>
-        <translation type="unfinished"></translation>
+        <translation>I/O 옵션</translation>
     </message>
     <message>
         <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
-        <translation type="unfinished"></translation>
+        <translation>직전 I/O를 활성화 (F_NOCACHE / O_DIRECT)</translation>
     </message>
     <message>
         <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>작성하기 위해 운영 체제 페이지 캐시를 우회합니다. 느려지지만 데이터가 바로 장치로 전달되도록 합니다.</translation>
     </message>
     <message>
         <source>Enable Async I/O</source>
-        <translation type="unfinished"></translation>
+        <translation>Async I/O를 활성화</translation>
     </message>
     <message>
         <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>큐 멀티플라이드는 장치 지연을 초복합니다. 직전 I/O를 활성화하면 성능을 향상시킵니다.</translation>
     </message>
     <message>
         <source>Queue Depth:</source>
-        <translation type="unfinished"></translation>
+        <translation>큐 깊이:</translation>
     </message>
     <message>
         <source>Async queue depth: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>동기화 행렬 깊이: %1</translation>
     </message>
     <message>
         <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
-        <translation type="unfinished"></translation>
+        <translation>버퍼 메모리: ~%1-%2 MB (시스템 RAM에 따라 달라집니다)</translation>
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
-        <translation type="unfinished"></translation>
+        <translation>장치 I/O 제한을 무시</translation>
     </message>
     <message>
         <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translation>장치에 의해 보고된 줄을 깊이 및 전송 크기의 제한을 무시하십시오. 기능에 미치지 않은 USB-NVMe 부록에 유용합니다.</translation>
     </message>
     <message>
         <source>Enable Periodic Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>주기적 동기화를 활성화</translation>
     </message>
     <message>
         <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
-        <translation type="unfinished"></translation>
+        <translation>기록 중 주기적으로 데이터를 디스크에 플래시하십시오. 직전 I/O가 활성화되면 자동으로 비활성화됩니다.</translation>
     </message>
     <message>
         <source>Debugging</source>
-        <translation type="unfinished"></translation>
+        <translation>디버깅</translation>
     </message>
     <message>
         <source>Verbose Performance Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Verbose 성능 기록</translation>
     </message>
     <message>
         <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
-        <translation type="unfinished"></translation>
+        <translation>성능 문제를 진단하는 데 도움이 되는 각 작전에 대한 상세한 시간 정보를 기록하십시오.</translation>
     </message>
     <message>
         <source>Network Options</source>
-        <translation type="unfinished"></translation>
+        <translation>네트워크 옵션</translation>
     </message>
     <message>
         <source>Force IPv4-only Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>힘 IPv4만 다운로드</translation>
     </message>
     <message>
         <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
-        <translation type="unfinished"></translation>
+        <translation>다운로드를 위해만 IPv4을 사용하세요. IPv6 라우팅 장애로 인해 연결 문제가 발생하면 이것을 활성화하십시오.</translation>
     </message>
     <message>
         <source>Workarounds</source>
-        <translation type="unfinished"></translation>
+        <translation>해결방안</translation>
     </message>
     <message>
         <source>Counterfeit Card Mode (skip end-of-device checks)</source>
-        <translation type="unfinished"></translation>
+        <translation>가짜 카드 모드 (기기말 체크를 건너뛰기)</translation>
     </message>
     <message>
         <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치의 끝에서 동작을 건너뛰기 가짜 SD 카드에 대해 더 큰 용량을 신고하는 경우 이것을 활성화하십시오. 디스크 이미지는 카드의 실제 용량보다 작아야 합니다.</translation>
     </message>
     <message>
         <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation type="unfinished"></translation>
+        <translation>️ SD 카드가 실제보다 더 큰 용량을 보고할 경우만 이 기능을 활성화하십시오. 디스크 이미지가 실제 카드 용량보다 작다는 것을 확인하세요!</translation>
     </message>
     <message>
         <source>Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation>고급 기능</translation>
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">보안 부트</translation>
+        <translation>보안 부트</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation type="unfinished"></translation>
+        <translation>포스 안전 붐 사용 가능</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation type="unfinished"></translation>
+        <translation>OS 기능에 관계없이 안전한 부트 사용자 정의를 표시합니다. --enable-secure-boot CLI 플래그와 동등합니다.</translation>
     </message>
     <message>
         <source>Current Status</source>
-        <translation type="unfinished"></translation>
+        <translation>현재 상태</translation>
     </message>
     <message>
         <source>Close the debug options dialog without saving any changes</source>
-        <translation type="unfinished"></translation>
+        <translation>변경사항을 저장하지 않고 디버그 옵션 대화소를 닫는다</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>적용</translation>
     </message>
     <message>
         <source>Apply the selected debug options</source>
-        <translation type="unfinished"></translation>
+        <translation>선택된 디버깅 옵션을 적용</translation>
     </message>
 </context>
 <context>
@@ -509,8 +561,16 @@
         <translation>ZimaOS 장치를 선택하세요</translation>
     </message>
     <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>기기 목록은 다운로드할 수 없었습니다. 인터넷 연결을 확인하고 다시 시도해보세요.
+
+다음을 누르며 다음 화면에서 &apos;지역 디스크 이미지를 사용&apos;을 선택하면 여전히 로컬 디스크 이미지 파일을 작성할 수 있습니다.</translation>
+    </message>
+    <message>
         <source>Loading device types...</source>
-        <translation type="unfinished"></translation>
+        <translation>로딩 기기 유형...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -530,25 +590,19 @@
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>화살표 키를 사용해 이동하고 Enter 또는 Space로 선택하세요</translation>
+        <translation>방향키로 이동하고 Enter 또는 Space 키로 선택하세요</translation>
     </message>
     <message>
         <source>Unable to load device list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>장치 목록을 로드할 수 없습니다</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>다시 시도</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
-        <translation type="unfinished"></translation>
+        <translation>장치 목록을 다시 다운로드 시도</translation>
     </message>
 </context>
 <context>
@@ -559,7 +613,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Ejecting the storage device — do not remove it yet…</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치를 배제합니다. 아직 제거하지 않습니다.</translation>
     </message>
     <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
@@ -567,7 +621,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치는 추출될 수 없었습니다. 여전히 사용 중인 응용 프로그램을 닫고, Eject을 누르십시오.</translation>
     </message>
     <message>
         <source>Please eject the storage device before removing it from your computer.</source>
@@ -575,11 +629,11 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Eject</source>
-        <translation type="unfinished"></translation>
+        <translation>추방</translation>
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치를 안전하게 제거할 수 있도록 배제한다</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -653,11 +707,18 @@ No data has been written for 30 seconds. This could be caused by:
 • System resource exhaustion
 
 Please check the storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>글쓰기 작업이 멈췄습니다.
+
+30초 동안 데이터가 기록되지 않았습니다. 이것은 다음과 같은 원인으로 인해 발생할 수 있습니다.
+• 저장 장치가 연결되지 않거나 반응하지 않습니다
+• 장치 가 고장 나 고장
+• 시스템 자원의 고갈
+
+저장장치를 확인하고 다시 시도하십시오.</translation>
     </message>
     <message>
         <source>Failed to acquire write buffer slot</source>
-        <translation type="unfinished"></translation>
+        <translation>쓰기 버퍼 슬롯을 획득하지 못했습니다</translation>
     </message>
     <message>
         <source>The download has stalled.
@@ -668,7 +729,14 @@ No data received for 30 seconds. This could be caused by:
 • Firewall or proxy blocking the connection
 
 Please check your network connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>다운로드가 멈췄습니다.
+
+30초 동안 자료가 없었습니다. 이것은 다음과 같은 원인으로 인해 발생할 수 있습니다.
+• 네트워크 연결이 손실되거나 불안정
+• 원격 서버는 응답 하지 않았습니다.
+• 연결을 차단하는 방화벽 또는 프록시
+
+네트워크 연결을 확인하고 다시 시도해 보세요.</translation>
     </message>
 </context>
 <context>
@@ -779,25 +847,27 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation type="unfinished"></translation>
+        <translation>운영체제 사용자 정의 확인...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>OS 사용자 정의 설정은 장치에 올바르게 저장되지 않았습니다. 다음 파일은 실종되거나 손상되었습니다: %1.
+
+기기는 데이터를 받아들였지만 보관하지 않았기 때문에 일반적으로 SD 카드 또는 USB 어댑터가 실패하거나 위조된 것을 의미합니다. 디스크 이미지는 올바르게 작성되었지만 장치가 첫 부팅에서 설정을 적용하지 않았을 것입니다 (그래서 당신은 그것에 연결할 수 없었을 것입니다). 다른 카드 또는 카드 리더를 사용해보세요.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>검증에 필요한 메모리를 할당할 수 없습니다.</translation>
     </message>
     <message>
         <source>seeking storage for verification</source>
-        <translation type="unfinished"></translation>
+        <translation>검증을 위한 저장소 수색</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장소에서 오류가 발생했습니다.&lt;br&gt;기기는 예상보다 적은 데이터를 반환했습니다.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -889,33 +959,35 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>디스크 &apos;%1&apos;를 제거하지 못했습니다. 디스크를 이용한 애플리케이션을 닫고 다시 시도해 보세요.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>디스크 &apos;%1&apos;를 제거하지 못했습니다.</translation>
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
-        <translation type="unfinished"></translation>
+        <translation>드라이브가 사용할 수 있을 때까지 기다리고 있습니다...%1(s)</translation>
     </message>
     <message>
         <source>getting device size</source>
-        <translation type="unfinished"></translation>
+        <translation>장치 크기를 얻는</translation>
     </message>
     <message>
         <source>Failed to allocate buffer for MBR zeroing.
 
 The system may be low on memory.</source>
-        <translation type="unfinished"></translation>
+        <translation>MBR 제로링에 대한 버퍼를 할당하지 못했습니다.
+
+시스템 기억력이 떨어질 수도 있습니다.</translation>
     </message>
     <message>
         <source>preparing storage device</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치를 준비하는</translation>
     </message>
     <message>
         <source>Zero&apos;ing out end of drive...</source>
-        <translation type="unfinished"></translation>
+        <translation>운전 끝에서 제로&apos;링...</translation>
     </message>
     <message>
         <source>Timeout writing to end of storage device.
@@ -923,7 +995,11 @@ The system may be low on memory.</source>
 This may indicate a counterfeit SD card with fake capacity.
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치의 끝까지 타임아웃 글쓰기
+
+이것은 가짜 용량을 가진 가짜 SD 카드를 나타낼 수 있습니다.
+
+다른 저장장치를 시도해 보세요.</translation>
     </message>
     <message>
         <source>Write error while trying to zero out last part of card.
@@ -931,21 +1007,27 @@ Please try a different storage device.</source>
 This could indicate the card is advertising wrong capacity (possible counterfeit).
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>카드의 마지막 부분을 0으로 풀려고 하는 동안 오류를 적으십시오.
+
+이것은 카드에서 잘못된 용량을 광고하는 것을 나타낼 수 있습니다 (가능한 위조).
+
+다른 저장장치를 시도해 보세요.</translation>
     </message>
     <message>
         <source>Storage device responding slowly. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치가 느리게 반응합니다. 호환 모드에서 다시 시작...</translation>
     </message>
     <message>
         <source>storage operation</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 작업</translation>
     </message>
     <message>
         <source>Failed to open storage device.
 
 The device may be in use by another application, or you may not have permission to access it.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치를 열지 못했습니다.
+
+이 장치가 다른 응용 프로그램에서 사용되고 있거나 액세스 할 권한이 없을 수도 있습니다.</translation>
     </message>
     <message>
         <source>Error writing to storage device during %1.
@@ -956,49 +1038,70 @@ This could be caused by:
 • Hardware failure or bad sectors
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 동안 저장 장치에 작성 오류
+
+이것은 다음과 같은 원인으로 인해 발생할 수 있습니다.
+• 장치가 끊어졌거나 반응이 되지 않았습니다.
+• 장치가 전체 또는 쓰기 보호
+• 하드웨어 고장 또는 부실 부문
+
+기기를 확인하고 다시 시도해 보세요.</translation>
     </message>
     <message>
         <source>Error reading from storage device during %1.
 
 The device may have been disconnected or is malfunctioning.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치에서 error reading %1
+
+장치가 끊어졌거나 작동이 잘못되었을 수도 있습니다.</translation>
     </message>
     <message>
         <source>Error seeking on storage device during %1.
 
 The device may be malfunctioning or disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 동안 저장 장치에서 오류 검색
+
+장치가 잘못 작동하거나 연결이 끊어질 수 있습니다.</translation>
     </message>
     <message>
         <source>Error getting storage device size.
 
 The device may not be properly recognized.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치 크기를 얻는 오류.
+
+장치가 제대로 인식되지 않을 수도 있습니다.</translation>
     </message>
     <message>
         <source>Error closing storage device.
 
 The device may have been disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치를 닫는 오류
+
+장치가 끊어졌을 수도 있습니다.</translation>
     </message>
     <message>
         <source>Failed to lock storage device.
 
 The device may be in use by another application. Please close any applications using this device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치를 잠금하지 못했습니다.
+
+이 장치는 다른 응용 프로그램에서 사용될 수 있습니다. 이 장치를 사용하는 모든 응용 프로그램을 종료하고 다시 시도하십시오.</translation>
     </message>
     <message>
         <source>Error syncing data to storage device.
 
 The device may have been disconnected or is not responding. Data may not have been fully written.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치에 데이터를 동기화하는 오류
+
+장치가 끊어졌거나 반응하지 않는 경우도 있습니다. 자료는 완전히 작성되지 않았을 수도 있습니다.</translation>
     </message>
     <message>
         <source>Error flushing data to storage device.
 
 The device may have been disconnected or is not responding.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치에 데이터를 입력하는 오류
+
+장치가 끊어졌거나 반응하지 않는 경우도 있습니다.</translation>
     </message>
     <message>
         <source>Storage device timed out during %1.
@@ -1009,13 +1112,22 @@ The device is not responding. This may indicate:
 • Driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치 %1 동안 시간화
+
+기기는 반응하지 않습니다. 이것은 다음과 같은 것을 나타낼 수 있습니다.
+• 장치 가 끊어졌다
+• 장치가 실패
+• 운전자 또는 시스템 문제
+
+기기를 분리하고 다시 연결하고 다시 시도하십시오.</translation>
     </message>
     <message>
         <source>Unknown storage error during %1.
 
 Please try again or use a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 동안 알려진 저장 오류.
+
+다시 시도하거나 다른 저장 장치를 사용하십시오.</translation>
     </message>
     <message>
         <source>The storage device is not responding. This may indicate:
@@ -1024,7 +1136,12 @@ Please try again or use a different storage device.</source>
 • A driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치가 응답하지 않습니다. 이것은 다음과 같은 것을 나타낼 수 있습니다.
+• 장치 가 끊어졌다
+• 장치가 실패
+• 운전자 또는 시스템 문제
+
+기기를 분리하고 다시 연결하고 다시 시도하십시오.</translation>
     </message>
     <message>
         <source>Error writing to storage device.
@@ -1035,35 +1152,42 @@ Some writes failed to complete. This could be caused by:
 • Hardware failure
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치에 작성 오류
+
+일부 기록은 완성되지 않았습니다. 이것은 다음과 같은 원인으로 인해 발생할 수 있습니다.
+• 작성 중 연결이 끊어지는 저장 장치
+• 장치가 전체 또는 쓰기 보호
+• 하드웨어 장애
+
+기기를 확인하고 다시 시도해 보세요.</translation>
     </message>
     <message>
         <source>flush</source>
-        <translation type="unfinished"></translation>
+        <translation>데이터 플러시</translation>
     </message>
     <message>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>동기화</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>파티션 테이블을 작성하기 전에 디스크 이미지를 빨라</translation>
     </message>
     <message>
         <source>writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>필기 파티션 테이블</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation type="unfinished"></translation>
+        <translation>글쓰기 검증 실패 저장 장치의 파티션 테이블은 기록된 것과는 다릅니다.</translation>
     </message>
     <message>
         <source>final flush</source>
-        <translation type="unfinished"></translation>
+        <translation>마지막 플래시</translation>
     </message>
     <message>
         <source>final sync</source>
-        <translation type="unfinished"></translation>
+        <translation>최종 동기화</translation>
     </message>
 </context>
 <context>
@@ -1110,11 +1234,26 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>디스크 &apos;%1&apos;를 제거하지 못했습니다. 디스크를 이용한 애플리케이션을 닫고 다시 시도해 보세요.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>디스크 &apos;%1&apos;를 제거하지 못했습니다.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>오류 세부 사항</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>확인</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>오류 세부사항을 닫기</translation>
     </message>
 </context>
 <context>
@@ -1246,6 +1385,22 @@ Please check the device and try again.</source>
         <translation>시리얼 인터페이스를 구성합니다: 비활성, 기본(시스템 결정), 콘솔 &amp; 하드웨어(콘솔과 UART 모두), 하드웨어(UART만), 또는 콘솔(지원 장치에서 콘솔 전용)</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>비활성화</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>기본값</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>콘솔 및 하드웨어</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>하드웨어</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>USB 가젯 모드 경고</translation>
     </message>
@@ -1269,16 +1424,20 @@ Please check the device and try again.</source>
 <context>
     <name>ImComboBox</name>
     <message>
+        <source>Error: Invalid selection</source>
+        <translation>오류: 유효하지 않은 선택</translation>
+    </message>
+    <message>
         <source>Search: &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>검색: &quot;%1&quot;</translation>
     </message>
     <message>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%2의 %1</translation>
     </message>
     <message>
         <source>No matches</source>
-        <translation type="unfinished"></translation>
+        <translation>짝이 없어</translation>
     </message>
 </context>
 <context>
@@ -1351,7 +1510,7 @@ or type a path in the address bar above.</source>
     </message>
     <message>
         <source>Enter folder or file path…</source>
-        <translation type="unfinished"></translation>
+        <translation>폴더 또는 파일 경로를 입력합니다.</translation>
     </message>
 </context>
 <context>
@@ -1500,10 +1659,6 @@ or type a path in the address bar above.</source>
         <translation> 또는 </translation>
     </message>
     <message>
-        <source>No organisation API key is configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>성능 데이터 저장</translation>
     </message>
@@ -1515,7 +1670,9 @@ or type a path in the address bar above.</source>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 용량은 충분하지 않습니다.
+
+디스크 이미지는 적어도 %1의 저장 공간이 필요합니다.</translation>
     </message>
     <message>
         <source>Failed to start write operation: insufficient memory.
@@ -1523,27 +1680,31 @@ The image requires at least %1 of storage.</source>
 The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
 
 Technical details: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>작성 작업을 시작하지 못했는데 메모리가 부족했습니다.
+
+시스템은 이 작업을 수행하기 위해 충분한 메모리를 가지고 있지 않습니다. 메모리를 확보하기 위해 다른 애플리케이션을 닫고 다시 시도해보세요.
+
+기술 세부 사항: %1</translation>
     </message>
     <message>
         <source>Failed to start write operation: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>작성 동작을 시작하지 못했습니다: %1</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>다운로드 속도가 제한된</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>압축 속도가 제한되어 있습니다</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치 속도가 제한되어 있습니다</translation>
     </message>
     <message>
         <source>Verifying written data</source>
-        <translation type="unfinished"></translation>
+        <translation>작성된 데이터를 확인</translation>
     </message>
 </context>
 <context>
@@ -1655,7 +1816,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Why am I being asked this?</source>
-        <translation type="unfinished"></translation>
+        <translation>왜 이런 질문을 받나요?</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1667,28 +1828,21 @@ Technical details: %1</source>
     </message>
     <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
-        <translation type="unfinished"></translation>
+        <translation>이 또한 해당 지역의 Wi-Fi 규제 도메인을 설정합니다.</translation>
     </message>
 </context>
 <context>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished">ZimaOS USB Creator가 이미지를 기록하려면 디스크에 접근해야 합니다</translation>
+        <translation>ZimaOS USB Creator가 이미지를 기록하려면 디스크에 접근해야 합니다</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>권장</translation>
+        <translation>파일 타입:</translation>
     </message>
 </context>
 <context>
@@ -1739,7 +1893,15 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>화살표 키를 사용해 이동하고 Enter 또는 Space로 선택하세요</translation>
+        <translation>방향키로 이동하고 Enter 또는 Space 키로 선택하세요</translation>
+    </message>
+    <message>
+        <source>Recommended</source>
+        <translation>권장</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>테스트 버전</translation>
     </message>
     <message>
         <source>Operating system category</source>
@@ -1747,7 +1909,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>화살표 키를 사용해 이동하고 Enter 또는 Space로 선택하며, 왼쪽 화살표로 뒤로 가기</translation>
+        <translation>방향키로 이동하고 Enter 또는 Space 키로 선택하세요, 왼쪽 방향키로 돌아가세요</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1755,46 +1917,46 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Unable to download OS list. You can still use a local image file.</source>
-        <translation type="unfinished"></translation>
+        <translation>OS 목록을 다운로드할 수 없습니다. 여전히 로컬 디스크 이미지 파일을 사용할 수 있습니다.</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>다시 시도</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
-        <translation type="unfinished"></translation>
+        <translation>OS 리스트를 다시 다운로드 하려고 합니다</translation>
     </message>
 </context>
 <context>
     <name>PasswordlessSudoWarningDialog</name>
     <message>
         <source>Passwordless Sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>비밀번호 없는 Sudo</translation>
     </message>
     <message>
         <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
-        <translation type="unfinished"></translation>
+        <translation>비밀번호 없는 sudo를 활성화하면 이 사용자로 실행되는 모든 프로세스가 인증 없이 전체 root 권한을 얻을 수 있습니다. 이것은 여러분의 시스템의 보안을 크게 약화시킵니다.</translation>
     </message>
     <message>
         <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>자동화된 스크립트나 헤드리스 운영과 같은 위험성을 이해하고 특별한 필요성이 있는 경우에만 이것을 가능하게 한다.</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
         <source>Cancel and keep sudo requiring a password</source>
-        <translation type="unfinished"></translation>
+        <translation>비밀번호가 필요한 sudo을 취소하고 보관</translation>
     </message>
     <message>
         <source>ENABLE</source>
-        <translation type="unfinished"></translation>
+        <translation>활성화</translation>
     </message>
     <message>
         <source>Enable passwordless sudo for this user account</source>
-        <translation type="unfinished"></translation>
+        <translation>이 사용자 계정에서 비밀번호 없는 sudo을 활성화</translation>
     </message>
 </context>
 <context>
@@ -1889,6 +2051,89 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>SSH를 통해 ZimaOS에 연결할 때 인증 방식을 선택하세요. 비밀번호 인증은 구성한 계정 자격 증명을 사용하고, 공개 키 인증은 암호화 키 쌍을 사용해 더 안전합니다</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>콘텐츠 저장소</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>운영 체제 이미지를 어디서 얻을 수 있는지 선택하세요.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (기본값)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>공식 ZimaOS 이미지, 설치 준비.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>ZimaOS 공식 운영 체제 저장소를 사용합니다</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>사용자 정의 파일 사용</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>컴퓨터의 파일에서 디스크 이미지 목록을 로드하세요.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>컴퓨터에 있는 JSON 파일에서 운영 체제 목록을 불러옵니다</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>저장소 파일을 선택</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>컴퓨터에서 사용자 정의 저장소 JSON 파일을 선택하세요</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>저장소 선택</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>사용자 정의 URL 사용</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>웹 주소에서 디스크 이미지 목록을 로드하십시오.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>사용자 정의 웹 주소에서 운영 체제 목록을 다운로드합니다</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>사용자 지정 저장소 URL</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>소스를 변경하면 장치 선택으로 돌아갑니다.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>콘텐츠 소스를 변경하지 않고 저장소 대화 상자를 닫습니다</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>변경 사항 적용</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>새로운 콘텐츠 저장소를 적용하고 마법사를 처음부터 재시작합니다</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>사용자 정의 저장소 선택</translation>
     </message>
 </context>
 <context>
@@ -2076,10 +2321,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
 <context>
     <name>StorageSelectionStep</name>
     <message>
-        <source>No storage devices found</source>
-        <translation>저장 장치가 발견되지 않았습니다</translation>
-    </message>
-    <message>
         <source>Mounted as %1</source>
         <translation>%1로 마운트</translation>
     </message>
@@ -2113,27 +2354,7 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>화살표 키를 사용해 이동하고 Enter 또는 Space로 선택하세요</translation>
-    </message>
-    <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>보여지는 모든 장치가 읽기 전용입니다.
-새 장치를 연결하거나 아래의
-&apos;시스템 드라이브 제외&apos;를 해제하세요.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>모든 장치가 읽기 전용입니다.
-기록 가능한 저장 장치를 연결하세요.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>필터에 의해 모든 장치가 숨겨졌습니다. 아래의 &apos;시스템 드라이브 제외&apos;를 해제해 시스템 드라이브를 표시하세요</translation>
+        <translation>방향키로 이동하고 Enter 또는 Space 키로 선택하세요</translation>
     </message>
     <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
@@ -2157,15 +2378,33 @@ to show system drives.</source>
     </message>
     <message>
         <source>Could not list storage devices: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치 목록이 나열되지 않았습니다: %1</translation>
     </message>
     <message>
         <source>Error: Could not list storage devices. %1</source>
-        <translation type="unfinished"></translation>
+        <translation>오류: 저장장치 목록이 열리지 못했습니다. %1</translation>
+    </message>
+    <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>저장장치는 감지되지 않았습니다. 액세스 권한을 확인하고 장치를 다시 연결하십시오.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>하드 드라이브, USB 플래시 드라이브 또는 메모리 카드와 같은 저장 장치를 연결하여 계속하십시오.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>사용 가능한 장치는 읽기 전용입니다. 쓰기 가능한 저장 장치를 연결하세요.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>사용 가능한 저장 장치가 없습니다.
+저장 장치를 연결하거나 아래의 ‘시스템 드라이브 제외’를 선택 해제하세요.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장장치 목록이 나열되지 않았다: %1. 이것은 권한 문제가 될 수 있습니다. 관리자 권한으로 응용 프로그램을 실행해보십시오.</translation>
     </message>
 </context>
 <context>
@@ -2176,7 +2415,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>크리에이터 버전 %1이 사용 가능합니다. 웹사이트를 방문하여 다운로드 받으실 수 있나요?</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
@@ -2192,7 +2431,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>업데이트</translation>
     </message>
 </context>
 <context>
@@ -2271,23 +2510,23 @@ to show system drives.</source>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>저장된 비밀번호는 선택된 운영 체제와 호환되지 않으므로 다시 입력하시기 바랍니다.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>비밀번호 없는 sudo을 활성화</translation>
     </message>
     <message>
         <source>Allow this user to run sudo commands without entering a password.</source>
-        <translation type="unfinished"></translation>
+        <translation>이 사용자는 비밀번호를 입력하지 않고 sudo 명령을 실행할 수 있도록 허용합니다.</translation>
     </message>
     <message>
         <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>이 사용자로서 실행되는 모든 프로세스는 비밀번호 없이 전체 root 권한을 얻을 수 있습니다. 자동화된 스크립트나 헤드리스 동작과 같은 특별한 필요성이 있을 때만 이 기능을 사용할 수 있습니다.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation type="unfinished"></translation>
+        <translation>비밀번호 없는 sudo 정보: </translation>
     </message>
 </context>
 <context>
@@ -2460,70 +2699,68 @@ to show system drives.</source>
         <translation>잠시만 기다려 주세요</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>기존 유지</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>보안 부트</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation type="unfinished"></translation>
+        <translation>사운드 알림, 자동 발음 및 경고 알림을 구성하기 위해 응용 프로그램 설정을 열</translation>
     </message>
     <message>
         <source>Wi‑Fi</source>
-        <translation type="unfinished"></translation>
+        <translation>Wi-Fi</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
-        <translation type="unfinished"></translation>
+        <translation>로컬 리포지토리 파일을 열어?</translation>
     </message>
     <message>
         <source>Switch to a custom repository?</source>
-        <translation type="unfinished"></translation>
+        <translation>맞춤형 저장소로 전환하세요?</translation>
     </message>
     <message>
         <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation type="unfinished"></translation>
+        <translation>당신은 로컬 ZimaOS USB Creator 매니프트를 열고 있습니다. 이것은 이 파일의 내용으로 현재의 OS 목록을 대체할 것이다.</translation>
     </message>
     <message>
         <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>웹 사이트는 사용자 지정 OS 저장소를 사용하기 위해 ZimaOS USB Creator을 전환하도록 요청합니다.
+
+</translation>
     </message>
     <message>
         <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
-        <translation type="unfinished"></translation>
+        <translation>이 자료를 신뢰하고 의도적으로 링크를 클릭하여 저장소를 열면만 받아들일 수 있습니다.</translation>
     </message>
     <message>
         <source>Repository URL: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>저장소 URL: %1</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">열기</translation>
+        <translation>열기</translation>
     </message>
     <message>
         <source>Switch repository</source>
-        <translation type="unfinished"></translation>
+        <translation>스위치 저장소</translation>
     </message>
     <message>
         <source>Open the local manifest file and use it as the OS repository</source>
-        <translation type="unfinished"></translation>
+        <translation>로컬 매니페스트 파일을 열고 OS 저장소로 사용</translation>
     </message>
     <message>
         <source>Switch to the custom repository from the link</source>
-        <translation type="unfinished"></translation>
+        <translation>링크에서 사용자 지정 저장소에 전환</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">취소</translation>
+        <translation>취소</translation>
     </message>
     <message>
         <source>Keep your current repository settings</source>
-        <translation type="unfinished"></translation>
+        <translation>현재 저장소 설정을 유지하세요</translation>
     </message>
 </context>
 <context>
@@ -2538,20 +2775,53 @@ to show system drives.</source>
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>이 장치를 지우시겠습니까?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>이미지를 쓰면 이 장치의 모든 데이터가 삭제됩니다.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>대상 저장 장치</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>저장 장치</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>이 작업은 되돌릴 수 없습니다. 계속하기 전에 중요한 파일을 백업하세요.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>지우고 쓰기</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>지우고 쓰기 (%1)</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
-        <translation type="unfinished"></translation>
+        <translation>호환성 모드로 전환 - 계속 작성...</translation>
     </message>
     <message>
         <source>Write stalled - no progress for %1 seconds.
 
 Please check your storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1초 동안 진행이 되지 않았습니다.
+
+저장장치를 확인하고 다시 시도하십시오.</translation>
     </message>
     <message>
         <source>Storage device not responding. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>저장 장치가 응답하지 않습니다. 호환 모드에서 다시 시작...</translation>
     </message>
 </context>
 <context>
@@ -2565,6 +2835,10 @@ Please check your storage device and try again.</source>
         <translation>기록</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>취소 중…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>요약</translation>
     </message>
@@ -2574,35 +2848,15 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>다운로드 속도가 제한된</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>압축 속도가 제한되어 있습니다</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>다음에 있는 모든 데이터를 삭제하려고 합니다: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>저장 장치</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>이 작업은 영구적이며 되돌릴 수 없습니다</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>이해합니다. 삭제하고 기록</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>잠시만 기다려 주세요</translation>
+        <translation>저장장치 속도가 제한되어 있습니다</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2653,6 +2907,10 @@ Please check your storage device and try again.</source>
         <translation>쓰기 취소</translation>
     </message>
     <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>취소 중… 장치 사용이 종료될 때까지 기다려 주세요.</translation>
+    </message>
+    <message>
         <source>Skip verification and finish the write process</source>
         <translation>검증을 건너뛰고 기록 프로세스를 완료합니다</translation>
     </message>
@@ -2677,6 +2935,18 @@ Please check your storage device and try again.</source>
         <translation>쓰기 진행 상황</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>다운로드: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>다운로드: %1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>이미지 다운로드 중…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>마무리 중...</translation>
     </message>
@@ -2689,12 +2959,8 @@ Please check your storage device and try again.</source>
         <translation>사용자 지정 항목</translation>
     </message>
     <message>
-        <source>Please wait... %1</source>
-        <translation>잠시만 기다려 주세요… %1</translation>
-    </message>
-    <message>
         <source>Writing... %1 MB written</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 MB가 작성되었습니다.</translation>
     </message>
 </context>
 <context>
@@ -2706,22 +2972,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>Error</source>
         <translation>오류</translation>
-    </message>
-    <message>
-        <source>Erase</source>
-        <translation>삭제</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>카드를 FAT32로 포맷</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>사용자 정의 사용</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>컴퓨터에서 사용자 지정 .img를 선택합니다.</translation>
     </message>
     <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
@@ -2738,10 +2988,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>OK</source>
         <translation>확인</translation>
-    </message>
-    <message>
-        <source>Close the error dialog and continue</source>
-        <translation>오류 대화 상자를 닫고 계속합니다</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>
@@ -2797,11 +3043,27 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Offline</source>
-        <translation type="unfinished"></translation>
+        <translation>오프라인</translation>
     </message>
     <message>
         <source>Using data from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>%1의 데이터를 사용함</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>저장 장치 포맷</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>데이터를 삭제하고 저장 장치를 FAT32로 포맷</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>로컬 이미지 사용</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>로컬 디스크 이미지 파일을 선택 (IMG, ISO 또는 압축 디스크 이미지)</translation>
     </message>
 </context>
 </TS>

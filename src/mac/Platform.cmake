@@ -34,6 +34,8 @@ if(NOT BUILD_CLI_ONLY)
         mac/location_helper.h
         mac/location_helper.mm
         mac/nativefiledialog_macos.mm
+        mac/windowchrome.h
+        mac/windowchrome.mm
     )
 else()
     # Use stub implementation for CLI builds

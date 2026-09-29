@@ -106,7 +106,7 @@ SelectionListView {
                 
                 // Call the handler with modelData and fromKeyboard/fromMouse flags
                 // For double-click, treat it like keyboard (fromKeyboard=true) to enable auto-advance
-                var fromKeyboard = fromDoubleClick ? true : !fromMouse
+                var fromKeyboard = fromDoubleClick || root.advanceOnSelection
                 osSelectionHandler(modelData, fromKeyboard, fromMouse)
                 
                 // Restore scroll position after all changes

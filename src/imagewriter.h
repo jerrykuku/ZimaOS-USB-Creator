@@ -404,6 +404,7 @@ public:
 
     /* True only after a manifest request has actually failed (not while it is loading). */
     bool isOsListUnavailable() const { return _osListFetchFailed; }
+    bool hasOsListData() const { return !_completeOsList.isEmpty(); }
 
     /* Get access to performance stats for instrumentation */
     PerformanceStats* performanceStats() { return _performanceStats; }

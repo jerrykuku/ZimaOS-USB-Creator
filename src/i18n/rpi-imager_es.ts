@@ -24,12 +24,12 @@
         <translation>Guardar</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>¿Desactivar advertencias?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (predeterminado)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation>Si desactiva las advertencias, ZimaOS USB Creator &lt;b&gt;no mostrará mensajes de confirmación antes de escribir imágenes&lt;/b&gt;. Aún así, deberá &lt;b&gt;escribir el nombre exacto&lt;/b&gt; al seleccionar una unidad del sistema.</translation>
+        <source>Disable warnings?</source>
+        <translation>¿Desactivar advertencias?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -40,8 +40,28 @@
         <translation>Guardar las opciones seleccionadas y aplicarlas a ZimaOS USB Creator</translation>
     </message>
     <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>Ya no se pedirá confirmación antes de escribir una imagen.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>La protección de las unidades del sistema sigue activa</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Para seleccionar una unidad del sistema seguirá siendo necesario introducir su nombre exacto.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Mantener advertencias</translation>
+    </message>
+    <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>Mantener las advertencias activadas y volver a la ventana de opciones</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Desactivar de todos modos</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>Reproduce una notificación de audio cuando finalice el proceso de escritura de la imagen</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Gestionar las preferencias de escritura y las fuentes de imágenes del disco.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>Expulsar automáticamente el dispositivo de almacenamiento cuando el proceso de escritura finalice correctamente</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Omitir las ventanas de confirmación antes de escribir imágenes (solo para usuarios avanzados)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Salta la confirmación antes de borrar un dispositivo.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>Repositorio de contenidos</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Editar</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>Cambiar la fuente de las imágenes del sistema operativo entre el repositorio oficial de ZimaOS y fuentes personalizadas</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -159,7 +199,7 @@
     </message>
     <message>
         <source>Back</source>
-        <translation>Volver</translation>
+        <translation>Atrás</translation>
     </message>
     <message>
         <source>Finish</source>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>Al desactivar el filtrado de unidades del sistema, &lt;b&gt;las unidades del sistema se mostrarán&lt;/b&gt; en la lista.</translation>
+        <source>Show system drives?</source>
+        <translation>¿Mostrar las unidades del sistema?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>MANTENER FILTRO ACTIVADO</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>Las unidades del sistema contienen su sistema operativo y también pueden contener archivos personales.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>MOSTAR UNIDADES DEL SISTEMA</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>Escribir en la unidad equivocada borrará sus datos permanentemente y puede impedir que el equipo arranque.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>Aún tendrá que seleccionar un dispositivo y confirmar su nombre antes de escribir a una unidad del sistema.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>Mantener ocultas</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>Mantenga ocultas las unidades del sistema para evitar daños accidentales en su sistema operativo</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>Mostrar unidades del sistema</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -475,15 +527,15 @@
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">Arranque seguro</translation>
+        <translation>Arranque seguro</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Disponible para botas de seguridad</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Muestre una personalización de arranque segura independientemente de las capacidades del sistema operativo. Equivalente a la bandera CLI de arranque seguro habilitado.</translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -509,8 +561,16 @@
         <translation>Seleccione su dispositivo ZimaOS</translation>
     </message>
     <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>No se pudo descargar la lista de dispositivos. Por favor, revise su conexión a Internet y vuelva a intentarlo.
+
+Todavía puede escribir un archivo de imagen de disco local pulsando Siguiente y seleccionando &apos;Usar una imagen local de disco&apos; en la siguiente pantalla.</translation>
+    </message>
+    <message>
         <source>Loading device types...</source>
-        <translation type="unfinished"></translation>
+        <translation>Los tipos de dispositivos de carga...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -530,19 +590,11 @@
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Use las teclas de flecha para navegar, Entrar o Espacio para seleccionar</translation>
+        <translation>Usa las flechas para navegar y Intro o Espacio para seleccionar</translation>
     </message>
     <message>
         <source>Unable to load device list</source>
         <translation>No se puede cargar la lista de dispositivos</translation>
-    </message>
-    <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation>No se pudo descargar la lista de dispositivos. Verifique su conexión a Internet e inténtelo nuevamente.
-
-Aún puede escribir un archivo de imagen local presionando Siguiente y seleccionando &apos;Usar personalizado&apos; en la siguiente pantalla.</translation>
     </message>
     <message>
         <source>Retry</source>
@@ -581,7 +633,7 @@ Aún puede escribir un archivo de imagen local presionando Siguiente y seleccion
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation type="unfinished"></translation>
+        <translation>Ejecutar el dispositivo de almacenamiento para que pueda ser retirado de forma segura</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -795,13 +847,15 @@ No se recibieron datos durante 30 segundos. Esto podría deberse a:
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificar la personalización del sistema operativo...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>Las configuraciones de personalización del sistema operativo no se almacenaron correctamente en el dispositivo. Se han perdido o dañados los siguientes archivos: %1.
+
+El dispositivo aceptó los datos pero no los guardó, lo que normalmente significa que la tarjeta SD o el adaptador USB está fallando o es falsa. La imagen del disco en sí misma fue escrita correctamente, pero el dispositivo no habría aplicado sus configuraciones en el primer arranque (por lo que no habría podido conectarse a ella). Prueba una tarjeta o un lector de tarjetas diferente.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
@@ -813,7 +867,7 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de lectura del almacenamiento.&lt;br&gt;El dispositivo devolvió menos datos de lo esperado.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -913,7 +967,7 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Esperando que el disco esté disponible... (%1s)</translation>
     </message>
     <message>
         <source>getting device size</source>
@@ -1117,7 +1171,7 @@ Algunas escrituras no se pudieron completar. Esto podría deberse a:
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>descarga de la imagen del disco antes de escribir la tabla de particiones</translation>
     </message>
     <message>
         <source>writing partition table</source>
@@ -1125,7 +1179,7 @@ Algunas escrituras no se pudieron completar. Esto podría deberse a:
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation type="unfinished"></translation>
+        <translation>La verificación de escritura falló. La tabla de particiones en el dispositivo de almacenamiento es diferente de lo que estaba escrito.</translation>
     </message>
     <message>
         <source>final flush</source>
@@ -1185,6 +1239,21 @@ Algunas escrituras no se pudieron completar. Esto podría deberse a:
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
         <translation>No se pudo desmontar el disco &apos;%1&apos;.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Detalles de error</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Entendido</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Cierre los detalles del error</translation>
     </message>
 </context>
 <context>
@@ -1316,6 +1385,22 @@ Algunas escrituras no se pudieron completar. Esto podría deberse a:
         <translation>Configurar la interfaz serie: Desactivada, Predeterminada (el sistema decide), Consola y hardware (consola y UART), Hardware (solo UART) o Consola (solo consola en dispositivos compatibles).</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>Desactivado</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Predeterminado</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>Consola y hardware</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>Hardware</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>Advertencia del modo USB Gadget</translation>
     </message>
@@ -1338,6 +1423,10 @@ Algunas escrituras no se pudieron completar. Esto podría deberse a:
 </context>
 <context>
     <name>ImComboBox</name>
+    <message>
+        <source>Error: Invalid selection</source>
+        <translation>Erro: Selección inválida</translation>
+    </message>
     <message>
         <source>Search: &quot;%1&quot;</source>
         <translation>Búsqueda: &quot;%1&quot;</translation>
@@ -1570,10 +1659,6 @@ o escriba una ruta en la barra de direcciones situada arriba.</translation>
         <translation> o </translation>
     </message>
     <message>
-        <source>No organisation API key is configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Guardar datos de rendimiento</translation>
     </message>
@@ -1731,7 +1816,7 @@ Detalles técnicos: %1</translation>
     </message>
     <message>
         <source>Why am I being asked this?</source>
-        <translation type="unfinished"></translation>
+        <translation>¿Por qué me preguntan esto?</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1750,21 +1835,14 @@ Detalles técnicos: %1</translation>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished">ZimaOS USB Creator necesita acceder al disco para escribir la imagen.</translation>
+        <translation>ZimaOS USB Creator necesita acceder al disco para escribir la imagen.</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>Recomendado</translation>
+        <translation>Tipo de archivo:</translation>
     </message>
 </context>
 <context>
@@ -1815,7 +1893,15 @@ Detalles técnicos: %1</translation>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Use las teclas de flecha para navegar, Entrar o Espacio para seleccionar</translation>
+        <translation>Usa las flechas para navegar y Intro o Espacio para seleccionar</translation>
+    </message>
+    <message>
+        <source>Recommended</source>
+        <translation>Recomendado</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>Versión de ensayo</translation>
     </message>
     <message>
         <source>Operating system category</source>
@@ -1823,7 +1909,7 @@ Detalles técnicos: %1</translation>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>Use las teclas de flecha para navegar, Entrar o Espacio para seleccionar, Flecha izquierda para volver atrás</translation>
+        <translation>Usa las flechas para navegar y Intro o Espacio para seleccionar, usa la flecha izquierda para volver</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1965,6 +2051,89 @@ Haga clic en «Instalar autorización» para configurar la elevación automátic
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>Elija cómo se autenticará al conectarse a su ZimaOS a través de SSH. La autenticación por contraseña usa las credenciales de la cuenta que configuró. La autenticación por clave pública usa un par de claves criptográficas y es más segura.</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>Repositorio de contenidos</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>Elige dónde obtener las imágenes de tu sistema operativo.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (predeterminado)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Imágenes oficiales de ZimaOS, listos para instalar.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>Usar el repositorio oficial del sistema operativo ZimaOS</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>Usar un archivo personalizado</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Cargue una lista de imágenes de disco de un archivo en su computadora.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>Cargar la lista de sistemas operativos desde un archivo JSON en su equipo</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Seleccione un archivo de repositorio</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>Seleccione un archivo JSON de repositorio personalizado de su equipo</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>Seleccionar repositorio</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>Usar URL personalizada</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Cargar una lista de imágenes de disco desde una dirección web.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>Descargar la lista de sistemas operativos desde una dirección web personalizada</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>URL del repositorio personalizado</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Cambiar la fuente le devuelve a la selección del dispositivo.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>Cierre la ventana del repositorio sin cambiar la fuente de contenido</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Aplicar cambios</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>Aplique el nuevo repositorio de contenido y reinicie el asistente desde el principio</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>Seleccionar repositorio personalizado</translation>
     </message>
 </context>
 <context>
@@ -2152,10 +2321,6 @@ Haga clic en «Instalar autorización» para configurar la elevación automátic
 <context>
     <name>StorageSelectionStep</name>
     <message>
-        <source>No storage devices found</source>
-        <translation>No se han encontrado dispositivos de almacenamiento</translation>
-    </message>
-    <message>
         <source>Mounted as %1</source>
         <translation>Montado como %1</translation>
     </message>
@@ -2189,29 +2354,7 @@ Haga clic en «Instalar autorización» para configurar la elevación automátic
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Use las teclas de flecha para navegar, Entrar o Espacio para seleccionar</translation>
-    </message>
-    <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>Todos los dispositivos visibles son de solo lectura.
-Intente conectar un nuevo dispositivo o desmarque
-«Excluir unidades del sistema» a continuación.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>Todos los dispositivos son de solo lectura.
-Conecte un dispositivo de almacenamiento escribible.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>Todos los dispositivos están ocultos por el filtro.
-Desmarque «Excluir unidades del sistema» a continuación
-para mostrar las unidades del sistema.</translation>
+        <translation>Usa las flechas para navegar y Intro o Espacio para seleccionar</translation>
     </message>
     <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
@@ -2242,6 +2385,24 @@ para mostrar las unidades del sistema.</translation>
         <translation>Error: no se pudieron enumerar los dispositivos de almacenamiento. %1</translation>
     </message>
     <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>No se detectaron los dispositivos de almacenamiento. Compruebe los permisos de acceso y vuelva a conectar el dispositivo.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>Conecte un dispositivo de almacenamiento, como un disco duro, un disco flash o una tarjeta de memoria USB, para continuar.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>Los dispositivos disponibles son de solo lectura. Conecta un dispositivo de almacenamiento que permita la escritura.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>No hay dispositivos de almacenamiento disponibles.
+Conecta uno o desmarca «Excluir unidades del sistema» a continuación.</translation>
+    </message>
+    <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
         <translation>No se pudieron enumerar los dispositivos de almacenamiento: %1. Esto puede ser un problema de permisos. Intente ejecutar la aplicación con privilegios de administrador.</translation>
     </message>
@@ -2254,7 +2415,7 @@ para mostrar las unidades del sistema.</translation>
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>La versión creadora %1 está disponible. ¿Te gustaría visitar el sitio web para descargarlo?</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
@@ -2349,7 +2510,7 @@ para mostrar las unidades del sistema.</translation>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Su contraseña guardada no es compatible con el sistema operativo seleccionado, por lo que por favor introduzca de nuevo.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
@@ -2365,7 +2526,7 @@ para mostrar las unidades del sistema.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation>Información sudo sin contraseña:</translation>
+        <translation>Información sudo sin contraseña: </translation>
     </message>
 </context>
 <context>
@@ -2542,16 +2703,12 @@ para mostrar las unidades del sistema.</translation>
         <translation>Por favor, espere…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>Mantener el existente</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>Arranque seguro</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation type="unfinished"></translation>
+        <translation>Abre las configuraciones de la aplicación para configurar alertas de sonido, expulsión automática y advertencias</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -2618,6 +2775,37 @@ para mostrar las unidades del sistema.</translation>
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>¿Borrar este dispositivo?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>Al escribir la imagen se borrarán todos los datos de este dispositivo.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Dispositivo de almacenamiento de destino</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Dispositivo de almacenamiento</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>Esta acción no se puede deshacer. Haz una copia de seguridad de los archivos importantes antes de continuar.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Borrar y escribir</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Borrar y escribir (%1)</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
@@ -2647,6 +2835,10 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
         <translation>Escribir</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>Cancelando…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>Resumen</translation>
     </message>
@@ -2656,35 +2848,15 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished">Limitado por la velocidad de descarga</translation>
+        <translation>Limitado por la velocidad de descarga</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished">Limitado por la velocidad de descompresión.</translation>
+        <translation>Limitado por la velocidad de descompresión.</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished">Limitado por la velocidad del dispositivo de almacenamiento</translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>Está a punto de BORRAR todos los datos de: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>el dispositivo de almacenamiento</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Esta acción es PERMANENTE y NO se puede deshacer.</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>Lo entiendo, borrar y escribir</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>Por favor, espere...</translation>
+        <translation>Limitado por la velocidad del dispositivo de almacenamiento</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2735,6 +2907,10 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
         <translation>Cancelar escritura</translation>
     </message>
     <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>Cancelando… Espera a que se libere el dispositivo.</translation>
+    </message>
+    <message>
         <source>Skip verification and finish the write process</source>
         <translation>Omitir verificación y finalizar el proceso de escritura</translation>
     </message>
@@ -2759,6 +2935,18 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
         <translation>Progreso de escritura</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>Descarga: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>Descargado: %1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>Descargando imagen…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>Finalizando...</translation>
     </message>
@@ -2769,10 +2957,6 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
     <message>
         <source>customizations</source>
         <translation>personalizaciones</translation>
-    </message>
-    <message>
-        <source>Please wait... %1</source>
-        <translation>Por favor, espere... %1</translation>
     </message>
     <message>
         <source>Writing... %1 MB written</source>
@@ -2790,22 +2974,6 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
         <translation>Error</translation>
     </message>
     <message>
-        <source>Erase</source>
-        <translation>Borrar</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>Formatear tarjeta como FAT32</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>Usar personalizado</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>Seleccione un .img personalizado de su ordenador</translation>
-    </message>
-    <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
         <translation>ZimaOS USB Creator sigue ocupado. ¿Está seguro de que desea salir?</translation>
     </message>
@@ -2820,10 +2988,6 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
     <message>
         <source>OK</source>
         <translation>ACEPTAR</translation>
-    </message>
-    <message>
-        <source>Close the error dialog and continue</source>
-        <translation>Cerrar la ventana de error y continuar</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>
@@ -2884,6 +3048,22 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
     <message>
         <source>Using data from %1</source>
         <translation>Usando datos de %1</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>Formatear el dispositivo de almacenamiento</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>Eliminar los datos y formatar el dispositivo de almacenamiento como FAT32</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>Usar una imagen local</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>Seleccione un archivo de imagen de disco local (IMG, ISO o imagen del disco comprimido)</translation>
     </message>
 </context>
 </TS>

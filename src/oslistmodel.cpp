@@ -5,6 +5,7 @@
 
 #include "oslistmodel.h"
 #include "imagewriter.h"
+#include "imageselectionpolicy.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -296,6 +297,7 @@ bool OSListModel::reload()
     
     // Apply architecture-based sorting if device has a preference
     applyArchitectureSorting(list, preferredArchitecture);
+    const int recommended = ImageSelectionPolicy::recommendedIndex(list, root.value("imager").toObject().value("default_os").toString());
 
     beginResetModel();
     _osList.clear();
@@ -307,6 +309,9 @@ bool OSListModel::reload()
 
         os.name = obj["name"].toString();
         os.description = obj["description"].toString();
+        os.recommended = _osList.size() == recommended;
+        os.prerelease = ImageSelectionPolicy::isPrerelease(obj);
+        os.description.remove(QRegularExpression(QStringLiteral("\\s*\\(Recommended\\)"), QRegularExpression::CaseInsensitiveOption));
 
         QJsonArray devicesArray = obj["devices"].toArray();
         os.devices.reserve(devicesArray.size());
@@ -350,9 +355,6 @@ bool OSListModel::reload()
         _osList.append(os);
     }
 
-    // Mark the first OS as recommended after architecture sorting
-    markFirstAsRecommended();
-
     endResetModel();
     
     emit eventOsListParse(static_cast<quint32>(parseTimer.elapsed()), true);
@@ -392,6 +394,8 @@ QHash<int, QByteArray> OSListModel::roleNames() const
         { TooltipRole, "tooltip" },
         { WebsiteRole, "website" },
         { ArchitectureRole, "architecture" },
+        { RecommendedRole, "recommended" },
+        { PrereleaseRole, "prerelease" },
     };
 }
 
@@ -435,43 +439,22 @@ QVariant OSListModel::data(const QModelIndex &index, int role) const {
             return os.website;
         case ArchitectureRole:
             return os.architecture;
+        case RecommendedRole:
+            return os.recommended;
+        case PrereleaseRole:
+            return os.prerelease;
     }
 
     return {};
 }
 
-void OSListModel::markFirstAsRecommended() {
-    const QString recommendedString = QStringLiteral(" (%1)").arg(tr("Recommended"));
-
-    // First pass: Remove any existing "(Recommended)" labels from all items
-    for (int i = 0; i < _osList.size(); i++) {
-        OS &os = _osList[i];
-        // Remove any variant of the recommended string (handles different locales)
-        if (os.description.contains(QRegularExpression(R"( \([^)]*\bRecommended\b[^)]*\))"))) {
-            os.description.remove(QRegularExpression(R"( \([^)]*\bRecommended\b[^)]*\))"));
-        }
-        // Also remove the localized version if it exists
-        if (os.description.contains(recommendedString)) {
-            os.description.remove(recommendedString);
-        }
-    }
-
-    // Second pass: Add the localized "(Recommended)" to the first item if appropriate
-    // Skip internal items (Erase, Use custom) - these are fallbacks when OS list download fails
-    for (int i = 0; i < _osList.size(); i++) {
-        OS &candidate = _osList[i];
-
-        // Skip internal items (e.g., "internal://format", "internal://custom")
-        if (candidate.url.startsWith(QLatin1String("internal://"))) {
-            continue;
-        }
-
-        // Found a real OS entry - mark it as recommended if appropriate
-        if (!candidate.description.isEmpty() &&
-            candidate.subitemsJson.isEmpty())
-        {
-            candidate.description += recommendedString;
-        }
-        break;  // Only mark the first real OS
-    }
+QVariantMap OSListModel::get(int row) const
+{
+    QVariantMap result;
+    if (row < 0 || row >= _osList.size())
+        return result;
+    const auto roles = roleNames();
+    for (auto it = roles.cbegin(); it != roles.cend(); ++it)
+        result.insert(QString::fromUtf8(it.value()), data(index(row), it.key()));
+    return result;
 }

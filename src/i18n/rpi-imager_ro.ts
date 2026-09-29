@@ -24,12 +24,12 @@
         <translation>Salvează</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>Dezactivez avertismentele?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (implicit)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation>Dacă dezactivezi avertismentele, ZimaOS USB Creator &lt;b&gt;nu va mai afișa prompturi de confirmare înainte de a scrie imagini&lt;/b&gt;. Totuși, vei fi obligat să &lt;b&gt;introduci numele exact&lt;/b&gt; când selectezi un drive de sistem.</translation>
+        <source>Disable warnings?</source>
+        <translation>Dezactivez avertismentele?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -40,8 +40,28 @@
         <translation>Salvează opțiunile selectate și aplică-le în ZimaOS USB Creator</translation>
     </message>
     <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>Nu vi se va mai cere confirmarea înainte de scrierea unei imagini.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>Protecția discurilor de sistem rămâne activă</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Selectarea unui disc de sistem necesită în continuare introducerea numelui său exact.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Păstrează avertismentele</translation>
+    </message>
+    <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>Păstrează avertismentele activate și revino la dialogul de opțiuni</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Dezactivează oricum</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>Redă o notificare audio când procesul de scriere a imaginii este finalizat</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Gestionați preferințele de scriere și sursele de imagini de disk.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>Scoate automat dispozitivul de stocare când procesul de scriere se finalizează cu succes</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Omită dialogurile de confirmare înainte de scrierea imaginilor (doar pentru utilizatori avansați)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Să treci peste confirmare înainte de a șterge un dispozitiv.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>Depozit de Conținut</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Editează</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>Schimbă sursa imaginilor de sistem de operare între depozitul oficial ZimaOS și surse personalizate</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -85,26 +125,26 @@
     </message>
     <message>
         <source>PEM Files (*.pem)</source>
-        <translation type="unfinished"></translation>
+        <translation>PEM Fișiere (*.pem)</translation>
     </message>
     <message>
         <source>All Files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Toate fișierele (*)</translation>
     </message>
     <message>
         <source>Audio notification unavailable - no viable audio player found on this system</source>
-        <translation type="unfinished"></translation>
+        <translation>Notificarea audio neaccesibilă - nu s-a găsit nici un jucător audio viabil pe acest sistem</translation>
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Versiune: %1</translation>
     </message>
 </context>
 <context>
     <name>AsyncCacheWriter</name>
     <message>
         <source>Cache write error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erore de scriere în cache: %1</translation>
     </message>
 </context>
 <context>
@@ -131,7 +171,7 @@
     </message>
     <message>
         <source>Repository Manifest Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fișiere de reținut (*.json *.%1)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -235,66 +275,66 @@
     </message>
     <message>
         <source>Authorized keys files (authorized_keys)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fișiere de cheie autorizate (authorized_keys)</translation>
     </message>
 </context>
 <context>
     <name>ConfirmOtpProgramDialog</name>
     <message>
         <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
-        <translation type="unfinished"></translation>
+        <translation>ATENŢIE: OTP Programarea este permanentă şi ireversibilă</translation>
     </message>
     <message>
         <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>Această operațiune va programa în permanență hash-ul cheie publică securizată de boot în memoria programată de o dată (OTP) a dispozitivului. După programare, acest dispozitiv va porni numai imagini semnate cu cheia privată corespunzătoare. Această acţiune nu poate fi inversată.</translation>
     </message>
     <message>
         <source>Device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispozitiv: %1</translation>
     </message>
     <message>
         <source>Serial: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Serial: %1</translation>
     </message>
     <message>
         <source>Key fingerprint: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Amprenta degetului cheie: %1</translation>
     </message>
     <message>
         <source>Also lock JTAG debug port (additional irreversible action)</source>
-        <translation type="unfinished"></translation>
+        <translation>De asemenea, blochează portul de debug JTAG (acţiune ireversibilă suplimentară)</translation>
     </message>
     <message>
         <source>To confirm, type the device serial number below:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pentru a confirma, introduceți numărul de serie al dispozitivului de mai jos:</translation>
     </message>
     <message>
         <source>Serial to type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>De la serie la tip: %1</translation>
     </message>
     <message>
         <source>Type device serial number exactly</source>
-        <translation type="unfinished"></translation>
+        <translation>Numărul de serie exact al dispozitivului</translation>
     </message>
     <message>
         <source>Confirmation input. Type exactly: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Intrare de confirmare. Tip exact: %1</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">ANULEAZĂ</translation>
+        <translation>ANULEAZĂ</translation>
     </message>
     <message>
         <source>Cancel OTP programming and return to previous screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Anula programarea OTP și reveni la ecranul anterior</translation>
     </message>
     <message>
         <source>PROGRAM OTP</source>
-        <translation type="unfinished"></translation>
+        <translation>PROGRAMOTP</translation>
     </message>
     <message>
         <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Programarea permanentă a cheii de boot securizată în memoria dispozitivului OTP</translation>
     </message>
 </context>
 <context>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>Prin dezactivarea filtrării drive-urilor de sistem, &lt;b&gt;drive-urile de sistem vor fi afișate&lt;/b&gt; în listă.</translation>
+        <source>Show system drives?</source>
+        <translation>Afișați discurile de sistem?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>PĂSTREAZĂ FILTRUL ACTIVAT</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>Discutele de sistem conțin sistemul de operare și pot conține, de asemenea, fișiere personale.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>AFIȘEAZĂ DRIVE-URI DE SISTEM</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>Scrierea pe discul greșit va șterge definitiv datele acestuia și poate împiedica pornirea computerului.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>Va trebui să selectați încă un dispozitiv și să confirmați numele înainte de a scrie la un sistem.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>Păstrează ascunse</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>Păstrează drive-urile de sistem ascunse pentru a preveni deteriorarea accidentală a sistemului de operare</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>Arată discurile de sistem</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -375,131 +427,131 @@
     <name>DebugOptionsDialog</name>
     <message>
         <source>Debug Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opțiuni de debug</translation>
     </message>
     <message>
         <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation type="unfinished"></translation>
+        <translation>️ Aceste opțiuni sunt pentru debugging și testare. Modificarea acestora poate afecta performanța și integritatea datelor.</translation>
     </message>
     <message>
         <source>I/O Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opțiuni de I/O</translation>
     </message>
     <message>
         <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
-        <translation type="unfinished"></translation>
+        <translation>Actionați I/ O direct (F_NOCACHE / O_DIRECT)</translation>
     </message>
     <message>
         <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Evită cașul de pagină al sistemului de operare pentru scrieri. Mai lent, dar asigură că datele merg direct la dispozitiv.</translation>
     </message>
     <message>
         <source>Enable Async I/O</source>
-        <translation type="unfinished"></translation>
+        <translation>Acceptați Async I/O</translation>
     </message>
     <message>
         <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Coada multiple scrie pentru a suprapune latența dispozitivului. Îmbunătățește performanța cu activarea directă de I/O.</translation>
     </message>
     <message>
         <source>Queue Depth:</source>
-        <translation type="unfinished"></translation>
+        <translation>Adâncime de coadă:</translation>
     </message>
     <message>
         <source>Async queue depth: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Adâncime de coadă de sincronizare: %1</translation>
     </message>
     <message>
         <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
-        <translation type="unfinished"></translation>
+        <translation>Memorie tampon: ~%1-%2 MB (variează în funcție de RAM-ul sistemului)</translation>
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorați limitele de I/O ale dispozitivului</translation>
     </message>
     <message>
         <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorați limitele de dimensiuni de transfer și de adâncime a coarelor raportate de dispozitiv. Utilizat pentru USB-NVMe cabine care sub-reporta capacitățile lor.</translation>
     </message>
     <message>
         <source>Enable Periodic Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Activaţi sincronizarea periodică</translation>
     </message>
     <message>
         <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fă rost de date pe disc periodic în timpul scrierii. Dezactivarea automată atunci când este activată activitatea directă de I/O.</translation>
     </message>
     <message>
         <source>Debugging</source>
-        <translation type="unfinished"></translation>
+        <translation>Debugging</translation>
     </message>
     <message>
         <source>Verbose Performance Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Înregistrare a performanțelor verbose</translation>
     </message>
     <message>
         <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
-        <translation type="unfinished"></translation>
+        <translation>Înregistrați informații detaliate privind momentul pentru fiecare operațiune de scriere pentru a ajuta la diagnosticarea problemelor de performanță.</translation>
     </message>
     <message>
         <source>Network Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opțiuni de rețea</translation>
     </message>
     <message>
         <source>Force IPv4-only Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Forţa IPv4- download-uri numai</translation>
     </message>
     <message>
         <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Folosește doar IPv4 pentru descărcări. Activați acest lucru dacă aveți probleme de conexiune datorită unei rotații stricate IPv6.</translation>
     </message>
     <message>
         <source>Workarounds</source>
-        <translation type="unfinished"></translation>
+        <translation>Răspunsuri</translation>
     </message>
     <message>
         <source>Counterfeit Card Mode (skip end-of-device checks)</source>
-        <translation type="unfinished"></translation>
+        <translation>Modul de falsificare a cardului (să treci controlul la finalul dispozitivului)</translation>
     </message>
     <message>
         <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
-        <translation type="unfinished"></translation>
+        <translation>Skip operațiuni la sfârșitul dispozitivului de stocare. Acceptați acest lucru pentru carduri false SD care raportează o capacitate falsă mai mare. Imaginea de pe disc trebuie să fie mai mică decât capacitatea reală a cărții.</translation>
     </message>
     <message>
         <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation type="unfinished"></translation>
+        <translation>️ Acceptați acest lucru numai dacă cardul SD raportează o capacitate mai mare decât are de fapt. Asiguraţi-vă că imaginea de pe disc este mai mică decât capacitatea reală a cărţii!</translation>
     </message>
     <message>
         <source>Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation>Caracteristici avansate</translation>
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">Secure Boot</translation>
+        <translation>Secure Boot</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Forţa de încălzire sigură disponibilă</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Află personalizarea sigură a boot-ului, indiferent de capacitățile sistemului de operare. Echivalent cu steagul CLI de pornire securizată -enable-secure-boot.</translation>
     </message>
     <message>
         <source>Current Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Starea actuală</translation>
     </message>
     <message>
         <source>Close the debug options dialog without saving any changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Închideți dialogul opțiuni de debug fără a salva modificări</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplică</translation>
     </message>
     <message>
         <source>Apply the selected debug options</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicați opțiunile selectate debug</translation>
     </message>
 </context>
 <context>
@@ -509,8 +561,16 @@
         <translation>Selectează dispozitivul ZimaOS</translation>
     </message>
     <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>Lista dispozitivelor nu a putut fi descărcată. Verificaţi conexiunea de internet şi încercaţi din nou.
+
+Puteți încă să scrieți un fișier de imagine de disk local apăsând următorul și selecționând &quot;Use a local disk image&quot; pe ecranul următor.</translation>
+    </message>
+    <message>
         <source>Loading device types...</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipuri de dispozitive de încărcare...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -530,25 +590,19 @@
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Folosește tastele săgeți pentru navigare, Enter sau Spațiu pentru selectare</translation>
+        <translation>Folosiți săgețile pentru navigare și Enter sau Spațiu pentru selectare</translation>
     </message>
     <message>
         <source>Unable to load device list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu se poate încărca lista dispozitivelor</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Reîncearcă</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
-        <translation type="unfinished"></translation>
+        <translation>Încercați din nou să descărcați lista dispozitivelor</translation>
     </message>
 </context>
 <context>
@@ -559,7 +613,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Ejecting the storage device — do not remove it yet…</source>
-        <translation type="unfinished"></translation>
+        <translation>Ejectarea dispozitivului de stocare  nu-l scoate încă...</translation>
     </message>
     <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
@@ -567,7 +621,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispozitivul de stocare nu a putut fi ejectat. Închideţi orice aplicaţie care încă o foloseşte, apoi apăsaţi Eject.</translation>
     </message>
     <message>
         <source>Please eject the storage device before removing it from your computer.</source>
@@ -575,11 +629,11 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Eject</source>
-        <translation type="unfinished"></translation>
+        <translation>Ejectare</translation>
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation type="unfinished"></translation>
+        <translation>Ejectarea dispozitivului de stocare pentru a fi îndepărtat în siguranță</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -653,11 +707,18 @@ No data has been written for 30 seconds. This could be caused by:
 • System resource exhaustion
 
 Please check the storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Operaţiunea de scriere s-a oprit.
+
+Nu au fost scrise date de 30 de secunde. Acest lucru ar putea fi cauzat de:
+• Dispozitivul de stocare deconectat sau fără răspuns
+• Dispozitivul a eşuat sau este defectuos
+• Epuizarea resurselor de sistem
+
+Vă rugăm să verificaţi dispozitivul de stocare şi să încercaţi din nou.</translation>
     </message>
     <message>
         <source>Failed to acquire write buffer slot</source>
-        <translation type="unfinished"></translation>
+        <translation>Eșecul de a dobândi slot de buffer de scriere</translation>
     </message>
     <message>
         <source>The download has stalled.
@@ -668,7 +729,14 @@ No data received for 30 seconds. This could be caused by:
 • Firewall or proxy blocking the connection
 
 Please check your network connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Descărcarea s-a oprit.
+
+Nu au primit date timp de 30 de secunde. Acest lucru ar putea fi cauzat de:
+• Conexiunea la reţea este pierdută sau instabilă
+• Serverul de la distanţă nu a răspuns
+• Firewall sau proxy blochează conexiunea
+
+Verificaţi conexiunea de reţea şi încercaţi din nou.</translation>
     </message>
 </context>
 <context>
@@ -779,25 +847,27 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificarea personalizării sistemului...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>Setările de personalizare a sistemului de operare nu au fost stocate corect pe dispozitiv. Următoarele fișiere sunt lipsite sau deteriorate: %1.
+
+Dispozitivul a acceptat datele, dar nu le-a păstrat, ceea ce înseamnă de obicei că cardul SD sau adaptatorul USB nu funcționează sau este fals. Imaginea de pe disc a fost scrisă corect, dar dispozitivul nu ar fi aplicat setările dvs. la prima pornire (așadar nu ați fi putut să vă conectați la ea). Încearcă o altă carte sau un alt cititor de cărţi.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu se poate aloca memorie pentru verificare.</translation>
     </message>
     <message>
         <source>seeking storage for verification</source>
-        <translation type="unfinished"></translation>
+        <translation>căutarea depozitării pentru verificare</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cazare greșită de la depozit.&lt;br&gt;Dispozitivul a returnat mai puţine date decât era de aşteptat.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -873,49 +943,51 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Unmounting volumes...</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume de descărcare...</translation>
     </message>
     <message>
         <source>Cleaning disk...</source>
-        <translation type="unfinished">Curățare disc...</translation>
+        <translation>Curățare disc...</translation>
     </message>
     <message>
         <source>Cleaning disk (legacy method)...</source>
-        <translation type="unfinished"></translation>
+        <translation>Discul de curățare (metode tradițională)...</translation>
     </message>
     <message>
         <source>Writing customization files...</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrie fişiere de personalizare...</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu am reușit să desființez discul &apos;%1&apos;. Vă rugăm să închideți orice aplicații folosind discul și să încercați din nou.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu am reușit să desființez discul &apos;%1&apos;.</translation>
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aşteptând să fie disponibil...%1(s)</translation>
     </message>
     <message>
         <source>getting device size</source>
-        <translation type="unfinished"></translation>
+        <translation>obţinerea mărimii dispozitivului</translation>
     </message>
     <message>
         <source>Failed to allocate buffer for MBR zeroing.
 
 The system may be low on memory.</source>
-        <translation type="unfinished"></translation>
+        <translation>N-a reuşit să asigure rezervă pentru zeroarea cu MBR.
+
+Sistemul ar putea fi slab de memorie.</translation>
     </message>
     <message>
         <source>preparing storage device</source>
-        <translation type="unfinished"></translation>
+        <translation>prepararea dispozitivului de depozitare</translation>
     </message>
     <message>
         <source>Zero&apos;ing out end of drive...</source>
-        <translation type="unfinished"></translation>
+        <translation>Zero&apos;ing din capătul conducerii...</translation>
     </message>
     <message>
         <source>Timeout writing to end of storage device.
@@ -923,7 +995,11 @@ The system may be low on memory.</source>
 This may indicate a counterfeit SD card with fake capacity.
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrierea cu interval de timp până la sfârșitul dispozitivului de stocare.
+
+Acest lucru poate indica o falsificare SD card cu capacitate falsă.
+
+Vă rog să încercați un alt dispozitiv de stocare.</translation>
     </message>
     <message>
         <source>Write error while trying to zero out last part of card.
@@ -931,21 +1007,27 @@ Please try a different storage device.</source>
 This could indicate the card is advertising wrong capacity (possible counterfeit).
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrieți o eroare în timp ce încercați să eliminați ultima parte a cărții.
+
+Acest lucru ar putea indica că cardul publicită capacitatea greșită (potrivit cărora este posibilă falsificarea).
+
+Vă rog să încercați un alt dispozitiv de stocare.</translation>
     </message>
     <message>
         <source>Storage device responding slowly. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispozitivul de stocare răspunde încet. Reluarea în modul de compatibilitate...</translation>
     </message>
     <message>
         <source>storage operation</source>
-        <translation type="unfinished"></translation>
+        <translation>operațiuni de depozitare</translation>
     </message>
     <message>
         <source>Failed to open storage device.
 
 The device may be in use by another application, or you may not have permission to access it.</source>
-        <translation type="unfinished"></translation>
+        <translation>N-am putut deschide dispozitivul de stocare.
+
+Dispozitivul poate fi utilizat de o altă aplicație sau poate nu aveți permisiunea de a avea acces la el.</translation>
     </message>
     <message>
         <source>Error writing to storage device during %1.
@@ -956,49 +1038,70 @@ This could be caused by:
 • Hardware failure or bad sectors
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erore de scriere la dispozitivul de stocare în timpul %1.
+
+Acest lucru ar putea fi cauzat de:
+• Dispozitivul a fost deconectat sau nu a răspuns
+• Dispozitivul este complet sau este protejat de scris
+• defecțiuni hardware sau sectoare proaste
+
+Verificaţi dispozitivul şi încercaţi din nou.</translation>
     </message>
     <message>
         <source>Error reading from storage device during %1.
 
 The device may have been disconnected or is malfunctioning.</source>
-        <translation type="unfinished"></translation>
+        <translation>Citirea greșită din dispozitivul de stocare în timpul %1.
+
+Dispozitivul poate fi deconectat sau funcționează greșit.</translation>
     </message>
     <message>
         <source>Error seeking on storage device during %1.
 
 The device may be malfunctioning or disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cerere de eroare pe dispozitivul de stocare în timpul %1.
+
+Dispozitivul poate fi defectuos sau desconectat.</translation>
     </message>
     <message>
         <source>Error getting storage device size.
 
 The device may not be properly recognized.</source>
-        <translation type="unfinished"></translation>
+        <translation>Greşeală în obţinerea mărimii dispozitivului de stocare.
+
+Dispozitivul poate să nu fie recunoscut corespunzător.</translation>
     </message>
     <message>
         <source>Error closing storage device.
 
 The device may have been disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Eșecul de închidere a dispozitivului de stocare.
+
+Dispozitivul poate fi deconectat.</translation>
     </message>
     <message>
         <source>Failed to lock storage device.
 
 The device may be in use by another application. Please close any applications using this device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>N-am reuşit să încui dispozitivul de stocare.
+
+Dispozitivul poate fi utilizat de o altă aplicație. Vă rugăm să închideți orice aplicații folosind acest dispozitiv și să încercați din nou.</translation>
     </message>
     <message>
         <source>Error syncing data to storage device.
 
 The device may have been disconnected or is not responding. Data may not have been fully written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erorile de sincronizare a datelor cu dispozitivul de stocare.
+
+Dispozitivul poate fi deconectat sau nu răspunde. Datele nu au fost scrise complet.</translation>
     </message>
     <message>
         <source>Error flushing data to storage device.
 
 The device may have been disconnected or is not responding.</source>
-        <translation type="unfinished"></translation>
+        <translation>Greșeală în transferul datelor la dispozitivul de stocare.
+
+Dispozitivul poate fi deconectat sau nu răspunde.</translation>
     </message>
     <message>
         <source>Storage device timed out during %1.
@@ -1009,13 +1112,22 @@ The device is not responding. This may indicate:
 • Driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispozitivul de stocare datorită timpului în cursul %1.
+
+Dispozitivul nu răspunde. Acest lucru poate indica:
+• Dispozitivul a fost deconectat
+• Dispozitivul nu funcţionează
+• Problema cu conducătorul sau cu sistemul
+
+Vă rugăm să desconectați și reconectați dispozitivul, apoi încercați din nou.</translation>
     </message>
     <message>
         <source>Unknown storage error during %1.
 
 Please try again or use a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Greșeală de stocare necunoscută în timpul %1.
+
+Vă rugăm să încercaţi din nou sau să utilizaţi un dispozitiv de stocare diferit.</translation>
     </message>
     <message>
         <source>The storage device is not responding. This may indicate:
@@ -1024,7 +1136,12 @@ Please try again or use a different storage device.</source>
 • A driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispozitivul de stocare nu răspunde. Acest lucru poate indica:
+• Dispozitivul a fost deconectat
+• Dispozitivul a eşuat
+• O problemă cu conducătorul sau cu sistemul
+
+Vă rugăm să desconectați și reconectați dispozitivul, apoi încercați din nou.</translation>
     </message>
     <message>
         <source>Error writing to storage device.
@@ -1035,35 +1152,42 @@ Some writes failed to complete. This could be caused by:
 • Hardware failure
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erore de scriere la dispozitivul de stocare.
+
+Unele scrieri nu au fost finalizate. Acest lucru ar putea fi cauzat de:
+• Dispozitivul de stocare desconectat în timpul scrierii
+• Dispozitivul este complet sau este protejat de scris
+• Eșec hardware
+
+Verificaţi dispozitivul şi încercaţi din nou.</translation>
     </message>
     <message>
         <source>flush</source>
-        <translation type="unfinished"></translation>
+        <translation>înălțime</translation>
     </message>
     <message>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>sincronizare</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>flushing disc imaginea înainte de a scrie tabel de partiții</translation>
     </message>
     <message>
         <source>writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>tabel de scriere</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificarea scrisului a eşuat. Tabla de partiții de pe dispozitivul de stocare este diferită de ceea ce a fost scris.</translation>
     </message>
     <message>
         <source>final flush</source>
-        <translation type="unfinished"></translation>
+        <translation>îndepărtare finală</translation>
     </message>
     <message>
         <source>final sync</source>
-        <translation type="unfinished"></translation>
+        <translation>sincronizare finală</translation>
     </message>
 </context>
 <context>
@@ -1110,11 +1234,26 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu am reușit să desființez discul &apos;%1&apos;. Vă rugăm să închideți orice aplicații folosind discul și să încercați din nou.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu am reușit să desființez discul &apos;%1&apos;.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Detalii privind erorile</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Am înțeles</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Închide detaliile de eroare</translation>
     </message>
 </context>
 <context>
@@ -1246,6 +1385,22 @@ Please check the device and try again.</source>
         <translation>Configurează interfața serială: Dezactivat, Implicit (sistemul decide), Consolă &amp; Hardware (atât consolă cât și UART), Hardware (doar UART), sau Consolă (doar consolă pe dispozitive suportate).</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>Dezactivat</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Implicit</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>Consolă și hardware</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>Hardware</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>Avertisment Modul USB Gadget</translation>
     </message>
@@ -1269,16 +1424,20 @@ Please check the device and try again.</source>
 <context>
     <name>ImComboBox</name>
     <message>
+        <source>Error: Invalid selection</source>
+        <translation>Eroare: Selecție invalidă</translation>
+    </message>
+    <message>
         <source>Search: &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Căutare: &quot;%1&quot;</translation>
     </message>
     <message>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 din %2</translation>
     </message>
     <message>
         <source>No matches</source>
-        <translation type="unfinished"></translation>
+        <translation>Fără chibrituri.</translation>
     </message>
 </context>
 <context>
@@ -1313,92 +1472,93 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>Documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Documente</translation>
     </message>
     <message>
         <source>Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Descărcări</translation>
     </message>
     <message>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation>Acasă</translation>
     </message>
     <message>
         <source>File name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Numele fișierului:</translation>
     </message>
     <message>
         <source>Enter filename…</source>
-        <translation type="unfinished"></translation>
+        <translation>Introduceţi numele fişierului...</translation>
     </message>
     <message>
         <source>Folder: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dosar: %1</translation>
     </message>
     <message>
         <source>File: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fișier: %1</translation>
     </message>
     <message>
         <source>Navigate to a folder using the panel on the left,
 or type a path in the address bar above.</source>
-        <translation type="unfinished"></translation>
+        <translation>Navigați la un dosar folosind panoul de la stânga,
+sau să înregistrați o cale în bară de adrese de mai sus.</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished">Salvează</translation>
+        <translation>Salvează</translation>
     </message>
     <message>
         <source>Enter folder or file path…</source>
-        <translation type="unfinished"></translation>
+        <translation>Introduceți un dosar sau traseul de dosar...</translation>
     </message>
 </context>
 <context>
     <name>ImOptionButton</name>
     <message>
         <source>Opens in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Deschide în browser</translation>
     </message>
 </context>
 <context>
     <name>ImOptionPill</name>
     <message>
         <source>Opens in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Deschide în browser</translation>
     </message>
 </context>
 <context>
     <name>ImPasswordField</name>
     <message>
         <source>Password is visible. Press F2 to hide.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parola este vizibilă. Apasă F2 pentru a se ascunde.</translation>
     </message>
     <message>
         <source>Password is hidden. Press F2 to show.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parola e ascunsă. Apasă F2 pentru a arăta.</translation>
     </message>
     <message>
         <source>Hide password</source>
-        <translation type="unfinished"></translation>
+        <translation>Ascundeţi parola</translation>
     </message>
     <message>
         <source>Show password</source>
-        <translation type="unfinished"></translation>
+        <translation>Află parola</translation>
     </message>
     <message>
         <source>Password is currently visible. Activate to hide it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parola este vizibilă în prezent. Activă-l pentru a-l ascunde.</translation>
     </message>
     <message>
         <source>Password is currently hidden. Activate to show it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parola este ascunsă în prezent. Activă-l pentru a arăta.</translation>
     </message>
 </context>
 <context>
     <name>ImSaveFileDialog</name>
     <message>
         <source>Save File</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvaţi fişierele</translation>
     </message>
 </context>
 <context>
@@ -1499,22 +1659,20 @@ or type a path in the address bar above.</source>
         <translation> sau </translation>
     </message>
     <message>
-        <source>No organisation API key is configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvați datele de performanță</translation>
     </message>
     <message>
         <source>JSON files (*.json);;All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fișiere JSON (*.json);;Toate fișierele (*)</translation>
     </message>
     <message>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
+        <translation>Capacitatea de stocare nu este suficient de mare.
+
+Imaginea necesită cel puţin %1 de depozitare.</translation>
     </message>
     <message>
         <source>Failed to start write operation: insufficient memory.
@@ -1522,27 +1680,31 @@ The image requires at least %1 of storage.</source>
 The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
 
 Technical details: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Eșecul de a începe operațiunea de scriere: memorie insuficientă.
+
+Sistemul nu are suficientă memorie disponibilă pentru a efectua această operațiune. Încearcă să închizi alte aplicații pentru a elibera memorie, apoi încearcă din nou.
+
+Detalii tehnice: %1</translation>
     </message>
     <message>
         <source>Failed to start write operation: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Eșecul de a începe operațiunea de scriere: %1</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitată de viteza de descărcare</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitate de viteza de descomprimare</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitată de viteza dispozitivului de stocare</translation>
     </message>
     <message>
         <source>Verifying written data</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificarea datelor scrise</translation>
     </message>
 </context>
 <context>
@@ -1654,7 +1816,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Why am I being asked this?</source>
-        <translation type="unfinished"></translation>
+        <translation>De ce sunt întrebat asta?</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1666,28 +1828,21 @@ Technical details: %1</source>
     </message>
     <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
-        <translation type="unfinished"></translation>
+        <translation>Acest lucru stabilește, de asemenea, domeniul de reglementare Wi-Fi pentru regiunea dvs.</translation>
     </message>
 </context>
 <context>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished">ZimaOS USB Creator are nevoie să acceseze discul pentru a scrie imaginea.</translation>
+        <translation>ZimaOS USB Creator are nevoie să acceseze discul pentru a scrie imaginea.</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>Recomandat</translation>
+        <translation>Tip de fișier:</translation>
     </message>
 </context>
 <context>
@@ -1738,7 +1893,15 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Folosește tastele săgeți pentru navigare, Enter sau Spațiu pentru selectare</translation>
+        <translation>Folosiți săgețile pentru navigare și Enter sau Spațiu pentru selectare</translation>
+    </message>
+    <message>
+        <source>Recommended</source>
+        <translation>Recomandat</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>Versiunea de testare</translation>
     </message>
     <message>
         <source>Operating system category</source>
@@ -1746,7 +1909,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>Folosește tastele săgeți pentru navigare, Enter sau Spațiu pentru selectare, Săgeată stânga pentru a merge înapoi</translation>
+        <translation>Folosiți săgețile pentru navigare și Enter sau Spațiu pentru selectare, folosiți săgeata stânga pentru a reveni</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1754,46 +1917,46 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Unable to download OS list. You can still use a local image file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu pot descărca lista de sistem de operare. Puteţi folosi încă un fişier de imagini de pe disc local.</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Reîncearcă</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
-        <translation type="unfinished"></translation>
+        <translation>Încercați din nou să descărcați lista OS</translation>
     </message>
 </context>
 <context>
     <name>PasswordlessSudoWarningDialog</name>
     <message>
         <source>Passwordless Sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Sudo fără parola</translation>
     </message>
     <message>
         <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Abilitarea fără parola sudo permite oricărui proces care funcționează ca acest utilizator să obțină privilegiile root complete fără autentificare. Acest lucru slăbeşte semnificativ securitatea sistemului dumneavoastră.</translation>
     </message>
     <message>
         <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Acceptați acest lucru numai dacă înțelegeți riscurile și aveți o nevoie specifică, cum ar fi scripturi automatizate sau operațiuni fără cap.</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">ANULEAZĂ</translation>
+        <translation>ANULEAZĂ</translation>
     </message>
     <message>
         <source>Cancel and keep sudo requiring a password</source>
-        <translation type="unfinished"></translation>
+        <translation>Anulaţi şi păstraţi sudo care necesită parola</translation>
     </message>
     <message>
         <source>ENABLE</source>
-        <translation type="unfinished"></translation>
+        <translation>ENABLE</translation>
     </message>
     <message>
         <source>Enable passwordless sudo for this user account</source>
-        <translation type="unfinished"></translation>
+        <translation>Acceptați sudo fără parola pentru acest cont de utilizator</translation>
     </message>
 </context>
 <context>
@@ -1826,7 +1989,9 @@ Te rog rulează cu privilegii ridicate: sudo %1</translation>
         <source>You are not running as root.
 
 Click &quot;Install Authorization&quot; to set up automatic privilege elevation, or run manually with: sudo %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu ești în funcțiune ca root.
+
+Faceți clic pe &quot;Autoritate de instalare&quot; pentru a seta înălțarea automată a privilegiilor sau rulați manual cu: sudo %1</translation>
     </message>
 </context>
 <context>
@@ -1889,6 +2054,89 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
 </context>
 <context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>Depozit de Conținut</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>Alege unde să obţii imaginile sistemului de operare.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (implicit)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Imagini oficiale ZimaOS, gata de instalare.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>Folosește depozitul oficial de sisteme de operare ZimaOS</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>Folosește fișier personalizat</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Încărcaţi o listă de imagini de pe disc dintr-un fişier de pe calculator.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>Încarcă lista de sisteme de operare dintr-un fișier JSON de pe computerul tău</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Selectați un fișier de depozit</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>Selectează un fișier JSON de depozit personalizat de pe computerul tău</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>Selectează Depozit</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>Folosește URL personalizat</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Încărcați o listă de imagini de pe disc dintr-o adresă web.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>Descarcă lista de sisteme de operare de la o adresă web personalizată</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>URL-ul de depozit personalizat</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Schimbarea sursei vă întoarce la selecția dispozitivului.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>Închide dialogul depozit fără a schimba sursa de conținut</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Aplică modificările</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>Aplică noul depozit de conținut și repornește expertul de la început</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>Selectează depozit personalizat</translation>
+    </message>
+</context>
+<context>
     <name>SecureBootCustomizationStep</name>
     <message>
         <source>Customisation: Secure Boot</source>
@@ -1940,142 +2188,138 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>RSA Private Key</source>
-        <translation type="unfinished"></translation>
+        <translation>RSA Cheie privată</translation>
     </message>
     <message>
         <source>Change</source>
-        <translation type="unfinished">Schimbă</translation>
+        <translation>Schimbă</translation>
     </message>
     <message>
         <source>Select</source>
-        <translation type="unfinished">Selectează</translation>
+        <translation>Selectează</translation>
     </message>
     <message>
         <source>Select an RSA 2048-bit private key for signing boot images in secure boot mode</source>
-        <translation type="unfinished">Selectează o cheie privată RSA de 2048 biți pentru semnarea imaginilor de boot în modul secure boot</translation>
+        <translation>Selectează o cheie privată RSA de 2048 biți pentru semnarea imaginilor de boot în modul secure boot</translation>
     </message>
     <message>
         <source>Select RSA Private Key</source>
-        <translation type="unfinished">Selectează Cheie Privată RSA</translation>
+        <translation>Selectează Cheie Privată RSA</translation>
     </message>
     <message>
         <source>PEM Files (*.pem);;All Files (*)</source>
-        <translation type="unfinished">Fișiere PEM (*.pem);;Toate Fișierele (*)</translation>
+        <translation>Fișiere PEM (*.pem);;Toate Fișierele (*)</translation>
     </message>
     <message>
         <source>Selected: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecționat: %1</translation>
     </message>
     <message>
         <source>Your boot partition will be signed using the selected RSA private key.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parțiția de pornire va fi semnată folosind cheia privată RSA selectată.</translation>
     </message>
     <message>
         <source>Please select an RSA private key above to enable secure boot signing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vă rugăm să selectați o cheie privată RSA de mai sus pentru a activa semnarea securizată de pornire.</translation>
     </message>
     <message>
         <source>PEM Files (*.pem)</source>
-        <translation type="unfinished"></translation>
+        <translation>PEM Fișiere (*.pem)</translation>
     </message>
     <message>
         <source>All Files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Toate fișierele (*)</translation>
     </message>
 </context>
 <context>
     <name>SshKeyManager</name>
     <message>
         <source>No SSH keys configured</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu sunt configurate cheile SSH</translation>
     </message>
     <message>
         <source>1 SSH key configured</source>
-        <translation type="unfinished"></translation>
+        <translation>1 SSH cheie configurat</translation>
     </message>
     <message>
         <source>%1 SSH keys configured</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 SSH cheie configurate</translation>
     </message>
     <message>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Ascunde-te</translation>
     </message>
     <message>
         <source>Show</source>
-        <translation type="unfinished"></translation>
+        <translation>Să vedem .</translation>
     </message>
     <message>
         <source>Hide the list of SSH keys</source>
-        <translation type="unfinished"></translation>
+        <translation>Ascunde lista de chei SSH</translation>
     </message>
     <message>
         <source>Show the list of SSH keys</source>
-        <translation type="unfinished"></translation>
+        <translation>Află lista de chei SSH</translation>
     </message>
     <message>
         <source>SSH keys list</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH lista cheilor</translation>
     </message>
     <message>
         <source>SSH key %1: %2, %3</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH cheie %1: %2, %3</translation>
     </message>
     <message>
         <source>SSH key %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH cheie %1: %2</translation>
     </message>
     <message>
         <source>SSH key %1</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH cheie %1</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Îndepărtaţi</translation>
     </message>
     <message>
         <source>Remove SSH key: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Îndepărtaţi cheia SSH: %1</translation>
     </message>
     <message>
         <source>Remove SSH key %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Îndepărtaţi cheia SSH %1</translation>
     </message>
     <message>
         <source>Paste key or click BROWSE to select file</source>
-        <translation type="unfinished"></translation>
+        <translation>Pastează cheia sau faceți clic pe BROWSE pentru a selecta fișierul</translation>
     </message>
     <message>
         <source>SSH public key input</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH intrare cu cheie publică</translation>
     </message>
     <message>
         <source>Paste an SSH public key here or use the browse button to select a key file</source>
-        <translation type="unfinished"></translation>
+        <translation>Pastează o cheie publică SSH aici sau folosește butonul de navigare pentru a selecta un fișier de cheie</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Adăugați</translation>
     </message>
     <message>
         <source>Select SSH Public Key</source>
-        <translation type="unfinished">Selectează Cheie Publică SSH</translation>
+        <translation>Selectează Cheie Publică SSH</translation>
     </message>
     <message>
         <source>Add the entered SSH key</source>
-        <translation type="unfinished"></translation>
+        <translation>Adăugați cheia SSH introdusă</translation>
     </message>
     <message>
         <source>Select an SSH public key file to add</source>
-        <translation type="unfinished"></translation>
+        <translation>Selectați un fișier de cheie publică SSH pentru a se adauga</translation>
     </message>
 </context>
 <context>
     <name>StorageSelectionStep</name>
-    <message>
-        <source>No storage devices found</source>
-        <translation>Niciun dispozitiv de stocare găsit</translation>
-    </message>
     <message>
         <source>Mounted as %1</source>
         <translation>Montat ca %1</translation>
@@ -2090,7 +2334,7 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Exclude system drives</source>
-        <translation>Exclude drive-uri de sistem</translation>
+        <translation>Exclude discurile de sistem</translation>
     </message>
     <message>
         <source>Storage device list</source>
@@ -2110,29 +2354,7 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Folosește tastele săgeți pentru navigare, Enter sau Spațiu pentru selectare</translation>
-    </message>
-    <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>Toate dispozitivele vizibile sunt doar citire.
-Încearcă să conectezi un dispozitiv nou, sau debifează
-&apos;Exclude drive-uri de sistem&apos; mai jos.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>Toate dispozitivele sunt doar citire.
-Te rog conectează un dispozitiv de stocare scriibil.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>Toate dispozitivele sunt ascunse de filtru.
-Debifează &apos;Exclude drive-uri de sistem&apos; mai jos
-pentru a afișa drive-uri de sistem.</translation>
+        <translation>Folosiți săgețile pentru navigare și Enter sau Spațiu pentru selectare</translation>
     </message>
     <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
@@ -2156,15 +2378,33 @@ pentru a afișa drive-uri de sistem.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu a putut lista dispozitivele de stocare: %1</translation>
     </message>
     <message>
         <source>Error: Could not list storage devices. %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erore: Nu am putut lista dispozitivele de stocare. %1</translation>
+    </message>
+    <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>Dispozitivele de stocare nu au putut fi detectate. Verificaţi permisiunile de acces şi reconectaţi dispozitivul.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>Conectați un dispozitiv de stocare, cum ar fi un hard disk, un flash drive USB sau o card de memorie, pentru a continua.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>Dispozitivele disponibile sunt doar pentru citire. Conectați un dispozitiv de stocare pe care se pot scrie date.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>Nu există dispozitive de stocare disponibile.
+Conectați un dispozitiv sau debifați mai jos „Exclude discurile de sistem”.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nu am putut lista dispozitivele de stocare: %1. Aceasta poate fi o problemă de permisiuni. Încercați să rulați aplicația cu privilegiile de administrator.</translation>
     </message>
 </context>
 <context>
@@ -2175,7 +2415,7 @@ pentru a afișa drive-uri de sistem.</translation>
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Versiunea Creator %1 este disponibilă. Vreţi să vizitaţi site-ul web pentru a-l descărca?</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
@@ -2191,7 +2431,7 @@ pentru a afișa drive-uri de sistem.</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualizare</translation>
     </message>
 </context>
 <context>
@@ -2270,23 +2510,23 @@ pentru a afișa drive-uri de sistem.</translation>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parola salvată nu este compatibilă cu sistemul de operare selectat, așa că vă rugăm să o introduceți din nou.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Activați fără parola sudo</translation>
     </message>
     <message>
         <source>Allow this user to run sudo commands without entering a password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permiteți acestui utilizator să execute comenzi sudo fără a introduce parola.</translation>
     </message>
     <message>
         <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permite oricărui proces care rulează ca acest utilizator să obțină privilegiile root complete fără parola. Acceptați acest lucru numai dacă aveți o nevoie specifică, cum ar fi scripturi automatizate sau operațiuni fără cap.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation type="unfinished"></translation>
+        <translation>Informații fără parola sudo: </translation>
     </message>
 </context>
 <context>
@@ -2463,73 +2703,71 @@ pentru a afișa drive-uri de sistem.</translation>
         <translation>Te rog așteaptă…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>Păstrează existent</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>Secure Boot</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation type="unfinished"></translation>
+        <translation>Deschideți setările aplicației pentru a configura alarmele audio, ejectarea automată și avertismentele</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
-        <translation type="unfinished"></translation>
+        <translation>Deschideţi dosarul de depozit local?</translation>
     </message>
     <message>
         <source>Switch to a custom repository?</source>
-        <translation type="unfinished"></translation>
+        <translation>Treci la un depozit personalizat?</translation>
     </message>
     <message>
         <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deschideţi un fişier de manifest local ZimaOS USB Creator. Acest lucru va înlocui lista actuală a sistemului de operare cu conținutul acestui fișier.</translation>
     </message>
     <message>
         <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Un site web solicită să schimbați ZimaOS USB Creator pentru a utiliza un depozit de OS personalizat.
+
+</translation>
     </message>
     <message>
         <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
-        <translation type="unfinished"></translation>
+        <translation>Acceptă doar dacă ai încredere în această sursă și ai făcut intenționat clic pe un link pentru a deschide acest depozit.</translation>
     </message>
     <message>
         <source>Repository URL: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>URL-ul de depozit: %1</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Deschide</translation>
+        <translation>Deschide</translation>
     </message>
     <message>
         <source>Switch repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Depozitarul de schimbare</translation>
     </message>
     <message>
         <source>Open the local manifest file and use it as the OS repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Deschideţi fişierul de manifest local şi folosiţi-l ca depozit de OS</translation>
     </message>
     <message>
         <source>Switch to the custom repository from the link</source>
-        <translation type="unfinished"></translation>
+        <translation>Treci la depozitul personalizat de la link</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Anulează</translation>
+        <translation>Anulează</translation>
     </message>
     <message>
         <source>Keep your current repository settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Păstraţi setările actuale ale depozitului</translation>
     </message>
 </context>
 <context>
     <name>WizardStepBase</name>
     <message>
         <source>Next</source>
-        <translation>Următorul</translation>
+        <translation>Înainte</translation>
     </message>
     <message>
         <source>Skip customisation</source>
@@ -2537,20 +2775,53 @@ pentru a afișa drive-uri de sistem.</translation>
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>Ștergeți acest dispozitiv?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>Scrierea imaginii va șterge toate datele de pe acest dispozitiv.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Dispozitiv de stocare țintă</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Dispozitiv de stocare</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>Această acțiune nu poate fi anulată. Faceți copii de siguranță ale fișierelor importante înainte de a continua.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Șterge și scrie</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Șterge și scrie (%1)</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
-        <translation type="unfinished"></translation>
+        <translation>S-a schimbat la modul de compatibilitate - scrierea continuă...</translation>
     </message>
     <message>
         <source>Write stalled - no progress for %1 seconds.
 
 Please check your storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Scriere blocat - nici un progres pentru %1 secunde.
+
+Vă rugăm să verificaţi dispozitivul de stocare şi să încercaţi din nou.</translation>
     </message>
     <message>
         <source>Storage device not responding. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispozitivul de stocare nu răspunde. Reluarea în modul de compatibilitate...</translation>
     </message>
 </context>
 <context>
@@ -2564,6 +2835,10 @@ Please check your storage device and try again.</source>
         <translation>Scrie</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>Se anulează…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>Rezumat</translation>
     </message>
@@ -2573,35 +2848,15 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitată de viteza de descărcare</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitate de viteza de descomprimare</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>Ești pe cale să ȘTERGI toate datele de pe: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>dispozitivul de stocare</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Această acțiune este PERMANENTĂ și NU POATE fi anulată.</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>Înțeleg, șterge și scrie</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>Te rog așteaptă...</translation>
+        <translation>Limitată de viteza dispozitivului de stocare</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2652,6 +2907,10 @@ Please check your storage device and try again.</source>
         <translation>Anulează scrierea</translation>
     </message>
     <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>Se anulează… Așteptați eliberarea dispozitivului.</translation>
+    </message>
+    <message>
         <source>Skip verification and finish the write process</source>
         <translation>Sari peste verificare și finalizează procesul de scriere</translation>
     </message>
@@ -2676,6 +2935,18 @@ Please check your storage device and try again.</source>
         <translation>Progres scriere</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>Descărcare: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>Descărcat: %1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>Se descarcă imaginea…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>Finalizare…</translation>
     </message>
@@ -2688,12 +2959,8 @@ Please check your storage device and try again.</source>
         <translation>personalizări</translation>
     </message>
     <message>
-        <source>Please wait... %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Writing... %1 MB written</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrierea... %1 MB scris</translation>
     </message>
 </context>
 <context>
@@ -2705,22 +2972,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>Error</source>
         <translation>Eroare</translation>
-    </message>
-    <message>
-        <source>Erase</source>
-        <translation>Șterge</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>Formatează cardul ca FAT32</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>Folosește personalizat</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>Selectează un .img personalizat de pe computerul tău</translation>
     </message>
     <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
@@ -2737,10 +2988,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>OK</source>
         <translation>OK</translation>
-    </message>
-    <message>
-        <source>Close the error dialog and continue</source>
-        <translation>Închide dialogul de eroare și continuă</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>
@@ -2772,7 +3019,7 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Install Authorization</source>
-        <translation type="unfinished"></translation>
+        <translation>Instala autorizaţia</translation>
     </message>
     <message>
         <source>ZimaOS USB Creator</source>
@@ -2780,27 +3027,43 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>
-        <translation type="unfinished"></translation>
+        <translation>Instala autorizația sistemului pentru a permite funcționarea cu privilegii ridicate a ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Save Performance Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Salvați datele de performanță</translation>
     </message>
     <message>
         <source>JSON files (*.json)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fișiere JSON (*.json)</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation type="unfinished">Toate fișierele (*)</translation>
+        <translation>Toate fișierele (*)</translation>
     </message>
     <message>
         <source>Offline</source>
-        <translation type="unfinished"></translation>
+        <translation>Offline</translation>
     </message>
     <message>
         <source>Using data from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilizarea datelor din %1</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>Formatează dispozitivul de stocare</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>Ștergeți datele și formaționați dispozitivul de stocare ca FAT32</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>Folosește o imagine locală</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>Selectați un fișier de imagini de disk local (IMG, ISO sau imagini cu disc comprimat)</translation>
     </message>
 </context>
 </TS>

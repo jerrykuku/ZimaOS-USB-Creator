@@ -118,3 +118,80 @@
 - main.qml 中的错误弹窗按长文本隐式宽度扩展，说明使用 StyledText，磁盘权限错误通过 <br> 分隔原因和建议。
 - 将其提取为独立 ErrorDialog，固定自适应宽度、灰色详情卡和可滚动内容，保留富文本及换行兼容；使用“知道了”明确关闭动作，按钮保持 32px。
 - 新错误弹窗在 680×450 窗口和 150% 字号下完整显示权限提示；长内容可以滚动到底部，操作区固定可见，原错误文本和格式保留。
+
+## 默认选择与交互优化实施
+- 设备与 OS 列表当前不自动选首项；OS 已支持 imager.default_os。
+- 本地 cf/ 清单仅 Intel/AMD PC，推荐稳定版在第二项，首项为 beta，不能按列表第一项默认选择。
+- 已保存语言仍触发语言页；空设备提示 opacity=0；取消写入把进度写成 100；禁用警告立即改全局状态；空格选中后自动跳页，均已定位。
+- 实施中发现 OSListModel::markFirstAsRecommended 会清除仓库原推荐标记，再把首项标为推荐，可能把 beta 标为推荐；需修正推荐模型而不只设置默认索引。
+- selectNamedOS 使用 model.get，但 OSListModel 尚未暴露 get；新增明确的取行接口，避免默认选择依赖不存在的方法。
+
+- 推荐策略已改为：稳定的 imager.default_os → 明确推荐的稳定镜像 → 版本号最大的稳定 ZimaOS。测试版、目录和内置操作不参与默认推荐；无明确推荐的第三方仓库保持未选择。
+- getFilteredOSlistDocument 即使尚未加载仓库也会附加“擦除/自定义”，因此硬件模型必须通过 hasOsListData 区分加载中与已加载但没有设备分类。无分类/唯一分类可直接进入系统选择，多分类保留选择页。
+- OS URL 与存储设备路径分别记录真实选择，列表 currentIndex 只代表键盘游标。返回或刷新仅恢复游标，不重复 setSrc；同名但 URL 不同的镜像也会清理下游选择。
+- 取消自定义文件选择保留先前镜像；双击系统盘仍走名称确认；写入取消时忽略后续进度/收尾事件，保留实际进度。
+- 本机 Qt 未安装 QtTest QML 模块，交互回归改用隔离 QQmlApplicationEngine、模拟后端及 QKeyEvent，未操作真实磁盘或用户设置。
+
+## 存储页提示叠层
+- 空状态目前依赖 !hasValidStorageOptions，只读设备可见时仍会显示空状态并覆盖列表。应单独统计可见设备，只读提示放在列表外。
+- 取消系统盘筛选时先显示列表再打开弹窗，确认操作为空；改为确认窗口关闭后应用筛选。设备模型同数量更新也需要刷新状态。
+- 交互回归发现 ImCheckBox 的键盘/辅助功能调用 toggle() 不发出 toggled 信号；筛选确认改为统一处理 checkedChanged，并为已确认的修改设内部标志，防止键盘绕过或重复弹窗。
+- 已通过普通与 150% 字号预览：新弹窗使用 480px 自适应白色面板、警告标题、灰色说明卡与固定 32px 按钮；确认后的 Overlay.overlay 处于不可见状态，列表空状态也隐藏。
+
+## 格式化与本地镜像入口
+- QML 与原生文件选择器均支持 IMG/ISO/WIC/ZIP/GZ/XZ/ZST；旧描述和图标仍强调 .img，格式化描述仅指 USB。改为“格式化设备”和“使用本地镜像”，设备重置/文件内磁盘图标不包含格式文字。
+- USB 保留通用三叉符号，改为与格式化/镜像文件一致的深灰色、圆角端点与 2.2px 描边；40px 列表和 28px 确认卡片均已核对，不限定为 U 盘外形。
+
+## macOS 原生窗口
+- main.qml 对所有平台使用 FramelessWindowHint，红黄绿按钮由 Rectangle/Canvas 模拟，绿色按钮只调用 showMaximized；因此没有 NSWindow 原生标题栏及绿色按钮菜单。
+- Qt 官方 WindowFullscreenButtonHint 可启用 macOS 原生全屏按钮；Qt.Window 可恢复标准系统装饰。采用常规原生标题栏，让拖动、双击和窗口管理由系统处理，无需添加 Objective-C 私有接口。
+- 参考：https://doc.qt.io/qt-6/qt.html#WindowType-enum；https://support.apple.com/en-gb/guide/mac-help/mchlef287e5d/mac。平铺仍遵循窗口最小尺寸和 macOS 的窗口管理设置。
+- 隔离预览确认 NSWindow styleMask=15（标题栏、关闭、最小化及缩放）、collectionBehavior=128（FullScreenPrimary，未禁止平铺），三个标准 NSButton 均存在、启用且可见；原生标题栏高度 32px，内容最小尺寸保持 680×420。
+- 用户要求移除标题栏背景后，加入 ExpandedClientAreaHint 和 NoTitleBarBackgroundHint；ApplicationWindow 自动将内容放入安全区域，背景延伸到窗口顶部。最终 NSWindow styleMask=32783，titlebarAppearsTransparent=true，保持原生按钮及 FullScreenPrimary。参考：https://www.qt.io/blog/expanded-client-areas-and-safe-areas-in-qt-6.9。
+- 透明扩展客户区缺少显式拖动入口。在 ApplicationWindow.background 的顶部安全区域加入 MouseArea，左键按下调用 startSystemMove；高度跟随 topPadding，不占用内容区，原生 NSButton 仍在 Qt 内容视图上方处理点击。参考：https://doc.qt.io/qt-6/qwindow.html#startSystemMove。
+- 上述 background 方案实测无效：ApplicationWindowContentControl 覆盖整个窗口并拦截事件。隔离事件回归在 (340,16) 注入同样的 Qt 鼠标按下/松开，背景方案触发次数为 0，header 方案为 1。最终拖动区域放在 ApplicationWindow.header，高度取 window.SafeArea.margins.top，保留原生安全间距和透明背景，不叠加额外标题栏行。
+
+## 全语言 i18n 审计
+- 应用从打包的 QM 自动枚举语言，共 27 个 TS 目录。用户确认覆盖全部语言，并清除不再使用的条目。
+- lupdate 同步后新增文案和清除过时文案；补充串口选项与组合框错误提示后，每种语言共有 686 个活动条目。串口显示文本与配置值已分离，避免翻译后破坏设备配置。
+- 英文使用源文案补齐；简体中文补齐 127 条，繁体中文补齐 597 条（复用中文并转换台湾用语，保留已有繁体翻译）。
+- 在相同上下文和品牌归一化后复用上游已有有效译文：https://github.com/raspberrypi/rpi-imager/tree/main/src/i18n。
+- 网络翻译测试不可用（Google 429、Bing 空响应、Lingva 403），改为本地 M2M100 辅助翻译，模型与运行依赖仅放在 /tmp，不引入产品依赖。模型来源：https://huggingface.co/michaelfeil/ct2fast-m2m100_418M。
+
+- M2M100 抽查不合格，已撤回其生成内容并改用本地 NLLB-200。来源：https://huggingface.co/JustFrederik/nllb-200-distilled-600M-ct2-int8。按钮、串口模式、取消中、存储空状态及擦除风险提示另行逐语言编辑；不将模型输出等同于母语校对。
+- 本次 lupdate 共移除 609 个已不被源码引用的条目（跨 27 个目录累计）；保留平台条件、调试和设备定制页面仍引用的条目。
+- 最终覆盖率：27 个语言目录 × 686 个活动条目 = 18,522 条，空译文/未完成/废弃条目均为 0。Qt lcheck、lrelease、QTranslator 逐条比对和 macOS 构建通过。新增 tools/check_translations.py 与 doc/translations.md，后续更新可复用同一套检查。
+
+## 标题文字拖动
+- 原生测试窗口复现：从标题文字拖动，窗口位置保持 (3500,510)。命中视图为 NSTextField，mouseDownCanMoveWindow=true，但 NSWindow.movableByWindowBackground=false；空白区域命中 QNSView，需要已有 QML header 处理。将验证启用原生背景拖动后是否覆盖文字，同时检查正文不跟随拖动。
+- Qt 6.11.1 官方源码 startSystemMove 使用 performWindowDragWithEvent；读取 qcocoawindow_manager.mm 首次路径错误（404，实际名无下划线），GitHub API 目录枚举限流（403），改为读取官方原始 CMakeLists 定位。
+- 最终采用 NSWindow.movableByWindowBackground = YES，保留 ExpandedClientAreaHint、透明标题栏与 QML header。标题 NSTextField 及其原生祖先 mouseDownCanMoveWindow 均为 true，正文 QNSView 为 false，原生拖动开关补齐后由 AppKit 决定拖动区域，不拦截鼠标事件。参考：https://developer.apple.com/documentation/appkit/nswindow/ismovablebywindowbackground 与 https://developer.apple.com/documentation/appkit/nsview/mousedowncanmovewindow。
+- 自动拖动验证存在边界：CUA 发出了原生鼠标按下/拖动/抬起，但普通原生标题栏（已去掉 ExpandedClientAreaHint 的对照窗口）也没有位置变化。因此不能用本轮 CUA 结果声称真实拖动通过；事件监控/手工转发尝试全部撤回，产品中不含这些逻辑。
+
+## 标题栏双击最大化
+- 现有 QML 标题栏只在按下时开始系统拖动，没有双击最大化逻辑；原生标题文字位于 QML 之上，也无法通过 QML MouseArea 处理。
+- 本轮新增窗口生命周期内的 AppKit 本地双击监听：仅处理目标窗口顶部安全区域内的 Qt 标题栏或原生只读标题文字，切换最大化/还原；原生按钮和正文不匹配，全屏时不处理。非 macOS 自绘标题栏补充 QML 双击处理。
+- 首次隔离测试中，原生标题双击通过，但 QML 双击与按下启动系统拖动发生冲突，空白区域未最大化。将 macOS 两个区域统一提前在原生事件路径处理后回归通过。
+
+## 跨平台原生窗口（2026-09-29）
+- 现有 main.qml 仅 macOS 使用原生窗口；Windows/Linux 使用无边框和 QML 模拟按钮，Windows 另有 8px 人工阴影边距。
+- Qt 6.9+ ExpandedClientAreaHint / NoTitleBarBackgroundHint 官方支持 macOS 和 Windows，Linux 不在支持列表。Linux 系统标题栏的圆角、居中和背景由窗口管理器/装饰插件决定，不能跨 GNOME/KDE、X11/Wayland 一概保证。
+- Qt Windows 后端源码需要核对是否真正保留系统按钮，以及标题区域命中和 SafeArea 行为。读取独立 qwindowstitlebar.cpp 返回 404，实际实现位于 qwindowswindow.cpp，已下载 v6.11.1 供审计。
+- 参考：https://www.qt.io/blog/expanded-client-areas-and-safe-areas-in-qt-6.9；https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-rounded-corners。
+- Windows 11 原生圆角在最大化/贴靠等状态下按系统规则关闭，Windows 10 本身无相同的 DWM 圆角接口。
+- Windows 改为公开 Win32/DWM API：保留 WS_CAPTION / WS_THICKFRAME，通过 WM_NCCALCSIZE 仅扩展顶部客户区，DwmDefWindowProc 保留原生按钮，HTCAPTION 提供拖动、双击、系统菜单和还原拖动。避开 Qt ExpandedClientAreaHint 的平台自绘按钮，不依赖 Qt 私有 API。
+- Qt qWindowsWndProc 明确捕获用户覆盖 WM_NCCALCSIZE 后的矩形，更新 frame margins；因此侧边和底边保留 DefWindowProc 计算，上边扩展方案可与 QPA 几何同步。
+- Windows 使用原生 DPI 指标和 DWM 按钮范围提供 QML 预留区；Linux 使用普通 Qt.Window 装饰，禁止第二行应用标题。macOS 保留现有透明原生标题栏路径。
+- 最终实现保留 QML onClosing 写入确认，并让 Windows caption/button hit test 进入原生消息路径。原生按钮字色根据实际页面底色设置，避免深色系统主题在浅色页上使用白色图标。
+- 布局分支检查在 macOS 通过临时平台常量与模拟 DWM 指标进行，只验证 QML 几何和事件声明；没有冒充 Windows/Linux 原生运行验证。
+
+## Linux macOS 风格补充
+- 用户已改选统一 macOS 风格。Linux 改为透明无边框窗口与左侧红黄绿自绘按钮、居中标题、统一圆角表面和轻阴影；不再声称为系统原生按钮。
+- 自绘标题栏的拖动延迟至超过系统拖动阈值，避免按下即进入系统拖动吞掉双击；边缘/角落调用 startSystemResize，以支持 Wayland 系统交互。
+- 最大化/全屏去掉阴影边距与外圆角，全屏隐藏自绘标题栏。Windows DWM 源码不变，仍保留系统阴影。
+- BaseDialog 原先无条件为 Windows 保留旧 8px 人工阴影边距，与上一轮原生 DWM 转换不符；改为读取所属窗口的实际阴影边距与圆角，Linux 弹窗遮罩也保持一致。
+
+## Linux Ubuntu 按钮
+- 用户进一步指定 Ubuntu 风格按钮。参照 Ubuntu Yaru 官方 GTK 样式：中性色圆形背景，前景色 10%/15%/25% 对应普通/悬浮/按下；失焦移除背景并减弱图标。按钮按最小化、最大化/还原、关闭顺序放右侧。
+- 参考 https://github.com/ubuntu/yaru/blob/master/gtk/src/default/gtk-3.0/_tweaks.scss。尝试读取该目录 assets/window-maximize-symbolic.svg 返回 404；本实现自行绘制简单几何图标，不复制主题素材。
+- 最大化时图标切换为叠放方框；标题按实际按钮组宽度对称避让，保持窗口居中。

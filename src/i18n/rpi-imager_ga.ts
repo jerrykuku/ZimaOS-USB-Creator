@@ -24,12 +24,12 @@
         <translation>Sábháil</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>Díchumasaigh rabhaidh?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (réamhshocrú)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation type="unfinished"></translation>
+        <source>Disable warnings?</source>
+        <translation>Díchumasaigh rabhaidh?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -37,11 +37,31 @@
     </message>
     <message>
         <source>Save the selected options and apply them to ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Sábháil na roghanna roghnaithe agus cuir i bhfeidhm iad ar ZimaOS USB Creator</translation>
+    </message>
+    <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>Ní iarrfar deimhniú ort a thuilleadh sula scríobhfar íomhá.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>Fanann cosaint tiomántán córais ar siúl</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Ní mór ainm beacht tiomántáin chórais a chur isteach fós chun é a roghnú.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Coinnigh na rabhaidh</translation>
     </message>
     <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>Coinnigh rabhaidh cumasaithe agus fill ar an dialóg roghanna</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Díchumasaigh ar aon nós</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>Seinn fógra fuaime nuair a bheidh an próiseas scríofa íomhá críochnaithe</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Bainistíocht rogha scríbhneoireachta agus foinsí íomhá diosc.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>Díbirt an gléas stórála go huathoibríoch nuair a bheidh an próiseas scríbhneoireachta críochnaithe go rathúil</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Seachain dialóga deimhnithe sula scríobhtar íomhánna (d&apos;úsáideoirí ardleibhéil amháin)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Skip an dearbhú sula scriosann tú an gléas.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>Stór Ábhair</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Eagar</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>Athraigh foinse íomhánna an chórais oibriúcháin idir stór oifigiúil ZimaOS agus foinsí saincheaptha</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -131,7 +171,7 @@
     </message>
     <message>
         <source>Repository Manifest Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fioscairí Repository Manifest (*.json *.%1)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -223,7 +263,7 @@
     </message>
     <message>
         <source>1-Wire enabled</source>
-        <translation>Cumasaithe 1-Sreang</translation>
+        <translation>1-Wire cumasaithe</translation>
     </message>
     <message>
         <source>Serial configured</source>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>Trí scagadh tiomántán córais a dhíchumasú, &lt;b&gt;taispeánfar tiomántáin chórais&lt;/b&gt; sa liosta.</translation>
+        <source>Show system drives?</source>
+        <translation>Taispeáin tiomántáin chórais?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>COINNIGH AN SCAGAIRE AR SIÚL</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>Tá do chóras oibriúcháin ag tiomáint an chórais agus d&apos;fhéadfadh comhaid phearsanta a bheith ann freisin.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>TAISPEÁIN TIOMÁNTAÍ AN CHÓRAIS</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>Scriosfar sonraí go buan má scríobhann tú chuig an tiomántán mícheart, agus d&apos;fhéadfadh sé sin cosc a chur ar do ríomhaire tosú.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>Beidh ort feiste a roghnú fós agus a ainm a dhearbhú sula scríobhann tú chuig tiomáint an chórais.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>Coinnigh i bhfolach</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>Coinnigh tiomántáin chórais i bhfolach chun damáiste de thaisme do do chóras oibriúcháin a chosc</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>Taispeáin tiomántáin chórais</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -415,11 +467,11 @@
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
-        <translation type="unfinished"></translation>
+        <translation>Déan neamhaird ar theorainneacha I/O</translation>
     </message>
     <message>
         <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translation>Déan dearmad ar na teorainneacha do thréimhse agus do mhéid aistriú a thuairiscigh an t-inneall. Tá sé úsáideach le haghaidh USB-NVMe cáipéisí a thuairisciú a gcumas.</translation>
     </message>
     <message>
         <source>Enable Periodic Sync</source>
@@ -475,15 +527,15 @@
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">Tosaithe Slán</translation>
+        <translation>Tosaithe Slán</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Fág freagra ar &apos;An t-Aisteán Folláine&apos;</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Taispeánadh saincheapthacht boot slán beag beann ar na cumasanna OS. Coibhéiseach leis an bhlag CLI --enable-secure-boot.</translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -495,7 +547,7 @@
     </message>
     <message>
         <source>Apply</source>
-        <translation>Cuir isteach</translation>
+        <translation>Cuir i bhfeidhm</translation>
     </message>
     <message>
         <source>Apply the selected debug options</source>
@@ -506,11 +558,19 @@
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
-        <translation type="unfinished"></translation>
+        <translation>Roghnaigh do ghléas</translation>
+    </message>
+    <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>Ní raibh an liosta feistí in ann a íoslódáil. Déan seiceáil ar do nasc idirlín agus déan iarracht arís.
+
+Is féidir leat comhad íomhá diosc áitiúil a scríobh fós trí bhrú Next a phraghasú agus &apos;Cosaint íomhán diosc ionadail a úsáid&apos; a roghnú ar an scáileán seo a leanas.</translation>
     </message>
     <message>
         <source>Loading device types...</source>
-        <translation type="unfinished"></translation>
+        <translation>Tírí feistí lastaithe...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -530,23 +590,15 @@
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Úsáid na heochracha saigheada chun nascleanúint a dhéanamh, Iontráil nó Spás chun roghnú</translation>
+        <translation>Úsáid na saigheadeochracha chun nascleanúint a dhéanamh agus Enter nó an spásbharra chun roghnú</translation>
     </message>
     <message>
         <source>Unable to load device list</source>
         <translation>Ní féidir liosta na ngléasanna a lódáil</translation>
     </message>
     <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation>Níorbh fhéidir an liosta gléasanna a íoslódáil. Seiceáil do nasc idirlín agus déan iarracht eile.
-
-Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaidh agus &apos;Úsáid saincheaptha&apos; a roghnú ar an scáileán seo a leanas.</translation>
-    </message>
-    <message>
         <source>Retry</source>
-        <translation>Déan iarracht arís</translation>
+        <translation>Bain triail eile as</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
@@ -561,7 +613,7 @@ Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaid
     </message>
     <message>
         <source>Ejecting the storage device — do not remove it yet…</source>
-        <translation type="unfinished"></translation>
+        <translation>Ejecting an gléas stórála  gan é a bhaint go fóill...</translation>
     </message>
     <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
@@ -569,7 +621,7 @@ Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaid
     </message>
     <message>
         <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ní fhéadfaí an gléas stórála a eisiúint. Clúdaigh aon iarratas atá fós ag baint úsáide as é, ansin brúigh Eject.</translation>
     </message>
     <message>
         <source>Please eject the storage device before removing it from your computer.</source>
@@ -577,11 +629,11 @@ Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaid
     </message>
     <message>
         <source>Eject</source>
-        <translation type="unfinished"></translation>
+        <translation>Eject</translation>
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation type="unfinished"></translation>
+        <translation>Eject an gléas stórála ionas gur féidir é a bhaint go sábháilte</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -613,7 +665,7 @@ Is féidir leat comhad íomhá áitiúil a scríobh fós trí bhrú ar Ar Aghaid
     </message>
     <message>
         <source>Close ZimaOS USB Creator and exit the application</source>
-        <translation type="unfinished"></translation>
+        <translation>Dún ZimaOS USB Creator agus scoir an feidhmchlár</translation>
     </message>
     <message>
         <source>Return to storage selection to write the same image to another storage device</source>
@@ -795,25 +847,27 @@ Seiceáil do nasc líonra agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation type="unfinished"></translation>
+        <translation>A fhíorú OS saincheaptha...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ní raibh na socruithe oiriúnaithe OS stóráilte go ceart ar an gléas. Tá na comhaid seo a leanas caillte nó damáiste: %1.
+
+Ghlac an t-inneall na sonraí ach ní choinnigh sé iad, rud a chiallaíonn de ghnáth go bhfuil an cárta SD nó an t‐aisteoir USB ag mealladh nó go bhfuil sé bréagach. Bhí an íomhá diosc féin scríofa go ceart, ach níor chuir an t-inneall do shuiteáin i bhfeidhm ar an gcéad bhrú (mar sin ní bheadh tú in ann ceangal a dhéanamh leis). Déan iarracht cárta nó léitheoir cárta eile.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ní féidir cuimhne a leithdháileadh le haghaidh fíorú.</translation>
     </message>
     <message>
         <source>seeking storage for verification</source>
-        <translation type="unfinished"></translation>
+        <translation>chun stóráil a lorg chun a fhíorú</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Measadh mícheart ó stóráil.&lt;br&gt;Thug an t-inneall níos lú sonraí ar ais ná mar a bhí súil leis.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -913,7 +967,7 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ag fanacht le tiomáint a bheith ar fáil... (%1s)</translation>
     </message>
     <message>
         <source>getting device size</source>
@@ -1117,7 +1171,7 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>pictiúr diosca flushing sula scríobhann tábla roinnte</translation>
     </message>
     <message>
         <source>writing partition table</source>
@@ -1125,7 +1179,7 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Níor éirigh leis an scríbhneoireacht a fhíorú. Tá an tábla roinnte ar an gléas stórála difriúil ón méid a scríobh sé.</translation>
     </message>
     <message>
         <source>final flush</source>
@@ -1185,6 +1239,21 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
         <translation>Theip ar dhíshuiteáil diosca &apos;%1&apos;.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Fíricí mícheart</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Tuigim</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Clúdach na sonraí mearachd</translation>
     </message>
 </context>
 <context>
@@ -1281,7 +1350,7 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>Enable 1-Wire</source>
-        <translation>Cumasaigh 1-Sreang</translation>
+        <translation>Cumasaigh 1-Wire</translation>
     </message>
     <message>
         <source>Enable the I2C (Inter-Integrated Circuit) interface for connecting sensors and other low-speed peripherals</source>
@@ -1316,6 +1385,22 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
         <translation>Cumraigh an comhéadan sraitheach: Díchumasaithe, Réamhshocraithe (cinneann an córas), Consól &amp; Crua-earraí (consól agus UART araon), Crua-earraí (UART amháin), nó Consól (consól ar ghléasanna tacaithe amháin).</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>Díchumasaithe</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Réamhshocrú</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>Consól agus crua-earraí</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>Crua-earraí</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>Rabhadh maidir le Mód Gléasanna USB</translation>
     </message>
@@ -1338,6 +1423,10 @@ Seiceáil an gléas agus déan iarracht arís.</translation>
 </context>
 <context>
     <name>ImComboBox</name>
+    <message>
+        <source>Error: Invalid selection</source>
+        <translation>Éileamh: Roghnú neamhbhailí</translation>
+    </message>
     <message>
         <source>Search: &quot;%1&quot;</source>
         <translation>Cuardaigh: &quot;%1&quot;</translation>
@@ -1570,10 +1659,6 @@ nó clóscríobh cosán sa bharra seoltaí thuas.</translation>
         <translation> nó </translation>
     </message>
     <message>
-        <source>No organisation API key is configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Sábháil Sonraí Feidhmíochta</translation>
     </message>
@@ -1657,11 +1742,11 @@ Sonraí teicniúla: %1</translation>
     </message>
     <message>
         <source>Choose your language for ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Roghnaigh do theanga le haghaidh ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Select the language for the ZimaOS USB Creator interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Roghnaigh an teanga don chomhéadan ZimaOS USB Creator</translation>
     </message>
 </context>
 <context>
@@ -1731,7 +1816,7 @@ Sonraí teicniúla: %1</translation>
     </message>
     <message>
         <source>Why am I being asked this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Cén fáth a bhfuil an cheist seo á cur orm?</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1750,21 +1835,14 @@ Sonraí teicniúla: %1</translation>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ní mór do ZimaOS USB Creator rochtain a fháil ar an diosc chun an íomhá diosc a scríobh.</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>Molta</translation>
+        <translation>Cineál comhaid:</translation>
     </message>
 </context>
 <context>
@@ -1815,7 +1893,15 @@ Sonraí teicniúla: %1</translation>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Úsáid na heochracha saigheada chun nascleanúint a dhéanamh, Iontráil nó Spás chun roghnú</translation>
+        <translation>Úsáid na saigheadeochracha chun nascleanúint a dhéanamh agus Enter nó an spásbharra chun roghnú</translation>
+    </message>
+    <message>
+        <source>Recommended</source>
+        <translation>Molta</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>Leabhar tástála</translation>
     </message>
     <message>
         <source>Operating system category</source>
@@ -1823,7 +1909,7 @@ Sonraí teicniúla: %1</translation>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>Úsáid na heochracha saigheada chun nascleanúint a dhéanamh, Iontráil nó Spás chun roghnú, Saighead chlé chun dul ar ais</translation>
+        <translation>Úsáid na saigheadeochracha chun nascleanúint a dhéanamh agus Enter nó an spásbharra chun roghnú, úsáid an tsaighead chlé chun dul ar ais</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1835,7 +1921,7 @@ Sonraí teicniúla: %1</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation>Déan iarracht arís</translation>
+        <translation>Bain triail eile as</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
@@ -1877,7 +1963,7 @@ Sonraí teicniúla: %1</translation>
     <name>QObject</name>
     <message>
         <source>ZimaOS USB Creator requires elevated privileges to write to storage devices.</source>
-        <translation type="unfinished"></translation>
+        <translation>Éilíonn ZimaOS USB Creator pribhléidí ardaithe chun scríobh chuig gléasanna stórála.</translation>
     </message>
     <message>
         <source>Without this, you will encounter permission errors when writing images.</source>
@@ -1965,6 +2051,89 @@ Cliceáil &quot;Suiteáil Údarú&quot; chun ardú uathoibríoch pribhléide a s
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>Roghnaigh conas a dhéanfaidh tú fíordheimhniú agus tú ag ceangal le do ZimaOS trí SSH. Úsáideann fíordheimhniú pasfhocail dintiúir an chuntais a chumraigh tú. Úsáideann fíordheimhniú eochrach poiblí péire eochrach cripteagrafach agus tá sé níos sláine.</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>Stór Ábhair</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>Roghnaigh cá háit a fháil ar do chuid grianghraif chórais oibriúcháin.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (réamhshocrú)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Fógraí oifigiúla ZimaOS, réidh le suiteáil.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>Bain úsáid as stór oifigiúil chóras oibriúcháin ZimaOS</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>Úsáid comhad saincheaptha</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Lodaigh liosta íomhánna diosc ó chomhad ar do ríomhaire.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>Luchtaigh liosta córas oibriúcháin ó chomhad JSON ar do ríomhaire</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Roghnaigh comhad stórála</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>Roghnaigh comhad JSON stórtha saincheaptha ó do ríomhaire</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>Roghnaigh Stór</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>Úsáid URL saincheaptha</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Lodaigh liosta íomhánna diosc ó sheoladh gréasáin.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>Íoslódáil liosta córas oibriúcháin ó sheoladh gréasáin saincheaptha</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>Ríomhchlár reáchtála saincheaptha</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Athraíonn athrú ar an foinse tú ar ais go rogha an gléas.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>Dún dialóg an taisclainne gan foinse an ábhair a athrú</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Cuir athruithe i bhfeidhm</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>Cuir an stór ábhair nua i bhfeidhm agus atosú an draoi ón tús</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>Roghnaigh stórlann saincheaptha</translation>
     </message>
 </context>
 <context>
@@ -2152,10 +2321,6 @@ Cliceáil &quot;Suiteáil Údarú&quot; chun ardú uathoibríoch pribhléide a s
 <context>
     <name>StorageSelectionStep</name>
     <message>
-        <source>No storage devices found</source>
-        <translation>Níor aimsíodh aon fheistí stórála</translation>
-    </message>
-    <message>
         <source>Mounted as %1</source>
         <translation>Suiteáilte mar %1</translation>
     </message>
@@ -2169,7 +2334,7 @@ Cliceáil &quot;Suiteáil Údarú&quot; chun ardú uathoibríoch pribhléide a s
     </message>
     <message>
         <source>Exclude system drives</source>
-        <translation>Eisiamh tiomántáin chórais</translation>
+        <translation>Fág tiomántáin chórais as an áireamh</translation>
     </message>
     <message>
         <source>Storage device list</source>
@@ -2189,29 +2354,7 @@ Cliceáil &quot;Suiteáil Údarú&quot; chun ardú uathoibríoch pribhléide a s
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Úsáid na heochracha saigheada chun nascleanúint a dhéanamh, Iontráil nó Spás chun roghnú</translation>
-    </message>
-    <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>Is féidir gach gléas atá le feiceáil a léamh amháin.
-Bain triail as gléas nua a nascadh, nó díthiceáil
-&apos;Eisiamh tiomántáin chórais&apos; thíos.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>Is gléasanna inléite amháin iad na gléasanna uile.
-Ceangail gléas stórála inscríofa le do thoil.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>Tá gach gléas i bhfolach ag an scagaire.
-Díthiceáil &apos;Eisiamh tiomántáin chórais&apos; thíos
-chun tiomántáin chórais a thaispeáint.</translation>
+        <translation>Úsáid na saigheadeochracha chun nascleanúint a dhéanamh agus Enter nó an spásbharra chun roghnú</translation>
     </message>
     <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
@@ -2242,6 +2385,24 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Earráid: Níorbh fhéidir gléasanna stórála a liostáil. %1</translation>
     </message>
     <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>Ní fhéadfaí feistí stórála a bhrath. Déan seiceáil ar cheadanna rochtain agus cuir do ghléas ar ais.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>Cuir feiste stórála, mar shampla tiomáint crua, tiomáint flash USB nó cárta cuimhne, le leanúint ar aghaidh.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>Tá na gléasanna atá ar fáil inléite amháin. Ceangail gléas stórála inscríofa.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>Níl aon ghléas stórála ar fáil.
+Ceangail gléas stórála nó díthiceáil “Fág tiomántáin chórais as an áireamh” thíos.</translation>
+    </message>
+    <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
         <translation>Níorbh fhéidir gléasanna stórála a liostáil: %1. B’fhéidir gur fadhb ceadanna atá ann. Bain triail as an bhfeidhmchlár a rith le ceadanna riarthóra.</translation>
     </message>
@@ -2254,23 +2415,23 @@ chun tiomántáin chórais a thaispeáint.</translation>
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Tá leagan cruthaitheoir %1 ar fáil. Ba mhaith leat cuairt a thabhairt ar an láithreán gréasáin chun é a íoslódáil?</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Tá leagan níos nua de na Cruthaithe ar fáil. Ba mhaith leat cuairt a thabhairt ar an láithreán gréasáin chun é a íoslódáil?</translation>
     </message>
     <message>
         <source>Continue using the current version of ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Lean ort ag úsáid an leagan reatha de ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuashonrú</translation>
     </message>
     <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
-        <translation type="unfinished"></translation>
+        <translation>Oscail suíomh Gréasáin ZimaOS i do bhrabhsálaí chun an leagan is déanaí a íoslódáil</translation>
     </message>
 </context>
 <context>
@@ -2349,7 +2510,7 @@ chun tiomántáin chórais a thaispeáint.</translation>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Níl an pasfhocal a shábháil comhoiriúnach leis an gcóras oibriúcháin roghnaithe, mar sin cuir isteach é arís.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
@@ -2365,7 +2526,7 @@ chun tiomántáin chórais a thaispeáint.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation>Faisnéis sudo gan focal faire:</translation>
+        <translation>Faisnéis sudo gan focal faire: </translation>
     </message>
 </context>
 <context>
@@ -2542,16 +2703,12 @@ chun tiomántáin chórais a thaispeáint.</translation>
         <translation>Fan le do thoil…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>Coinnigh atá ann cheana féin</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>Tosaithe Slán</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation type="unfinished"></translation>
+        <translation>Ag oscailt socraíochtaí feidhmchlár chun fógraí fuaime, eicte féin agus fógraí rabhaidh a chur i bhfeidhm</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -2610,11 +2767,42 @@ chun tiomántáin chórais a thaispeáint.</translation>
     <name>WizardStepBase</name>
     <message>
         <source>Next</source>
-        <translation>Ar Aghaidh</translation>
+        <translation>Ar aghaidh</translation>
     </message>
     <message>
         <source>Skip customisation</source>
         <translation>Seachain an saincheapadh</translation>
+    </message>
+</context>
+<context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>An bhfuil fonn ort an gléas seo a scriosadh?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>Scriosfar na sonraí go léir ar an ngléas seo nuair a scríobhfar an íomhá.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Spriocghléas stórála</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Gléas stórála</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>Ní féidir an gníomh seo a chealú. Déan cúltaca de chomhaid thábhachtacha sula leanann tú ar aghaidh.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Scrios agus scríobh</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Scrios agus scríobh (%1)</translation>
     </message>
 </context>
 <context>
@@ -2647,6 +2835,10 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
         <translation>Scríobh</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>Á chealú…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>Achoimre</translation>
     </message>
@@ -2656,35 +2848,15 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished">Teoranta ag luas íoslódála</translation>
+        <translation>Teoranta ag luas íoslódála</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished">Teoranta ag luas dí-chomhbhrúite</translation>
+        <translation>Teoranta ag luas dí-chomhbhrúite</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished">Teoranta ag luas an fheiste stórála</translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>Tá tú ar tí na sonraí go léir a SCRIOSADH ar: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>an gléas stórála</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Tá an gníomh seo BUAN agus NÍ FÉIDIR é a chealú.</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>Tuigim, scrios agus scríobh</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>Fan le do thoil...</translation>
+        <translation>Teoranta ag luas an fheiste stórála</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2735,6 +2907,10 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
         <translation>Cealaigh an scríobh</translation>
     </message>
     <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>Á chealú… Fan go scaoilfear an gléas.</translation>
+    </message>
+    <message>
         <source>Skip verification and finish the write process</source>
         <translation>Seachain an fíorú agus críochnaigh an próiseas scríbhneoireachta</translation>
     </message>
@@ -2759,6 +2935,18 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
         <translation>Dul chun cinn a scríobh</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>Íoslódáil: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>Íoslódáilte: %1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>Íomhá á híoslódáil…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>Ag críochnú…</translation>
     </message>
@@ -2769,10 +2957,6 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     <message>
         <source>customizations</source>
         <translation>saincheaptha</translation>
-    </message>
-    <message>
-        <source>Please wait... %1</source>
-        <translation>Fan le do thoil... %1</translation>
     </message>
     <message>
         <source>Writing... %1 MB written</source>
@@ -2790,24 +2974,8 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
         <translation>Earráid</translation>
     </message>
     <message>
-        <source>Erase</source>
-        <translation>Scrios</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>Formáidigh cárta mar FAT32</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>Úsáid saincheaptha</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>Roghnaigh .img saincheaptha ó do ríomhaire</translation>
-    </message>
-    <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
-        <translation type="unfinished"></translation>
+        <translation>Tá ZimaOS USB Creator fós gnóthach. An bhfuil tú cinnte gur mhaith leat éirí as?</translation>
     </message>
     <message>
         <source>Storage device removed</source>
@@ -2822,20 +2990,16 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
         <translation>Ceart go leor</translation>
     </message>
     <message>
-        <source>Close the error dialog and continue</source>
-        <translation>Dún an dialóg earráide agus lean ar aghaidh</translation>
-    </message>
-    <message>
         <source>Close the storage removed notification and return to storage selection</source>
         <translation>Dún an fógra maidir leis an stóráil a baineadh agus fill ar ais chuig an rogha stórála</translation>
     </message>
     <message>
         <source>Return to ZimaOS USB Creator and continue the current operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Fill ar ZimaOS USB Creator agus lean ar aghaidh leis an oibríocht reatha</translation>
     </message>
     <message>
         <source>Force quit ZimaOS USB Creator and cancel the current write operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Éigeantach scor de ZimaOS USB Creator agus cealaigh an oibríocht scríbhneoireachta reatha</translation>
     </message>
     <message>
         <source>Insufficient Permissions</source>
@@ -2851,7 +3015,7 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>Exit ZimaOS USB Creator - you must restart with elevated privileges to write images</source>
-        <translation type="unfinished"></translation>
+        <translation>Scoir ZimaOS USB Creator - ní mór duit atosú le pribhléidí ardaithe chun íomhánna a scríobh</translation>
     </message>
     <message>
         <source>Install Authorization</source>
@@ -2863,7 +3027,7 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>
-        <translation type="unfinished"></translation>
+        <translation>Suiteáil údarú córais chun ligean do ZimaOS USB Creator rith le pribhléidí ardaithe</translation>
     </message>
     <message>
         <source>Save Performance Data</source>
@@ -2884,6 +3048,22 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     <message>
         <source>Using data from %1</source>
         <translation>Ag baint úsáide as sonraí ó %1</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>Formáidigh an gléas stórála</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>Déan sonraí a scriosadh agus an t-inneall stórála a fhormáid mar FAT32</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>Úsáid íomhá áitiúil</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>Roghnaigh comhad íomhá diosc áitiúil (IMG, ISO nó íomhán diosc comhbhrúite)</translation>
     </message>
 </context>
 </TS>

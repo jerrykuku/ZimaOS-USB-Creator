@@ -193,8 +193,6 @@ BaseDialog {
                                 if (checked) {
                                     // Confirm before enabling this risky setting
                                     confirmDisableWarnings.open();
-                                } else if (popup.wizardContainer) {
-                                    popup.wizardContainer.disableWarnings = false;
                                 }
                             }
                         }
@@ -406,9 +404,7 @@ BaseDialog {
             chkDisableWarnings.checked = popup.wizardContainer ? popup.wizardContainer.disableWarnings : false;
             // Load secure boot RSA key path
             var keyPath = imageWriter.getStringSetting("secureboot_rsa_key");
-            if (keyPath) {
-                rsaKeyPath.text = keyPath;
-            }
+            rsaKeyPath.text = keyPath || "";
 
             initialized = true;
             // Clear initialization flag
@@ -631,8 +627,6 @@ BaseDialog {
 
                     onClicked: {
                         confirmDisableWarnings.confirmAccepted = true;
-                        if (popup.wizardContainer)
-                            popup.wizardContainer.disableWarnings = true;
                         confirmDisableWarnings.close();
                     }
                 }

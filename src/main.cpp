@@ -37,6 +37,11 @@
 #include <QtMath>
 #include <QtQuickControls2/QQuickStyle>
 #include <QDir>
+#ifdef Q_OS_DARWIN
+#include "mac/windowchrome.h"
+#elif defined(Q_OS_WIN)
+#include "windows/windowchrome.h"
+#endif
 
 // In QML live mode, qt_add_qml_module types would otherwise resolve to the
 // compiled qrc:/qt/qml/RpiImager copies. Rewrite those URLs to the source tree
@@ -688,8 +693,8 @@ int main(int argc, char *argv[])
 
     // Determine if we should show the language selection landing step
     // Consider language undetermined if QLocale::system() is AnyLanguage or C
-    // In embedded mode, always show language selection since we can't trust the host OS language
-    // Also show if user has previously made a language selection (sticky preference)
+    // In embedded mode, ask on first launch since we cannot trust the host OS language
+    // Reuse a saved language without showing the selector on every launch.
     bool couldDetermineLanguage = true;
     {
         QLocale::Language sysLang = QLocale::system().language();
@@ -697,8 +702,7 @@ int main(int argc, char *argv[])
             couldDetermineLanguage = false;
     }
 
-    // Check if user has previously made a language selection - if so, always show the selector
-    // and load their saved preference
+    // Load the user's saved language preference.
     const QString savedLanguage = settings.value("savedLanguage").toString();
     const bool hasSavedLanguagePreference = !savedLanguage.isEmpty();
 
@@ -709,7 +713,8 @@ int main(int argc, char *argv[])
         imageWriter.changeLanguage(savedLanguage);
     }
 
-    const bool showLanguageSelection = enableLanguageSelection || !couldDetermineLanguage || imageWriter.isEmbeddedMode() || hasSavedLanguagePreference;
+    const bool showLanguageSelection = enableLanguageSelection ||
+        (!hasSavedLanguagePreference && (!couldDetermineLanguage || imageWriter.isEmbeddedMode()));
 
     // Supply the app-owned ImageWriter instance to the declaratively-registered
     // "ImageWriterSingleton" QML singleton (see ImageWriter::create). Declarative
@@ -739,6 +744,11 @@ int main(int argc, char *argv[])
         return -1;
 
     QObject *qmlwindow = engine.rootObjects().value(0);
+#ifdef Q_OS_DARWIN
+    enableMacTitleBarDragging(qobject_cast<QWindow *>(qmlwindow));
+#elif defined(Q_OS_WIN)
+    enableWindowsWindowChrome(qobject_cast<QWindow *>(qmlwindow));
+#endif
     qmlwindow->connect(&imageWriter, SIGNAL(downloadProgress(QVariant,QVariant)), qmlwindow, SLOT(onDownloadProgress(QVariant,QVariant)));
     qmlwindow->connect(&imageWriter, SIGNAL(writeProgress(QVariant,QVariant)), qmlwindow, SLOT(onWriteProgress(QVariant,QVariant)));
     qmlwindow->connect(&imageWriter, SIGNAL(verifyProgress(QVariant,QVariant)), qmlwindow, SLOT(onVerifyProgress(QVariant,QVariant)));

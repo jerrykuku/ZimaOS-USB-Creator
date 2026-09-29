@@ -62,6 +62,7 @@ WizardStepBase {
     property string selectedDeviceName: ""
     property bool hasValidStorageOptions: false
     property bool hasAnyDevices: false
+    property bool hasVisibleStorageOptions: false
     property bool hasOnlyReadOnlyDevices: false
     property string enumerationErrorMessage: ""
     
@@ -87,6 +88,7 @@ WizardStepBase {
                 // Device was removed - clear the visual selection and ensure next button is disabled
                 dstlist.currentIndex = -1
                 root.selectedDeviceName = ""
+                root.wizardContainer.selectedStorageDevice = ""
                 root.nextButtonEnabled = false
             }
         }
@@ -96,6 +98,10 @@ WizardStepBase {
     // This handles cases where the OS can't enumerate drives (permissions, driver issues, etc.)
     Connections {
         target: ImageWriterSingleton ? ImageWriterSingleton.getDriveList() : null
+        function onModelReset() { root.updateStorageStatus() }
+        function onDataChanged() { root.updateStorageStatus() }
+        function onRowsInserted() { root.updateStorageStatus() }
+        function onRowsRemoved() { root.updateStorageStatus() }
         function onEnumerationError(errorMessage) {
             root.enumerationErrorMessage = errorMessage || ""
             if (errorMessage) {
@@ -216,7 +222,7 @@ WizardStepBase {
                     // Then advance to next step if possible (same as pressing Return)
                     Qt.callLater(function() {
                         if (root.nextButtonEnabled) {
-                            root.nextClicked()
+                            root.conditionalNext()
                         }
                     })
                 }
@@ -227,58 +233,55 @@ WizardStepBase {
                 root.updateStorageStatus()
             }
             
-            // No storage devices or no valid options message (visually hidden, for screen readers only)
-            Label {
-                id: noDevicesLabel
-                anchors.fill: parent
-                visible: !root.hasValidStorageOptions
-                text: {
-                    // Check for enumeration error first
-                    if (root.enumerationErrorMessage.length > 0) {
-                        return qsTr("Could not list storage devices: %1").arg(root.enumerationErrorMessage)
-                    } else if (!root.hasAnyDevices) {
-                        return qsTr("No storage devices found")
-                    } else if (root.hasOnlyReadOnlyDevices) {
-                        if (filterSystemDrives.checked) {
-                            return qsTr("All visible devices are read-only.\nTry connecting a new device, or uncheck\n'Exclude system drives' below.")
-                        } else {
-                            return qsTr("All devices are read-only.\nPlease connect a writable storage device.")
-                        }
-                    } else {
-                        return qsTr("All devices are hidden by the filter.\nUncheck 'Exclude system drives' below\nto show system drives.")
-                    }
+            ColumnLayout {
+                anchors.centerIn: parent
+                width: Math.max(0, parent.width - Style.spacingExtraLarge * 2)
+                spacing: Style.spacingMedium
+                visible: !root.hasVisibleStorageOptions
+
+                Image {
+                    source: "../icons/ic_storage_40px.svg"
+                    sourceSize: Qt.size(48, 48)
+                    Layout.preferredWidth: 48
+                    Layout.preferredHeight: 48
+                    Layout.alignment: Qt.AlignHCenter
+                    opacity: 0.5
+                    Accessible.ignored: true
                 }
-                // Make it invisible but still accessible to screen readers
-                opacity: 0
-                Accessible.role: Accessible.StatusBar
-                Accessible.name: text
-                Accessible.ignored: false
-                
-                // Force accessibility update when text changes
-                onTextChanged: {
-                    if (visible) {
-                        // Briefly toggle focus to force screen reader update
-                        Accessible.ignored = true
-                        Qt.callLater(function() {
-                            Accessible.ignored = false
-                        })
-                    }
-                }
-                
-                // Announce when becomes visible
-                onVisibleChanged: {
-                    if (visible) {
-                        // Small delay to ensure the text is set before announcing
-                        Qt.callLater(function() {
-                            if (visible) {
-                                forceActiveFocus()
-                            }
-                        })
-                    }
+
+                FocusableText {
+                    objectName: "storageEmptyState"
+                    Layout.fillWidth: true
+                    font.family: Style.fontFamily
+                    font.pixelSize: Style.fontSizePixelSm
+                    color: Style.colorTextSecondary
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.Wrap
+                    text: root.enumerationErrorMessage.length > 0
+                          ? qsTr("Storage devices could not be detected. Check access permissions and reconnect your device.")
+                          : !root.hasAnyDevices ? qsTr("Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.")
+                          : root.hasOnlyReadOnlyDevices ? qsTr("The available devices are read-only. Connect a writable storage device.")
+                          : qsTr("No storage devices available.\nConnect a storage device or uncheck “Exclude system drives” below.")
+                    Accessible.role: Accessible.StatusBar
                 }
             }
         }
         
+        // Read-only devices remain visible; keep guidance outside their cards.
+        FocusableText {
+            objectName: "storageReadOnlyNotice"
+            Layout.fillWidth: true
+            Layout.topMargin: Style.spacingSmall
+            Layout.bottomMargin: Style.spacingSmall
+            visible: root.hasVisibleStorageOptions && root.hasOnlyReadOnlyDevices
+            text: qsTr("The available devices are read-only. Connect a writable storage device.")
+            font.family: Style.fontFamily
+            font.pixelSize: Style.fontSizePixelSm
+            color: Style.colorTextSecondary
+            wrapMode: Text.Wrap
+            Accessible.role: Accessible.StatusBar
+        }
+
         // Filter controls
         RowLayout {
             Layout.fillWidth: true
@@ -289,28 +292,28 @@ WizardStepBase {
             
             ImCheckBox {
                 id: filterSystemDrives
+                objectName: "filterSystemDrives"
                 checked: true
                 text: qsTr("Exclude system drives")
                 indicatorSize: 16
                 Accessible.description: qsTr("When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.")
 
-                onToggled: {
-                    if (!checked) {
-                        // If warnings are disabled, bypass the confirmation dialog
-                        if (root.wizardContainer && root.wizardContainer.disableWarnings) {
-                            // Leave checkbox unchecked and continue showing system drives
-                            dstlist.forceActiveFocus()
-                        } else {
-                            // Ask for stern confirmation before disabling filtering
-                            confirmUnfilterPopup.open()
-                        }
-                    }
+                property bool applyingConfirmedChange: false
+
+                function showConfirmedSystemDrives() {
+                    applyingConfirmedChange = true
+                    checked = false
+                    applyingConfirmedChange = false
                 }
-                
-                // Update storage status whenever checked state changes (from any source)
+
+                // checkedChanged also covers keyboard and accessibility toggles;
+                // CheckBox.toggle() does not emit the user-only toggled signal.
                 onCheckedChanged: {
-                    // Defer the update to allow the model to update first
-                    Qt.callLater(root.updateStorageStatus)
+                    if (!checked && !applyingConfirmedChange && !(root.wizardContainer && root.wizardContainer.disableWarnings)) {
+                        checked = true
+                        confirmUnfilterPopup.open()
+                    }
+                    root.updateStorageStatus()
                 }
             }
         }
@@ -361,11 +364,11 @@ WizardStepBase {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                color: (dstlist.currentIndex === dstitem.index) ? Style.colorSelectionSurface :
+                color: root.wizardContainer.selectedStorageDevice === dstitem.device ? Style.colorSelectionSurface :
                        (dstMouseArea.containsMouse && !dstitem.unselectable ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
                 radius: Style.listItemBorderRadius
-                border.color: (dstlist.currentIndex === dstitem.index) ? Style.colorAccentPrimary : "transparent"
-                border.width: 1
+                border.color: root.wizardContainer.selectedStorageDevice === dstitem.device || (dstlist.activeFocus && dstlist.currentIndex === dstitem.index) ? Style.colorAccentPrimary : "transparent"
+                border.width: dstlist.activeFocus && dstlist.currentIndex === dstitem.index ? 2 : 1
                 anchors.bottomMargin: Style.sectionMargin
                 anchors.topMargin: Style.sectionMargin
                 opacity: dstitem.unselectable ? 0.5 : 1.0
@@ -508,6 +511,7 @@ WizardStepBase {
         ImageWriterSingleton.setDst(dstitem.device, dstitem.size)
         selectedDeviceName = dstitem.description || dstitem.device
         root.wizardContainer.selectedStorageName = dstitem.description || dstitem.device
+        root.wizardContainer.selectedStorageDevice = dstitem.device
 
         // Do not auto-advance; enable Next
         root.nextButtonEnabled = true
@@ -577,43 +581,28 @@ WizardStepBase {
         return !isReadOnly && !shouldHide
     }
     
-    // Check if there are any selectable items in the list
-    function hasSelectableItems() {
-        var model = ImageWriterSingleton.getDriveList()
-        if (!model || model.rowCount() === 0) {
-            return false
-        }
-        
-        for (var i = 0; i < model.rowCount(); i++) {
-            if (isStorageItemSelectable(i)) {
-                return true
-            }
-        }
-        return false
-    }
-    
-    // Update storage status properties for accessibility messages
+    // Track visibility separately from writability to avoid covering read-only rows.
     function updateStorageStatus() {
+        if (!filterSystemDrives)
+            return
         var model = ImageWriterSingleton.getDriveList()
-        root.hasValidStorageOptions = hasSelectableItems()
-        root.hasAnyDevices = model && model.rowCount() > 0
-        
-        // Check if we only have read-only devices
-        if (root.hasAnyDevices && !root.hasValidStorageOptions) {
-            var isReadOnlyRole = 0x106
-            var allReadOnly = true
-            for (var i = 0; i < model.rowCount(); i++) {
-                var idx = model.index(i, 0)
-                var isReadOnly = model.data(idx, isReadOnlyRole)
-                if (!isReadOnly) {
-                    allReadOnly = false
-                    break
-                }
-            }
-            root.hasOnlyReadOnlyDevices = allReadOnly
-        } else {
-            root.hasOnlyReadOnlyDevices = false
+        var count = model ? model.rowCount() : 0
+        var visibleCount = 0
+        var writableCount = 0
+        for (var i = 0; i < count; i++) {
+            var idx = model.index(i, 0)
+            var isReadOnly = model.data(idx, 0x106)
+            var isSystem = model.data(idx, 0x107)
+            if (isSystem && filterSystemDrives.checked)
+                continue
+            visibleCount++
+            if (!isReadOnly)
+                writableCount++
         }
+        root.hasAnyDevices = count > 0
+        root.hasVisibleStorageOptions = visibleCount > 0
+        root.hasValidStorageOptions = writableCount > 0
+        root.hasOnlyReadOnlyDevices = visibleCount > 0 && writableCount === 0
     }
     
     // Get the storage status message for accessibility
@@ -636,10 +625,11 @@ WizardStepBase {
     // Stern confirmation when disabling system drive filtering
     ConfirmUnfilterDialog {
         id: confirmUnfilterPopup
+        objectName: "confirmUnfilterPopup"
         overlayParent: root.wizardContainer && root.wizardContainer.overlayRootRef ? root.wizardContainer.overlayRootRef : (root.Window.window ? root.Window.window.overlayRootItem : null)
         onConfirmed: {
-            // user chose to disable filter; leave checkbox unchecked
-            // updateStorageStatus will be called via onCheckedChanged
+            filterSystemDrives.showConfirmedSystemDrives()
+            root.updateStorageStatus()
         }
         onCancelled: {
             // Re-enable the filter checkbox and keep system drives hidden
@@ -647,11 +637,12 @@ WizardStepBase {
             // updateStorageStatus will be called via onCheckedChanged
         }
         onClosed: {
-            if (filterSystemDrives.checked === false) {
-                dstlist.forceActiveFocus()
-            } else {
-                filterSystemDrives.forceActiveFocus()
-            }
+            Qt.callLater(function() {
+                if (filterSystemDrives.checked)
+                    filterSystemDrives.forceActiveFocus()
+                else
+                    dstlist.forceActiveFocus()
+            })
         }
     }
 
@@ -663,6 +654,7 @@ WizardStepBase {
             ImageWriterSingleton.setDst(systemDriveConfirm.device, systemDriveConfirm.deviceSize)
             root.selectedDeviceName = systemDriveConfirm.driveName || systemDriveConfirm.device
             root.wizardContainer.selectedStorageName = systemDriveConfirm.driveName || systemDriveConfirm.device
+            root.wizardContainer.selectedStorageDevice = systemDriveConfirm.device
             // Re-enable filtering after selection via confirmation path
             filterSystemDrives.checked = true
             // updateStorageStatus will be called via onCheckedChanged

@@ -26,7 +26,7 @@ WizardStepBase {
     // subtitle: qsTr("Select the ZimaOS version you want to install")
     showNextButton: true
     // Disable Next until a concrete OS has been selected
-    nextButtonEnabled: oslist.currentIndex !== -1 && wizardContainer.selectedOsName.length > 0
+    nextButtonEnabled: wizardContainer.selectedOsName.length > 0
 
     property alias oslist: oslist
     property alias osswipeview: osswipeview
@@ -81,7 +81,7 @@ WizardStepBase {
             root.selectOSitem(modelData, false, fromMouse);
 
             // For keyboard selection of concrete OS items, automatically advance to next step
-            if (fromKeyboard && modelData && !root.isOSsublist(modelData)) {
+            if (fromKeyboard && modelData && modelData.url !== "internal://custom" && !root.isOSsublist(modelData)) {
                 // Use Qt.callLater to ensure the OS selection completes first
                 Qt.callLater(function () {
                     if (root.nextButtonEnabled) {
@@ -143,6 +143,7 @@ WizardStepBase {
                 onOsListPreparedHandler();
             } else if (root.osmodel) {
                 root.osmodel.reload();
+                restoreOrSelectDefault();
             }
         }
         function onOsListUnavailableChanged() {
@@ -156,6 +157,7 @@ WizardStepBase {
             // Hardware filter changed (device selected) - reload OS list to apply new filter
             if (root.modelLoaded && root.osmodel) {
                 root.osmodel.reload();
+                restoreOrSelectDefault();
             }
         }
         // Handle native file selection for "Use custom"
@@ -164,6 +166,7 @@ WizardStepBase {
             imageWriter.setSrc(fileUrl);
             // Update selected OS name to the chosen file name
             root.wizardContainer.selectedOsName = imageWriter.srcFileName();
+            root.wizardContainer.selectedOsUrl = fileUrl.toString();
             root.wizardContainer.customizationSupported = imageWriter.imageSupportsCustomization();
             // For custom images, customization is not supported; clear any staged flags
             if (!root.wizardContainer.customizationSupported) {
@@ -381,6 +384,9 @@ WizardStepBase {
             // This delegate is shared between the main OS list and dynamically created sublists.
             // Using ListView.view directly in bindings can be unreliable, so we cache it here.
             // This enables proper highlighting for both keyboard and mouse navigation in all lists.
+            readonly property bool selected: root.wizardContainer.selectedOsUrl === url || (url === "internal://custom" && root.customSelected)
+            readonly property bool recommended: model.recommended === true
+            readonly property bool prerelease: model.prerelease === true
             property var parentListView: ListView.view
 
             width: parentListView ? parentListView.width : 200
@@ -393,7 +399,7 @@ WizardStepBase {
 
             // Accessibility properties
             Accessible.role: Accessible.ListItem
-            Accessible.name: delegateItem.name + ". " + delegateItem.description + (delegateItem.release_date !== "" ? ". " + qsTr("Released: %1").arg(delegateItem.release_date) : "")
+            Accessible.name: delegateItem.name + (recommended ? ". " + qsTr("Recommended") : prerelease ? ". " + qsTr("Test version") : "") + ". " + delegateItem.description + (delegateItem.release_date !== "" ? ". " + qsTr("Released: %1").arg(delegateItem.release_date) : "")
             Accessible.focusable: true
             Accessible.ignored: false
 
@@ -405,10 +411,10 @@ WizardStepBase {
                 anchors.bottom: parent.bottom
                 // Delegate highlighting: Works together with ListView's built-in highlight system
                 // DO NOT disable ListView's highlight - both systems work in harmony
-                color: (parentListView && parentListView.currentIndex === index) ? Style.colorSelectionSurface : (osMouseArea.containsMouse ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
+                color: delegateItem.selected ? Style.colorSelectionSurface : (osMouseArea.containsMouse ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
                 radius: 8
-                border.color: (parentListView && parentListView.currentIndex === index) ? Style.colorAccentPrimary : "transparent"
-                border.width: 1
+                border.color: delegateItem.selected || (parentListView && parentListView.activeFocus && parentListView.currentIndex === index) ? Style.colorAccentPrimary : "transparent"
+                border.width: parentListView && parentListView.activeFocus && parentListView.currentIndex === index ? 2 : 1
                 anchors.bottomMargin: 0
                 anchors.topMargin: 0
                 // Let delegates use the full content width; the ListView clips
@@ -486,14 +492,34 @@ WizardStepBase {
                         Layout.fillWidth: true
                         spacing: Style.spacingXXSmall
 
-                        Text {
-                            text: delegateItem.name
-                            font.pointSize: Style.fontSizeFormLabel
-                            font.family: Style.fontFamilyBold
-                            font.bold: true
-                            color: Style.formLabelColor
+                        RowLayout {
                             Layout.fillWidth: true
-                            Accessible.ignored: true
+                            spacing: Style.spacingSmall
+                            Text {
+                                text: delegateItem.name
+                                font.pointSize: Style.fontSizeFormLabel
+                                font.family: Style.fontFamilyBold
+                                font.bold: true
+                                color: Style.formLabelColor
+                                Layout.fillWidth: true
+                                wrapMode: Text.Wrap
+                                Accessible.ignored: true
+                            }
+                            Rectangle {
+                                visible: delegateItem.recommended || delegateItem.prerelease
+                                implicitWidth: versionBadge.implicitWidth + 12
+                                implicitHeight: versionBadge.implicitHeight + 6
+                                radius: 4
+                                color: delegateItem.recommended ? Style.colorSelectionSurface : Style.colorSurfaceMuted
+                                Text {
+                                    id: versionBadge
+                                    anchors.centerIn: parent
+                                    text: delegateItem.recommended ? qsTr("Recommended") : qsTr("Test version")
+                                    color: delegateItem.recommended ? Style.colorAccentPrimary : Style.colorTextSecondary
+                                    font.family: Style.fontFamily
+                                    font.pointSize: Style.fontSizeSmall
+                                }
+                            }
                         }
 
                         Text {
@@ -663,7 +689,6 @@ WizardStepBase {
                 // Use custom: open native file selector if available, otherwise fall back to QML FileDialog
                 // Don't clear selectedOsName or customSelected here - only update them when user actually selects a file
                 // Changing these properties causes delegate height changes and scroll position resets
-                root.nextButtonEnabled = false;
                 if (imageWriter.nativeFileDialogAvailable()) {
                     // Defer opening the native dialog until after the current event completes
                     Qt.callLater(function () {
@@ -686,10 +711,12 @@ WizardStepBase {
                 }
             } else if (typeof (model.url) === "string" && model.url === "internal://format") {
                 // Erase/format flow
+                root.customSelected = false;
                 imageWriter.setSrc(model.url, model.image_download_size, model.extract_size, typeof (model.extract_sha256) != "undefined" ? model.extract_sha256 : "", typeof (model.contains_multiple_files) != "undefined" ? model.contains_multiple_files : false, categorySelected, model.name, typeof (model.init_format) != "undefined" ? model.init_format : "");
                 imageWriter.setSWCapabilitiesList("[]");
 
                 root.wizardContainer.selectedOsName = model.name;
+                root.wizardContainer.selectedOsUrl = model.url;
                 root.wizardContainer.customizationSupported = imageWriter.imageSupportsCustomization();
                 root.wizardContainer.secureBootAvailable = imageWriter.isSecureBootForcedByCliFlag();
                 root.wizardContainer.ccRpiAvailable = false;
@@ -703,9 +730,10 @@ WizardStepBase {
             } else {
                 // Normal OS selection
                 imageWriter.setSrc(model.url, model.image_download_size, model.extract_size, typeof (model.extract_sha256) != "undefined" ? model.extract_sha256 : "", typeof (model.contains_multiple_files) != "undefined" ? model.contains_multiple_files : false, categorySelected, model.name, typeof (model.init_format) != "undefined" ? model.init_format : "", typeof (model.release_date) != "undefined" ? model.release_date : "");
-                imageWriter.setSWCapabilitiesList(model.capabilities);
+                imageWriter.setSWCapabilitiesList(typeof model.capabilities === "string" ? model.capabilities : JSON.stringify(model.capabilities || []));
 
                 root.wizardContainer.selectedOsName = model.name;
+                root.wizardContainer.selectedOsUrl = model.url;
                 root.wizardContainer.customizationSupported = imageWriter.imageSupportsCustomization();
                 root.wizardContainer.secureBootAvailable = imageWriter.checkSWCapability("secure_boot") || imageWriter.isSecureBootForcedByCliFlag();
                 root.wizardContainer.ccRpiAvailable = imageWriter.imageSupportsCcRpi();
@@ -864,17 +892,43 @@ WizardStepBase {
                         root.updatePopupRequested(imager["url"], imager["latest_version"]);
                     }
                 }
-                if ("default_os" in imager) {
-                    selectNamedOS(imager["default_os"], root.osmodel);
-                }
                 if (ImageWriterSingleton.isEmbeddedMode()) {
-                    if ("embedded_default_os" in imager) {
+                    if (!root.wizardContainer.selectedOsUrl && "embedded_default_os" in imager) {
                         selectNamedOS(imager["embedded_default_os"], root.osmodel);
                     }
                     if ("embedded_default_destination" in imager) {
                         root.defaultEmbeddedDriveRequested(imager["embedded_default_destination"]);
                     }
                 }
+            }
+        }
+        if (osSuccess)
+            restoreOrSelectDefault();
+    }
+
+    // Cursor position is separate from selection. Restoring it must not call
+    // setSrc(), which would invalidate downstream choices on return/refresh.
+    function restoreOrSelectDefault() {
+        var selectedUrl = root.wizardContainer.selectedOsUrl;
+        for (var i = 0; i < root.osmodel.rowCount(); ++i) {
+            var entry = root.osmodel.get(i);
+            if (selectedUrl && (entry.url === selectedUrl || (entry.url === "internal://custom" && selectedUrl.indexOf("file:") === 0))) {
+                oslist.currentIndex = i;
+                root.customSelected = entry.url === "internal://custom";
+                if (root.customSelected)
+                    root.customSelectedSize = imageWriter.getSelectedSourceSize();
+                return;
+            }
+        }
+        // A chosen custom/sublist/removed image remains the user's choice.
+        if (selectedUrl || root.wizardContainer.selectedOsName)
+            return;
+        for (var j = 0; j < root.osmodel.rowCount(); ++j) {
+            var candidate = root.osmodel.get(j);
+            if (candidate.recommended && !candidate.prerelease) {
+                selectOSitem(candidate, false);
+                oslist.currentIndex = j;
+                return;
             }
         }
     }

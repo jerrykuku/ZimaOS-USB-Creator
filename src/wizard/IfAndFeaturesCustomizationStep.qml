@@ -133,12 +133,18 @@ WizardStepBase {
                             }
                             ImComboBox {
                                 id: comboSerial
-                                model: ListModel {
-                                    id: serialModel
-                                    ListElement { text: "Disabled" }
-                                    ListElement { text: "Default" }
-                                    ListElement { text: "Console & Hardware" }
-                                    ListElement { text: "Hardware" }
+                                textRole: "text"
+                                valueRole: "value"
+                                model: {
+                                    var options = [
+                                        { text: qsTr("Disabled"), value: "Disabled" },
+                                        { text: qsTr("Default"), value: "Default" },
+                                        { text: qsTr("Console & Hardware"), value: "Console & Hardware" },
+                                        { text: qsTr("Hardware"), value: "Hardware" }
+                                    ]
+                                    if (root.supportsSerialConsoleOnly)
+                                        options.push({ text: qsTr("Console"), value: "Console" })
+                                    return options
                                 }
                                 Layout.fillWidth: false
                                 editable: false
@@ -225,10 +231,6 @@ WizardStepBase {
                 return
             }
             
-            if (supportsSerialConsoleOnly) {
-                serialModel.append({ text: qsTr("Console") })
-            }
-            
             // Include label before combo box so users hear the explanation first
             // Build focus group dynamically based on which interfaces are supported
             // Labels are automatically skipped when screen reader is not active (via activeFocusOnTab)
@@ -277,7 +279,7 @@ WizardStepBase {
             
             if (supportsSerial) {
                 var enableSerial = settings.enableSerial || wizardContainer.ifSerial
-                var idx = comboSerial.find(enableSerial)
+                var idx = comboSerial.indexOfValue(enableSerial)
                 comboSerial.currentIndex = (idx >= 0 ? idx : 0)
             } else {
                 comboSerial.currentIndex = 0
@@ -300,7 +302,9 @@ WizardStepBase {
         var i2cVal = supportsI2c ? chkEnableI2C.checked : false
         var spiVal = supportsSpi ? chkEnableSPI.checked : false
         var oneWireVal = supports1Wire ? chkEnable1Wire.checked : false
-        var serialVal = supportsSerial ? (!supportsSerialConsoleOnly && comboSerial.editText === "Console" ? "Default" : comboSerial.editText) : "Disabled"
+        var serialVal = supportsSerial ? (comboSerial.currentValue || "Disabled") : "Disabled"
+        if (!supportsSerialConsoleOnly && serialVal === "Console")
+            serialVal = "Default"
         var usbGadgetVal = supportsUsbOtg ? chkEnableUsbGadget.checked : false
         
         // Update conserved customization settings (runtime state)
@@ -322,7 +326,7 @@ WizardStepBase {
         wizardContainer.ifI2cEnabled     = i2cVal
         wizardContainer.ifSpiEnabled     = spiVal
         wizardContainer.if1WireEnabled   = oneWireVal
-        wizardContainer.ifSerial         = supportsSerial ? comboSerial.editText : "Disabled"
+        wizardContainer.ifSerial         = serialVal
         wizardContainer.featUsbGadgetEnabled = usbGadgetVal
 
         if (usbGadgetVal && !wizardContainer.disableWarnings) {
@@ -480,7 +484,7 @@ WizardStepBase {
                 // Rebuild focus order based on new capabilities
                 root.rebuildFocusOrder()
                 // If Console is no longer supported and was selected, fall back
-                if (!root.supportsSerialConsoleOnly && comboSerial.editText === qsTr("Console"))
+                if (!root.supportsSerialConsoleOnly && comboSerial.currentValue === "Console")
                     comboSerial.currentIndex = 0;
             })
         }

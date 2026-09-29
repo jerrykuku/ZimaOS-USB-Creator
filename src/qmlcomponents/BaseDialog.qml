@@ -19,6 +19,7 @@ Dialog {
 
     // Application-owned writer instance injected by main.qml where needed.
     property var imageWriter: ImageWriterSingleton
+    readonly property var hostWindow: parent ? parent.Window.window : null
     
     // We declare it here so bindings work, but children override it
     
@@ -56,12 +57,14 @@ Dialog {
     // Custom modal overlay background
     Overlay.modal: Rectangle {
         color: Qt.rgba(0, 0, 0, 0.3)
-        radius: Style.radiusPanel
+        radius: root.hostWindow && root.hostWindow.windowCornerRadius !== undefined
+                ? root.hostWindow.windowCornerRadius : Style.radiusPanel
         antialiasing: true
         clip: true
-        // Ensure overlay only covers the content area (not the shadow margins on Windows)
+        // Match client-drawn frame insets; native DWM windows have no inset.
         anchors.fill: parent
-        anchors.margins: Qt.platform.os === "windows" ? 8 : 0
+        anchors.margins: root.hostWindow && root.hostWindow.windowFrameInset !== undefined
+                         ? root.hostWindow.windowFrameInset : 0
         Behavior on opacity {
             NumberAnimation {
                 duration: PlatformHelper.prefersReducedMotion ? 0 : 150

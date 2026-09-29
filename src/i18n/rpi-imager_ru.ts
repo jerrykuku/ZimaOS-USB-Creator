@@ -24,12 +24,12 @@
         <translation>Сохранить</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>Отключить предупреждения?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (по умолчанию)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation>Если отключить предупреждения, ZimaOS USB Creator не будет &lt;b&gt;показывать запросы на подтверждение перед записью образов&lt;/b&gt;. Вам всё равно потребуется &lt;b&gt;ввести точное имя&lt;/b&gt; при выборе системного диска.</translation>
+        <source>Disable warnings?</source>
+        <translation>Отключить предупреждения?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -40,8 +40,28 @@
         <translation>Сохраните выбранные параметры и применить их к ZimaOS USB Creator</translation>
     </message>
     <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>Перед записью образа подтверждение больше не будет запрашиваться.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>Защита системных дисков остаётся включённой</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Для выбора системного диска по-прежнему требуется ввести его точное имя.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Оставить предупреждения</translation>
+    </message>
+    <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>Оставить предупреждения включенными и вернуться в диалоговое окно параметров.</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Всё равно отключить</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>Воспроизведите звуковое уведомление о завершении процесса записи образа</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Управлять предпочтениями записи и источниками изображений диска.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>Автоматически извлекать запоминающее устройство при успешном завершении процесса записи</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Пропускать диалоговые окна подтверждения перед записью образов (только для опытных пользователей)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Предотвратить подтверждение, прежде чем удалить устройство.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>Хранилище контента</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Редактировать</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>Изменить источник образов операционной системы с официального репозитория ZimaOS на пользовательские.</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -93,11 +133,11 @@
     </message>
     <message>
         <source>Audio notification unavailable - no viable audio player found on this system</source>
-        <translation type="unfinished"></translation>
+        <translation>Звуковое уведомление недоступно - никакого жизнеспособного аудиоплеера в этой системе не найдено</translation>
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Версия: %1</translation>
     </message>
 </context>
 <context>
@@ -131,7 +171,7 @@
     </message>
     <message>
         <source>Repository Manifest Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Файлы-манифесты хранилища (*.json *.%1)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -139,7 +179,7 @@
     </message>
     <message>
         <source>Cancel</source>
-        <translation>Закрыть</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <source>Yes</source>
@@ -163,7 +203,7 @@
     </message>
     <message>
         <source>Finish</source>
-        <translation>Завершить</translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <source>Select image</source>
@@ -242,59 +282,59 @@
     <name>ConfirmOtpProgramDialog</name>
     <message>
         <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
-        <translation type="unfinished"></translation>
+        <translation>Предупреждение: OTP Программирование является постоянным и необратимым</translation>
     </message>
     <message>
         <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>Эта операция будет постоянно программировать хэш безопасного открытия общественного ключа в одноразовую программируемую память устройства (OTP). После запрограммирования устройство будет загружать только изображения, подписанные соответствующим частным ключом. Это действие нельзя отменить.</translation>
     </message>
     <message>
         <source>Device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство: %1</translation>
     </message>
     <message>
         <source>Serial: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Серия: %1</translation>
     </message>
     <message>
         <source>Key fingerprint: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Отпечаток ключа: %1</translation>
     </message>
     <message>
         <source>Also lock JTAG debug port (additional irreversible action)</source>
-        <translation type="unfinished"></translation>
+        <translation>Также блокировка порта дебаг JTAG (дополнительное необратимое действие)</translation>
     </message>
     <message>
         <source>To confirm, type the device serial number below:</source>
-        <translation type="unfinished"></translation>
+        <translation>Для подтверждения введите серийный номер устройства ниже:</translation>
     </message>
     <message>
         <source>Serial to type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Серийный тип: %1</translation>
     </message>
     <message>
         <source>Type device serial number exactly</source>
-        <translation type="unfinished"></translation>
+        <translation>Точный серийный номер устройства</translation>
     </message>
     <message>
         <source>Confirmation input. Type exactly: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Вход подтверждения. Точный тип: %1</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">ОТМЕНА</translation>
+        <translation>ОТМЕНА</translation>
     </message>
     <message>
         <source>Cancel OTP programming and return to previous screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить программу OTP и вернуться на предыдущий экран</translation>
     </message>
     <message>
         <source>PROGRAM OTP</source>
-        <translation type="unfinished"></translation>
+        <translation>ПРОГРАМА OTP</translation>
     </message>
     <message>
         <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Постоянно запрограммировать безопасный ключ загрузки в память устройства OTP</translation>
     </message>
 </context>
 <context>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>При отключении фильтра системных дисков &lt;b&gt;системные диски будут отображаться&lt;/b&gt; в списке.</translation>
+        <source>Show system drives?</source>
+        <translation>Показать системные диски?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>ОСТАВИТЬ ФИЛЬТР ВКЛЮЧЕННЫМ</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>Системные диски содержат вашу операционную систему, а также могут содержать личные файлы.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>ПОКАЗАТЬ СИСТЕМНЫЕ ДИСКИ</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>Запись на неправильный диск безвозвратно удалит его данные и может сделать загрузку компьютера невозможной.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>Вы все равно должны выбрать устройство и подтвердить его имя, прежде чем написать на системный диск.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>Оставить скрытыми</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>Оставить системные диски скрытыми, чтобы предотвратить случайное повреждение вашей операционной системы</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>Показать системные диски</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -375,131 +427,131 @@
     <name>DebugOptionsDialog</name>
     <message>
         <source>Debug Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Обязательное изменение</translation>
     </message>
     <message>
         <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation type="unfinished"></translation>
+        <translation>️ Эти варианты предназначены для дебгугирования и тестирования. Изменение данных может повлиять на производительность и целостность данных.</translation>
     </message>
     <message>
         <source>I/O Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Обязательства ввода/вывода</translation>
     </message>
     <message>
         <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить прямой вход (F_NOCACHE / O_DIRECT)</translation>
     </message>
     <message>
         <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Обходить кеши страницы операционной системы для записей. Медленнее, но обеспечивает передачу данных непосредственно на устройство.</translation>
     </message>
     <message>
         <source>Enable Async I/O</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить Async I/O</translation>
     </message>
     <message>
         <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Многократная очередь записывается для перекрытия задержки устройства. Улучшает производительность при включении прямого ввода/вывода.</translation>
     </message>
     <message>
         <source>Queue Depth:</source>
-        <translation type="unfinished"></translation>
+        <translation>Глубина очереди:</translation>
     </message>
     <message>
         <source>Async queue depth: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Глубина синхронизированной очереди: %1</translation>
     </message>
     <message>
         <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
-        <translation type="unfinished"></translation>
+        <translation>Буферная память: ~%1-%2 МБ (различается по системе RAM)</translation>
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
-        <translation type="unfinished"></translation>
+        <translation>Игнорируйте пределы ввода/вывода устройства</translation>
     </message>
     <message>
         <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translation>Игнорируйте пределы глубины очереди и размера передачи, сообщенные устройством. Полезный для USB-NVMe-оболонки, которые не отражают свои возможности.</translation>
     </message>
     <message>
         <source>Enable Periodic Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить периодическое синхронизацию</translation>
     </message>
     <message>
         <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
-        <translation type="unfinished"></translation>
+        <translation>Периодически выбросать данные на диск во время написания. Автоматически отключается при активном прямом вводе/выводе.</translation>
     </message>
     <message>
         <source>Debugging</source>
-        <translation type="unfinished"></translation>
+        <translation>Отладка ошибок</translation>
     </message>
     <message>
         <source>Verbose Performance Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Запись вербовых показателей</translation>
     </message>
     <message>
         <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
-        <translation type="unfinished"></translation>
+        <translation>Зарегистрируйте подробную информацию о времени для каждой операции записи, чтобы помочь диагностировать проблемы с производительностью.</translation>
     </message>
     <message>
         <source>Network Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбор сети</translation>
     </message>
     <message>
         <source>Force IPv4-only Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузки только на IPv4</translation>
     </message>
     <message>
         <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Используйте только IPv4 для загрузки. Включить это, если вы столкнулись с проблемами соединения из-за поврежденного IPv6 маршрутизации.</translation>
     </message>
     <message>
         <source>Workarounds</source>
-        <translation type="unfinished"></translation>
+        <translation>Реабилитация</translation>
     </message>
     <message>
         <source>Counterfeit Card Mode (skip end-of-device checks)</source>
-        <translation type="unfinished"></translation>
+        <translation>Мод подделки карточки (пропускать проверки конца устройства)</translation>
     </message>
     <message>
         <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пропускать операции в конце устройства хранения. Включить это для поддельных карт SD, которые сообщают о поддельной большей мощности. Изображение диска должно быть меньше, чем реальная емкость карты.</translation>
     </message>
     <message>
         <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation type="unfinished"></translation>
+        <translation>️ Включить это только в том случае, если ваша карта SD сообщает о большей емкости, чем на самом деле. Убедитесь, что изображение на диске меньше фактической емкости карты!</translation>
     </message>
     <message>
         <source>Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation>Усовершенствованные функции</translation>
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">Безопасная загрузка</translation>
+        <translation>Безопасная загрузка</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Сильная безопасная бот доступна</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать безопасную настройку загрузки независимо от возможностей ОС. эквивалент знаку CLI - enable-secure-boot.</translation>
     </message>
     <message>
         <source>Current Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Современный статус</translation>
     </message>
     <message>
         <source>Close the debug options dialog without saving any changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Закройте диалог с параметрами отладки без сохранения изменений</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить</translation>
     </message>
     <message>
         <source>Apply the selected debug options</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить выбранные параметры отладки</translation>
     </message>
 </context>
 <context>
@@ -509,8 +561,16 @@
         <translation>Выберите ваше устройство ZimaOS</translation>
     </message>
     <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>Список устройств не удалось скачать. Проверьте интернет-соединение и попробуйте еще раз.
+
+Вы все еще можете написать файл изображения локального диска, нажав на следующее и выбирая &quot;Используйте изображение локального диск&quot; на следующем экране.</translation>
+    </message>
+    <message>
         <source>Loading device types...</source>
-        <translation type="unfinished"></translation>
+        <translation>Типы загрузочных устройств...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -530,25 +590,19 @@
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Используйте клавиши со стрелками для навигации, Enter или пробел для выбора.</translation>
+        <translation>Для перемещения используйте стрелки, для выбора — Enter или пробел</translation>
     </message>
     <message>
         <source>Unable to load device list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось загрузить список устройств</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
-        <translation type="unfinished"></translation>
+        <translation>Перепробуйте загружать список устройств</translation>
     </message>
 </context>
 <context>
@@ -559,7 +613,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Ejecting the storage device — do not remove it yet…</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбросить устройство хранения  не удалить его еще...</translation>
     </message>
     <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
@@ -567,7 +621,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство для хранения не могло быть выброшено. Закройте любую приложения, использующую ее, а затем нажмите Eject.</translation>
     </message>
     <message>
         <source>Please eject the storage device before removing it from your computer.</source>
@@ -575,11 +629,11 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Eject</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбросить</translation>
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбросить устройство для хранения, чтобы его можно было безопасно удалить</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -653,11 +707,18 @@ No data has been written for 30 seconds. This could be caused by:
 • System resource exhaustion
 
 Please check the storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Операция написания остановилась.
+
+Никаких данных не было написано в течение 30 секунд. Это может быть вызвано:
+• Устройство хранения отключено или не отвечает
+• Устройство не работает или не работает
+• исчерпание системных ресурсов
+
+Проверьте устройство хранения и попробуйте еще раз.</translation>
     </message>
     <message>
         <source>Failed to acquire write buffer slot</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось приобрести буферный слот для записи</translation>
     </message>
     <message>
         <source>The download has stalled.
@@ -668,7 +729,14 @@ No data received for 30 seconds. This could be caused by:
 • Firewall or proxy blocking the connection
 
 Please check your network connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузка остановилась.
+
+Никаких данных не было 30 секунд. Это может быть вызвано:
+• Потеря сетевого соединения или нестабильность
+• Удалённый сервер не отвечает
+• Фейрвол или прокси блокируют подключение
+
+Пожалуйста, проверьте подключение к сети и попробуйте еще раз.</translation>
     </message>
 </context>
 <context>
@@ -779,25 +847,27 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка настройки ОС...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки настройки ОС не были сохранены правильно на устройстве. Пропали или повреждены следующие файлы: %1.
+
+Устройство принимало данные, но не хранило их, что обычно означает, что карта SD или адаптер USB не работает или поддельная. Само изображение диска было написано правильно, но устройство не применяло бы ваши настройки на первом загрузке (так что вы не могли бы подключиться к нему). Попробуйте другую карту или читатель карты.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось выделить память для проверки.</translation>
     </message>
     <message>
         <source>seeking storage for verification</source>
-        <translation type="unfinished"></translation>
+        <translation>искать хранение для проверки</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка отсчета из хранилища.&lt;br&gt;Устройство вернуло меньше данных, чем ожидалось.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -889,33 +959,35 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось размонтировать диск &apos;%1&apos;. Пожалуйста, закрывайте любые приложения с использованием диска и попробуйте снова.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось размонтировать диск &apos;%1&apos;.</translation>
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ждём, когда машина будет доступна...%1с)</translation>
     </message>
     <message>
         <source>getting device size</source>
-        <translation type="unfinished"></translation>
+        <translation>получение размера устройства</translation>
     </message>
     <message>
         <source>Failed to allocate buffer for MBR zeroing.
 
 The system may be low on memory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось выделить буфер для нуля MBR.
+
+В системе может быть низкая память.</translation>
     </message>
     <message>
         <source>preparing storage device</source>
-        <translation type="unfinished"></translation>
+        <translation>приготовление устройства для хранения</translation>
     </message>
     <message>
         <source>Zero&apos;ing out end of drive...</source>
-        <translation type="unfinished"></translation>
+        <translation>Нулевая за рулем...</translation>
     </message>
     <message>
         <source>Timeout writing to end of storage device.
@@ -923,7 +995,11 @@ The system may be low on memory.</source>
 This may indicate a counterfeit SD card with fake capacity.
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Письмо с отсрочкой до конца устройства хранения.
+
+Это может указывать на поддельную карту в SD с поддельной емкостью.
+
+Пожалуйста, попробуйте другое устройство хранения.</translation>
     </message>
     <message>
         <source>Write error while trying to zero out last part of card.
@@ -931,21 +1007,27 @@ Please try a different storage device.</source>
 This could indicate the card is advertising wrong capacity (possible counterfeit).
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Напишите ошибку, пытаясь выбить последнюю часть карты.
+
+Это может указывать на то, что на карте рекламируется неправильная емкость (возможно подделка).
+
+Пожалуйста, попробуйте другое устройство хранения.</translation>
     </message>
     <message>
         <source>Storage device responding slowly. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство хранения реагирует медленно. Перезагрузка в режиме совместимости...</translation>
     </message>
     <message>
         <source>storage operation</source>
-        <translation type="unfinished"></translation>
+        <translation>эксплуатация хранения</translation>
     </message>
     <message>
         <source>Failed to open storage device.
 
 The device may be in use by another application, or you may not have permission to access it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть устройство хранения.
+
+Устройство может быть использовано другим приложением, или у вас может не быть разрешения на доступ к нему.</translation>
     </message>
     <message>
         <source>Error writing to storage device during %1.
@@ -956,49 +1038,70 @@ This could be caused by:
 • Hardware failure or bad sectors
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка записи на устройство хранения во время %1.
+
+Это может быть вызвано:
+• Устройство отключено или не реагирует
+• Устройство полностью защищено или защищено от записи
+• неисправность оборудования или плохие сектора
+
+Проверьте устройство и попробуйте снова.</translation>
     </message>
     <message>
         <source>Error reading from storage device during %1.
 
 The device may have been disconnected or is malfunctioning.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка чтения из устройства хранения в течение %1.
+
+Устройство может быть отключено или неисправно.</translation>
     </message>
     <message>
         <source>Error seeking on storage device during %1.
 
 The device may be malfunctioning or disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск ошибки на устройстве хранения во время %1.
+
+Устройство может неисправно работать или быть отключено.</translation>
     </message>
     <message>
         <source>Error getting storage device size.
 
 The device may not be properly recognized.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка с размером устройства хранения.
+
+Устройство может не быть правильно распознано.</translation>
     </message>
     <message>
         <source>Error closing storage device.
 
 The device may have been disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка закрытия устройства хранения.
+
+Возможно, устройство было отключено.</translation>
     </message>
     <message>
         <source>Failed to lock storage device.
 
 The device may be in use by another application. Please close any applications using this device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось заблокировать устройство хранения.
+
+Устройство может быть использовано другим применением. Пожалуйста, закрывайте любые приложения с использованием этого устройства и попробуйте снова.</translation>
     </message>
     <message>
         <source>Error syncing data to storage device.
 
 The device may have been disconnected or is not responding. Data may not have been fully written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка синхронизации данных с устройством хранения.
+
+Устройство может быть отключено или не реагирует. Возможно, данные не были полностью написаны.</translation>
     </message>
     <message>
         <source>Error flushing data to storage device.
 
 The device may have been disconnected or is not responding.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка передачи данных на устройство хранения.
+
+Устройство может быть отключено или не реагирует.</translation>
     </message>
     <message>
         <source>Storage device timed out during %1.
@@ -1009,13 +1112,22 @@ The device is not responding. This may indicate:
 • Driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство хранения, выписано в течение %1.
+
+Устройство не реагирует. Это может указывать на:
+• Устройство было отключено
+• Устройство не работает
+• Проблема с водителем или системой
+
+Пожалуйста, отключите устройство и подключите его снова, а затем попробуйте снова.</translation>
     </message>
     <message>
         <source>Unknown storage error during %1.
 
 Please try again or use a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Неизвестная ошибка хранения во время %1.
+
+Пожалуйста, попробуйте еще раз или используйте другое устройство хранения.</translation>
     </message>
     <message>
         <source>The storage device is not responding. This may indicate:
@@ -1024,7 +1136,12 @@ Please try again or use a different storage device.</source>
 • A driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство не реагирует. Это может указывать на:
+• Устройство было отключено
+• Устройство не работает
+• Проблема водителя или системы
+
+Пожалуйста, отключите устройство и подключите его снова, а затем попробуйте снова.</translation>
     </message>
     <message>
         <source>Error writing to storage device.
@@ -1035,35 +1152,42 @@ Some writes failed to complete. This could be caused by:
 • Hardware failure
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка записи на устройство хранения.
+
+Некоторые письма не были завершены. Это может быть вызвано:
+• Устройство хранения отключено во время записи
+• Устройство полностью защищено или защищено от записи
+• Неисправность оборудования
+
+Проверьте устройство и попробуйте снова.</translation>
     </message>
     <message>
         <source>flush</source>
-        <translation type="unfinished"></translation>
+        <translation>сброс</translation>
     </message>
     <message>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>синхронизация</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>сбросить изображение диска перед написанием таблицы разделов</translation>
     </message>
     <message>
         <source>writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>письменная таблица разделов</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка написания не удалась. Таблица разделов на устройстве хранения отличается от того, что было написано.</translation>
     </message>
     <message>
         <source>final flush</source>
-        <translation type="unfinished"></translation>
+        <translation>последнее выброс</translation>
     </message>
     <message>
         <source>final sync</source>
-        <translation type="unfinished"></translation>
+        <translation>окончательная синхронизация</translation>
     </message>
 </context>
 <context>
@@ -1110,11 +1234,26 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось размонтировать диск &apos;%1&apos;. Пожалуйста, закрывайте любые приложения с использованием диска и попробуйте снова.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось размонтировать диск &apos;%1&apos;.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Детали ошибки</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Понятно</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Закрыть детали ошибки</translation>
     </message>
 </context>
 <context>
@@ -1246,6 +1385,22 @@ Please check the device and try again.</source>
         <translation>Настроить последовательный интерфейс: Отключен, По умолчанию (решает система), Консоль и Аппаратное обеспечение (как консоль и UART), Аппаратное обеспечение (только UART) или Консоль (консоль только на поддерживаемых устройствах).</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>Отключено</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>Консоль и оборудование</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>Оборудование</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>Предупреждение о режиме работы USB-гаджета</translation>
     </message>
@@ -1269,16 +1424,20 @@ Please check the device and try again.</source>
 <context>
     <name>ImComboBox</name>
     <message>
+        <source>Error: Invalid selection</source>
+        <translation>Ошибка: недействительный выбор</translation>
+    </message>
+    <message>
         <source>Search: &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск: &quot;%1&quot;</translation>
     </message>
     <message>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 из %2</translation>
     </message>
     <message>
         <source>No matches</source>
-        <translation type="unfinished"></translation>
+        <translation>Никаких совпадений</translation>
     </message>
 </context>
 <context>
@@ -1351,7 +1510,7 @@ or type a path in the address bar above.</source>
     </message>
     <message>
         <source>Enter folder or file path…</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите папку или путь файла...</translation>
     </message>
 </context>
 <context>
@@ -1453,11 +1612,11 @@ or type a path in the address bar above.</source>
     </message>
     <message>
         <source>%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <source>%1.%2 %3</source>
-        <translation type="unfinished"></translation>
+        <translation>%1.%2 %3</translation>
     </message>
     <message>
         <source>Unknown precondition failure.</source>
@@ -1500,10 +1659,6 @@ or type a path in the address bar above.</source>
         <translation> или </translation>
     </message>
     <message>
-        <source>No organisation API key is configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Сохранить данные о производительности</translation>
     </message>
@@ -1515,7 +1670,9 @@ or type a path in the address bar above.</source>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
+        <translation>Удерживаемость недостаточно велика.
+
+Изображение требует как минимум %1 хранилища.</translation>
     </message>
     <message>
         <source>Failed to start write operation: insufficient memory.
@@ -1523,27 +1680,31 @@ The image requires at least %1 of storage.</source>
 The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
 
 Technical details: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось начать работу записи: недостаточная память.
+
+Система не имеет достаточной доступной памяти для выполнения этой операции. Попробуйте закрыть другие приложения, чтобы освободить память, а затем попробуйте еще раз.
+
+Технические данные: %1</translation>
     </message>
     <message>
         <source>Failed to start write operation: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось запустить операцию записи: %1</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограниченная скорость загрузки</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограниченная скоростью декомпрессии</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограниченная скоростью устройства хранения</translation>
     </message>
     <message>
         <source>Verifying written data</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка письменных данных</translation>
     </message>
 </context>
 <context>
@@ -1655,7 +1816,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Why am I being asked this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Почему меня спрашивают об этом?</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1667,28 +1828,21 @@ Technical details: %1</source>
     </message>
     <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
-        <translation type="unfinished"></translation>
+        <translation>Это также устанавливает регуляторную домену Wi-Fi для вашего региона.</translation>
     </message>
 </context>
 <context>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished">Для записи образа ZimaOS USB Creator необходим доступ к диску.</translation>
+        <translation>Для записи образа ZimaOS USB Creator необходим доступ к диску.</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>Рекомендуется</translation>
+        <translation>Тип файла:</translation>
     </message>
 </context>
 <context>
@@ -1739,7 +1893,15 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Используйте клавиши со стрелками для навигации, Enter или пробел для выбора.</translation>
+        <translation>Для перемещения используйте стрелки, для выбора — Enter или пробел</translation>
+    </message>
+    <message>
+        <source>Recommended</source>
+        <translation>Рекомендуется</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>Испытательная версия</translation>
     </message>
     <message>
         <source>Operating system category</source>
@@ -1747,7 +1909,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>Используйте клавиши со стрелками для навигации, Enter или пробел для выбора, стрелку влево для возврата назад.</translation>
+        <translation>Для перемещения используйте стрелки, для выбора — Enter или пробел, для возврата — стрелку влево</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1755,46 +1917,46 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Unable to download OS list. You can still use a local image file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось загрузить список операционной системы. Вы все еще можете использовать локальный файл изображения диска.</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
-        <translation type="unfinished"></translation>
+        <translation>Попробуйте загрузить список операционной системы</translation>
     </message>
 </context>
 <context>
     <name>PasswordlessSudoWarningDialog</name>
     <message>
         <source>Passwordless Sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Судо без пароля</translation>
     </message>
     <message>
         <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Включение без пароля sudo позволяет любому процессу, выполняющемуся в качестве этого пользователя, получить полные привилегии root без аутентификации. Это значительно ослабляет безопасность вашей системы.</translation>
     </message>
     <message>
         <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Это можно сделать только в том случае, если вы понимаете риски и имеете определенные потребности, такие как автоматизированные сценарии или безголовная работа.</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">ОТМЕНА</translation>
+        <translation>ОТМЕНА</translation>
     </message>
     <message>
         <source>Cancel and keep sudo requiring a password</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить и сохранить sudo , требующий пароля</translation>
     </message>
     <message>
         <source>ENABLE</source>
-        <translation type="unfinished"></translation>
+        <translation>СОГЛАСОВАННО</translation>
     </message>
     <message>
         <source>Enable passwordless sudo for this user account</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить без пароля sudo для этой учетной записи пользователя</translation>
     </message>
 </context>
 <context>
@@ -1889,6 +2051,89 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>Выберите способ аутентификации при подключении к ZimaOS по SSH. Аутентификация по паролю использует указанные вами учётные данные. Аутентификация с открытым ключом использует пару криптографических ключей и является более безопасной.</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>Репозиторий контента</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>Выберите, где получить изображения операционной системы.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (по умолчанию)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Официальные изображения ZimaOS, готовые к установке.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>Использовать официальный репозиторий операционной системы ZimaOS</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>Использовать пользовательский файл</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Загрузите список изображений диска из файла на компьютере.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>Загрузить список операционных систем из JSON-файла на вашем компьютере</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Выберите файл хранилища</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>Выбрать JSON-файл пользовательского репозитория на вашем компьютере</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>Выбрать репозиторий</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>Использовать пользовательский URL</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Загрузите список изображений диска из веб-адреса.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>Загрузить список операционных систем с указанного веб-адреса</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>Указанный адрес хранилища</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Изменение источника возвращает вас к выбору устройства.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>Закрыть диалоговое окно репозитория, не меняя источник контента.</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Применить изменения</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>Применить новый репозиторий контента и перезапустить мастер настройки с самого начала.</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>Выбрать пользовательский репозиторий</translation>
     </message>
 </context>
 <context>
@@ -2022,15 +2267,15 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>SSH key %1: %2, %3</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH ключ %1: %2, %3</translation>
     </message>
     <message>
         <source>SSH key %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH ключ %1: %2</translation>
     </message>
     <message>
         <source>SSH key %1</source>
-        <translation type="unfinished"></translation>
+        <translation>SSH ключ %1</translation>
     </message>
     <message>
         <source>Remove</source>
@@ -2062,7 +2307,7 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Select SSH Public Key</source>
-        <translation type="unfinished">Выбрать открытый ключ SSH</translation>
+        <translation>Выбрать открытый ключ SSH</translation>
     </message>
     <message>
         <source>Add the entered SSH key</source>
@@ -2075,10 +2320,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
 </context>
 <context>
     <name>StorageSelectionStep</name>
-    <message>
-        <source>No storage devices found</source>
-        <translation>Устройства хранения данных не найдены</translation>
-    </message>
     <message>
         <source>Mounted as %1</source>
         <translation>Подключено как %1</translation>
@@ -2113,29 +2354,7 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Используйте клавиши со стрелками для навигации, Enter или пробел для выбора</translation>
-    </message>
-    <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>Все видимые устройства доступны только для чтения.
-Попробуйте подключить новое устройство или снимите флажок
-&apos;Исключить системные диски&apos; ниже.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>Все устройства доступны только для чтения.
-Пожалуйста, подключите запоминающее устройство с возможностью записи.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>Все устройства скрыты фильтром.
-Снимите флажок &apos;Исключить системные диски&apos; ниже,
-чтобы отобразить системные диски.</translation>
+        <translation>Для перемещения используйте стрелки, для выбора — Enter или пробел</translation>
     </message>
     <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
@@ -2159,15 +2378,33 @@ to show system drives.</source>
     </message>
     <message>
         <source>Could not list storage devices: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось перечислить устройства хранения: %1</translation>
     </message>
     <message>
         <source>Error: Could not list storage devices. %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка: Не удалось перечислить устройства хранения. %1</translation>
+    </message>
+    <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>Устройства хранения не были обнаружены. Проверяйте разрешения на доступ и воссоединяйте устройство.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>Подключить устройство хранения, например жесткий диск, флеш-накопитель USB или карту памяти, чтобы продолжить.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>Доступные устройства предназначены только для чтения. Подключите накопитель с возможностью записи.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>Нет доступных накопителей.
+Подключите накопитель или снимите флажок «Исключить системные диски» ниже.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось перечислить устройства хранения: %1. Это может быть проблема разрешений. Попробуйте запустить приложение с помощью привилегий администратора.</translation>
     </message>
 </context>
 <context>
@@ -2178,7 +2415,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Версия создателя %1 доступна. Хотите зайти на сайт, чтобы скачать его?</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
@@ -2194,7 +2431,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновление</translation>
     </message>
 </context>
 <context>
@@ -2273,23 +2510,23 @@ to show system drives.</source>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ваш сохраненный пароль не совместим с выбранной операционной системой, поэтому, пожалуйста, введите его снова.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить без пароля sudo</translation>
     </message>
     <message>
         <source>Allow this user to run sudo commands without entering a password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Позвольте этому пользователю запускать команды sudo без ввода пароля.</translation>
     </message>
     <message>
         <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Позволяет любому процессу, выполняющемуся в качестве этого пользователя, получить полные привилегии root без пароля. Включите его только в том случае, если у вас есть конкретные потребности, например, автоматизированные скрипты или безголовая операция.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation type="unfinished"></translation>
+        <translation>Информация без пароля sudo: </translation>
     </message>
 </context>
 <context>
@@ -2439,7 +2676,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Wi‑Fi</source>
-        <translation type="unfinished"></translation>
+        <translation>Wi-Fi</translation>
     </message>
     <message>
         <source>App Options</source>
@@ -2466,66 +2703,64 @@ to show system drives.</source>
         <translation>Пожалуйста, подождите…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>Сохранить существующий</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>Безопасная загрузка</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation type="unfinished"></translation>
+        <translation>Откройте настройки приложения для настройкі звуковых предупреждений, автоматического выброса и предупреждений</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть локальный архив?</translation>
     </message>
     <message>
         <source>Switch to a custom repository?</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейти на пользовательский хранилище?</translation>
     </message>
     <message>
         <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вы открываете локальный файл манифестации ZimaOS USB Creator. Это заменит текущий список ОС содержанием данного файла.</translation>
     </message>
     <message>
         <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Сайт просит переключить ZimaOS USB Creator на пользовательский хранилище ОС.
+
+</translation>
     </message>
     <message>
         <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
-        <translation type="unfinished"></translation>
+        <translation>Примите только, если доверяете этому источнику и намеренно нажимаете на ссылку для открытия этого хранилища.</translation>
     </message>
     <message>
         <source>Repository URL: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>URL хранилища: %1</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Открыть</translation>
+        <translation>Открыть</translation>
     </message>
     <message>
         <source>Switch repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Переменный хранилище</translation>
     </message>
     <message>
         <source>Open the local manifest file and use it as the OS repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Откройте локальный файл манифеста и используйте его в качестве хранилища ОС</translation>
     </message>
     <message>
         <source>Switch to the custom repository from the link</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейти к пользовательскому хранилищу с ссылки</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Закрыть</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <source>Keep your current repository settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохраняйте текущие настройки хранилища</translation>
     </message>
 </context>
 <context>
@@ -2540,20 +2775,53 @@ to show system drives.</source>
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>Стереть данные с этого устройства?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>Запись образа удалит все данные на этом устройстве.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Целевой накопитель</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Накопитель</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>Это действие нельзя отменить. Перед продолжением сделайте резервную копию важных файлов.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Стереть и записать</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Стереть и записать (%1)</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Переход на режим совместимости - запись продолжается...</translation>
     </message>
     <message>
         <source>Write stalled - no progress for %1 seconds.
 
 Please check your storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Письмо застряло - никакого прогресса в течение %1 секунд.
+
+Проверьте устройство хранения и попробуйте еще раз.</translation>
     </message>
     <message>
         <source>Storage device not responding. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройство хранения не отвечает. Перезагрузка в режиме совместимости...</translation>
     </message>
 </context>
 <context>
@@ -2567,6 +2835,10 @@ Please check your storage device and try again.</source>
         <translation>Запись</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>Отмена…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>Сводка</translation>
     </message>
@@ -2576,35 +2848,15 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограниченная скорость загрузки</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Ограниченная скоростью декомпрессии</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>Вы собираетесь УДАЛИТЬ все данные на: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>устройство хранения данных</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Это действие является ПЕРМАНЕНТНЫМ и НЕ МОЖЕТ быть отменено.</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>Я понимаю, стереть и записать</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>Пожалуйста, подождите...</translation>
+        <translation>Ограниченная скоростью устройства хранения</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2655,6 +2907,10 @@ Please check your storage device and try again.</source>
         <translation>Отменить запись</translation>
     </message>
     <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>Отмена… Дождитесь освобождения устройства.</translation>
+    </message>
+    <message>
         <source>Skip verification and finish the write process</source>
         <translation>Пропустите проверку и завершите процесс записи</translation>
     </message>
@@ -2679,6 +2935,18 @@ Please check your storage device and try again.</source>
         <translation>Ход записи</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>Скачать: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>Загружен: %1 МБ</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>Загрузка образа…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>Завершение…</translation>
     </message>
@@ -2691,12 +2959,8 @@ Please check your storage device and try again.</source>
         <translation>настройки</translation>
     </message>
     <message>
-        <source>Please wait... %1</source>
-        <translation>Пожалуйста, подождите... %1</translation>
-    </message>
-    <message>
         <source>Writing... %1 MB written</source>
-        <translation type="unfinished"></translation>
+        <translation>Написание... %1 МБ написано</translation>
     </message>
 </context>
 <context>
@@ -2708,22 +2972,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>Error</source>
         <translation>Ошибка</translation>
-    </message>
-    <message>
-        <source>Erase</source>
-        <translation>Стереть</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>Отформатировать карту как FAT32</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>Использовать настраиваемый образ</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>Выбрать настраиваемый файл .img на компьютере</translation>
     </message>
     <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
@@ -2739,11 +2987,7 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close the error dialog and continue</source>
-        <translation>Закрыть диалоговое окно с сообщением об ошибке и продолжить работу</translation>
+        <translation>Хорошо .</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>
@@ -2787,23 +3031,39 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Save Performance Data</source>
-        <translation type="unfinished">Сохранить данные о производительности</translation>
+        <translation>Сохранить данные о производительности</translation>
     </message>
     <message>
         <source>JSON files (*.json)</source>
-        <translation type="unfinished"></translation>
+        <translation>Файлы JSON (*.json)</translation>
     </message>
     <message>
         <source>All files (*)</source>
-        <translation type="unfinished">Все файлы (*)</translation>
+        <translation>Все файлы (*)</translation>
     </message>
     <message>
         <source>Offline</source>
-        <translation type="unfinished"></translation>
+        <translation>Оффлайн</translation>
     </message>
     <message>
         <source>Using data from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Используя данные из %1</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>Форматировать накопитель</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>Стерть данные и форматировать устройство хранения в FAT32</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>Использовать локальный образ</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>Выберите локальный файл изображения диска (IMG, ISO или изображение сжатого диска)</translation>
     </message>
 </context>
 </TS>

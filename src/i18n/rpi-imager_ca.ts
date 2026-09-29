@@ -24,12 +24,12 @@
         <translation>Desa</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>Voleu desactivar els avisos?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (predeterminat)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation>Si desactiveu els avisos, el ZimaOS USB Creator &lt;b&gt;no mostrarà les confirmacions abans d&apos;escriure les imatges&lt;/b&gt;. Encara haureu d&apos; &lt;b&gt;escriure el nom exacte &lt;/b&gt; en seleccionar una unitat del sistema.</translation>
+        <source>Disable warnings?</source>
+        <translation>Voleu desactivar els avisos?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -40,8 +40,28 @@
         <translation>Desa les opcions seleccionades i aplica-les al ZimaOS USB Creator</translation>
     </message>
     <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>Ja no se us demanarà confirmació abans d&apos;escriure una imatge.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>La protecció de les unitats del sistema continua activa</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Per seleccionar una unitat del sistema, encara cal introduir-ne el nom exacte.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Mantén els avisos</translation>
+    </message>
+    <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>Mantingues els avisos activats i torna al diàleg d&apos;opcions</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Desactiva igualment</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>Reprodueix una notificació d&apos;àudio quan el procés d&apos;escriptura de la imatge es completi</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Gestionar les preferències d&apos;escriptura i les fonts d&apos;imatge del disc.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>Expulsa automàticament el dispositiu d&apos;emmagatzematge quan el procés d&apos;escriptura es completi correctament</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Omet els diàlegs de confirmació abans d&apos;escriure imatges (només per a usuaris avançats)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Salta la confirmació abans de borrar un dispositiu.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>Repositori de contingut</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Edita</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>Canvia la font de les imatges del sistema operatiu entre el repositori oficial de ZimaOS i fonts personalitzades</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -93,11 +133,11 @@
     </message>
     <message>
         <source>Audio notification unavailable - no viable audio player found on this system</source>
-        <translation type="unfinished"></translation>
+        <translation>Notificació d&apos;àudio no està disponible - cap reproductor d&apos;audiu viable trobat en aquest sistema</translation>
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Versió: %1</translation>
     </message>
 </context>
 <context>
@@ -163,7 +203,7 @@
     </message>
     <message>
         <source>Finish</source>
-        <translation>Acaba</translation>
+        <translation>Finalitza</translation>
     </message>
     <message>
         <source>Select image</source>
@@ -242,59 +282,59 @@
     <name>ConfirmOtpProgramDialog</name>
     <message>
         <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
-        <translation type="unfinished"></translation>
+        <translation>Avís: OTP La programació és PERMANENT i IRREVERSIBLE</translation>
     </message>
     <message>
         <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aquesta operació programarà permanentment el hash de clau pública de arrancament segura en la memòria programable única (OTP) del dispositiu. Un cop programat, aquest dispositiu només arrancarà imatges signades amb la clau privada corresponent. Aquesta acció no pot ser revocada.</translation>
     </message>
     <message>
         <source>Device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositiu: %1</translation>
     </message>
     <message>
         <source>Serial: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Serial: %1</translation>
     </message>
     <message>
         <source>Key fingerprint: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Impressió d&apos;una clau: %1</translation>
     </message>
     <message>
         <source>Also lock JTAG debug port (additional irreversible action)</source>
-        <translation type="unfinished"></translation>
+        <translation>També bloquejar el port de descomposició JTAG (actuació irreversible addicional)</translation>
     </message>
     <message>
         <source>To confirm, type the device serial number below:</source>
-        <translation type="unfinished"></translation>
+        <translation>Per confirmar, escriu el número de sèrie del dispositiu a continuació:</translation>
     </message>
     <message>
         <source>Serial to type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Serial per tipus: %1</translation>
     </message>
     <message>
         <source>Type device serial number exactly</source>
-        <translation type="unfinished"></translation>
+        <translation>El número de sèrie exacte del dispositiu</translation>
     </message>
     <message>
         <source>Confirmation input. Type exactly: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrada de confirmació. Tip exact: %1</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">CANCEL·LA</translation>
+        <translation>CANCEL·LA</translation>
     </message>
     <message>
         <source>Cancel OTP programming and return to previous screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel·lar la programació OTP i tornar a la pantalla anterior</translation>
     </message>
     <message>
         <source>PROGRAM OTP</source>
-        <translation type="unfinished"></translation>
+        <translation>PROGRAMA OTP</translation>
     </message>
     <message>
         <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Programar permanentment la clau de arranque segura en la memòria del dispositiu OTP</translation>
     </message>
 </context>
 <context>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>En desactivar el filtratge d&apos;unitats del sistema, &lt;b&gt;les unitats del sistema es mostraran&lt;/b&gt; a la llista.</translation>
+        <source>Show system drives?</source>
+        <translation>Voleu mostrar els discos del sistema?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>MANTENIR EL FILTRE ACTIVAT</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>Les disques del sistema contenen el teu sistema operatiu i també poden contenir fitxers personals.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>MOSTRAR UNITATS DEL SISTEMA</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>Escriure a la unitat equivocada n&apos;esborrarà permanentment les dades i pot impedir que l&apos;ordinador s&apos;iniciï.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>Encara haurà de seleccionar un dispositiu i confirmar el seu nom abans d&apos;escriure a una unitat del sistema.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>Mantén-les ocultes</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>Mantingues les unitats del sistema ocultes per evitar danys accidentals al sistema operatiu</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>Mostra les unitats del sistema</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -375,47 +427,47 @@
     <name>DebugOptionsDialog</name>
     <message>
         <source>Debug Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcions de depreciació</translation>
     </message>
     <message>
         <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation type="unfinished"></translation>
+        <translation>️ Aquestes opcions són per a la depuración i la prova. El seu canvi pot afectar el rendiment i la integritat de les dades.</translation>
     </message>
     <message>
         <source>I/O Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcions d&apos;I/O</translation>
     </message>
     <message>
         <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
-        <translation type="unfinished"></translation>
+        <translation>Activar I/O directe (F_NOCACHE / O_DIRECT)</translation>
     </message>
     <message>
         <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorar el cache de la pàgina del sistema operatiu per escriure. Més lent però garanteix que les dades passen directament al dispositiu.</translation>
     </message>
     <message>
         <source>Enable Async I/O</source>
-        <translation type="unfinished"></translation>
+        <translation>Abilitar l&apos;I/O de sincronizació</translation>
     </message>
     <message>
         <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>La fila múltiple escriu per sobreponer la latencia del dispositiu. Millora el rendiment amb I/O directe activat.</translation>
     </message>
     <message>
         <source>Queue Depth:</source>
-        <translation type="unfinished"></translation>
+        <translation>Depesa de la fila:</translation>
     </message>
     <message>
         <source>Async queue depth: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Depesa de les files de filas de sincronització: %1</translation>
     </message>
     <message>
         <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
-        <translation type="unfinished"></translation>
+        <translation>Memòria tampó: ~%1-%2 MB (varia per RAM del sistema)</translation>
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
-        <translation>Ignora els límits d'E/S del dispositiu</translation>
+        <translation>Ignora els límits d&apos;E/S del dispositiu</translation>
     </message>
     <message>
         <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
@@ -423,83 +475,83 @@
     </message>
     <message>
         <source>Enable Periodic Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Abilitar la sincronizació periòdica</translation>
     </message>
     <message>
         <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
-        <translation type="unfinished"></translation>
+        <translation>Periodicament llançar dades al disc durant la redacció. Automàticament desactivat quan l&apos;I/O directe està activa.</translation>
     </message>
     <message>
         <source>Debugging</source>
-        <translation type="unfinished"></translation>
+        <translation>Debugging</translation>
     </message>
     <message>
         <source>Verbose Performance Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Registre de rendiment verbose</translation>
     </message>
     <message>
         <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
-        <translation type="unfinished"></translation>
+        <translation>Enregistrar informació detallada del temps per a cada operació de redacció per ajudar a diagnosticar problemes de rendiment.</translation>
     </message>
     <message>
         <source>Network Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcions de xarxa</translation>
     </message>
     <message>
         <source>Force IPv4-only Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Força només IPv4 Descargues</translation>
     </message>
     <message>
         <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Només utilitzeu IPv4 per descarregar. Abilitar això si experimenta problemes de connexió a causa del IPv6 encaminament rotat.</translation>
     </message>
     <message>
         <source>Workarounds</source>
-        <translation type="unfinished"></translation>
+        <translation>Solucions d&apos;eliminació</translation>
     </message>
     <message>
         <source>Counterfeit Card Mode (skip end-of-device checks)</source>
-        <translation type="unfinished"></translation>
+        <translation>Mode de targeta falsificada (salta les verificacions del final del dispositiu)</translation>
     </message>
     <message>
         <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
-        <translation type="unfinished"></translation>
+        <translation>Skip operacions al final del dispositiu de almacenament. Abilitar-ho per a tarjetes falses SD que indiquen una capacitat falsa més gran. La imatge del disc ha de ser menor que la capacitat real de la targeta.</translation>
     </message>
     <message>
         <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation type="unfinished"></translation>
+        <translation>️ Només habilitar això si la targeta SD informa d&apos;una capacitat més gran que realment té. Assegureu-vos que la imatge del disc és més petita que la capacitat real de la targeta!</translation>
     </message>
     <message>
         <source>Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation>Característiques avançades</translation>
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">Arrencada segura</translation>
+        <translation>Arrencada segura</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation>Força l'arrencada segura disponible</translation>
+        <translation>Força l&apos;arrencada segura disponible</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation>Mostra la personalització d'arrencada segura independentment de les capacitats del sistema operatiu. Equivalent a la bandera --enable-secure-boot CLI.</translation>
+        <translation>Mostra la personalització d&apos;arrencada segura independentment de les capacitats del sistema operatiu. Equivalent a la bandera --enable-secure-boot CLI.</translation>
     </message>
     <message>
         <source>Current Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Estat actual</translation>
     </message>
     <message>
         <source>Close the debug options dialog without saving any changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Tanca el diàleg de les opcions de descomposició sense guardar cap canvi</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplica</translation>
     </message>
     <message>
         <source>Apply the selected debug options</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar les opcions de debug seleccionades</translation>
     </message>
 </context>
 <context>
@@ -509,8 +561,16 @@
         <translation>Seleccioneu el vostre dispositiu ZimaOS</translation>
     </message>
     <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>La llista de dispositius no es va poder descarregar. Vegeu la vostra connexió a Internet i intenteu de nou.
+
+Encara pots escriure un fitxer d&apos;imatge de disc local pulsant Next i seleccionant &apos;Utilizar una imatge de disc locals&apos; a la pantalla següent.</translation>
+    </message>
+    <message>
         <source>Loading device types...</source>
-        <translation>S'estan carregant els tipus de dispositius...</translation>
+        <translation>S&apos;estan carregant els tipus de dispositius...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -530,25 +590,19 @@
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Utilitzeu les tecles de fletxa per navegar, Retorn o Espai per seleccionar</translation>
+        <translation>Feu servir les fletxes per navegar i Retorn o Espai per seleccionar</translation>
     </message>
     <message>
         <source>Unable to load device list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>No es pot cargar l&apos;historial de dispositius</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Torna-ho a provar</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
-        <translation type="unfinished"></translation>
+        <translation>Reintentar descarregar la llista de dispositius</translation>
     </message>
 </context>
 <context>
@@ -559,7 +613,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Ejecting the storage device — do not remove it yet…</source>
-        <translation>S'està expulsant el dispositiu d'emmagatzematge: encara no el treu...</translation>
+        <translation>S&apos;està expulsant el dispositiu d&apos;emmagatzematge: encara no el treu...</translation>
     </message>
     <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
@@ -567,7 +621,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
-        <translation>No s'ha pogut expulsar el dispositiu d'emmagatzematge. Tanca qualsevol aplicació que encara l'utilitzi i, a continuació, prem Expulsa.</translation>
+        <translation>No s&apos;ha pogut expulsar el dispositiu d&apos;emmagatzematge. Tanca qualsevol aplicació que encara l&apos;utilitzi i, a continuació, prem Expulsa.</translation>
     </message>
     <message>
         <source>Please eject the storage device before removing it from your computer.</source>
@@ -579,7 +633,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation>Expulsa el dispositiu d'emmagatzematge perquè es pugui treure amb seguretat</translation>
+        <translation>Expulsa el dispositiu d&apos;emmagatzematge perquè es pugui treure amb seguretat</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -653,11 +707,18 @@ No data has been written for 30 seconds. This could be caused by:
 • System resource exhaustion
 
 Please check the storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;operació d&apos;escriptura s&apos;ha aturat.
+
+No s&apos;han escrit dades durant 30 segons. Això podria ser causat per:
+• Dispositiu d&apos;emmagatzematge desconectat o sense resposta
+• Dispositiu fallit o està defectuós
+• Esgotament de recursos del sistema
+
+Vegeu el dispositiu d&apos;emmagatzematge i intenteu de nou.</translation>
     </message>
     <message>
         <source>Failed to acquire write buffer slot</source>
-        <translation type="unfinished"></translation>
+        <translation>No s&apos;ha obtingut l&apos;espai de buffer d&apos;escriptura</translation>
     </message>
     <message>
         <source>The download has stalled.
@@ -668,7 +729,14 @@ No data received for 30 seconds. This could be caused by:
 • Firewall or proxy blocking the connection
 
 Please check your network connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>La descarga s&apos;ha aturat.
+
+No s&apos;han rebut dades durant 30 segons. Això podria ser causat per:
+• Conexió a la xarxa perduda o inestable
+• El servidor remot no va respondre
+• Firewall o proxy bloquejant la connexió
+
+Vegeu la vostra connexió a la xarxa i intenteu de nou.</translation>
     </message>
 </context>
 <context>
@@ -779,19 +847,19 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation>S'està verificant la personalització del SO...</translation>
+        <translation>S&apos;està verificant la personalització del SO...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation>La configuració de personalització del SO no s'ha emmagatzemat correctament al dispositiu. Falten o estan malmesos els fitxers següents: %1.
+        <translation>La configuració de personalització del SO no s&apos;ha emmagatzemat correctament al dispositiu. Falten o estan malmesos els fitxers següents: %1.
 
-El dispositiu ha acceptat les dades però no les ha conservat, la qual cosa normalment significa que la targeta SD o l'adaptador USB estan fallant o són falsificats. La imatge en si s'ha escrit correctament, però el dispositiu no hauria aplicat la configuració en el primer arrencada (per la qual cosa no hauríeu pogut connectar-vos-hi). Prova amb una targeta o un lector de targetes diferent.</translation>
+El dispositiu ha acceptat les dades però no les ha conservat, la qual cosa normalment significa que la targeta SD o l&apos;adaptador USB estan fallant o són falsificats. La imatge en si s&apos;ha escrit correctament, però el dispositiu no hauria aplicat la configuració en el primer arrencada (per la qual cosa no hauríeu pogut connectar-vos-hi). Prova amb una targeta o un lector de targetes diferent.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
-        <translation>No s'ha pogut assignar memòria per a la verificació.</translation>
+        <translation>No s&apos;ha pogut assignar memòria per a la verificació.</translation>
     </message>
     <message>
         <source>seeking storage for verification</source>
@@ -799,7 +867,7 @@ El dispositiu ha acceptat les dades però no les ha conservat, la qual cosa norm
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de lectura de l&apos;entrega.&lt;br&gt;El dispositiu va retornar menys dades del previst.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -891,11 +959,11 @@ El dispositiu ha acceptat les dades però no les ha conservat, la qual cosa norm
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>No es va desmontar el disc &apos;%1&apos;. Si us plau, tanca qualsevol aplicació utilitzant el disc i torna a intentar-ho.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>No es va desmontar el disc &apos;%1&apos;.</translation>
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
@@ -903,21 +971,23 @@ El dispositiu ha acceptat les dades però no les ha conservat, la qual cosa norm
     </message>
     <message>
         <source>getting device size</source>
-        <translation type="unfinished"></translation>
+        <translation>obtenir la mida del dispositiu</translation>
     </message>
     <message>
         <source>Failed to allocate buffer for MBR zeroing.
 
 The system may be low on memory.</source>
-        <translation type="unfinished"></translation>
+        <translation>No s&apos;ha assegurat el tampó per a la zerolització del MBR.
+
+El sistema pot ser pobre en memòria.</translation>
     </message>
     <message>
         <source>preparing storage device</source>
-        <translation type="unfinished"></translation>
+        <translation>preparació del dispositiu de conservació</translation>
     </message>
     <message>
         <source>Zero&apos;ing out end of drive...</source>
-        <translation type="unfinished"></translation>
+        <translation>Zero&apos;ing fora de final de conducció...</translation>
     </message>
     <message>
         <source>Timeout writing to end of storage device.
@@ -925,7 +995,11 @@ The system may be low on memory.</source>
 This may indicate a counterfeit SD card with fake capacity.
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escriure temps de temps fins al final del dispositiu de almacenament.
+
+Això pot indicar una targeta falsificada en SD amb capacitat falsa.
+
+Si us plau, prova un altre dispositiu d&apos;emmagatzematge.</translation>
     </message>
     <message>
         <source>Write error while trying to zero out last part of card.
@@ -933,21 +1007,27 @@ Please try a different storage device.</source>
 This could indicate the card is advertising wrong capacity (possible counterfeit).
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escriure l&apos;error mentre es tracta de zeroar l&apos;última part de la targeta.
+
+Això podria indicar que la targeta està anunciant capacitat incorrecta (possible falsificació).
+
+Si us plau, prova un altre dispositiu d&apos;emmagatzematge.</translation>
     </message>
     <message>
         <source>Storage device responding slowly. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositiu d&apos;emmagatzematge respon lentament. Reiniciació en mode de compatibilitat...</translation>
     </message>
     <message>
         <source>storage operation</source>
-        <translation type="unfinished"></translation>
+        <translation>operació d&apos;emmagatzematge</translation>
     </message>
     <message>
         <source>Failed to open storage device.
 
 The device may be in use by another application, or you may not have permission to access it.</source>
-        <translation type="unfinished"></translation>
+        <translation>No va obrir el dispositiu de memòria.
+
+El dispositiu pot estar utilitzat per una altra aplicació, o pot ser que no tingui permís d&apos;accedir-hi.</translation>
     </message>
     <message>
         <source>Error writing to storage device during %1.
@@ -958,49 +1038,70 @@ This could be caused by:
 • Hardware failure or bad sectors
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Errors d&apos;escriptura en el dispositiu de memòria durant %1.
+
+Això podria ser causat per:
+• Disconnexió o falta de resposta
+• L&apos;aparell està complet o està protegit per escrit
+• Falla de hardware o sectors dolents
+
+Vegeu el dispositiu i intenteu de nou.</translation>
     </message>
     <message>
         <source>Error reading from storage device during %1.
 
 The device may have been disconnected or is malfunctioning.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de lectura del dispositiu de memòria durant %1.
+
+El dispositiu pot haver estat desconectat o està funcionant incorrectament.</translation>
     </message>
     <message>
         <source>Error seeking on storage device during %1.
 
 The device may be malfunctioning or disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de recerca en el dispositiu d&apos;emmagatzematge durant %1.
+
+El dispositiu pot estar en mal funcionament o desconectat.</translation>
     </message>
     <message>
         <source>Error getting storage device size.
 
 The device may not be properly recognized.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error en obtenir la mida del dispositiu de memòria.
+
+El dispositiu pot no ser reconegut adequadament.</translation>
     </message>
     <message>
         <source>Error closing storage device.
 
 The device may have been disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de tancament del dispositiu de almacenament.
+
+El dispositiu pot haver estat desconectat.</translation>
     </message>
     <message>
         <source>Failed to lock storage device.
 
 The device may be in use by another application. Please close any applications using this device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>No va bloquejar el dispositiu de almacenament.
+
+El dispositiu pot ser utilitzat per una altra aplicació. Si us plau, tanqueu qualsevol aplicació utilitzant aquest dispositiu i intenteu de nou.</translation>
     </message>
     <message>
         <source>Error syncing data to storage device.
 
 The device may have been disconnected or is not responding. Data may not have been fully written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de sincronizació de dades amb dispositiu de memòria.
+
+El dispositiu pot haver estat desconectat o no respon. Les dades poden no haver estat escrites completament.</translation>
     </message>
     <message>
         <source>Error flushing data to storage device.
 
 The device may have been disconnected or is not responding.</source>
-        <translation type="unfinished"></translation>
+        <translation>Errors de transferència de dades al dispositiu de memòria.
+
+El dispositiu pot haver estat desconectat o no respon.</translation>
     </message>
     <message>
         <source>Storage device timed out during %1.
@@ -1011,13 +1112,22 @@ The device is not responding. This may indicate:
 • Driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositiu d&apos;emmagatzematge obtingut durant %1.
+
+El dispositiu no respon. Això pot indicar:
+• El dispositiu va ser desconectat
+• Dispositiu fallit
+• Problemes del conductor o del sistema
+
+Desconectar i reconectar el dispositiu, després intentar de nou.</translation>
     </message>
     <message>
         <source>Unknown storage error during %1.
 
 Please try again or use a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de memòria desconegut durant %1.
+
+Si us plau, torna a intentar-ho o utilitzeu un dispositiu de conservació diferent.</translation>
     </message>
     <message>
         <source>The storage device is not responding. This may indicate:
@@ -1026,7 +1136,12 @@ Please try again or use a different storage device.</source>
 • A driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>El dispositiu d&apos;emmagatzematge no respon. Això pot indicar:
+• El dispositiu va ser desconectat
+• El dispositiu ha fallat
+• Un problema del conductor o del sistema
+
+Desconectar i reconectar el dispositiu, després intentar de nou.</translation>
     </message>
     <message>
         <source>Error writing to storage device.
@@ -1037,35 +1152,42 @@ Some writes failed to complete. This could be caused by:
 • Hardware failure
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Errors d&apos;escriptura en el dispositiu de memòria.
+
+Alguns escrits no van acabar. Això podria ser causat per:
+• Dispositiu d&apos;emmagatzematge desconectat durant l&apos;escriptura
+• L&apos;aparell està complet o està protegit per escrit
+• Fallida de l&apos;hardware
+
+Vegeu el dispositiu i intenteu de nou.</translation>
     </message>
     <message>
         <source>flush</source>
-        <translation type="unfinished"></translation>
+        <translation>l&apos;esplendor</translation>
     </message>
     <message>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>sincronització</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation>buidar la imatge abans d'escriure la taula de particions</translation>
+        <translation>buidar la imatge abans d&apos;escriure la taula de particions</translation>
     </message>
     <message>
         <source>writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>taula de partició</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation>Ha fallat la verificació de l'escriptura. La taula de particions del dispositiu d'emmagatzematge és diferent del que s'ha escrit.</translation>
+        <translation>Ha fallat la verificació de l&apos;escriptura. La taula de particions del dispositiu d&apos;emmagatzematge és diferent del que s&apos;ha escrit.</translation>
     </message>
     <message>
         <source>final flush</source>
-        <translation type="unfinished"></translation>
+        <translation>flush final</translation>
     </message>
     <message>
         <source>final sync</source>
-        <translation type="unfinished"></translation>
+        <translation>sincronització final</translation>
     </message>
 </context>
 <context>
@@ -1112,11 +1234,26 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>No es va desmontar el disc &apos;%1&apos;. Si us plau, tanca qualsevol aplicació utilitzant el disc i torna a intentar-ho.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>No es va desmontar el disc &apos;%1&apos;.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Detalls d&apos;errors</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Entesos</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Tancar els detalls d&apos;error</translation>
     </message>
 </context>
 <context>
@@ -1248,6 +1385,22 @@ Please check the device and try again.</source>
         <translation>Configureu la interfície sèrie: Desactivada, Predeterminada (el sistema decideix), Consola i maquinari (tots dos consola i UART), Maquinari (només UART) o Consola (només consola en dispositius compatibles).</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>Desactivat</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Predeterminat</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>Consola i maquinari</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>Maquinari</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>Avís del mode de gadget USB</translation>
     </message>
@@ -1271,16 +1424,20 @@ Please check the device and try again.</source>
 <context>
     <name>ImComboBox</name>
     <message>
+        <source>Error: Invalid selection</source>
+        <translation>Error: Selecció invalida</translation>
+    </message>
+    <message>
         <source>Search: &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar: &quot;%1&quot;</translation>
     </message>
     <message>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 del %2</translation>
     </message>
     <message>
         <source>No matches</source>
-        <translation type="unfinished"></translation>
+        <translation>No hi ha fósforis.</translation>
     </message>
 </context>
 <context>
@@ -1345,7 +1502,7 @@ Please check the device and try again.</source>
         <source>Navigate to a folder using the panel on the left,
 or type a path in the address bar above.</source>
         <translation>Navegueu a una carpeta utilitzant el tauler de l&apos;esquerra,
-            o escriviu un camí a la barra d&apos;adreces de dalt.</translation>
+o escriviu un camí a la barra d&apos;adreces de dalt.</translation>
     </message>
     <message>
         <source>Save</source>
@@ -1353,7 +1510,7 @@ or type a path in the address bar above.</source>
     </message>
     <message>
         <source>Enter folder or file path…</source>
-        <translation type="unfinished"></translation>
+        <translation>Introdueix la carpeta o el camí del fitxer...</translation>
     </message>
 </context>
 <context>
@@ -1499,11 +1656,7 @@ or type a path in the address bar above.</source>
     </message>
     <message>
         <source> or </source>
-        <translation>o</translation>
-    </message>
-    <message>
-        <source>No organisation API key is configured.</source>
-        <translation>No s'ha configurat cap clau API d'organització.</translation>
+        <translation> o </translation>
     </message>
     <message>
         <source>Save Performance Data</source>
@@ -1517,7 +1670,9 @@ or type a path in the address bar above.</source>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
+        <translation>La capacitat d&apos;emmagatzematge no és prou gran.
+
+L&apos;imatge del disc requereix almenys %1 de memòria.</translation>
     </message>
     <message>
         <source>Failed to start write operation: insufficient memory.
@@ -1525,27 +1680,31 @@ The image requires at least %1 of storage.</source>
 The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
 
 Technical details: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>No va iniciar l&apos;operació d&apos;escriptura: memòria insuficient.
+
+El sistema no té prou memòria disponible per realitzar aquesta operació. Intenta tancar altres aplicacions per alliberar la memòria, i després torna a intentar-ho.
+
+Detalls tècnics: %1</translation>
     </message>
     <message>
         <source>Failed to start write operation: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>No va iniciar l&apos;operació d&apos;escriptura: %1</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitat per velocitat de descarrega</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitat per velocitat de descompressió</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitat per la velocitat del dispositiu d&apos;emmagatzematge</translation>
     </message>
     <message>
         <source>Verifying written data</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificació de dades escrites</translation>
     </message>
 </context>
 <context>
@@ -1669,28 +1828,21 @@ Technical details: %1</source>
     </message>
     <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
-        <translation type="unfinished"></translation>
+        <translation>Això també defineix el domini reglamentari Wi-Fi per a la seva regió.</translation>
     </message>
 </context>
 <context>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished">El ZimaOS USB Creator necessita accedir al disc per escriure la imatge.</translation>
+        <translation>El ZimaOS USB Creator necessita accedir al disc per escriure la imatge.</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation>Tipus d'arxiu:</translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>Recomanat</translation>
+        <translation>Tipus d&apos;arxiu:</translation>
     </message>
 </context>
 <context>
@@ -1741,7 +1893,15 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Utilitzeu les tecles de fletxa per navegar, Retorn o Espai per seleccionar</translation>
+        <translation>Feu servir les fletxes per navegar i Retorn o Espai per seleccionar</translation>
+    </message>
+    <message>
+        <source>Recommended</source>
+        <translation>Recomanat</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>Versió d&apos;assaig</translation>
     </message>
     <message>
         <source>Operating system category</source>
@@ -1749,7 +1909,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>Utilitzeu les tecles de fletxa per navegar, Retorn o Espai per seleccionar, Fletxa esquerra per tornar</translation>
+        <translation>Feu servir les fletxes per navegar i Retorn o Espai per seleccionar, feu servir la fletxa esquerra per tornar enrere</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1757,46 +1917,46 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Unable to download OS list. You can still use a local image file.</source>
-        <translation type="unfinished"></translation>
+        <translation>No es pot descarregar la llista de sistema operatiu. Encara pots utilitzar un fitxer d&apos;imatge de disc local.</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Torna-ho a provar</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
-        <translation type="unfinished"></translation>
+        <translation>Torna a intentar descarregar la llista d&apos;OS</translation>
     </message>
 </context>
 <context>
     <name>PasswordlessSudoWarningDialog</name>
     <message>
         <source>Passwordless Sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Sudo sense contrasenya</translation>
     </message>
     <message>
         <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Abilitar sudo sense contrasenya permet que qualsevol procés que s&apos;executeixi com a aquest usuari obtingui privilegis plens de root sense autenticació. Això debilita significativament la seguretat del seu sistema.</translation>
     </message>
     <message>
         <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Només habilitat això si entens els riscos i tens una necessitat específica, com els guions automàtics o l&apos;operació sense cap.</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">CANCEL·LA</translation>
+        <translation>CANCEL·LA</translation>
     </message>
     <message>
         <source>Cancel and keep sudo requiring a password</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel·lar i mantenir sudo que requereix una contrasenya</translation>
     </message>
     <message>
         <source>ENABLE</source>
-        <translation type="unfinished"></translation>
+        <translation>ANABLE</translation>
     </message>
     <message>
         <source>Enable passwordless sudo for this user account</source>
-        <translation type="unfinished"></translation>
+        <translation>Abilitar sudo sense contrasenya per a aquest compte d&apos;usuari</translation>
     </message>
 </context>
 <context>
@@ -1814,21 +1974,24 @@ Technical details: %1</source>
 
 Please run as Administrator.</source>
         <translation>No esteu executant com a administrador.
-            Executeu com a administrador.</translation>
+
+Executeu com a administrador.</translation>
     </message>
     <message>
         <source>You are not running as root.
 
 Please run with elevated privileges: sudo %1</source>
         <translation>No esteu executant com a root.
-            Executeu amb privilegis elevats: sudo %1</translation>
+
+Executeu amb privilegis elevats: sudo %1</translation>
     </message>
     <message>
         <source>You are not running as root.
 
 Click &quot;Install Authorization&quot; to set up automatic privilege elevation, or run manually with: sudo %1</source>
         <translation>No esteu executant com a root.
-            Feu clic a «Instal·la l&apos;autorització» per configurar l&apos;elevació de privilegis automàtica, o executeu manualment amb: sudo %1</translation>
+
+Feu clic a «Instal·la l&apos;autorització» per configurar l&apos;elevació de privilegis automàtica, o executeu manualment amb: sudo %1</translation>
     </message>
 </context>
 <context>
@@ -1888,6 +2051,89 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>Trieu com us autenticareu en connectar-vos al vostre ZimaOS mitjançant SSH. L&apos;autenticació de contrasenya utilitza les credencials del compte que heu configurat. L&apos;autenticació de clau pública utilitza un parell de claus criptogràfiques i és més segura.</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>Repositori de contingut</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>Seleccioneu on obtenir les imatges del sistema operatiu.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (predeterminat)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Imatges oficials ZimaOS, preparats per instal·lar.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>Utilitza el repositori del sistema operatiu oficial de ZimaOS</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>Utilitza un fitxer personalitzat</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Carrega una llista d&apos;imatges de disc d&apos;un fitxer en el teu ordinador.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>Carrega la llista de sistemes operatius des d&apos;un fitxer JSON del vostre ordinador</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Seleccionar un fitxer de repositori</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>Seleccioneu un fitxer JSON de repositori personalitzat del vostre ordinador</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>Selecciona el repositori</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>Utilitza un URL personalitzat</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Carrega una llista d&apos;imatges de disc d&apos;una adreça web.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>Baixa la llista de sistemes operatius des d&apos;una adreça web personalitzada</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>URL de repositori personalitzat</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Canviar la font us torna a la selecció de dispositiu.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>Tanca el diàleg del repositori sense canviar la font de contingut</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Aplica els canvis</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>Aplica el nou repositori de contingut i reinicia l&apos;assistent des del principi</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>Selecciona el repositori personalitzat</translation>
     </message>
 </context>
 <context>
@@ -2075,10 +2321,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
 <context>
     <name>StorageSelectionStep</name>
     <message>
-        <source>No storage devices found</source>
-        <translation>No s&apos;ha trobat cap dispositiu d&apos;emmagatzematge</translation>
-    </message>
-    <message>
         <source>Mounted as %1</source>
         <translation>Muntat com a %1</translation>
     </message>
@@ -2112,29 +2354,7 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Utilitzeu les tecles de fletxa per navegar, Retorn o Espai per seleccionar</translation>
-    </message>
-    <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>Tots els dispositius visibles són només de lectura.
-            Proveu de connectar un dispositiu nou o desmarqueu
-            &apos;Exclou les unitats del sistema&apos; a sota.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>Tots els dispositius són només de lectura.
-            Connecteu un dispositiu d&apos;emmagatzematge on es pugui escriure.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>Tots els dispositius estan ocults pel filtre.
-            Desmarqueu &apos;Exclou les unitats del sistema&apos; a sota
-            per mostrar les unitats del sistema.</translation>
+        <translation>Feu servir les fletxes per navegar i Retorn o Espai per seleccionar</translation>
     </message>
     <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
@@ -2158,15 +2378,33 @@ to show system drives.</source>
     </message>
     <message>
         <source>Could not list storage devices: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>No va poder enumerar els dispositius de almacenament: %1</translation>
     </message>
     <message>
         <source>Error: Could not list storage devices. %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error: No es va trobar la llista dels dispositius de memòria. %1</translation>
+    </message>
+    <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>Els dispositius d&apos;emmagatzematge no van ser detectats. Verifica els permisos d&apos;accés i reconeix el teu dispositiu.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>Coneixar un dispositiu de memòria, com un disc dur, un disc flash o targeta de memòria USB, per continuar.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>Els dispositius disponibles són de només lectura. Connecteu un dispositiu d&apos;emmagatzematge que permeti l&apos;escriptura.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>No hi ha dispositius d&apos;emmagatzematge disponibles.
+Connecteu-ne un o desmarqueu «Exclou les unitats del sistema» a continuació.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
-        <translation type="unfinished"></translation>
+        <translation>No va poder enumerar els dispositius de memòria: %1. Això pot ser un problema d&apos;autoritats. Intenta executar l&apos;aplicació amb privilegis d&apos;administrador.</translation>
     </message>
 </context>
 <context>
@@ -2193,7 +2431,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualització</translation>
     </message>
 </context>
 <context>
@@ -2272,23 +2510,23 @@ to show system drives.</source>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>La contrasenya guardada no és compatible amb el sistema operatiu seleccionat, així que per favor, entreu-la de nou.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Abilitar sudo sense contrasenya</translation>
     </message>
     <message>
         <source>Allow this user to run sudo commands without entering a password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permetre a aquest usuari executar comandos sudo sense entrar una contrasenya.</translation>
     </message>
     <message>
         <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Permet que qualsevol procés executat com a aquest usuari obtingui privilegis complets root sense contrasenya. Només habilitar això si tens una necessitat específica, com els guions automàtics o l&apos;operació sense cap.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation type="unfinished"></translation>
+        <translation>Informació sudo sense contrasenya: </translation>
     </message>
 </context>
 <context>
@@ -2465,66 +2703,64 @@ to show system drives.</source>
         <translation>Espereu…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>Mantén l&apos;existent</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>Arrencada segura</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation>Obre els paràmetres de l'aplicació per configurar les alertes de so, l'expulsió automàtica i les indicacions d'avís</translation>
+        <translation>Obre els paràmetres de l&apos;aplicació per configurar les alertes de so, l&apos;expulsió automàtica i les indicacions d&apos;avís</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir el fitxer de repositori local?</translation>
     </message>
     <message>
         <source>Switch to a custom repository?</source>
-        <translation type="unfinished"></translation>
+        <translation>Passar a un repositori personalitzat?</translation>
     </message>
     <message>
         <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Estàs oberint un fitxer de manifest local ZimaOS USB Creator. Això substituirà l&apos;actual llista de sistemes operatius amb el contingut d&apos;aquest fitxer.</translation>
     </message>
     <message>
         <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Un lloc web està sol·licitant canviar ZimaOS USB Creator per utilitzar un repositori d&apos;OS personalitzat.
+
+</translation>
     </message>
     <message>
         <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
-        <translation type="unfinished"></translation>
+        <translation>Només accepta si confia en aquesta font i intencionadament fa clic en un enllaç per obrir aquest repositori.</translation>
     </message>
     <message>
         <source>Repository URL: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;URL del repositori: %1</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Obre</translation>
+        <translation>Obre</translation>
     </message>
     <message>
         <source>Switch repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositori de canvi</translation>
     </message>
     <message>
         <source>Open the local manifest file and use it as the OS repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir el fitxer de manifest local i utilitzar-lo com el repositori del sistema operatiu</translation>
     </message>
     <message>
         <source>Switch to the custom repository from the link</source>
-        <translation type="unfinished"></translation>
+        <translation>Passa al repositori personalitzat des del enllaç</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Cancel·la</translation>
+        <translation>Cancel·la</translation>
     </message>
     <message>
         <source>Keep your current repository settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Mantenir les configuracions actuals del repositori</translation>
     </message>
 </context>
 <context>
@@ -2539,20 +2775,53 @@ to show system drives.</source>
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>Voleu esborrar aquest dispositiu?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>L&apos;escriptura de la imatge esborrarà totes les dades d&apos;aquest dispositiu.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Dispositiu d&apos;emmagatzematge de destinació</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Dispositiu d&apos;emmagatzematge</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>Aquesta acció no es pot desfer. Feu una còpia de seguretat dels fitxers importants abans de continuar.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Esborra i escriu</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Esborra i escriu (%1)</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Es va canviar al mode de compatibilitat. Escriure continuant...</translation>
     </message>
     <message>
         <source>Write stalled - no progress for %1 seconds.
 
 Please check your storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Escriure estancada - cap progrés per %1 segons.
+
+Vegeu el vostre dispositiu d&apos;emmagatzematge i intenteu de nou.</translation>
     </message>
     <message>
         <source>Storage device not responding. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositiu d&apos;emmagatzematge no respon. Reiniciació en mode de compatibilitat...</translation>
     </message>
 </context>
 <context>
@@ -2566,6 +2835,10 @@ Please check your storage device and try again.</source>
         <translation>Escriu</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>S&apos;està cancel·lant…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>Resum</translation>
     </message>
@@ -2575,35 +2848,15 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitat per velocitat de descarrega</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Limitat per velocitat de descompressió</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>Esteu a punt d&apos;ESBORRAR totes les dades de: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>el dispositiu d&apos;emmagatzematge</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Aquesta acció és PERMANENT i NO es pot desfer.</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>Ho entenc, esborra i escriu</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>Espereu...</translation>
+        <translation>Limitat per la velocitat del dispositiu d&apos;emmagatzematge</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2654,6 +2907,10 @@ Please check your storage device and try again.</source>
         <translation>Cancel·la l&apos;escriptura</translation>
     </message>
     <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>S&apos;està cancel·lant… Espereu que s&apos;alliberi el dispositiu.</translation>
+    </message>
+    <message>
         <source>Skip verification and finish the write process</source>
         <translation>Omet la verificació i finalitza el procés d&apos;escriptura</translation>
     </message>
@@ -2678,6 +2935,18 @@ Please check your storage device and try again.</source>
         <translation>Progrés de l&apos;escriptura</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>Descarga: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>Descarregat: %1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>S&apos;està baixant la imatge…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>S&apos;està finalitzant…</translation>
     </message>
@@ -2690,12 +2959,8 @@ Please check your storage device and try again.</source>
         <translation>personalitzacions</translation>
     </message>
     <message>
-        <source>Please wait... %1</source>
-        <translation>Espereu... %1</translation>
-    </message>
-    <message>
         <source>Writing... %1 MB written</source>
-        <translation type="unfinished"></translation>
+        <translation>Escriure... %1 MB escrit</translation>
     </message>
 </context>
 <context>
@@ -2706,23 +2971,7 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Error</source>
-        <translation>S&apos;ha produït un error</translation>
-    </message>
-    <message>
-        <source>Erase</source>
-        <translation>Esborra</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>Formata la targeta com a FAT32</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>Utilitza una personalitzada</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>Selecciona una imatge .img personalitzada de l&apos;ordinador</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
@@ -2739,10 +2988,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>OK</source>
         <translation>D&apos;acord</translation>
-    </message>
-    <message>
-        <source>Close the error dialog and continue</source>
-        <translation>Tanca el diàleg d&apos;error i continua</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>
@@ -2798,11 +3043,27 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Offline</source>
-        <translation type="unfinished"></translation>
+        <translation>Offline</translation>
     </message>
     <message>
         <source>Using data from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilitzant dades del %1</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>Formata el dispositiu d&apos;emmagatzematge</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>Esborrar dades i formatar el dispositiu d&apos;emmagatzematge com FAT32</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>Utilitza una imatge local</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>Seleccioneu un fitxer d&apos;imatge de disc local (IMG, ISO o imatge de disc comprimit)</translation>
     </message>
 </context>
 </TS>

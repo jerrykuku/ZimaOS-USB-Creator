@@ -25,7 +25,7 @@ ComboBox {
     // Accessibility properties
     Accessible.role: Accessible.ComboBox
     Accessible.name: currentText
-    Accessible.description: indicateError ? "Error: Invalid selection" : ""
+    Accessible.description: indicateError ? qsTr("Error: Invalid selection") : ""
     Accessible.editable: editable
     Accessible.focused: activeFocus
     

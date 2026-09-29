@@ -48,6 +48,11 @@ Item {
     // Track selections for display in summary
     property string selectedDeviceName: ""
     property string selectedOsName: ""
+    property string selectedOsUrl: ""
+    property string previousOsUrl: ""
+    property string selectedStorageDevice: ""
+    property bool singleDeviceMode: false
+    readonly property bool showDeviceStep: hasNetworkConnectivity && !singleDeviceMode
     property string selectedStorageName: ""
 
     // Track previous selections to detect changes
@@ -189,7 +194,7 @@ Item {
 
     // Wizard step names for sidebar (grouped for cleaner display)
     // When offline, skip Device selection
-    readonly property var stepNames: hasNetworkConnectivity ? [qsTr("Device"), qsTr("OS"), qsTr("Storage"), qsTr("Writing"), qsTr("Done")] : [qsTr("OS"), qsTr("Storage"), qsTr("Writing"), qsTr("Done")]
+    readonly property var stepNames: showDeviceStep ? [qsTr("Device"), qsTr("OS"), qsTr("Storage"), qsTr("Writing"), qsTr("Done")] : [qsTr("OS"), qsTr("Storage"), qsTr("Writing"), qsTr("Done")]
 
     readonly property int firstCustomizationStep: stepHostnameCustomization
 
@@ -207,15 +212,15 @@ Item {
     function getSidebarIndex(wizardStep) {
         if (wizardStep === stepDeviceSelection) {
             // Device is at index 0 when online, not shown when offline
-            return hasNetworkConnectivity ? 0 : -1;
+            return showDeviceStep ? 0 : -1;
         } else if (wizardStep === stepOSSelection) {
-            return hasNetworkConnectivity ? 1 : 0;
+            return showDeviceStep ? 1 : 0;
         } else if (wizardStep === stepStorageSelection) {
-            return hasNetworkConnectivity ? 2 : 1;
+            return showDeviceStep ? 2 : 1;
         } else if (wizardStep === stepWriting) {
-            return hasNetworkConnectivity ? 3 : 2; // Writing
+            return showDeviceStep ? 3 : 2; // Writing
         } else if (wizardStep === stepDone) {
-            return hasNetworkConnectivity ? 4 : 3; // Done
+            return showDeviceStep ? 4 : 3; // Done
         }
         return 0;
     }
@@ -289,7 +294,9 @@ Item {
 
         // Clear device-dependent state
         selectedOsName = "";
+        selectedOsUrl = "";
         selectedStorageName = "";
+        selectedStorageDevice = "";
         customizationSupported = true;  // Reset to default
 
         // Clear all customization flags
@@ -314,6 +321,7 @@ Item {
 
         // Clear OS-dependent state
         selectedStorageName = "";
+        selectedStorageDevice = "";
 
         // Clear customization flags since they depend on the specific OS
         // The OS selection logic will set customizationSupported appropriately
@@ -337,7 +345,7 @@ Item {
     // Map sidebar index back to the first wizard step in that group
     function getWizardStepFromSidebarIndex(sidebarIndex) {
         // When offline, device selection is not shown, so indices shift
-        if (hasNetworkConnectivity) {
+        if (showDeviceStep) {
             switch (sidebarIndex) {
             case 0:
                 return stepDeviceSelection;
@@ -826,7 +834,7 @@ Item {
                 prevIndex = stepStorageSelection;
             } else {
                 // Skip device selection if offline (it would be empty/useless)
-                if (prevIndex === stepDeviceSelection && !hasNetworkConnectivity) {
+                if (prevIndex === stepDeviceSelection && !showDeviceStep) {
                     // Can't go back further, stay at current step
                     return;
                 }
@@ -844,7 +852,7 @@ Item {
     function jumpToStep(stepIndex) {
         if (stepIndex >= 0 && stepIndex < root.totalSteps) {
             // Prevent jumping to device selection when offline
-            if (stepIndex === stepDeviceSelection && !hasNetworkConnectivity) {
+            if (stepIndex === stepDeviceSelection && !showDeviceStep) {
                 console.log("Cannot jump to device selection when offline");
                 return;
             }
@@ -925,7 +933,7 @@ Item {
             imageWriter: root.imageWriter
             wizardContainer: root
             // Hide back button when offline (device selection was skipped)
-            showBackButton: root.hasNetworkConnectivity
+            showBackButton: root.showDeviceStep
             appOptionsButton: optionsButton
             onNextClicked: root.nextStep()
             onBackClicked: root.previousStep()
@@ -1294,13 +1302,16 @@ Item {
     function resetWizard() {
         // Reset all wizard state to initial values
         // Start at OS selection if offline, device selection if online
-        currentStep = hasNetworkConnectivity ? 0 : 1;
+        singleDeviceMode = false;
+        currentStep = hasNetworkConnectivity ? stepDeviceSelection : stepOSSelection;
         permissibleStepsBitmap = 1;  // Reset to only Device step permissible
         isWriting = false;
         writeAnotherMode = false;
         selectedDeviceName = "";
         selectedOsName = "";
+        selectedOsUrl = "";
         selectedStorageName = "";
+        selectedStorageDevice = "";
         previousDeviceName = "";
         previousOsName = "";
         hostnameConfigured = false;
@@ -1339,6 +1350,7 @@ Item {
         // Reset only the storage selection to allow choosing a new storage device
         // while preserving device, OS, and customization settings
         selectedStorageName = "";
+        selectedStorageDevice = "";
 
         // Keep all steps permissible - they've already been completed
         // This allows backward navigation if needed
@@ -1368,6 +1380,12 @@ Item {
             invalidateOSDependentSteps();
         }
         previousOsName = selectedOsName;
+    }
+
+    onSelectedOsUrlChanged: {
+        if (previousOsUrl !== "" && previousOsUrl !== selectedOsUrl)
+            invalidateOSDependentSteps();
+        previousOsUrl = selectedOsUrl;
     }
 
     // Keep customization items visible when navigating within customization

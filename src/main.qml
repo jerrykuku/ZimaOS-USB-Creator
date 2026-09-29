@@ -20,30 +20,90 @@ import RpiImager
 ApplicationWindow {
     id: window
     visible: true
-    flags: Qt.FramelessWindowHint | Qt.Window
+    readonly property bool usesNativeWindowChrome: !ImageWriterSingleton.isEmbeddedMode()
+            && (Qt.platform.os === "osx" || Qt.platform.os === "windows")
+    readonly property bool usesMacTitleBar: usesNativeWindowChrome && Qt.platform.os === "osx"
+    readonly property bool usesLinuxCustomChrome: Qt.platform.os === "linux" && !ImageWriterSingleton.isEmbeddedMode()
+    readonly property bool fillsScreen: visibility === Window.Maximized || visibility === Window.FullScreen
+    readonly property int customShadowInset: usesLinuxCustomChrome ? 12
+            : !usesNativeWindowChrome && Qt.platform.os === "windows" ? 8 : 0
+    readonly property int windowFrameInset: fillsScreen ? 0 : customShadowInset
+    readonly property real windowCornerRadius: usesNativeWindowChrome || fillsScreen ? 0 : Style.radiusPanel
+    // Windows supplies these metrics in logical pixels from its DWM frame.
+    // Zero means the ordinary system title bar is in use (e.g. a fallback).
+    property real nativeTitleBarHeight: 0
+    property real nativeTitleBarInset: 0
+    // Linux uses a client-drawn title bar with Ubuntu-style controls so its transparent
+    // background and centered title do not depend on the desktop theme.
+    // On Windows, the native helper extends the DWM frame; Qt's expanded
+    // title-bar mode would instead draw its own caption buttons.
+    flags: usesMacTitleBar ? Qt.Window | Qt.WindowFullscreenButtonHint
+                             | Qt.ExpandedClientAreaHint | Qt.NoTitleBarBackgroundHint
+           : usesNativeWindowChrome ? Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint
+                                      | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint
+                                      | Qt.WindowCloseButtonHint
+                                    : Qt.FramelessWindowHint | Qt.Window
 
     background: Rectangle {
-        color: Style.transparent
+        color: window.usesNativeWindowChrome ? Style.colorSurfacePage : Style.transparent
     }
-    color: Style.transparent
 
-    // Single rounded surface for the title bar and application content.
+    // The header sits above ApplicationWindow's content control. A MouseArea
+    // in background cannot receive presses intercepted by that control.
+    // macOS uses Qt's safe area; Windows reserves the height of its DWM frame.
+    // Windows hit testing handles moving and double-clicking in native code.
+    header: MouseArea {
+        height: window.visibility === Window.FullScreen ? 0
+                : window.usesMacTitleBar ? window.SafeArea.margins.top : window.nativeTitleBarHeight
+        visible: height > 0
+        acceptedButtons: window.usesMacTitleBar ? Qt.LeftButton : Qt.NoButton
+        onPressed: window.startSystemMove()
+
+        Text {
+            anchors.centerIn: parent
+            // Symmetric space keeps the title centered in the window and
+            // clear of the native traffic-light buttons, even for long titles.
+            width: Math.max(0, parent.width - 2 * Math.max(100, window.nativeTitleBarInset))
+            text: window.title
+            color: Style.colorTextChromeMuted
+            font.family: Style.fontFamilyBold
+            font.pixelSize: Style.fontSizePixelSm
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
+        }
+    }
+    color: usesNativeWindowChrome ? Style.colorSurfacePage : Style.transparent
+
+    function toggleMaximized() {
+        if (visibility === Window.FullScreen)
+            return
+        if (visibility === Window.Maximized)
+            showNormal()
+        else
+            showMaximized()
+    }
+
+    // macOS/Windows own the outer corners and shadow. Linux draws its rounded
+    // surface on a transparent window, with room for a small client shadow.
     Rectangle {
         id: windowSurface
         anchors.fill: parent
-        anchors.margins: Qt.platform.os === "windows" ? 8 : 0
+        anchors.margins: window.windowFrameInset
         color: Style.colorSurfacePage
-        radius: Style.radiusPanel
+        radius: window.windowCornerRadius
+        antialiasing: true
         clip: true
         z: 0
 
-        // Add drop shadow on Windows only (macOS has native window shadow)
-        layer.enabled: Qt.platform.os === "windows"
+        // Native Windows keeps its DWM shadow; never draw a second one.
+        layer.enabled: window.windowFrameInset > 0
         layer.effect: MultiEffect {
             shadowEnabled: true
             shadowColor: Qt.rgba(0, 0, 0, 0.15)
             shadowBlur: 0.5
-            shadowVerticalOffset: 4
+            blurMax: window.usesLinuxCustomChrome ? 16 : 32
+            shadowVerticalOffset: window.usesLinuxCustomChrome ? 2 : 4
             shadowHorizontalOffset: 0
         }
     }
@@ -55,10 +115,10 @@ ApplicationWindow {
     // Expose overlay root to child components for dialog parenting
     readonly property alias overlayRootItem: overlayRoot
 
-    width: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(680)
-    height: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(450)
-    minimumWidth: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(680)
-    minimumHeight: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(420)
+    width: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(680) + 2 * customShadowInset
+    height: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(450) + 2 * customShadowInset
+    minimumWidth: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(680) + 2 * customShadowInset
+    minimumHeight: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(420) + 2 * customShadowInset
 
     // Track custom repo host for title display
     property string customRepoHost: ImageWriterSingleton.customRepoHost()
@@ -80,61 +140,83 @@ ApplicationWindow {
         return baseTitle
     }
 
-    // Custom title bar keeps the application chrome consistent across platforms.
+    // Linux and embedded/other frameless platforms use the custom controls.
     Rectangle {
         id: customTitleBar
         parent: windowSurface
         anchors.top: windowSurface.top
         anchors.left: windowSurface.left
         anchors.right: windowSurface.right
-        height: Style.titleBarHeight
-        color: Style.colorSurfacePage
-        radius: Style.radiusPanel
+        visible: !window.usesNativeWindowChrome && window.visibility !== Window.FullScreen
+        height: visible ? Style.titleBarHeight : 0
+        color: Style.transparent
         clip: true
         z: 2000
 
         MouseArea {
             anchors.fill: parent
-            onPressed: window.startSystemMove()
+            acceptedButtons: Qt.LeftButton
+            property point pressPosition
+            property bool moveRequested: false
+            onPressed: function(mouse) {
+                pressPosition = Qt.point(mouse.x, mouse.y)
+                moveRequested = false
+            }
+            // Starting a system move on every press can swallow the second
+            // click. Start only once the pointer crosses the drag threshold.
+            onPositionChanged: function(mouse) {
+                if (pressed && !moveRequested
+                        && Math.abs(mouse.x - pressPosition.x) + Math.abs(mouse.y - pressPosition.y)
+                           >= Qt.styleHints.startDragDistance) {
+                    moveRequested = true
+                    window.startSystemMove()
+                }
+            }
+            onDoubleClicked: window.toggleMaximized()
         }
 
         Row {
-            anchors.left: window.isWindowsTitleBar ? undefined : parent.left
-            anchors.right: window.isWindowsTitleBar ? parent.right : undefined
+            id: windowControls
+            readonly property bool rightAligned: window.isWindowsTitleBar || window.usesLinuxCustomChrome
+            anchors.left: rightAligned ? undefined : parent.left
+            anchors.right: rightAligned ? parent.right : undefined
             anchors.top: parent.top
-            anchors.leftMargin: window.isWindowsTitleBar ? 0 : Style.spacingCardInset
+            anchors.leftMargin: rightAligned ? 0 : Style.spacingCardInset
             // Windows caption controls sit flush with the right edge. The
             // title bar's rounded clipping keeps the window's top-right
             // corner rounded while allowing the close button to reach it.
-            anchors.rightMargin: 0
+            anchors.rightMargin: window.usesLinuxCustomChrome ? 12 : 0
             anchors.topMargin: (parent.height - height) / 2
-            spacing: window.isWindowsTitleBar ? 0 : Style.spacingContentInset
+            spacing: window.usesLinuxCustomChrome ? 6 : window.isWindowsTitleBar ? 0 : Style.spacingContentInset
 
             Repeater {
-                // macOS: close/minimize/maximize on the left. Windows:
-                // minimize/maximize/close on the right.
-                model: window.isWindowsTitleBar ? [1, 2, 0] : [0, 1, 2]
+                // Ubuntu/Windows: minimize/maximize/close on the right.
+                model: windowControls.rightAligned ? [1, 2, 0] : [0, 1, 2]
                 delegate: Rectangle {
                     required property int modelData
                     required property int index
                     readonly property int actionIndex: modelData
                     readonly property bool windowsStyle: window.isWindowsTitleBar
-                    width: windowsStyle ? 40 : Style.titleBarControlSize
-                    height: windowsStyle ? 32 : Style.titleBarControlSize
-                    radius: windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    readonly property bool ubuntuStyle: window.usesLinuxCustomChrome
+                    readonly property bool maximized: window.visibility === Window.Maximized
+                    onMaximizedChanged: glyphCanvas.requestPaint()
+                    width: ubuntuStyle ? 28 : windowsStyle ? 40 : Style.titleBarControlSize
+                    height: ubuntuStyle ? 28 : windowsStyle ? 32 : Style.titleBarControlSize
+                    radius: ubuntuStyle || windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    opacity: ubuntuStyle && !window.active ? 0.5 : 1
                     // The close button reaches the window edge, so preserve
                     // the title bar's rounded top-right corner on that item.
-                    topLeftRadius: windowsStyle ? 0 : Style.titleBarControlSize / 2
-                    topRightRadius: windowsStyle && actionIndex === 0
+                    topLeftRadius: ubuntuStyle || windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    topRightRadius: ubuntuStyle ? 0 : windowsStyle && actionIndex === 0
                                     ? Style.radiusPanel : (windowsStyle ? 0 : Style.titleBarControlSize / 2)
-                    bottomLeftRadius: windowsStyle ? 0 : Style.titleBarControlSize / 2
-                    bottomRightRadius: windowsStyle ? 0 : Style.titleBarControlSize / 2
-                    color: windowsStyle
+                    bottomLeftRadius: ubuntuStyle || windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    bottomRightRadius: ubuntuStyle || windowsStyle ? 0 : Style.titleBarControlSize / 2
+                    color: ubuntuStyle ? Style.transparent : windowsStyle
                            ? (hovered
                               ? (actionIndex === 0 ? "#C42B1C" : "#E5E5E5")
                               : Style.transparent)
                            : [Style.colorChromeClose, Style.colorChromeMinimize, Style.colorChromeMaximize][actionIndex]
-                    border.width: windowsStyle ? 0 : Style.borderWidthDefault
+                    border.width: ubuntuStyle || windowsStyle ? 0 : Style.borderWidthDefault
                     border.color: windowsStyle
                                   ? Style.transparent
                                   : Qt.darker(color, 1.08)
@@ -142,7 +224,21 @@ ApplicationWindow {
                     property bool hovered: false
                     onHoveredChanged: glyphCanvas.requestPaint()
 
+                    // Yaru's light title buttons: neutral circles, stronger
+                    // hover/pressed fills, and no colored traffic lights.
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 24
+                        height: 24
+                        radius: 12
+                        visible: parent.ubuntuStyle && window.active
+                        color: Qt.rgba(0.24, 0.24, 0.24,
+                                       controlMouseArea.pressed ? 0.25 : parent.hovered ? 0.15 : 0.10)
+                        antialiasing: true
+                    }
+
                     MouseArea {
+                        id: controlMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
                         onEntered: parent.hovered = true
@@ -160,28 +256,39 @@ ApplicationWindow {
                     Canvas {
                         id: glyphCanvas
                         anchors.fill: parent
-                        visible: parent.windowsStyle || parent.hovered
+                        visible: parent.ubuntuStyle || parent.windowsStyle || parent.hovered
                         antialiasing: true
                         onPaint: {
                             var context = getContext("2d")
                             context.reset()
-                            context.strokeStyle = parent.windowsStyle && parent.hovered && parent.actionIndex === 0
+                            context.strokeStyle = parent.ubuntuStyle ? "#3D3D3D"
+                                                  : parent.windowsStyle && parent.hovered && parent.actionIndex === 0
                                                   ? "#FFFFFF" : Style.colorTextChrome
-                            context.lineWidth = parent.windowsStyle ? 1.2 : 1.15
+                            context.lineWidth = parent.ubuntuStyle ? 1.4 : parent.windowsStyle ? 1.2 : 1.15
                             context.lineCap = "round"
                             context.beginPath()
-                            if (parent.windowsStyle) {
+                            if (parent.windowsStyle || parent.ubuntuStyle) {
                                 // Windows caption glyphs: minimize, maximize, close.
-                                var glyphSize = 9
+                                var glyphSize = parent.ubuntuStyle ? 10 : 9
                                 var glyphLeft = (width - glyphSize) / 2
                                 var glyphRight = glyphLeft + glyphSize
                                 var glyphTop = (height - glyphSize) / 2
                                 var glyphBottom = glyphTop + glyphSize
                                 if (parent.actionIndex === 1) {
-                                    context.moveTo(glyphLeft, height / 2 + 3)
-                                    context.lineTo(glyphRight, height / 2 + 3)
+                                    var minimizeY = height / 2 + (parent.ubuntuStyle ? 0 : 3)
+                                    context.moveTo(glyphLeft, minimizeY)
+                                    context.lineTo(glyphRight, minimizeY)
                                 } else if (parent.actionIndex === 2) {
-                                    context.rect(glyphLeft + 0.5, glyphTop + 0.5, glyphSize - 1, glyphSize - 1)
+                                    if (parent.maximized) {
+                                        context.rect(glyphLeft + 0.5, glyphTop + 3.5, glyphSize - 4, glyphSize - 4)
+                                        context.moveTo(glyphLeft + 3.5, glyphTop + 2)
+                                        context.lineTo(glyphLeft + 3.5, glyphTop + 0.5)
+                                        context.lineTo(glyphRight - 0.5, glyphTop + 0.5)
+                                        context.lineTo(glyphRight - 0.5, glyphBottom - 3.5)
+                                        context.lineTo(glyphRight - 2, glyphBottom - 3.5)
+                                    } else {
+                                        context.rect(glyphLeft + 0.5, glyphTop + 0.5, glyphSize - 1, glyphSize - 1)
+                                    }
                                 } else {
                                     context.moveTo(glyphLeft, glyphTop)
                                     context.lineTo(glyphRight, glyphBottom)
@@ -227,10 +334,43 @@ ApplicationWindow {
             font.pixelSize: Style.fontSizePixelSm
             font.bold: true
             elide: Text.ElideRight
-            width: parent.width - 180
+            width: Math.max(0, parent.width - 2 * Math.max(100, windowControls.width + 24))
             horizontalAlignment: Text.AlignHCenter
         }
 
+    }
+
+    // Frameless Linux windows need explicit edge/corner resize hit areas.
+    // Keep these outside the controls and content, and let the compositor
+    // perform the operation (including Wayland's interactive resize).
+    Item {
+        parent: windowSurface
+        anchors.fill: parent
+        visible: window.usesLinuxCustomChrome && !window.fillsScreen
+        z: 3000
+
+        Repeater {
+            model: [Qt.TopEdge | Qt.LeftEdge, Qt.TopEdge, Qt.TopEdge | Qt.RightEdge,
+                    Qt.LeftEdge, Qt.RightEdge, Qt.BottomEdge | Qt.LeftEdge,
+                    Qt.BottomEdge, Qt.BottomEdge | Qt.RightEdge]
+            delegate: MouseArea {
+                required property int modelData
+                readonly property bool leftEdge: (modelData & Qt.LeftEdge) !== 0
+                readonly property bool rightEdge: (modelData & Qt.RightEdge) !== 0
+                readonly property bool topEdge: (modelData & Qt.TopEdge) !== 0
+                readonly property bool bottomEdge: (modelData & Qt.BottomEdge) !== 0
+                readonly property bool corner: (leftEdge || rightEdge) && (topEdge || bottomEdge)
+                width: corner ? 12 : (leftEdge || rightEdge) ? 5 : parent.width - 24
+                height: corner ? 12 : (topEdge || bottomEdge) ? 5 : parent.height - 24
+                x: leftEdge ? 0 : rightEdge ? parent.width - width : 12
+                y: topEdge ? 0 : bottomEdge ? parent.height - height : 12
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton
+                cursorShape: corner ? (leftEdge === topEdge ? Qt.SizeFDiagCursor : Qt.SizeBDiagCursor)
+                                    : (leftEdge || rightEdge) ? Qt.SizeHorCursor : Qt.SizeVerCursor
+                onPressed: window.startSystemResize(modelData)
+            }
+        }
     }
 
     Component.onCompleted: {

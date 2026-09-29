@@ -1903,15 +1903,15 @@ QJsonDocument ImageWriter::getFilteredOSlistDocument() {
     }
 
     reference_os_list_array.append(QJsonObject({
-            {"name", QCoreApplication::translate("main", "Erase")},
-            {"description", QCoreApplication::translate("main", "Format card as FAT32")},
+            {"name", QCoreApplication::translate("main", "Format storage device")},
+            {"description", QCoreApplication::translate("main", "Erase data and format the storage device as FAT32")},
             {"icon", "../icons/erase.svg"},
             {"url", "internal://format"},
         }));
 
     reference_os_list_array.append(QJsonObject({
-            {"name", QCoreApplication::translate("main", "Use custom")},
-            {"description", QCoreApplication::translate("main", "Select a custom .img from your computer")},
+            {"name", QCoreApplication::translate("main", "Use a local image")},
+            {"description", QCoreApplication::translate("main", "Select a local image file (IMG, ISO or compressed image)")},
             {"icon", "../icons/use_custom.svg"},
             {"url", "internal://custom"},
         }));

@@ -24,12 +24,12 @@
         <translation>Kaydet</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>Uyarılar devre dışı bırakılsın mı?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (varsayılan)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation>Uyarıları devre dışı bırakırsanız, ZimaOS USB Creator &lt;b&gt;görüntüleri yazmadan önce onay istemeyecektir&lt;/b&gt;. Bir sistem sürücüsü seçerken yine de &lt;b&gt;tam adını yazmanız&lt;/b&gt; gerekecektir.</translation>
+        <source>Disable warnings?</source>
+        <translation>Uyarılar devre dışı bırakılsın mı?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -40,8 +40,28 @@
         <translation>Seçilen seçenekleri kaydet ve ZimaOS USB Creator&apos;a uygula</translation>
     </message>
     <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>Kalıp yazılmadan önce artık onay istenmeyecek.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>Sistem sürücüsü koruması açık kalır</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Bir sistem sürücüsünü seçmek için yine de adını tam olarak girmeniz gerekir.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Uyarıları koru</translation>
+    </message>
+    <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>Uyarıları etkin tut ve seçenekler penceresine dön</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Yine de devre dışı bırak</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>Yazma işlemi tamamlandığında sesli bildirim çal</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Yazma tercihlerini ve disk görüntü kaynaklarını yönetin.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>Yazma işlemi başarıyla tamamlandığında depolama cihazını otomatik olarak çıkart</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Yazma öncesi onay iletişim kutularını atla (Yalnızca ileri düzey kullanıcılar)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Bir cihazı silmeden önce onaylamayı atlayın.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>İçerik Deposu (Repository)</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Düzenle</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>İşletim sistemi görüntülerinin kaynağını resmi ZimaOS deposu ve özel kaynaklar arasında değiştir</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -131,7 +171,7 @@
     </message>
     <message>
         <source>Repository Manifest Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Depo tanım dosyaları (*.json *.%1)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -155,7 +195,7 @@
     </message>
     <message>
         <source>Continue</source>
-        <translation>Devam Et</translation>
+        <translation>Devam et</translation>
     </message>
     <message>
         <source>Back</source>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>Sistem sürücüsü filtrelemesini devre dışı bıraktığınızda, &lt;b&gt;sistem sürücüleri listede gösterilecektir&lt;/b&gt;.</translation>
+        <source>Show system drives?</source>
+        <translation>Sistem sürücüleri gösterilsin mi?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>FİLTREYİ AÇIK TUT</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>Sistem sürücüleri işletim sisteminizi içerir ve kişisel dosyalar da içerebilir.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>SİSTEM SÜRÜCÜLERİNİ GÖSTER</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>Yanlış sürücüye yazmak, o sürücünün verilerini kalıcı olarak siler ve bilgisayarınızın açılmasını engelleyebilir.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>Sistem sürücüsüne yazmadan önce bir cihazı seçip adını onaylamanız gerekecek.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>Gizli tut</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>İşletim sisteminize kazara zarar gelmesini önlemek için sistem sürücülerini gizli tutun</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>Sistem sürücülerini göster</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -415,11 +467,11 @@
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
-        <translation type="unfinished"></translation>
+        <translation>Cihaz I/O sınırlarını görmezden gel</translation>
     </message>
     <message>
         <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cihaz tarafından bildirilen kuyruk derinliği ve transfer boyutu sınırlarını görmezden gelin. USB-NVMe kapakları için yararlı.</translation>
     </message>
     <message>
         <source>Enable Periodic Sync</source>
@@ -475,15 +527,15 @@
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">Güvenli Önyükleme</translation>
+        <translation>Güvenli Önyükleme</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Güçlü Güvenli Çıkış</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation type="unfinished"></translation>
+        <translation>OS yeteneklerine bakılmaksızın güvenli başlangıç özelleştirmesini göster. --enable-secure-boot CLI bayrağına eşittir.</translation>
     </message>
     <message>
         <source>Current Status</source>
@@ -509,8 +561,16 @@
         <translation>ZimaOS cihazınızı seçin</translation>
     </message>
     <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>Cihaz listesini indiremiyorum. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.
+
+Önceki basarak ve aşağıdaki ekranda &apos;Yerel bir disk görüntüsünü kullan&apos; seçerek hala yerel bir disk görüntü dosyası yazabilirsiniz.</translation>
+    </message>
+    <message>
         <source>Loading device types...</source>
-        <translation type="unfinished"></translation>
+        <translation>Yükleme cihazı türleri...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -537,16 +597,8 @@
         <translation>Cihaz listesi alınamadı</translation>
     </message>
     <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation>Cihaz listesi indirilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.
-
-Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan&apos; seçeneğini belirleyerek yerel bir imaj dosyası yazdırabilirsiniz</translation>
-    </message>
-    <message>
         <source>Retry</source>
-        <translation>Tekrar dene</translation>
+        <translation>Yeniden dene</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
@@ -561,7 +613,7 @@ Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan
     </message>
     <message>
         <source>Ejecting the storage device — do not remove it yet…</source>
-        <translation type="unfinished"></translation>
+        <translation>Depolama cihazını dışarı atmak  henüz çıkarmayın...</translation>
     </message>
     <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
@@ -569,7 +621,7 @@ Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan
     </message>
     <message>
         <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
-        <translation type="unfinished"></translation>
+        <translation>Depolama cihazı dışarı atılamadı. Kullanmakta olan herhangi bir uygulamayı kapatın ve sonra Eject&apos;e basın.</translation>
     </message>
     <message>
         <source>Please eject the storage device before removing it from your computer.</source>
@@ -577,11 +629,11 @@ Yine de &apos;İleri&apos; düğmesine basıp sonraki ekranda &apos;Özel kullan
     </message>
     <message>
         <source>Eject</source>
-        <translation type="unfinished"></translation>
+        <translation>Çıkar</translation>
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation type="unfinished"></translation>
+        <translation>Depolama cihazını güvenli bir şekilde çıkarmak için dışarı at</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -795,25 +847,27 @@ Lütfen ağ bağlantınızı kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation type="unfinished"></translation>
+        <translation>İşlem sisteminin özelleştirilmesini doğrulamak...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>İşlem sisteminin özelleştirme ayarları cihazda doğru şekilde saklanmadı. Aşağıdaki dosyalar kayıp veya hasarlı: %1.
+
+Cihaz verileri kabul etti ama saklamadı, bu da genellikle SD kartının veya USB adaptörünün başarısız olduğu veya sahte olduğu anlamına gelir. Disk görüntüsü kendisi doğru yazılmıştı, ancak cihaz ilk başlangıçta ayarlarınızı uygulamamıştı (böylelikle ona bağlanamazdınız). Farklı bir kart ya da kart okuyucuyu dene.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>Doğrulama için bellek ayıramaz.</translation>
     </message>
     <message>
         <source>seeking storage for verification</source>
-        <translation type="unfinished"></translation>
+        <translation>Verifikasyon için depolama talebi</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Depolama hatası.&lt;br&gt;Cihaz beklenenden daha az veri gönderdi.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -913,7 +967,7 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Sürücünün kullanılabilir olmasını bekliyoruz... (%1s)</translation>
     </message>
     <message>
         <source>getting device size</source>
@@ -1117,7 +1171,7 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>Partisyon tablosunu yazmadan önce disk görüntüsünü fırlat</translation>
     </message>
     <message>
         <source>writing partition table</source>
@@ -1125,7 +1179,7 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Yazıyı doğrulama başarısız oldu. Depolama cihazındaki partisyon tablosu yazılından farklıdır.</translation>
     </message>
     <message>
         <source>final flush</source>
@@ -1185,6 +1239,21 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
         <translation>&apos;%1&apos; diski ayrılamadı.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Hata ayrıntıları</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Anladım</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Hata ayrıntılarını kapat</translation>
     </message>
 </context>
 <context>
@@ -1316,6 +1385,22 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
         <translation>Seri arayüzü yapılandırın: Devre Dışı, Varsayılan (sistem karar verir), Konsol ve Donanım (hem konsol hem UART), Donanım (yalnızca UART) veya Konsol (desteklenen cihazlarda yalnızca konsol).</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>Devre dışı</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Varsayılan</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>Konsol ve donanım</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>Donanım</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>USB Gadget Modu Uyarısı</translation>
     </message>
@@ -1338,6 +1423,10 @@ Lütfen aygıtı kontrol edin ve tekrar deneyin.</translation>
 </context>
 <context>
     <name>ImComboBox</name>
+    <message>
+        <source>Error: Invalid selection</source>
+        <translation>Hata: Geçersiz seçim</translation>
+    </message>
     <message>
         <source>Search: &quot;%1&quot;</source>
         <translation>Ara: &quot;%1&quot;</translation>
@@ -1570,10 +1659,6 @@ veya yukarıdaki adres çubuğuna bir yol yazın.</translation>
         <translation> veya </translation>
     </message>
     <message>
-        <source>No organisation API key is configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Performans Verilerini Kaydet</translation>
     </message>
@@ -1731,7 +1816,7 @@ Teknik detaylar: %1</translation>
     </message>
     <message>
         <source>Why am I being asked this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Bana neden bu soru soruluyor?</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1750,21 +1835,14 @@ Teknik detaylar: %1</translation>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished">ZimaOS USB Creator&apos;ın imajı yazabilmesi için diske erişmesi gerekiyor.</translation>
+        <translation>ZimaOS USB Creator&apos;ın imajı yazabilmesi için diske erişmesi gerekiyor.</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>Önerilen</translation>
+        <translation>Dosya tipi:</translation>
     </message>
 </context>
 <context>
@@ -1818,12 +1896,20 @@ Teknik detaylar: %1</translation>
         <translation>Gezinmek için ok tuşlarını, seçmek için Enter veya Boşluk tuşunu kullanın</translation>
     </message>
     <message>
+        <source>Recommended</source>
+        <translation>Önerilen</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>Test versiyonu</translation>
+    </message>
+    <message>
         <source>Operating system category</source>
         <translation>İşletim sistemi kategorisi</translation>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>Gezinmek için ok tuşlarını, seçmek için Enter veya Boşluk tuşunu, geri gitmek için Sol oku kullanın</translation>
+        <translation>Gezinmek için ok tuşlarını, seçmek için Enter veya Boşluk tuşunu kullanın, geri dönmek için sol ok tuşunu kullanın</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1835,7 +1921,7 @@ Teknik detaylar: %1</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation>Yeniden Dene</translation>
+        <translation>Yeniden dene</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
@@ -1965,6 +2051,89 @@ Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&q
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>ZimaOS&apos;nize SSH üzerinden bağlanırken nasıl doğrulama yapacağınızı seçin. Parola doğrulaması yapılandırdığınız hesap bilgilerini kullanır. Kamu anahtarı doğrulaması ise kriptografik bir anahtar çifti kullanır ve daha güvenlidir.</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>İçerik Deposu (Repository)</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>İşletim sisteminizdeki görüntüleri nerede alacağınızı seçin.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (varsayılan)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Resmi ZimaOS görüntüler, yüklemeye hazır.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>Resmi ZimaOS işletim sistemi deposunu kullan</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>Özel dosya kullan</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Bilgisayarınızdaki bir dosyadan disk görüntü listesini yükleyin.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>İşletim sistemi listesini bilgisayarınızdaki bir JSON dosyasından yükleyin</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Depo dosyasını seç</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>Bilgisayarınızdan özel bir depo JSON dosyası seçin</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>Depo Seç</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>Özel URL kullan</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Bir web adresinden disk görüntü listesini yükle.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>İşletim sistemi listesini özel bir web adresinden indirin</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>Özel depo URL</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Kaynağı değiştirmek, cihaz seçeneğine geri dönmenizi sağlar.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>İçerik kaynağını değiştirmeden depo iletişim kutusunu kapat</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Değişiklikleri uygula</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>Yeni içerik deposunu uygula ve sihirbazı baştan başlat</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>Özel depo seç</translation>
     </message>
 </context>
 <context>
@@ -2152,10 +2321,6 @@ Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&q
 <context>
     <name>StorageSelectionStep</name>
     <message>
-        <source>No storage devices found</source>
-        <translation>Depolama aygıtı bulunamadı</translation>
-    </message>
-    <message>
         <source>Mounted as %1</source>
         <translation>%1 olarak bağlandı.</translation>
     </message>
@@ -2192,28 +2357,6 @@ Otomatik ayrıcalık yükseltmeyi ayarlamak için &quot;Yetkilendirmeyi Yükle&q
         <translation>Gezinmek için ok tuşlarını, seçmek için Enter veya Boşluk tuşunu kullanın</translation>
     </message>
     <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>Görünen tüm cihazlar salt okunur.
-Yeni bir cihaz bağlamayı deneyin veya aşağıdaki
-&apos;Sistem sürücülerini hariç tut&apos; seçeneğinin işaretini kaldırın.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>Tüm cihazlar salt okunur.
-Lütfen yazılabilir bir depolama aygıtı bağlayın.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>Tüm cihazlar filtre tarafından gizlendi.
-Sistem sürücülerini göstermek için aşağıdaki
-&apos;Sistem sürücülerini hariç tut&apos; seçeneğinin işaretini kaldırın.</translation>
-    </message>
-    <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
         <translation>İşaretlendiğinde, sistem sürücüleri listeden gizlenir. Sistem sürücüleri dahil tüm sürücüleri göstermek için işareti kaldırın.</translation>
     </message>
@@ -2242,6 +2385,24 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Hata: Depolama aygıtları listelenemedi. %1</translation>
     </message>
     <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>Depolama cihazları tespit edilemedi. Giriş izinlerini kontrol et ve cihazı yeniden bağla.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>Devam etmek için sabit disk, USB flash sürücüsü veya bellek kartı gibi bir depolama cihazını bağlayın.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>Kullanılabilir aygıtlar salt okunur. Yazılabilir bir depolama aygıtı bağlayın.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>Kullanılabilir depolama aygıtı yok.
+Bir depolama aygıtı bağlayın veya aşağıdaki “Sistem sürücülerini hariç tut” seçeneğinin işaretini kaldırın.</translation>
+    </message>
+    <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
         <translation>Depolama aygıtları listelenemedi: %1. Bu bir yetki sorunu olabilir. Uygulamayı yönetici ayrıcalıklarıyla çalıştırmayı deneyin.</translation>
     </message>
@@ -2254,7 +2415,7 @@ Sistem sürücülerini göstermek için aşağıdaki
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Yaratıcı sürümü %1 mevcut. Web sitesini ziyaret edip indirmek ister misiniz?</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
@@ -2349,7 +2510,7 @@ Sistem sürücülerini göstermek için aşağıdaki
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kaydedilen şifreniz seçilen işletim sistemi ile uyumlu değil, bu yüzden lütfen tekrar girin.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
@@ -2365,7 +2526,7 @@ Sistem sürücülerini göstermek için aşağıdaki
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation>Parola gerektirmeyen sudo bilgileri:</translation>
+        <translation>Parola gerektirmeyen sudo bilgileri: </translation>
     </message>
 </context>
 <context>
@@ -2542,16 +2703,12 @@ Sistem sürücülerini göstermek için aşağıdaki
         <translation>Lütfen bekleyin…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>Mevcut olanı koru</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>Güvenli Önyükleme</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation type="unfinished"></translation>
+        <translation>Ses uyarıları, otomatik atışlar ve uyarı uyarıları yapılandırmak için uygulama ayarlarını aç</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
@@ -2618,6 +2775,37 @@ Sistem sürücülerini göstermek için aşağıdaki
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>Bu aygıt silinsin mi?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>Kalıbın yazılması bu aygıttaki tüm verileri silecektir.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Hedef depolama aygıtı</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Depolama aygıtı</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>Bu işlem geri alınamaz. Devam etmeden önce önemli dosyalarınızı yedekleyin.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Sil ve yaz</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Sil ve yaz (%1)</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
@@ -2647,6 +2835,10 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
         <translation>Yaz</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>İptal ediliyor…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>Özet</translation>
     </message>
@@ -2656,35 +2848,15 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished">İndirme hızıyla sınırlı</translation>
+        <translation>İndirme hızıyla sınırlı</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished">Sıkıştırma açma hızıyla sınırlı</translation>
+        <translation>Sıkıştırma açma hızıyla sınırlı</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished">Depolama aygıtı hızıyla sınırlı</translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>Şu cihazdaki tüm verileri SİLMEK üzeresiniz: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>depolama aygıtı</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Bu işlem KALICIDIR ve geri ALINAMAZ.</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>Anlıyorum, sil ve yaz</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>Lütfen bekleyin...</translation>
+        <translation>Depolama aygıtı hızıyla sınırlı</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2735,6 +2907,10 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
         <translation>Yazmayı iptal et</translation>
     </message>
     <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>İptal ediliyor… Aygıtın serbest bırakılmasını bekleyin.</translation>
+    </message>
+    <message>
         <source>Skip verification and finish the write process</source>
         <translation>Doğrulamayı atla ve yazma işlemini bitir</translation>
     </message>
@@ -2759,6 +2935,18 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
         <translation>Yazma ilerlemesi</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>İndir: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>İndirildi: %1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>Kalıp indiriliyor…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>Tamamlanıyor…</translation>
     </message>
@@ -2769,10 +2957,6 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     <message>
         <source>customizations</source>
         <translation>özelleştirmeler</translation>
-    </message>
-    <message>
-        <source>Please wait... %1</source>
-        <translation>Lütfen bekleyin... %1</translation>
     </message>
     <message>
         <source>Writing... %1 MB written</source>
@@ -2790,22 +2974,6 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
         <translation>Hata</translation>
     </message>
     <message>
-        <source>Erase</source>
-        <translation>Sil</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>Kartı FAT32 olarak biçimlendir</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>Özel imaj kullan</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>Bilgisayarınızdan özel bir .img seçin</translation>
-    </message>
-    <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
         <translation>ZimaOS USB Creator hâlâ meşgul. Çıkmak istediğinize emin misiniz?</translation>
     </message>
@@ -2820,10 +2988,6 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     <message>
         <source>OK</source>
         <translation>Tamam</translation>
-    </message>
-    <message>
-        <source>Close the error dialog and continue</source>
-        <translation>Hata iletişim kutusunu kapat ve devam et</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>
@@ -2884,6 +3048,22 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     <message>
         <source>Using data from %1</source>
         <translation>%1 üzerinden alınan veriler kullanılıyor</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>Depolama aygıtını biçimlendir</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>Verileri sil ve depolama cihazını FAT32 olarak biçimlendirin</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>Yerel bir kalıp kullan</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>Yerel disk görüntü dosyası seçin (IMG, ISO veya sıkıştırılmış disk görüntü)</translation>
     </message>
 </context>
 </TS>

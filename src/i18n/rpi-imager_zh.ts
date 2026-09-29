@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>Audio notification unavailable - no viable audio player found on this system</source>
-        <translation type="unfinished"></translation>
+        <translation>提示音不可用：系统中未找到可用的音频播放器</translation>
     </message>
     <message>
         <source>Eject media when finished</source>
@@ -30,10 +30,6 @@
     <message>
         <source>Disable warnings?</source>
         <translation>禁用警告？</translation>
-    </message>
-    <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation>如果你禁用警告，ZimaOS USB Creator 将&lt;b&gt;不会在写入镜像前显示确认提示&lt;/b&gt;。在选择系统盘时，你仍需要&lt;b&gt;输入完全一致的名称&lt;/b&gt;。</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -62,6 +58,10 @@
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>写入镜像前跳过确认对话框（仅限高级用户）</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>在 ZimaOS 官方仓库与自定义来源之间切换操作系统镜像来源</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -282,59 +282,59 @@
     <name>ConfirmOtpProgramDialog</name>
     <message>
         <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
-        <translation type="unfinished"></translation>
+        <translation>警告：OTP 编程是永久性的，无法撤销</translation>
     </message>
     <message>
         <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>此操作会将安全启动公钥的哈希值永久写入设备的一次性可编程（OTP）存储器。写入后，此设备只能启动由对应私钥签名的镜像。此操作无法撤销。</translation>
     </message>
     <message>
         <source>Device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>设备：%1</translation>
     </message>
     <message>
         <source>Serial: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>序列号：%1</translation>
     </message>
     <message>
         <source>Key fingerprint: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>密钥指纹：%1</translation>
     </message>
     <message>
         <source>Also lock JTAG debug port (additional irreversible action)</source>
-        <translation type="unfinished"></translation>
+        <translation>同时锁定 JTAG 调试端口（此操作同样无法撤销）</translation>
     </message>
     <message>
         <source>To confirm, type the device serial number below:</source>
-        <translation type="unfinished"></translation>
+        <translation>请在下方输入设备序列号以确认：</translation>
     </message>
     <message>
         <source>Serial to type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>需要输入的序列号：%1</translation>
     </message>
     <message>
         <source>Type device serial number exactly</source>
-        <translation type="unfinished"></translation>
+        <translation>请准确输入设备序列号</translation>
     </message>
     <message>
         <source>Confirmation input. Type exactly: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>确认输入框。请准确输入：%1</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">取消</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>Cancel OTP programming and return to previous screen</source>
-        <translation type="unfinished"></translation>
+        <translation>取消 OTP 编程并返回上一页</translation>
     </message>
     <message>
         <source>PROGRAM OTP</source>
-        <translation type="unfinished"></translation>
+        <translation>写入 OTP</translation>
     </message>
     <message>
         <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
+        <translation>将安全启动密钥永久写入设备的 OTP 存储器</translation>
     </message>
 </context>
 <context>
@@ -391,18 +391,6 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>禁用系统盘过滤后，列表中将&lt;b&gt;显示系统盘&lt;/b&gt;。</translation>
-    </message>
-    <message>
-        <source>KEEP FILTER ON</source>
-        <translation>保持过滤开启</translation>
-    </message>
-    <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>显示系统盘</translation>
-    </message>
-    <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>保持系统盘隐藏以防止意外损坏操作系统</translation>
     </message>
@@ -410,48 +398,72 @@
         <source>Remove the safety filter and display system drives in the storage device list</source>
         <translation>移除安全过滤并在存储设备列表中显示系统盘</translation>
     </message>
+    <message>
+        <source>Show system drives?</source>
+        <translation>显示系统盘？</translation>
+    </message>
+    <message>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>系统盘包含操作系统，也可能存有照片、文档等个人文件。</translation>
+    </message>
+    <message>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>选错设备并写入会永久清除其数据，还可能导致计算机无法启动。</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>写入系统盘前，仍需选择设备并输入完整名称确认。</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>保持隐藏</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>显示系统盘</translation>
+    </message>
 </context>
 <context>
     <name>DebugOptionsDialog</name>
     <message>
         <source>Debug Options</source>
-        <translation type="unfinished"></translation>
+        <translation>调试选项</translation>
     </message>
     <message>
         <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation type="unfinished"></translation>
+        <translation>⚠️ 这些选项用于调试和测试，修改后可能影响性能和数据完整性。</translation>
     </message>
     <message>
         <source>I/O Options</source>
-        <translation type="unfinished"></translation>
+        <translation>I/O 选项</translation>
     </message>
     <message>
         <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
-        <translation type="unfinished"></translation>
+        <translation>启用直接 I/O（F_NOCACHE / O_DIRECT）</translation>
     </message>
     <message>
         <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>写入时绕过操作系统的页缓存。速度可能较慢，但可确保数据直接写入设备。</translation>
     </message>
     <message>
         <source>Enable Async I/O</source>
-        <translation type="unfinished"></translation>
+        <translation>启用异步 I/O</translation>
     </message>
     <message>
         <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>将多次写入加入队列，以减少设备延迟的影响。启用直接 I/O 时可提高性能。</translation>
     </message>
     <message>
         <source>Queue Depth:</source>
-        <translation type="unfinished"></translation>
+        <translation>队列深度：</translation>
     </message>
     <message>
         <source>Async queue depth: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>异步队列深度：%1</translation>
     </message>
     <message>
         <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
-        <translation type="unfinished"></translation>
+        <translation>缓冲区内存：约 %1–%2 MB（取决于系统内存容量）</translation>
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
@@ -463,59 +475,59 @@
     </message>
     <message>
         <source>Enable Periodic Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>启用定期同步</translation>
     </message>
     <message>
         <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
-        <translation type="unfinished"></translation>
+        <translation>写入过程中定期将数据刷新到磁盘。启用直接 I/O 后会自动关闭此选项。</translation>
     </message>
     <message>
         <source>Debugging</source>
-        <translation type="unfinished"></translation>
+        <translation>调试</translation>
     </message>
     <message>
         <source>Verbose Performance Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>详细性能日志</translation>
     </message>
     <message>
         <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
-        <translation type="unfinished"></translation>
+        <translation>记录每次写入操作的详细耗时，帮助排查性能问题。</translation>
     </message>
     <message>
         <source>Network Options</source>
-        <translation type="unfinished"></translation>
+        <translation>网络选项</translation>
     </message>
     <message>
         <source>Force IPv4-only Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>仅通过 IPv4 下载</translation>
     </message>
     <message>
         <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
-        <translation type="unfinished"></translation>
+        <translation>下载时仅使用 IPv4。如果 IPv6 路由异常导致连接问题，可启用此选项。</translation>
     </message>
     <message>
         <source>Workarounds</source>
-        <translation type="unfinished"></translation>
+        <translation>兼容性选项</translation>
     </message>
     <message>
         <source>Counterfeit Card Mode (skip end-of-device checks)</source>
-        <translation type="unfinished"></translation>
+        <translation>扩容卡兼容模式（跳过设备末尾检查）</translation>
     </message>
     <message>
         <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
-        <translation type="unfinished"></translation>
+        <translation>跳过对存储设备末尾的操作。适用于虚报容量的 SD 卡。镜像大小必须小于卡的真实容量。</translation>
     </message>
     <message>
         <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation type="unfinished"></translation>
+        <translation>⚠️ 仅在 SD 卡显示的容量大于其真实容量时启用。请确保镜像大小小于卡的真实容量！</translation>
     </message>
     <message>
         <source>Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation>高级功能</translation>
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">安全启动</translation>
+        <translation>安全启动</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
@@ -527,19 +539,19 @@
     </message>
     <message>
         <source>Current Status</source>
-        <translation type="unfinished"></translation>
+        <translation>当前状态</translation>
     </message>
     <message>
         <source>Close the debug options dialog without saving any changes</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭调试选项，不保存任何更改</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>应用</translation>
     </message>
     <message>
         <source>Apply the selected debug options</source>
-        <translation type="unfinished"></translation>
+        <translation>应用所选调试选项</translation>
     </message>
 </context>
 <context>
@@ -550,21 +562,23 @@
     </message>
     <message>
         <source>Unable to load device list</source>
-        <translation type="unfinished"></translation>
+        <translation>无法加载设备列表</translation>
     </message>
     <message>
         <source>The device list could not be downloaded. Please check your internet connection and try again.
 
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation type="unfinished"></translation>
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>无法下载设备列表。请检查网络连接后重试。
+
+你仍可点击“下一步”，然后在下一页选择“使用本地镜像”来写入本地镜像文件。</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>重试</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
-        <translation type="unfinished"></translation>
+        <translation>重新下载设备列表</translation>
     </message>
     <message>
         <source>Loading device types...</source>
@@ -693,11 +707,18 @@ No data has been written for 30 seconds. This could be caused by:
 • System resource exhaustion
 
 Please check the storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>写入操作已停滞。
+
+已有 30 秒未写入任何数据，可能的原因包括：
+• 存储设备已断开或无响应
+• 设备损坏或发生故障
+• 系统资源不足
+
+请检查存储设备后重试。</translation>
     </message>
     <message>
         <source>Failed to acquire write buffer slot</source>
-        <translation type="unfinished"></translation>
+        <translation>无法获取写入缓冲区槽位</translation>
     </message>
     <message>
         <source>The download has stalled.
@@ -708,7 +729,14 @@ No data received for 30 seconds. This could be caused by:
 • Firewall or proxy blocking the connection
 
 Please check your network connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>下载已停滞。
+
+已有 30 秒未收到任何数据，可能的原因包括：
+• 网络连接已断开或不稳定
+• 远程服务器无响应
+• 防火墙或代理阻止了连接
+
+请检查网络连接后重试。</translation>
     </message>
 </context>
 <context>
@@ -819,11 +847,11 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法卸载磁盘“%1”。请关闭正在使用此磁盘的应用后重试。</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法卸载磁盘“%1”。</translation>
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
@@ -831,21 +859,23 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>getting device size</source>
-        <translation type="unfinished"></translation>
+        <translation>获取设备容量</translation>
     </message>
     <message>
         <source>Failed to allocate buffer for MBR zeroing.
 
 The system may be low on memory.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法为清零 MBR 分配缓冲区。
+
+系统内存可能不足。</translation>
     </message>
     <message>
         <source>preparing storage device</source>
-        <translation type="unfinished"></translation>
+        <translation>准备存储设备</translation>
     </message>
     <message>
         <source>Zero&apos;ing out end of drive...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在清零设备末尾…</translation>
     </message>
     <message>
         <source>Timeout writing to end of storage device.
@@ -853,7 +883,11 @@ The system may be low on memory.</source>
 This may indicate a counterfeit SD card with fake capacity.
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>写入存储设备末尾时超时。
+
+这可能表示 SD 卡虚报了容量。
+
+请尝试使用其他存储设备。</translation>
     </message>
     <message>
         <source>Write error while trying to zero out last part of card.
@@ -861,21 +895,27 @@ Please try a different storage device.</source>
 This could indicate the card is advertising wrong capacity (possible counterfeit).
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>清零存储卡末尾时发生写入错误。
+
+存储卡可能虚报了容量（可能是假冒产品）。
+
+请尝试使用其他存储设备。</translation>
     </message>
     <message>
         <source>Storage device responding slowly. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>存储设备响应缓慢，正在以兼容模式重试…</translation>
     </message>
     <message>
         <source>storage operation</source>
-        <translation type="unfinished"></translation>
+        <translation>存储操作</translation>
     </message>
     <message>
         <source>Failed to open storage device.
 
 The device may be in use by another application, or you may not have permission to access it.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法打开存储设备。
+
+设备可能正被其他应用占用，或者你没有访问权限。</translation>
     </message>
     <message>
         <source>Error writing to storage device during %1.
@@ -886,49 +926,70 @@ This could be caused by:
 • Hardware failure or bad sectors
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>在%1时写入存储设备出错。
+
+可能的原因包括：
+• 设备已断开或无响应
+• 设备空间已满或受到写保护
+• 硬件故障或存在坏扇区
+
+请检查设备后重试。</translation>
     </message>
     <message>
         <source>Error reading from storage device during %1.
 
 The device may have been disconnected or is malfunctioning.</source>
-        <translation type="unfinished"></translation>
+        <translation>在%1时读取存储设备出错。
+
+设备可能已断开或发生故障。</translation>
     </message>
     <message>
         <source>Error seeking on storage device during %1.
 
 The device may be malfunctioning or disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>在%1时定位存储设备位置出错。
+
+设备可能发生故障或已断开。</translation>
     </message>
     <message>
         <source>Error getting storage device size.
 
 The device may not be properly recognized.</source>
-        <translation type="unfinished"></translation>
+        <translation>获取存储设备容量时出错。
+
+设备可能未被正确识别。</translation>
     </message>
     <message>
         <source>Error closing storage device.
 
 The device may have been disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>关闭存储设备时出错。
+
+设备可能已断开。</translation>
     </message>
     <message>
         <source>Failed to lock storage device.
 
 The device may be in use by another application. Please close any applications using this device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法锁定存储设备。
+
+设备可能正被其他应用占用。请关闭正在使用此设备的应用后重试。</translation>
     </message>
     <message>
         <source>Error syncing data to storage device.
 
 The device may have been disconnected or is not responding. Data may not have been fully written.</source>
-        <translation type="unfinished"></translation>
+        <translation>将数据同步到存储设备时出错。
+
+设备可能已断开或无响应，数据可能尚未完整写入。</translation>
     </message>
     <message>
         <source>Error flushing data to storage device.
 
 The device may have been disconnected or is not responding.</source>
-        <translation type="unfinished"></translation>
+        <translation>将数据刷新到存储设备时出错。
+
+设备可能已断开或无响应。</translation>
     </message>
     <message>
         <source>Storage device timed out during %1.
@@ -939,13 +1000,22 @@ The device is not responding. This may indicate:
 • Driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>存储设备在%1时超时。
+
+设备无响应，可能的原因包括：
+• 设备已断开
+• 设备发生故障
+• 驱动程序或系统问题
+
+请断开并重新连接设备后重试。</translation>
     </message>
     <message>
         <source>Unknown storage error during %1.
 
 Please try again or use a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>在%1时发生未知存储错误。
+
+请重试或使用其他存储设备。</translation>
     </message>
     <message>
         <source>The storage device is not responding. This may indicate:
@@ -954,7 +1024,12 @@ Please try again or use a different storage device.</source>
 • A driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>存储设备无响应，可能的原因包括：
+• 设备已断开
+• 设备发生故障
+• 驱动程序或系统问题
+
+请断开并重新连接设备后重试。</translation>
     </message>
     <message>
         <source>Error writing to storage device.
@@ -965,15 +1040,22 @@ Some writes failed to complete. This could be caused by:
 • Hardware failure
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>写入存储设备时出错。
+
+部分写入未能完成，可能的原因包括：
+• 写入过程中存储设备断开
+• 设备空间已满或受到写保护
+• 硬件故障
+
+请检查设备后重试。</translation>
     </message>
     <message>
         <source>flush</source>
-        <translation type="unfinished"></translation>
+        <translation>刷新数据</translation>
     </message>
     <message>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>同步数据</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
@@ -981,7 +1063,7 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>写入分区表</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
@@ -989,11 +1071,11 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>final flush</source>
-        <translation type="unfinished"></translation>
+        <translation>最终刷新数据</translation>
     </message>
     <message>
         <source>final sync</source>
-        <translation type="unfinished"></translation>
+        <translation>最终同步数据</translation>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
@@ -1003,7 +1085,9 @@ Please check the device and try again.</source>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>操作系统定制设置未能正确保存在设备上。以下文件缺失或损坏：%1。
+
+设备接收了数据却没有将其保留，这通常表示 SD 卡或 USB 适配器发生故障，或是假冒产品。镜像本身已正确写入，但设备首次启动时将无法应用你的设置（因此你可能无法连接设备）。请尝试使用其他存储卡或读卡器。</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
@@ -1015,7 +1099,7 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>读取存储设备时出错。&lt;br&gt;设备返回的数据量少于预期。</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -1110,11 +1194,11 @@ The device accepted the data but did not keep it, which usually means the SD car
     <name>DriveFormatThread</name>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法卸载磁盘“%1”。请关闭正在使用此磁盘的应用后重试。</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法卸载磁盘“%1”。</translation>
     </message>
     <message>
         <source>Error opening device for formatting</source>
@@ -1155,6 +1239,21 @@ The device accepted the data but did not keep it, which usually means the SD car
     <message>
         <source>Cannot format device: insufficient permissions. Please run with elevated privileges (sudo).</source>
         <translation>无法格式化设备：权限不足。请使用提升的权限运行（sudo）。</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>错误详情</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>知道了</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>关闭错误详情</translation>
     </message>
 </context>
 <context>
@@ -1286,6 +1385,22 @@ The device accepted the data but did not keep it, which usually means the SD car
         <translation>配置串口接口：禁用、默认（由系统决定）、控制台和硬件（同时启用控制台和 UART）、仅硬件（仅 UART）、或仅控制台（仅在支持的设备上提供控制台）。</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>禁用</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>默认</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>控制台和硬件</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>硬件</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>USB Gadget 模式警告</translation>
     </message>
@@ -1309,16 +1424,20 @@ The device accepted the data but did not keep it, which usually means the SD car
 <context>
     <name>ImComboBox</name>
     <message>
+        <source>Error: Invalid selection</source>
+        <translation>错误：选择无效</translation>
+    </message>
+    <message>
         <source>Search: &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>搜索：“%1”</translation>
     </message>
     <message>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 / %2</translation>
     </message>
     <message>
         <source>No matches</source>
-        <translation type="unfinished"></translation>
+        <translation>没有匹配项</translation>
     </message>
 </context>
 <context>
@@ -1373,7 +1492,7 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Enter folder or file path…</source>
-        <translation type="unfinished"></translation>
+        <translation>输入文件夹或文件路径…</translation>
     </message>
     <message>
         <source>File name:</source>
@@ -1537,13 +1656,15 @@ or type a path in the address bar above.</source>
     </message>
     <message>
         <source> or </source>
-        <translation>或</translation>
+        <translation> 或 </translation>
     </message>
     <message>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
+        <translation>存储设备容量不足。
+
+此镜像至少需要 %1 的存储空间。</translation>
     </message>
     <message>
         <source>Failed to start write operation: insufficient memory.
@@ -1551,15 +1672,15 @@ The image requires at least %1 of storage.</source>
 The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
 
 Technical details: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>无法开始写入：内存不足。
+
+系统可用内存不足，无法执行此操作。请关闭其他应用以释放内存后重试。
+
+技术详情：%1</translation>
     </message>
     <message>
         <source>Failed to start write operation: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No organisation API key is configured.</source>
-        <translation>未配置组织 API 密钥。</translation>
+        <translation>无法开始写入：%1</translation>
     </message>
     <message>
         <source>Save Performance Data</source>
@@ -1699,7 +1820,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
-        <translation type="unfinished"></translation>
+        <translation>这也会设置所在地区的 Wi-Fi 监管域。</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1714,7 +1835,7 @@ Technical details: %1</source>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished">ZimaOS USB Creator 需要访问磁盘以写入镜像。</translation>
+        <translation>ZimaOS USB Creator 需要访问磁盘以写入镜像。</translation>
     </message>
 </context>
 <context>
@@ -1722,13 +1843,6 @@ Technical details: %1</source>
     <message>
         <source>File type:</source>
         <translation>文件类型：</translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>建议</translation>
     </message>
 </context>
 <context>
@@ -1763,15 +1877,15 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Unable to download OS list. You can still use a local image file.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法下载操作系统列表，你仍可使用本地镜像文件。</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>重试</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
-        <translation type="unfinished"></translation>
+        <translation>重新下载操作系统列表</translation>
     </message>
     <message>
         <source>Operating system list</source>
@@ -1805,36 +1919,44 @@ Technical details: %1</source>
         <source>Released: %1</source>
         <translation>发布时间：%1</translation>
     </message>
+    <message>
+        <source>Recommended</source>
+        <translation>推荐</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>测试版</translation>
+    </message>
 </context>
 <context>
     <name>PasswordlessSudoWarningDialog</name>
     <message>
         <source>Passwordless Sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>免密码 sudo</translation>
     </message>
     <message>
         <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
-        <translation type="unfinished"></translation>
+        <translation>启用免密码 sudo 后，以此用户身份运行的任何进程都可直接获得完整的 root 权限，无需身份验证。这会显著降低系统安全性。</translation>
     </message>
     <message>
         <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>仅在你了解风险且确有需要时启用，例如用于自动化脚本或无显示器操作。</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">取消</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>Cancel and keep sudo requiring a password</source>
-        <translation type="unfinished"></translation>
+        <translation>取消，继续要求输入 sudo 密码</translation>
     </message>
     <message>
         <source>ENABLE</source>
-        <translation type="unfinished"></translation>
+        <translation>启用</translation>
     </message>
     <message>
         <source>Enable passwordless sudo for this user account</source>
-        <translation type="unfinished"></translation>
+        <translation>为此用户账户启用免密码 sudo</translation>
     </message>
 </context>
 <context>
@@ -1929,6 +2051,89 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>选择通过 SSH 连接到 ZimaOS 设备时的认证方式。密码认证使用您配置的账户凭据。公钥认证使用加密密钥对，更加安全。</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>内容仓库</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>使用自定义文件</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>选择仓库</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>选择自定义仓库</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>使用自定义 URL</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>从您的计算机中选择自定义仓库 JSON 文件</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>关闭仓库对话框，不更改内容源</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>应用新的内容仓库并从头重新启动向导</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>从您计算机上的 JSON 文件加载操作系统列表</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>从自定义网址下载操作系统列表</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS（默认）</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>选择操作系统镜像的获取来源。</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>获取官方 ZimaOS 系统镜像。</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>使用 ZimaOS 官方操作系统仓库</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>从本地文件读取镜像列表。</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>从指定网址获取镜像列表。</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>选择仓库文件</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>自定义仓库 URL</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>应用更改</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>更换来源后，将返回设备选择步骤。</translation>
     </message>
 </context>
 <context>
@@ -2116,10 +2321,6 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
 <context>
     <name>StorageSelectionStep</name>
     <message>
-        <source>No storage devices found</source>
-        <translation>找不到存储设备</translation>
-    </message>
-    <message>
         <source>Mounted as %1</source>
         <translation>已挂载为：%1</translation>
     </message>
@@ -2141,11 +2342,11 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
     </message>
     <message>
         <source>Could not list storage devices: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>无法列出存储设备：%1</translation>
     </message>
     <message>
         <source>Error: Could not list storage devices. %1</source>
-        <translation type="unfinished"></translation>
+        <translation>错误：无法列出存储设备。%1</translation>
     </message>
     <message>
         <source>No devices</source>
@@ -2164,34 +2365,12 @@ Click &quot;Install Authorization&quot; to set up automatic privilege elevation,
         <translation>使用方向键导航，按 Enter 或空格键选择</translation>
     </message>
     <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>所有可见设备均为只读。
-请尝试连接新设备，或取消勾选
-下方的「排除系统驱动器」。</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>所有设备均为只读。
-请连接可写的存储设备。</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>所有设备已被筛选器隐藏。
-取消勾选下方的「排除系统驱动器」
-以显示系统驱动器。</translation>
-    </message>
-    <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
         <translation>勾选后，系统驱动器将从列表中隐藏。取消勾选可显示包括系统驱动器在内的所有驱动器。</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
-        <translation type="unfinished"></translation>
+        <translation>无法列出存储设备：%1。这可能是权限问题，请尝试以管理员权限运行应用。</translation>
     </message>
     <message>
         <source>No storage devices found. Please connect a storage device to continue.</source>
@@ -2208,6 +2387,24 @@ to show system drives.</source>
     <message>
         <source>No valid storage devices are currently available. Uncheck &apos;Exclude system drives&apos; to show hidden system drives, or connect a new storage device.</source>
         <translation>当前没有可用的有效存储设备。取消勾选「排除系统驱动器」以显示隐藏的系统驱动器，或连接新的存储设备。</translation>
+    </message>
+    <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>无法检测存储设备，请检查访问权限并重新连接设备。</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>请连接硬盘、U 盘或存储卡等存储设备以继续。</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>当前设备为只读，请连接可写入的存储设备。</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>未找到可用的存储设备。
+请连接存储设备，或取消勾选“排除系统驱动器”。</translation>
     </message>
 </context>
 <context>
@@ -2230,7 +2427,7 @@ to show system drives.</source>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>更新</translation>
     </message>
     <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
@@ -2313,23 +2510,23 @@ to show system drives.</source>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>已保存的密码与所选操作系统不兼容，请重新输入。</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>启用免密码 sudo</translation>
     </message>
     <message>
         <source>Allow this user to run sudo commands without entering a password.</source>
-        <translation type="unfinished"></translation>
+        <translation>允许此用户无需输入密码即可运行 sudo 命令。</translation>
     </message>
     <message>
         <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>以此用户身份运行的任何进程都可无需密码获得完整的 root 权限。仅在确有需要时启用，例如用于自动化脚本或无显示器操作。</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation type="unfinished"></translation>
+        <translation>免密码 sudo 说明： </translation>
     </message>
 </context>
 <context>
@@ -2506,58 +2703,56 @@ to show system drives.</source>
         <translation>请稍候…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>保留现有</translation>
-    </message>
-    <message>
         <source>Open local repository file?</source>
-        <translation type="unfinished"></translation>
+        <translation>打开本地仓库文件？</translation>
     </message>
     <message>
         <source>Switch to a custom repository?</source>
-        <translation type="unfinished"></translation>
+        <translation>切换到自定义仓库？</translation>
     </message>
     <message>
         <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation type="unfinished"></translation>
+        <translation>你正在打开一个本地 ZimaOS USB Creator 清单文件。当前操作系统列表将被替换为此文件的内容。</translation>
     </message>
     <message>
         <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>某个网站请求将 ZimaOS USB Creator 切换为使用自定义操作系统仓库。
+
+</translation>
     </message>
     <message>
         <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
-        <translation type="unfinished"></translation>
+        <translation>仅在你信任此来源，且确实主动点击了打开此仓库的链接时接受。</translation>
     </message>
     <message>
         <source>Repository URL: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>仓库 URL：%1</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">打开</translation>
+        <translation>打开</translation>
     </message>
     <message>
         <source>Switch repository</source>
-        <translation type="unfinished"></translation>
+        <translation>切换仓库</translation>
     </message>
     <message>
         <source>Open the local manifest file and use it as the OS repository</source>
-        <translation type="unfinished"></translation>
+        <translation>打开本地清单文件并将其用作操作系统仓库</translation>
     </message>
     <message>
         <source>Switch to the custom repository from the link</source>
-        <translation type="unfinished"></translation>
+        <translation>切换到链接指向的自定义仓库</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">取消</translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>Keep your current repository settings</source>
-        <translation type="unfinished"></translation>
+        <translation>保留当前仓库设置</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -2580,20 +2775,53 @@ to show system drives.</source>
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>确认擦除设备？</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>写入镜像会清除设备上的全部数据。</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>目标存储设备</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>存储设备</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>此操作无法撤销，请先备份重要文件。</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>擦除并写入</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>擦除并写入（%1）</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
-        <translation type="unfinished"></translation>
+        <translation>已切换到兼容模式，正在继续写入…</translation>
     </message>
     <message>
         <source>Write stalled - no progress for %1 seconds.
 
 Please check your storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>写入已停滞，已有 %1 秒没有进展。
+
+请检查存储设备后重试。</translation>
     </message>
     <message>
         <source>Storage device not responding. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>存储设备无响应，正在以兼容模式重试…</translation>
     </message>
 </context>
 <context>
@@ -2616,39 +2844,19 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished">受下载速度限制</translation>
+        <translation>受下载速度限制</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished">受解压速度限制</translation>
+        <translation>受解压速度限制</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished">受存储设备速度限制</translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>您即将擦除以下设备上的所有数据：%1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>存储设备</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>此操作是永久性的，无法撤销。</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>我已了解，擦除并写入</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>请稍候...</translation>
+        <translation>受存储设备速度限制</translation>
     </message>
     <message>
         <source>Writing... %1 MB written</source>
-        <translation type="unfinished"></translation>
+        <translation>正在写入… 已写入 %1 MB</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2735,8 +2943,24 @@ Please check your storage device and try again.</source>
         <translation>自定义设置</translation>
     </message>
     <message>
-        <source>Please wait... %1</source>
-        <translation>请稍候… %1</translation>
+        <source>Cancelling…</source>
+        <translation>正在取消…</translation>
+    </message>
+    <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>正在取消，请等待设备安全释放。</translation>
+    </message>
+    <message>
+        <source>Download: %1%</source>
+        <translation>下载：%1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>已下载：%1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>正在下载镜像…</translation>
     </message>
 </context>
 <context>
@@ -2750,20 +2974,20 @@ Please check your storage device and try again.</source>
         <translation>错误</translation>
     </message>
     <message>
-        <source>Erase</source>
-        <translation>格式化</translation>
+        <source>Format storage device</source>
+        <translation>格式化设备</translation>
     </message>
     <message>
-        <source>Format card as FAT32</source>
-        <translation>把 USB 设备格式化为 FAT32</translation>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>清除数据并将存储设备格式化为 FAT32</translation>
     </message>
     <message>
-        <source>Use custom</source>
-        <translation>使用自定义镜像</translation>
+        <source>Use a local image</source>
+        <translation>使用本地镜像</translation>
     </message>
     <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>选择本地已有的 .img 文件</translation>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>选择本地镜像文件，支持 IMG、ISO 及压缩镜像</translation>
     </message>
     <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
@@ -2780,10 +3004,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>OK</source>
         <translation>确定</translation>
-    </message>
-    <message>
-        <source>Close the error dialog and continue</source>
-        <translation>关闭错误对话框并继续</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>
@@ -2823,11 +3043,11 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Offline</source>
-        <translation type="unfinished"></translation>
+        <translation>离线</translation>
     </message>
     <message>
         <source>Using data from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>使用来自 %1 的数据</translation>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>
@@ -2844,147 +3064,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>All files (*)</source>
         <translation>所有文件 (*)</translation>
-    </message>
-</context>
-<context>
-    <name>RepositoryDialog</name>
-    <message>
-        <source>Content Repository</source>
-        <translation>内容仓库</translation>
-    </message>
-    <message>
-        <source>Repository source:</source>
-        <translation>仓库源：</translation>
-    </message>
-    <message>
-        <source>Use custom file</source>
-        <translation>使用自定义文件</translation>
-    </message>
-    <message>
-        <source>Please select a custom repository json file</source>
-        <translation>请选择自定义仓库 JSON 文件</translation>
-    </message>
-    <message>
-        <source>Select Repository</source>
-        <translation>选择仓库</translation>
-    </message>
-    <message>
-        <source>Apply &amp; Restart</source>
-        <translation>应用并重启</translation>
-    </message>
-    <message>
-        <source>Select custom repository</source>
-        <translation>选择自定义仓库</translation>
-    </message>
-    <message>
-        <source>Use custom URL</source>
-        <translation>使用自定义 URL</translation>
-    </message>
-    <message>
-        <source>Select a custom repository JSON file from your computer</source>
-        <translation>从您的计算机中选择自定义仓库 JSON 文件</translation>
-    </message>
-    <message>
-        <source>Close the repository dialog without changing the content source</source>
-        <translation>关闭仓库对话框，不更改内容源</translation>
-    </message>
-    <message>
-        <source>Apply the new content repository and restart the wizard from the beginning</source>
-        <translation>应用新的内容仓库并从头重新启动向导</translation>
-    </message>
-    <message>
-        <source>Choose the source for operating system images</source>
-        <translation>选择操作系统镜像的来源</translation>
-    </message>
-    <message>
-        <source>Load operating system list from a JSON file on your computer</source>
-        <translation>从您计算机上的 JSON 文件加载操作系统列表</translation>
-    </message>
-    <message>
-        <source>Download operating system list from a custom web address</source>
-        <translation>从自定义网址下载操作系统列表</translation>
-    </message>
-    <message>
-        <source>ZimaOS (default)</source>
-        <translation>ZimaOS（默认）</translation>
-    </message>
-    <message>
-        <source>Choose where to get your operating system images.</source>
-        <translation>选择操作系统镜像的获取来源。</translation>
-    </message>
-    <message>
-        <source>Official ZimaOS images, ready to install.</source>
-        <translation>获取官方 ZimaOS 系统镜像。</translation>
-    </message>
-    <message>
-        <source>Load an image list from a file on your computer.</source>
-        <translation>从本地文件读取镜像列表。</translation>
-    </message>
-    <message>
-        <source>Load an image list from a web address.</source>
-        <translation>从指定网址获取镜像列表。</translation>
-    </message>
-    <message>
-        <source>Select a repository file</source>
-        <translation>选择仓库文件</translation>
-    </message>
-    <message>
-        <source>Custom repository URL</source>
-        <translation>自定义仓库 URL</translation>
-    </message>
-    <message>
-        <source>Apply changes</source>
-        <translation>应用更改</translation>
-    </message>
-    <message>
-        <source>Changing the source returns you to device selection.</source>
-        <translation>更换来源后，将返回设备选择步骤。</translation>
-    </message>
-</context>
-<context>
-    <name>WriteConfirmationDialog</name>
-    <message>
-        <source>Erase this device?</source>
-        <translation>确认擦除设备？</translation>
-    </message>
-    <message>
-        <source>Writing the image will erase all data on this device.</source>
-        <translation>写入镜像会清除设备上的全部数据。</translation>
-    </message>
-    <message>
-        <source>Target storage device</source>
-        <translation>目标存储设备</translation>
-    </message>
-    <message>
-        <source>Storage device</source>
-        <translation>存储设备</translation>
-    </message>
-    <message>
-        <source>This action cannot be undone. Back up any important files before continuing.</source>
-        <translation>此操作无法撤销，请先备份重要文件。</translation>
-    </message>
-    <message>
-        <source>Erase and write</source>
-        <translation>擦除并写入</translation>
-    </message>
-    <message>
-        <source>Erase and write (%1)</source>
-        <translation>擦除并写入（%1）</translation>
-    </message>
-</context>
-<context>
-    <name>ErrorDialog</name>
-    <message>
-        <source>Error details</source>
-        <translation>错误详情</translation>
-    </message>
-    <message>
-        <source>Got it</source>
-        <translation>知道了</translation>
-    </message>
-    <message>
-        <source>Close the error details</source>
-        <translation>关闭错误详情</translation>
     </message>
 </context>
 </TS>

@@ -44,6 +44,8 @@ if(NOT BUILD_CLI_ONLY)
         windows/winwlancredentials.h
         windows/winwlancredentials.cpp
         windows/nativefiledialog_windows.cpp
+        windows/windowchrome.h
+        windows/windowchrome.cpp
     )
 else()
     # Use stub implementation for CLI builds
@@ -57,6 +59,9 @@ set(DEPENDENCIES
     wlanapi_delayed.lib
 )
 set(EXTRALIBS setupapi ${CMAKE_BINARY_DIR}/wlanapi_delayed.lib Bcrypt.dll crypt32 ole32 oleaut32 wbemuuid)
+if(NOT BUILD_CLI_ONLY)
+    list(APPEND EXTRALIBS dwmapi)
+endif()
 
 # ---- Relay exe ----
 add_executable(zimaos-usb-creator-callback-relay WIN32 windows/CallbackRelay.cpp)

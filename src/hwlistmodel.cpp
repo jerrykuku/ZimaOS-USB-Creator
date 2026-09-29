@@ -16,6 +16,18 @@ HWListModel::HWListModel(ImageWriter &imageWriter)
 
 bool HWListModel::reload()
 {
+    // Filtered OS lists always include built-in actions, even before the manifest
+    // arrives. Do not mistake that loading state for a hardware-free repository.
+    if (!_imageWriter.hasOsListData()) {
+        beginResetModel();
+        _hwDevices.clear();
+        _currentIndex = -1;
+        endResetModel();
+        emit currentIndexChanged();
+        emit currentNameChanged();
+        emit currentArchitectureChanged();
+        return false;
+    }
     QJsonDocument doc = _imageWriter.getFilteredOSlistDocument();
     QJsonObject root = doc.object();
 
@@ -24,28 +36,18 @@ bool HWListModel::reload()
         return false;
     }
 
-    QJsonValue imager = root.value("imager");
-
-    if (!imager.isObject()) {
-        qWarning() << Q_FUNC_INFO << "missing imager";
-        return false;
-    }
-
-    QJsonValue devices = imager.toObject().value("devices");
-
-    if (!devices.isArray()) {
-        // just means list hasn't been loaded yet
-        return false;
-    }
+    // Repositories may omit hardware categories entirely.
+    const QJsonArray devices = root.value("imager").toObject().value("devices").toArray();
 
     beginResetModel();
     _currentIndex = -1;
     // Replace contents on reload to avoid duplicate entries when re-entering the step
     _hwDevices.clear();
 
-    const QJsonArray deviceArray = devices.toArray();
+    const QJsonArray deviceArray = devices;
     _hwDevices.reserve(deviceArray.size());
     int indexOfDefault = -1;
+    int indexOfPrevious = -1;
     for (const QJsonValue &deviceValue: deviceArray) {
         QJsonObject deviceObj = deviceValue.toObject();
 
@@ -70,6 +72,8 @@ bool HWListModel::reload()
             deviceObj["architecture"].toString()
         };
         _hwDevices.append(hwDevice);
+        if (hwDevice.name == _lastSelectedDeviceName)
+            indexOfPrevious = _hwDevices.size() - 1;
 
         if (deviceObj["default"].isBool() && deviceObj["default"].toBool())
             indexOfDefault = _hwDevices.size() - 1;
@@ -77,7 +81,7 @@ bool HWListModel::reload()
 
     endResetModel();
 
-    setCurrentIndex(indexOfDefault);
+    setCurrentIndex(indexOfPrevious >= 0 ? indexOfPrevious : indexOfDefault);
 
     return true;
 }

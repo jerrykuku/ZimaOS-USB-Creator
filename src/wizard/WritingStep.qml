@@ -23,6 +23,8 @@ WizardStepBase {
         return ""
     }
     nextButtonText: {
+        if (root.isCancelling)
+            return qsTr("Cancelling…")
         if (root.isWriting) {
             // Show specific cancel text based on write state
             if (ImageWriterSingleton.writeState === ImageWriterSingleton.Verifying) {
@@ -37,6 +39,8 @@ WizardStepBase {
         }
     }
     nextButtonAccessibleDescription: {
+        if (root.isCancelling)
+            return qsTr("Cancelling… Please wait for the device to be released.")
         if (root.isWriting) {
             if (ImageWriterSingleton.writeState === ImageWriterSingleton.Verifying) {
                 return qsTr("Skip verification and finish the write process")
@@ -50,7 +54,7 @@ WizardStepBase {
         }
     }
     backButtonAccessibleDescription: qsTr("Return to previous customization step")
-    nextButtonEnabled: root.isWriting || root.isComplete || (!beginWriteDelay.running && ImageWriterSingleton.readyToWrite())
+    nextButtonEnabled: !root.isCancelling && (root.isWriting || root.isComplete || (!beginWriteDelay.running && ImageWriterSingleton.readyToWrite()))
     nextButtonDestructive: root.isWriting && !root.isVerifying
     showBackButton: true
 
@@ -68,6 +72,8 @@ WizardStepBase {
     property int writeThroughputKBps: 0
     property string operationWarning: ""  // Non-fatal warning message (e.g., sync fallback)
     property bool isIndeterminateProgress: false  // True when we can't determine accurate progress (e.g., gz files >4GB)
+    property string downloadStatus: ""
+    property bool hasWriteProgress: false
     readonly property bool anyCustomizationsApplied: (
         wizardContainer.customizationSupported && (
             wizardContainer.hostnameConfigured ||
@@ -287,6 +293,8 @@ WizardStepBase {
 
             FocusableText {
                 id: progressText
+                objectName: "writeProgressText"
+                wrapMode: Text.WordWrap
                 text: qsTr("Starting write process...")
                 font.pointSize: Style.fontSizeHeading
                 font.family: Style.fontFamilyBold
@@ -299,6 +307,7 @@ WizardStepBase {
 
             ImProgressBar {
                 id: progressBar
+                objectName: "writeProgressBar"
                 Layout.fillWidth: true
                 Layout.preferredHeight: 10
                 value: 0
@@ -309,6 +318,16 @@ WizardStepBase {
                 Accessible.role: Accessible.ProgressBar
                 Accessible.name: qsTr("Write progress")
                 Accessible.description: progressText.text
+            }
+
+            Text {
+                text: root.downloadStatus
+                visible: root.isWriting && !root.isCancelling && !root.isVerifying && !root.isFinalising && text !== ""
+                font.family: Style.fontFamily
+                font.pixelSize: Style.fontSizePixelXs
+                color: Style.colorTextSecondary
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignHCenter
             }
             
             // Bottleneck status indicator - shows what's limiting progress
@@ -356,14 +375,15 @@ WizardStepBase {
 
     // Handle next button clicks based on current state
     onNextClicked: {
+        if (root.isCancelling)
+            return
         if (root.isWriting) {
             // If we're in verification phase, skip verification and let write complete successfully
             if (ImageWriterSingleton.writeState === ImageWriterSingleton.Verifying) {
                 ImageWriterSingleton.skipCurrentVerification()
             } else {
                 // Cancel the actual write operation
-                progressBar.value = 100
-                progressText.text = qsTr("Finalising…")
+                progressText.text = qsTr("Cancelling… Please wait for the device to be released.")
                 ImageWriterSingleton.cancelWrite()
             }
         } else if (!root.isComplete) {
@@ -381,8 +401,8 @@ WizardStepBase {
     }
 
     function onFinalizing() {
-        progressText.text = qsTr("Finalising...")
-        progressBar.value = 100
+        if (!root.isCancelling)
+            progressText.text = qsTr("Finalising...")
     }
 
     WriteConfirmationDialog {
@@ -406,6 +426,8 @@ WizardStepBase {
             root.bottleneckStatus = ""
             root.writeThroughputKBps = 0
             root.operationWarning = ""
+            root.downloadStatus = ""
+            root.hasWriteProgress = false
             // Check if extract size is known upfront (e.g., gz files can't reliably store sizes >4GB)
             root.isIndeterminateProgress = !ImageWriterSingleton.isExtractSizeKnown()
             progressText.text = qsTr("Starting write process...")
@@ -415,12 +437,17 @@ WizardStepBase {
     }
 
     function onDownloadProgress(now, total) {
-        // Download progress is tracked for performance stats but not shown in UI
-        // (the write progress is more accurate as it reflects actual data written to disk)
+        if (!root.isWriting || root.isCancelling || root.isVerifying || root.isFinalising)
+            return
+        root.downloadStatus = total > 0 ? qsTr("Download: %1%").arg(Math.min(100, Math.round(now / total * 100)))
+                                       : qsTr("Downloaded: %1 MB").arg(Math.round(now / (1024 * 1024)))
+        if (!root.hasWriteProgress)
+            progressText.text = qsTr("Downloading image…")
     }
 
     function onWriteProgress(now, total) {
-        if (root.isWriting) {
+        if (root.isWriting && !root.isCancelling) {
+            root.hasWriteProgress = true
             if (root.isIndeterminateProgress) {
                 // Show indeterminate progress with bytes written (in human-readable format)
                 var bytesWrittenMB = Math.round(now / (1024 * 1024))
@@ -434,7 +461,8 @@ WizardStepBase {
     }
 
     function onVerifyProgress(now, total) {
-        if (root.isWriting) {
+        if (root.isWriting && !root.isCancelling) {
+            root.downloadStatus = ""
             root.operationWarning = ""  // Clear write warnings during verification
             var progress = total > 0 ? (now / total) * 100 : 0
             progressBar.value = progress
@@ -443,7 +471,7 @@ WizardStepBase {
     }
 
     function onPreparationStatusUpdate(msg) {
-        if (root.isWriting) {
+        if (root.isWriting && !root.isCancelling) {
             progressText.text = msg
         }
     }
@@ -462,9 +490,8 @@ WizardStepBase {
         }
 
         function onFinalizing() {
-            if (root.isWriting) {
+            if (root.isWriting && !root.isCancelling) {
                 progressText.text = qsTr("Finalising…")
-                progressBar.value = 100
             }
         }
         
@@ -481,6 +508,10 @@ WizardStepBase {
     // Focus management - rebuild when visibility changes between phases
     onIsWritingChanged: rebuildFocusOrder()
     onIsCompleteChanged: rebuildFocusOrder()
+    onIsCancellingChanged: {
+        if (isCancelling)
+            progressText.text = qsTr("Cancelling… Please wait for the device to be released.")
+    }
     onAnyCustomizationsAppliedChanged: rebuildFocusOrder()
     
     Component.onCompleted: {

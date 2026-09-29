@@ -24,12 +24,12 @@
         <translation>Uložiť</translation>
     </message>
     <message>
-        <source>Disable warnings?</source>
-        <translation>Vypnúť varovania?</translation>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (predvolené)</translation>
     </message>
     <message>
-        <source>If you disable warnings, ZimaOS USB Creator will &lt;b&gt;not show confirmation prompts before writing images&lt;/b&gt;. You will still be required to &lt;b&gt;type the exact name&lt;/b&gt; when selecting a system drive.</source>
-        <translation type="unfinished"></translation>
+        <source>Disable warnings?</source>
+        <translation>Vypnúť varovania?</translation>
     </message>
     <message>
         <source>Close the options dialog without saving any changes</source>
@@ -37,11 +37,31 @@
     </message>
     <message>
         <source>Save the selected options and apply them to ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložiť vybrané nastavenia a použiť ich v ZimaOS USB Creator</translation>
+    </message>
+    <message>
+        <source>You will no longer be asked to confirm before writing an image.</source>
+        <translation>Pred zápisom obrazu sa už nebude vyžadovať potvrdenie.</translation>
+    </message>
+    <message>
+        <source>System drive protection stays on</source>
+        <translation>Ochrana systémových diskov zostáva zapnutá</translation>
+    </message>
+    <message>
+        <source>Selecting a system drive still requires its exact name.</source>
+        <translation>Pri výbere systémového disku je stále potrebné zadať jeho presný názov.</translation>
+    </message>
+    <message>
+        <source>Keep warnings</source>
+        <translation>Ponechať upozornenia</translation>
     </message>
     <message>
         <source>Keep warnings enabled and return to the options dialog</source>
         <translation>Ponechať varovania zapnuté a vrátiť sa do okna s nastaveniami</translation>
+    </message>
+    <message>
+        <source>Disable anyway</source>
+        <translation>Napriek tomu vypnúť</translation>
     </message>
     <message>
         <source>Disable confirmation prompts before writing images, requiring only exact name entry for system drives</source>
@@ -52,12 +72,32 @@
         <translation>Prehrať zvukové upozornenie, keď je zápis kompletný</translation>
     </message>
     <message>
+        <source>Manage writing preferences and image sources.</source>
+        <translation>Upravovať preferencie písania a zdroje obrázkov na disku.</translation>
+    </message>
+    <message>
         <source>Automatically eject the storage device when the write process completes successfully</source>
         <translation>Automaticky vysunúť úložné zariadenie po úspešnom dokončení zápisu</translation>
     </message>
     <message>
         <source>Skip confirmation dialogs before writing images (advanced users only)</source>
         <translation>Preskočiť potvrdzovacie okná pred zápisom obrazov (iba pre pokročilých používateľov)</translation>
+    </message>
+    <message>
+        <source>Skip the confirmation before erasing a device.</source>
+        <translation>Pred vymazaním zariadenia vynechajte potvrdenie.</translation>
+    </message>
+    <message>
+        <source>Content Repository</source>
+        <translation>Repozitár s obrazmi</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Upraviť</translation>
+    </message>
+    <message>
+        <source>Change the source of operating system images between official ZimaOS repository and custom sources</source>
+        <translation>Zmeniť zdroj obrazov operačného systému medzi oficiálnym úložiskom ZimaOS a vlastnými zdrojmi</translation>
     </message>
     <message>
         <source>Secure Boot RSA Key</source>
@@ -93,11 +133,11 @@
     </message>
     <message>
         <source>Audio notification unavailable - no viable audio player found on this system</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio upozornenie nie je k dispozícii - žiadny životaschopný audio prehrávač sa nenašiel v tomto systéme</translation>
     </message>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Verzia: %1</translation>
     </message>
 </context>
 <context>
@@ -131,7 +171,7 @@
     </message>
     <message>
         <source>Repository Manifest Files (*.json *.%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositorium Manifest Files (*.json *.%1)</translation>
     </message>
     <message>
         <source>Public Key files (*.pub)</source>
@@ -242,59 +282,59 @@
     <name>ConfirmOtpProgramDialog</name>
     <message>
         <source>WARNING: OTP Programming is PERMANENT and IRREVERSIBLE</source>
-        <translation type="unfinished"></translation>
+        <translation>Upozornenie: OTP Programovanie je trvalé a nezvratné</translation>
     </message>
     <message>
         <source>This operation will permanently program the secure boot public key hash into the device&apos;s one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>Táto operácia bude trvalo programovať hash zabezpečeného verejného kľúča spúšťača do jednorazovej programovateľnej (OTP) pamäte zariadenia. Po tom, čo je programované, toto zariadenie bude štartovať iba obrázky podpísané príslušným súkromným kľúčom. Táto akcia sa nemôže zmeniť.</translation>
     </message>
     <message>
         <source>Device: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Zariadenie: %1</translation>
     </message>
     <message>
         <source>Serial: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Série: %1</translation>
     </message>
     <message>
         <source>Key fingerprint: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Odtlačky prstov kľúčov: %1</translation>
     </message>
     <message>
         <source>Also lock JTAG debug port (additional irreversible action)</source>
-        <translation type="unfinished"></translation>
+        <translation>Taktiež zakrývať JTAG debug port (dodatočné nezvratné opatrenie)</translation>
     </message>
     <message>
         <source>To confirm, type the device serial number below:</source>
-        <translation type="unfinished"></translation>
+        <translation>Na potvrdenie zadajte sériové číslo zariadenia nižšie:</translation>
     </message>
     <message>
         <source>Serial to type: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Sériový typ: %1</translation>
     </message>
     <message>
         <source>Type device serial number exactly</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypisovacie zariadenie presne sériové číslo</translation>
     </message>
     <message>
         <source>Confirmation input. Type exactly: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Úvod potvrdenia. Presný typ: %1</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">ZRUŠIŤ</translation>
+        <translation>ZRUŠIŤ</translation>
     </message>
     <message>
         <source>Cancel OTP programming and return to previous screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrušiť programovanie OTP a vrátiť sa na predchádzajúci obrazovka</translation>
     </message>
     <message>
         <source>PROGRAM OTP</source>
-        <translation type="unfinished"></translation>
+        <translation>PROGRAM OTP</translation>
     </message>
     <message>
         <source>Permanently program the secure boot key into device OTP memory</source>
-        <translation type="unfinished"></translation>
+        <translation>Stale programovať bezpečný tlačidlo spúšťača do pamäte zariadenia OTP</translation>
     </message>
 </context>
 <context>
@@ -351,20 +391,32 @@
 <context>
     <name>ConfirmUnfilterDialog</name>
     <message>
-        <source>By disabling system drive filtering, &lt;b&gt;system drives will be shown&lt;/b&gt; in the list.</source>
-        <translation>Vypnutím filtrovania systémových diskov sa &lt;b&gt;systémové disky zobrazia&lt;/b&gt; v zozname.</translation>
+        <source>Show system drives?</source>
+        <translation>Zobraziť systémové disky?</translation>
     </message>
     <message>
-        <source>KEEP FILTER ON</source>
-        <translation>NECHAŤ FILTER ZAPNUTÝ</translation>
+        <source>System drives contain your operating system and may also contain personal files.</source>
+        <translation>Systémové jednotky obsahujú váš operačný systém a môžu obsahovať aj osobné súbory.</translation>
     </message>
     <message>
-        <source>SHOW SYSTEM DRIVES</source>
-        <translation>ZOBRAZIŤ SYSTÉMOVÉ DISKY</translation>
+        <source>Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.</source>
+        <translation>Zápis na nesprávny disk natrvalo vymaže jeho údaje a môže znemožniť spustenie počítača.</translation>
+    </message>
+    <message>
+        <source>You will still need to select a device and confirm its name before writing to a system drive.</source>
+        <translation>Stále budete musieť vybrať zariadenie a potvrdiť jeho meno pred písaním na systémový pohon.</translation>
+    </message>
+    <message>
+        <source>Keep hidden</source>
+        <translation>Ponechať skryté</translation>
     </message>
     <message>
         <source>Keep system drives hidden to prevent accidental damage to your operating system</source>
         <translation>Nechať systémové disky skryté, aby nedošlo k neúmyselnému poškodeniu operačného systému</translation>
+    </message>
+    <message>
+        <source>Show system drives</source>
+        <translation>Zobraziť systémové disky</translation>
     </message>
     <message>
         <source>Remove the safety filter and display system drives in the storage device list</source>
@@ -375,142 +427,150 @@
     <name>DebugOptionsDialog</name>
     <message>
         <source>Debug Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Možnosti odkladania</translation>
     </message>
     <message>
         <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation type="unfinished"></translation>
+        <translation>️️ Tieto možnosti sú pre debugging a testovanie. Zmena týchto údajov môže mať vplyv na výkonnosť a integritu údajov.</translation>
     </message>
     <message>
         <source>I/O Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Možnosti I/O</translation>
     </message>
     <message>
         <source>Enable Direct I/O (F_NOCACHE / O_DIRECT)</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypustiť priame vstupy (F_NOCACHE / O_DIRECT)</translation>
     </message>
     <message>
         <source>Bypass the operating system page cache for writes. Slower but ensures data goes directly to device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Opasujte cache stránok operačného systému pre písanie. Pomalšie, ale zabezpečuje, že údaje idú priamo do zariadenia.</translation>
     </message>
     <message>
         <source>Enable Async I/O</source>
-        <translation type="unfinished"></translation>
+        <translation>Akcializovať Async I/O</translation>
     </message>
     <message>
         <source>Queue multiple writes to overlap device latency. Improves performance with Direct I/O enabled.</source>
-        <translation type="unfinished"></translation>
+        <translation>Režie mnohé píše prekrývať latenciu zariadenia. Zlepšuje výkonnosť pri priamej prevádzke.</translation>
     </message>
     <message>
         <source>Queue Depth:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hĺbka riadku:</translation>
     </message>
     <message>
         <source>Async queue depth: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Hĺbka asynchronizovanej riadku: %1</translation>
     </message>
     <message>
         <source>Buffer memory: ~%1-%2 MB (varies by system RAM)</source>
-        <translation type="unfinished"></translation>
+        <translation>Buffer pamäť: ~%1-%2 MB (vychádza podľa systému RAM)</translation>
     </message>
     <message>
         <source>Ignore Device I/O Limits</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorovať obmedzenia I/O zariadenia</translation>
     </message>
     <message>
         <source>Ignore the device-reported queue depth and transfer size limits. Useful for USB-NVMe enclosures that under-report their capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ignorujte hlbokú riadku a limity veľkosti prenosu hlásené zariadením. Použitá pre USB-NVMe príloh, ktoré podreportujú svoje schopnosti.</translation>
     </message>
     <message>
         <source>Enable Periodic Sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Umožniť pravidelné synchronizovanie</translation>
     </message>
     <message>
         <source>Periodically flush data to disk during writes. Automatically disabled when Direct I/O is active.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pravidelne vyplavujte údaje na disk počas písania. Automaticky vypnutý, keď je aktivovaná priama spúšťacia/výstup.</translation>
     </message>
     <message>
         <source>Debugging</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstraňovanie</translation>
     </message>
     <message>
         <source>Verbose Performance Logging</source>
-        <translation type="unfinished"></translation>
+        <translation>Účinkové záznamy verbose</translation>
     </message>
     <message>
         <source>Log detailed timing information for each write operation to help diagnose performance issues.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapíšte podrobné informácie o načasovaní pre každú písanú operáciu, aby ste pomohli diagnostikovať problémy s výkonnosťou.</translation>
     </message>
     <message>
         <source>Network Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Možnosti siete</translation>
     </message>
     <message>
         <source>Force IPv4-only Downloads</source>
-        <translation type="unfinished"></translation>
+        <translation>Násilné IPv4 stiahnutie</translation>
     </message>
     <message>
         <source>Only use IPv4 for downloads. Enable this if you experience connection issues due to broken IPv6 routing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Použite len IPv4 na stiahnutie. Umožnite to, ak sa vyskytnú problémy so pripojením v dôsledku poruchy smerovania IPv6.</translation>
     </message>
     <message>
         <source>Workarounds</source>
-        <translation type="unfinished"></translation>
+        <translation>Výpady</translation>
     </message>
     <message>
         <source>Counterfeit Card Mode (skip end-of-device checks)</source>
-        <translation type="unfinished"></translation>
+        <translation>Falošný režim karty (vynechajte kontroly na konci zariadenia)</translation>
     </message>
     <message>
         <source>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</source>
-        <translation type="unfinished"></translation>
+        <translation>Preskočiť operácie na konci skladovacieho zariadenia. Umožnite to pre falošné karty SD, ktoré hlásia falošnú väčšiu kapacitu. Obrázok na disku musí byť menší ako skutočná kapacita karty.</translation>
     </message>
     <message>
         <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation type="unfinished"></translation>
+        <translation>️ To umožníte len vtedy, ak vaša karta SD uvádza väčšiu kapacitu, než má v skutočnosti. Uistite sa, že obrázok disku je menší ako skutočná kapacita karty!</translation>
     </message>
     <message>
         <source>Advanced Features</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokročilé funkcie</translation>
     </message>
     <message>
         <source>Secure Boot</source>
-        <translation type="unfinished">Secure Boot</translation>
+        <translation>Secure Boot</translation>
     </message>
     <message>
         <source>Force Secure Boot Available</source>
-        <translation type="unfinished"></translation>
+        <translation>Sú k dispozícii silné bezpečné odchodové náprsy</translation>
     </message>
     <message>
         <source>Show secure boot customisation regardless of OS capabilities. Equivalent to the --enable-secure-boot CLI flag.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukážte zabezpečené prispôsobenie spustenia bez ohľadu na možnosti operačného systému. Rovnako ako vlajka CLI -enable-secure-boot.</translation>
     </message>
     <message>
         <source>Current Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuálny stav</translation>
     </message>
     <message>
         <source>Close the debug options dialog without saving any changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Zatvorte dialóg možnosti odkladania chyb bez uloženia zmien</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Použiť</translation>
     </message>
     <message>
         <source>Apply the selected debug options</source>
-        <translation type="unfinished"></translation>
+        <translation>Použite vybrané možnosti odkladu</translation>
     </message>
 </context>
 <context>
     <name>DeviceSelectionStep</name>
     <message>
         <source>Select your device</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte zariadenie</translation>
+    </message>
+    <message>
+        <source>The device list could not be downloaded. Please check your internet connection and try again.
+
+You can still write a local image file by pressing Next and selecting &apos;Use a local image&apos; on the following screen.</source>
+        <translation>Zoznam zariadení sa nedokázal stiahnuť. Prosím skontrolujte internetové pripojenie a skúste znova.
+
+Stále môžete napísať súbor zobrazenia lokálneho disku stlačením tlačidla Next a výberom &apos;Využite zobrazenie lokálneho disku&apos; na nasledujúcej obrazovke.</translation>
     </message>
     <message>
         <source>Loading device types...</source>
-        <translation type="unfinished"></translation>
+        <translation>Typy nabíjacích zariadení...</translation>
     </message>
     <message>
         <source>Device selection list</source>
@@ -530,25 +590,19 @@
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Na presun v ponuke použite šípky, výber potvrdzujte Enterom alebo medzerníkom</translation>
+        <translation>Na navigáciu použite šípky, na výber Enter alebo medzerník</translation>
     </message>
     <message>
         <source>Unable to load device list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The device list could not be downloaded. Please check your internet connection and try again.
-
-You can still write a local image file by pressing Next and selecting &apos;Use custom&apos; on the following screen.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nemôžete načítať zoznam zariadení</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Skúsiť znova</translation>
     </message>
     <message>
         <source>Retry downloading the device list</source>
-        <translation type="unfinished"></translation>
+        <translation>Opätovne skúste stiahnuť zoznam zariadení</translation>
     </message>
 </context>
 <context>
@@ -559,7 +613,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Ejecting the storage device — do not remove it yet…</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypúšťanie skladovacieho zariadenia  ešte ho neodstráňte...</translation>
     </message>
     <message>
         <source>The storage device was ejected automatically. You can now remove it safely.</source>
@@ -567,7 +621,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>The storage device could not be ejected. Close any application still using it, then press Eject.</source>
-        <translation type="unfinished"></translation>
+        <translation>Úložné zariadenie nebolo možné vylúčiť. Zatvorte akúkoľvek aplikáciu, ktorá ju stále používa, a potom stlačte tlačidlo Eject.</translation>
     </message>
     <message>
         <source>Please eject the storage device before removing it from your computer.</source>
@@ -575,11 +629,11 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Eject</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyhodenie</translation>
     </message>
     <message>
         <source>Eject the storage device so it can be removed safely</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypustite skladovacie zariadenie tak, aby sa mohlo bezpečne odstrániť</translation>
     </message>
     <message>
         <source>Write Another</source>
@@ -611,7 +665,7 @@ You can still write a local image file by pressing Next and selecting &apos;Use 
     </message>
     <message>
         <source>Close ZimaOS USB Creator and exit the application</source>
-        <translation type="unfinished"></translation>
+        <translation>Zatvoriť ZimaOS USB Creator a ukončiť aplikáciu</translation>
     </message>
     <message>
         <source>Return to storage selection to write the same image to another storage device</source>
@@ -653,11 +707,18 @@ No data has been written for 30 seconds. This could be caused by:
 • System resource exhaustion
 
 Please check the storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Operácia písania sa zastavila.
+
+Už 30 sekúnd nie sú zaznamenané žiadne údaje. Môže to byť spôsobené:
+• Skladné zariadenie odpojené alebo nereagujúce
+• Zlyhanie zariadenia alebo defekt
+• Vyčerpanie systémových zdrojov
+
+Prosím skontrolujte skladovacie zariadenie a skúste znova.</translation>
     </message>
     <message>
         <source>Failed to acquire write buffer slot</source>
-        <translation type="unfinished"></translation>
+        <translation>Nedokázal získať write buffer slot</translation>
     </message>
     <message>
         <source>The download has stalled.
@@ -668,7 +729,14 @@ No data received for 30 seconds. This could be caused by:
 • Firewall or proxy blocking the connection
 
 Please check your network connection and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sťahovanie sa zastavilo.
+
+Po 30 sekundách žiadne údaje nedostali. Môže to byť spôsobené:
+• Stratené alebo nestabilné pripojenie k sieti
+• Vzdialený server nereagoval
+• Firewall alebo proxy blokujúce pripojenie
+
+Prosím skontrolujte pripojenie k sieti a skúste znova.</translation>
     </message>
 </context>
 <context>
@@ -711,7 +779,7 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Controlled Folder Access seems to be enabled. Please add zimaos-usb-creator.exe to the list of allowed apps and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zdá sa, že je povolený kontrolovaný prístup do priečinka. Prosím, pridajte zimaos-usb-creator.exe do zoznamu povolených aplikácií a skúste znova.</translation>
     </message>
     <message>
         <source>Error: Multiple partitions found on disk. Please ensure the disk is completely clean.</source>
@@ -779,25 +847,27 @@ Please check your network connection and try again.</source>
     </message>
     <message>
         <source>Verifying OS customisation...</source>
-        <translation type="unfinished"></translation>
+        <translation>Verifikácia prispôsobenia operačného systému...</translation>
     </message>
     <message>
         <source>The OS customisation settings were not stored correctly on the device. The following files are missing or damaged: %1.
 
 The device accepted the data but did not keep it, which usually means the SD card or USB adapter is failing or counterfeit. The image itself was written correctly, but the device would not have applied your settings on first boot (so you would not have been able to connect to it). Try a different card or card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavenia prispôsobenia operačného systému neboli správne uložené na zariadení. Chýbajú alebo sú poškodené tieto súbory: %1.
+
+Prístroj prijal údaje, ale neuchovával ich, čo zvyčajne znamená, že karta SD alebo adaptér USB nie je funkčná alebo je falšovaná. Samotný diskový obrázok bol napísaný správne, ale zariadenie by vaše nastavenia pri prvom spustení nepoužívalo (takže by ste sa k nemu nemohli pripojiť). Vyskúšajte inú kartu alebo čítač karty.</translation>
     </message>
     <message>
         <source>Unable to allocate memory for verification.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nemožno prideliť pamäť na overenie.</translation>
     </message>
     <message>
         <source>seeking storage for verification</source>
-        <translation type="unfinished"></translation>
+        <translation>hľadanie skladovania na účely overenia</translation>
     </message>
     <message>
         <source>Error reading from storage.&lt;br&gt;The device returned less data than expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyb čítania zo skladovania.&lt;br&gt;Zariadenie vrátilo menej údajov, ako sa očakávalo.</translation>
     </message>
     <message>
         <source>Creating signed boot image...</source>
@@ -889,33 +959,35 @@ The device accepted the data but did not keep it, which usually means the SD car
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zlyhal sa odstránenie disku &apos;%1&apos;. Prosím, zatvorte všetky aplikácie pomocou disku a skúste znova.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zlyhal sa odstránenie disku &apos;%1&apos;.</translation>
     </message>
     <message>
         <source>Waiting for drive to become available... (%1s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Čakajú na dostupnosť disku... (%1s)</translation>
     </message>
     <message>
         <source>getting device size</source>
-        <translation type="unfinished"></translation>
+        <translation>získavanie veľkosti zariadenia</translation>
     </message>
     <message>
         <source>Failed to allocate buffer for MBR zeroing.
 
 The system may be low on memory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nedostrelil sa alokácia tampónu pre nulové nastavenie MBR.
+
+Systém môže mať nízku pamäť.</translation>
     </message>
     <message>
         <source>preparing storage device</source>
-        <translation type="unfinished"></translation>
+        <translation>príprava skladovacieho zariadenia</translation>
     </message>
     <message>
         <source>Zero&apos;ing out end of drive...</source>
-        <translation type="unfinished"></translation>
+        <translation>Zero&apos;ing mimo konca jazdy...</translation>
     </message>
     <message>
         <source>Timeout writing to end of storage device.
@@ -923,7 +995,11 @@ The system may be low on memory.</source>
 This may indicate a counterfeit SD card with fake capacity.
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Časový čas na písanie do konca skladovacieho zariadenia.
+
+To môže naznačovať falšovanie SD karta s falošnou kapacitou.
+
+Prosím, vyskúšajte iné skladovacie zariadenie.</translation>
     </message>
     <message>
         <source>Write error while trying to zero out last part of card.
@@ -931,21 +1007,27 @@ Please try a different storage device.</source>
 This could indicate the card is advertising wrong capacity (possible counterfeit).
 
 Please try a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Napíšte chybu pri pokuse o nulovú zmenu poslednej časti karty.
+
+To môže naznačovať, že karta reklamuje nesprávnu kapacitu (možná falšovanie).
+
+Prosím, vyskúšajte iné skladovacie zariadenie.</translation>
     </message>
     <message>
         <source>Storage device responding slowly. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Skladné zariadenie reaguje pomaly. Opätovné spustenie v kompatibilnom režime...</translation>
     </message>
     <message>
         <source>storage operation</source>
-        <translation type="unfinished"></translation>
+        <translation>prevádzka skladovania</translation>
     </message>
     <message>
         <source>Failed to open storage device.
 
 The device may be in use by another application, or you may not have permission to access it.</source>
-        <translation type="unfinished"></translation>
+        <translation>Neotvoril si skladovacie zariadenie.
+
+Prístroj môže byť používaný inou aplikáciou alebo nemáte povolenie na prístup k nemu.</translation>
     </message>
     <message>
         <source>Error writing to storage device during %1.
@@ -956,49 +1038,70 @@ This could be caused by:
 • Hardware failure or bad sectors
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyb písania na skladovaciu zariadenie počas %1.
+
+Môže to byť spôsobené:
+• Prístroj sa odpojí alebo nie je schopný reagovať
+• Zariadenie je plné alebo chránené písmenou
+• Zlyhanie hardvéru alebo zlý sektor
+
+Prosím skontrolujte zariadenie a skúste znova.</translation>
     </message>
     <message>
         <source>Error reading from storage device during %1.
 
 The device may have been disconnected or is malfunctioning.</source>
-        <translation type="unfinished"></translation>
+        <translation>Čítanie chyby zo skladovacieho zariadenia počas obdobia %1.
+
+Prístroj môže byť odpojený alebo nefunguje.</translation>
     </message>
     <message>
         <source>Error seeking on storage device during %1.
 
 The device may be malfunctioning or disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hľadanie chyby na ukladajúcom zariadení počas %1.
+
+Prístroj môže byť nefunkčný alebo odpojený.</translation>
     </message>
     <message>
         <source>Error getting storage device size.
 
 The device may not be properly recognized.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybu pri získavaní veľkosti skladovacieho zariadenia.
+
+Prístroj sa nemusí správne rozpoznať.</translation>
     </message>
     <message>
         <source>Error closing storage device.
 
 The device may have been disconnected.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyb uzavretia skladovacieho zariadenia.
+
+Prístroj mohol byť odpojený.</translation>
     </message>
     <message>
         <source>Failed to lock storage device.
 
 The device may be in use by another application. Please close any applications using this device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zmeškala som vypnúť skladovacie zariadenie.
+
+Prístroj môže byť použitý iným aplikáciou. Prosím, zatvorte všetky aplikácie s týmto zariadením a skúste znova.</translation>
     </message>
     <message>
         <source>Error syncing data to storage device.
 
 The device may have been disconnected or is not responding. Data may not have been fully written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyby pri synchronizácii údajov s ukladajúcim zariadením.
+
+Prístroj môže byť odpojený alebo nereagovať. Údaje možno neboli plne zapísané.</translation>
     </message>
     <message>
         <source>Error flushing data to storage device.
 
 The device may have been disconnected or is not responding.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyby pri presuchovaní údajov do ukladacieho zariadenia.
+
+Prístroj môže byť odpojený alebo nereagovať.</translation>
     </message>
     <message>
         <source>Storage device timed out during %1.
@@ -1009,13 +1112,22 @@ The device is not responding. This may indicate:
 • Driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Skladné zariadenie vyčerpané počas %1.
+
+Zariadenie neodpovedá. To môže znamenať:
+• zariadenie bolo odpojené
+• Zlyhanie zariadenia
+• Problém so vodičom alebo systémom
+
+Prosím, odpojte a znovu pripojte zariadenie, a potom skúste znova.</translation>
     </message>
     <message>
         <source>Unknown storage error during %1.
 
 Please try again or use a different storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Neznáma chyba uloženia počas obdobia %1.
+
+Skúste to znova alebo použite iné skladovacie zariadenie.</translation>
     </message>
     <message>
         <source>The storage device is not responding. This may indicate:
@@ -1024,7 +1136,12 @@ Please try again or use a different storage device.</source>
 • A driver or system issue
 
 Please disconnect and reconnect the device, then try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Skladné zariadenie nereaguje. To môže znamenať:
+• zariadenie bolo odpojené
+• Zlyhanie zariadenia
+• Problém so vodičom alebo systémom
+
+Prosím, odpojte a znovu pripojte zariadenie, a potom skúste znova.</translation>
     </message>
     <message>
         <source>Error writing to storage device.
@@ -1035,35 +1152,42 @@ Some writes failed to complete. This could be caused by:
 • Hardware failure
 
 Please check the device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyb písania na skladovacie zariadenie.
+
+Niekoľko písaní sa nedokázalo dokončiť. Môže to byť spôsobené:
+• Skladné zariadenie odpojené počas písania
+• Zariadenie je plné alebo chránené písmenou
+• Zlyhanie hardvéru
+
+Prosím skontrolujte zariadenie a skúste znova.</translation>
     </message>
     <message>
         <source>flush</source>
-        <translation type="unfinished"></translation>
+        <translation>rozpúšťanie</translation>
     </message>
     <message>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>synchronizácia</translation>
     </message>
     <message>
         <source>flushing image before writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>vyplatenie obrazu disku pred napísaním tabuľky oddelení</translation>
     </message>
     <message>
         <source>writing partition table</source>
-        <translation type="unfinished"></translation>
+        <translation>písaný rozdeľovací tabuľka</translation>
     </message>
     <message>
         <source>Verifying write failed. The partition table on the storage device is different from what was written.</source>
-        <translation type="unfinished"></translation>
+        <translation>Verifikácia napisu zlyhala. Rozdeľovacia tabuľka na skladovacom zariadení sa líši od toho, čo bolo napísané.</translation>
     </message>
     <message>
         <source>final flush</source>
-        <translation type="unfinished"></translation>
+        <translation>konečný výplyn</translation>
     </message>
     <message>
         <source>final sync</source>
-        <translation type="unfinished"></translation>
+        <translation>konečná synchronizácia</translation>
     </message>
 </context>
 <context>
@@ -1110,11 +1234,26 @@ Please check the device and try again.</source>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;. Please close any applications using the disk and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zlyhal sa odstránenie disku &apos;%1&apos;. Prosím, zatvorte všetky aplikácie pomocou disku a skúste znova.</translation>
     </message>
     <message>
         <source>Failed to unmount disk &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zlyhal sa odstránenie disku &apos;%1&apos;.</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <source>Error details</source>
+        <translation>Podrobnosti o chybe</translation>
+    </message>
+    <message>
+        <source>Got it</source>
+        <translation>Rozumiem</translation>
+    </message>
+    <message>
+        <source>Close the error details</source>
+        <translation>Zatvorenie údajov o chybe</translation>
     </message>
 </context>
 <context>
@@ -1246,6 +1385,22 @@ Please check the device and try again.</source>
         <translation>Nakonfigurujte sériové rozhranie: Zakázané, Predvolené (určené systémom), Konzola a Hardvér (konzola aj UART), Hardvér (iba UART) alebo Konzola (iba konzola na podporovaných zariadeniach).</translation>
     </message>
     <message>
+        <source>Disabled</source>
+        <translation>Vypnuté</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Predvolené</translation>
+    </message>
+    <message>
+        <source>Console &amp; Hardware</source>
+        <translation>Konzola a hardvér</translation>
+    </message>
+    <message>
+        <source>Hardware</source>
+        <translation>Hardvér</translation>
+    </message>
+    <message>
         <source>USB Gadget Mode Warning</source>
         <translation>Varovanie režimu USB Gadget</translation>
     </message>
@@ -1269,16 +1424,20 @@ Please check the device and try again.</source>
 <context>
     <name>ImComboBox</name>
     <message>
+        <source>Error: Invalid selection</source>
+        <translation>Chyb: Neplatný výber</translation>
+    </message>
+    <message>
         <source>Search: &quot;%1&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyhľadávanie: &quot;%1&quot;</translation>
     </message>
     <message>
         <source>%1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 z %2</translation>
     </message>
     <message>
         <source>No matches</source>
-        <translation type="unfinished"></translation>
+        <translation>Žiadne zápalky</translation>
     </message>
 </context>
 <context>
@@ -1351,7 +1510,7 @@ alebo zadajte cestu do adresného riadka hore.</translation>
     </message>
     <message>
         <source>Enter folder or file path…</source>
-        <translation type="unfinished"></translation>
+        <translation>Vložte priebeh do priečinku alebo do súboru...</translation>
     </message>
 </context>
 <context>
@@ -1500,10 +1659,6 @@ alebo zadajte cestu do adresného riadka hore.</translation>
         <translation> alebo </translation>
     </message>
     <message>
-        <source>No organisation API key is configured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save Performance Data</source>
         <translation>Uložiť údaje o výkone</translation>
     </message>
@@ -1515,7 +1670,9 @@ alebo zadajte cestu do adresného riadka hore.</translation>
         <source>Storage capacity is not large enough.
 
 The image requires at least %1 of storage.</source>
-        <translation type="unfinished"></translation>
+        <translation>Skladateľnosť nie je dostatočne veľká.
+
+Obrázok vyžaduje aspoň %1 skladovania.</translation>
     </message>
     <message>
         <source>Failed to start write operation: insufficient memory.
@@ -1523,27 +1680,31 @@ The image requires at least %1 of storage.</source>
 The system does not have enough available memory to perform this operation. Try closing other applications to free up memory, then try again.
 
 Technical details: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nedokázal začať písanie: nedostatočná pamäť.
+
+Systém nemá dostatočnú dostupnú pamäť na vykonanie tejto operácie. Skúste zatvoriť iné aplikácie, aby ste uvoľnili pamäť, a potom skúste znova.
+
+Technické údaje: %1</translation>
     </message>
     <message>
         <source>Failed to start write operation: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nedokázala začať písanie: %1</translation>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Obmedzený rýchlosťou stiahnutia</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Obmedzené rýchlosťou dekompresiu</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Omezená rýchlosťou skladovacieho zariadenia</translation>
     </message>
     <message>
         <source>Verifying written data</source>
-        <translation type="unfinished"></translation>
+        <translation>Overenie písomných údajov</translation>
     </message>
 </context>
 <context>
@@ -1581,11 +1742,11 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Choose your language for ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte jazyk pre ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Select the language for the ZimaOS USB Creator interface</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte jazyk používateľského rozhrania ZimaOS USB Creator</translation>
     </message>
 </context>
 <context>
@@ -1655,7 +1816,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>This also sets the Wi-Fi regulatory domain for your region.</source>
-        <translation type="unfinished"></translation>
+        <translation>To tiež nastaví reguláciu v oblasti Wi-Fi pre váš región.</translation>
     </message>
     <message>
         <source>Choose your time zone so your ZimaOS displays the correct local time. This is automatically recommended based on your capital city selection, but you can change it if the suggestion is incorrect.</source>
@@ -1667,28 +1828,21 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Why am I being asked this?</source>
-        <translation type="unfinished"></translation>
+        <translation>Prečo sa ma to pýtajú?</translation>
     </message>
 </context>
 <context>
     <name>MacFile</name>
     <message>
         <source>ZimaOS USB Creator needs to access the disk to write the image.</source>
-        <translation type="unfinished"></translation>
+        <translation>ZimaOS USB Creator potrebuje prístup na disk, aby napísal obrázok na disk.</translation>
     </message>
 </context>
 <context>
     <name>NativeFileDialog</name>
     <message>
         <source>File type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OSListModel</name>
-    <message>
-        <source>Recommended</source>
-        <translation>Odporúčané</translation>
+        <translation>Typ súboru:</translation>
     </message>
 </context>
 <context>
@@ -1739,7 +1893,15 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Na presun použite šípky, pre výber stlačte Enter alebo medzerník</translation>
+        <translation>Na navigáciu použite šípky, na výber Enter alebo medzerník</translation>
+    </message>
+    <message>
+        <source>Recommended</source>
+        <translation>Odporúčané</translation>
+    </message>
+    <message>
+        <source>Test version</source>
+        <translation>Testová verzia</translation>
     </message>
     <message>
         <source>Operating system category</source>
@@ -1747,7 +1909,7 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select, Left arrow to go back</source>
-        <translation>Na presun použite šípky, pre výber stlačte Enter alebo medzerník, šípka vľavo slúži pre návrat</translation>
+        <translation>Na navigáciu použite šípky, na výber Enter alebo medzerník, šípkou doľava sa vrátite späť</translation>
     </message>
     <message>
         <source>Released: %1</source>
@@ -1755,53 +1917,53 @@ Technical details: %1</source>
     </message>
     <message>
         <source>Unable to download OS list. You can still use a local image file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nemôžem stiahnuť zoznam operačného systému. Stále môžete použiť lokálny súbor obrazu na disku.</translation>
     </message>
     <message>
         <source>Retry</source>
-        <translation type="unfinished"></translation>
+        <translation>Skúsiť znova</translation>
     </message>
     <message>
         <source>Retry downloading the OS list</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokús sa znova stiahnuť zoznam operačného systému</translation>
     </message>
 </context>
 <context>
     <name>PasswordlessSudoWarningDialog</name>
     <message>
         <source>Passwordless Sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Sudo bez hesla</translation>
     </message>
     <message>
         <source>Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Akcializácia bez hesla sudo umožňuje každému procesu spúšťajúcemu sa ako používateľovi získať plné privilegium root bez overenia. To výrazne oslabuje bezpečnosť vášho systému.</translation>
     </message>
     <message>
         <source>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Umožnite to len vtedy, ak poznáte riziká a máte konkrétnu potrebu, ako sú automatizované skripty alebo bezhlavé prevádzky.</translation>
     </message>
     <message>
         <source>CANCEL</source>
-        <translation type="unfinished">ZRUŠIŤ</translation>
+        <translation>ZRUŠIŤ</translation>
     </message>
     <message>
         <source>Cancel and keep sudo requiring a password</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrušiť a udržať sudo vyžadujúce heslo</translation>
     </message>
     <message>
         <source>ENABLE</source>
-        <translation type="unfinished"></translation>
+        <translation>VYVORENÉ</translation>
     </message>
     <message>
         <source>Enable passwordless sudo for this user account</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypustiť bez hesla sudo pre tento používateľský účet</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>ZimaOS USB Creator requires elevated privileges to write to storage devices.</source>
-        <translation type="unfinished"></translation>
+        <translation>ZimaOS USB Creator vyžaduje vyššie oprávnenia pre zápis na úložné zariadenia.</translation>
     </message>
     <message>
         <source>Without this, you will encounter permission errors when writing images.</source>
@@ -1889,6 +2051,89 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
     <message>
         <source>Choose how you will authenticate when connecting to your ZimaOS via SSH. Password authentication uses the account credentials you configured. Public key authentication uses a cryptographic key pair and is more secure.</source>
         <translation>Vyberte, ako budete overovať vaše pripojenie k ZimaOS cez SSH. Overenie pomocou hesla používa prihlasovacie údaje vami nastaveného účtu. Overenie pomocou verejného kľúča využíva kryptografický pár kľúčov a je bezpečnejšie.</translation>
+    </message>
+</context>
+<context>
+    <name>RepositoryDialog</name>
+    <message>
+        <source>Content Repository</source>
+        <translation>Repozitár s obrazmi</translation>
+    </message>
+    <message>
+        <source>Choose where to get your operating system images.</source>
+        <translation>Vyberte si, kde získať obrázky operačného systému.</translation>
+    </message>
+    <message>
+        <source>ZimaOS (default)</source>
+        <translation>ZimaOS (predvolené)</translation>
+    </message>
+    <message>
+        <source>Official ZimaOS images, ready to install.</source>
+        <translation>Úradný úrad ZimaOS obrázky, pripravené na inštaláciu.</translation>
+    </message>
+    <message>
+        <source>Use the official ZimaOS operating system repository</source>
+        <translation>Použiť oficiálny repozitár operačných systémov ZimaOS</translation>
+    </message>
+    <message>
+        <source>Use custom file</source>
+        <translation>Použiť vlastný súbor</translation>
+    </message>
+    <message>
+        <source>Load an image list from a file on your computer.</source>
+        <translation>Zložte zoznam obrázkov z disku z súboru na počítači.</translation>
+    </message>
+    <message>
+        <source>Load operating system list from a JSON file on your computer</source>
+        <translation>Načítať zoznam operačných systémov zo súboru JSON vo vašom počítači</translation>
+    </message>
+    <message>
+        <source>Select a repository file</source>
+        <translation>Vyberte súbor v úložišti</translation>
+    </message>
+    <message>
+        <source>Select a custom repository JSON file from your computer</source>
+        <translation>Vyberte vlastný JSON súbor repozitára z vášho počítača</translation>
+    </message>
+    <message>
+        <source>Select Repository</source>
+        <translation>Vyberte repozitár</translation>
+    </message>
+    <message>
+        <source>Use custom URL</source>
+        <translation>Použiť vlastnú adresu URL</translation>
+    </message>
+    <message>
+        <source>Load an image list from a web address.</source>
+        <translation>Vložte zoznam obrázkov z disku z webovej adresy.</translation>
+    </message>
+    <message>
+        <source>Download operating system list from a custom web address</source>
+        <translation>Stiahnuť zoznam operačných systémov z vlastnej webovej adresy</translation>
+    </message>
+    <message>
+        <source>Custom repository URL</source>
+        <translation>Určené adresy reštaurácie</translation>
+    </message>
+    <message>
+        <source>Changing the source returns you to device selection.</source>
+        <translation>Zmena zdroja vás vráti k výberu zariadenia.</translation>
+    </message>
+    <message>
+        <source>Close the repository dialog without changing the content source</source>
+        <translation>Zatvoriť dialógové okno repozitára bez toho, aby sa zmenil zdroj obsahu</translation>
+    </message>
+    <message>
+        <source>Apply changes</source>
+        <translation>Použiť zmeny</translation>
+    </message>
+    <message>
+        <source>Apply the new content repository and restart the wizard from the beginning</source>
+        <translation>Použiť nový repozitár s obrazmi a spustiť sprievodcu od začiatku</translation>
+    </message>
+    <message>
+        <source>Select custom repository</source>
+        <translation>Vyberte vlastný repozitár</translation>
     </message>
 </context>
 <context>
@@ -2076,10 +2321,6 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
 <context>
     <name>StorageSelectionStep</name>
     <message>
-        <source>No storage devices found</source>
-        <translation>Nenašli sa žiadne úložné zariadenia</translation>
-    </message>
-    <message>
         <source>Mounted as %1</source>
         <translation>Pripojené ako %1</translation>
     </message>
@@ -2093,7 +2334,7 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
     </message>
     <message>
         <source>Exclude system drives</source>
-        <translation>Skryť systémové disky</translation>
+        <translation>Vylúčiť systémové disky</translation>
     </message>
     <message>
         <source>Storage device list</source>
@@ -2113,29 +2354,7 @@ Kliknite na „Nainštalovať oprávnenia“ pre automatické získanie vyšší
     </message>
     <message>
         <source>Use arrow keys to navigate, Enter or Space to select</source>
-        <translation>Na presun použite šípky, pre výber stlačte Enter alebo medzerník</translation>
-    </message>
-    <message>
-        <source>All visible devices are read-only.
-Try connecting a new device, or uncheck
-&apos;Exclude system drives&apos; below.</source>
-        <translation>Všetky viditeľné zariadenia sú určené iba na čítanie.
-Skúste znova pripojiť nové zariadenie alebo zrušte možnosť
-„Skryť systémové disky“ nižšie.</translation>
-    </message>
-    <message>
-        <source>All devices are read-only.
-Please connect a writable storage device.</source>
-        <translation>Všetky zariadenia sú určené iba na čítanie.
-Pripojte, prosím, zapisovateľné úložné zariadenie.</translation>
-    </message>
-    <message>
-        <source>All devices are hidden by the filter.
-Uncheck &apos;Exclude system drives&apos; below
-to show system drives.</source>
-        <translation>Všetky zariadenia sú skryté filtrom.
-Zrušte voľbu „Skryť systémové disky“
-pre zobrazenie systémových diskov.</translation>
+        <translation>Na navigáciu použite šípky, na výber Enter alebo medzerník</translation>
     </message>
     <message>
         <source>When checked, system drives are hidden from the list. Uncheck to show all drives including system drives.</source>
@@ -2159,15 +2378,33 @@ pre zobrazenie systémových diskov.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nemôžem uviesť zoznam skladovacích zariadení: %1</translation>
     </message>
     <message>
         <source>Error: Could not list storage devices. %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyb: Nedokázali vyznačiť úložiště. %1</translation>
+    </message>
+    <message>
+        <source>Storage devices could not be detected. Check access permissions and reconnect your device.</source>
+        <translation>Úložné zariadenia nemohli byť zistené. Zkontrolujte povolenia na prístup a znova pripojte zariadenie.</translation>
+    </message>
+    <message>
+        <source>Connect a storage device, such as a hard drive, USB flash drive or memory card, to continue.</source>
+        <translation>Pripojte skladovacie zariadenie, napríklad pevný disk, flash disk USB alebo pamäťovú kartu, aby ste mohli pokračovať.</translation>
+    </message>
+    <message>
+        <source>The available devices are read-only. Connect a writable storage device.</source>
+        <translation>Dostupné zariadenia sú iba na čítanie. Pripojte úložné zariadenie, na ktoré možno zapisovať.</translation>
+    </message>
+    <message>
+        <source>No storage devices available.
+Connect a storage device or uncheck “Exclude system drives” below.</source>
+        <translation>Nie sú dostupné žiadne úložné zariadenia.
+Pripojte úložné zariadenie alebo nižšie zrušte začiarknutie možnosti „Vylúčiť systémové disky“.</translation>
     </message>
     <message>
         <source>Could not list storage devices: %1. This may be a permissions issue. Try running the application with administrator privileges.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nedokázal uviesť zoznam skladovacích zariadení: %1. Môže to byť problém s povoleniami. Skúste spustiť aplikáciu s oprávnením administrátora.</translation>
     </message>
 </context>
 <context>
@@ -2178,23 +2415,23 @@ pre zobrazenie systémových diskov.</translation>
     </message>
     <message>
         <source>Creator version %1 is available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Verzia tvorcu %1 je k dispozícii. Chcete si ju stiahnuť na webovej stránke?</translation>
     </message>
     <message>
         <source>There is a newer version of Creator available. Would you like to visit the website to download it?</source>
-        <translation type="unfinished"></translation>
+        <translation>K dispozícii je novšia verzia Stvoriteľa. Chcete si ju stiahnuť na webovej stránke?</translation>
     </message>
     <message>
         <source>Continue using the current version of ZimaOS USB Creator</source>
-        <translation type="unfinished"></translation>
+        <translation>Pokračovať s existujúcou verziou ZimaOS USB Creator</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualizácia</translation>
     </message>
     <message>
         <source>Open the ZimaOS website in your browser to download the latest version</source>
-        <translation type="unfinished"></translation>
+        <translation>Otvorte webovú stránku ZimaOS vo vašom prehliadači a stiahnite najnovšiu verziu</translation>
     </message>
 </context>
 <context>
@@ -2273,23 +2510,23 @@ pre zobrazenie systémových diskov.</translation>
     </message>
     <message>
         <source>Your saved password isn&apos;t compatible with the selected operating system, so please enter it again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Váš uložený heslo nie je kompatibilné s vybraným operačným systémom, takže ho prosím zadajte znova.</translation>
     </message>
     <message>
         <source>Enable passwordless sudo</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypustiť bez hesla sudo</translation>
     </message>
     <message>
         <source>Allow this user to run sudo commands without entering a password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Umožnite tomuto používateľovi spustiť príkazy sudo bez zadávania hesla.</translation>
     </message>
     <message>
         <source>Allows any process running as this user to gain full root privileges without a password. Only enable this if you have a specific need, such as automated scripts or headless operation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Umožňuje akýmkoľvek procesom spúšťajúcim sa ako tento používateľ získať plné privilegy root bez hesla. Umožnite to len vtedy, ak máte špecifickú potrebu, ako sú automatizované skripty alebo bezhlavné operácie.</translation>
     </message>
     <message>
         <source>Passwordless sudo information: </source>
-        <translation type="unfinished"></translation>
+        <translation>Informácie bez hesla sudo: </translation>
     </message>
 </context>
 <context>
@@ -2466,66 +2703,64 @@ pre zobrazenie systémových diskov.</translation>
         <translation>Čakajte, prosím…</translation>
     </message>
     <message>
-        <source>Keep existing</source>
-        <translation>Ponechať súčasný</translation>
-    </message>
-    <message>
         <source>Secure Boot</source>
         <translation>Secure Boot</translation>
     </message>
     <message>
         <source>Open application settings to configure sound alerts, auto-eject, and warning prompts</source>
-        <translation type="unfinished"></translation>
+        <translation>Otvorte nastavenia aplikácie na konfiguráciu zvukových výstrahov, automatického výstrahu a výstražných výstrah</translation>
     </message>
     <message>
         <source>Open local repository file?</source>
-        <translation type="unfinished"></translation>
+        <translation>Otvoriť lokálny archív?</translation>
     </message>
     <message>
         <source>Switch to a custom repository?</source>
-        <translation type="unfinished"></translation>
+        <translation>Prejsť na vlastné sklad?</translation>
     </message>
     <message>
         <source>You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Otvoríte lokálny súbor manifest ZimaOS USB Creator. Toto nahradí súčasný zoznam operačného systému obsahom tohto súboru.</translation>
     </message>
     <message>
         <source>A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Webová stránka žiada presun z ZimaOS USB Creator na použitie vlastného reštaurácie operačného systému.
+
+</translation>
     </message>
     <message>
         <source>Only accept if you trust this source and intentionally clicked a link to open this repository.</source>
-        <translation type="unfinished"></translation>
+        <translation>Prijmite len vtedy, ak veríte tomuto zdroja a úmyselne kliknete na odkaz na otvorenie tohto repositória.</translation>
     </message>
     <message>
         <source>Repository URL: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Repositoriál URL: %1</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished">Otvoriť</translation>
+        <translation>Otvoriť</translation>
     </message>
     <message>
         <source>Switch repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Vymena reštaurácie</translation>
     </message>
     <message>
         <source>Open the local manifest file and use it as the OS repository</source>
-        <translation type="unfinished"></translation>
+        <translation>Otvorte lokálny súbor manifestu a použite ho ako repositorium operačného systému</translation>
     </message>
     <message>
         <source>Switch to the custom repository from the link</source>
-        <translation type="unfinished"></translation>
+        <translation>Preložiť na vlastné úložište z prepojenia</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušiť</translation>
+        <translation>Zrušiť</translation>
     </message>
     <message>
         <source>Keep your current repository settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Udržujte aktuálne nastavenia reštaurácie</translation>
     </message>
 </context>
 <context>
@@ -2540,20 +2775,53 @@ pre zobrazenie systémových diskov.</translation>
     </message>
 </context>
 <context>
+    <name>WriteConfirmationDialog</name>
+    <message>
+        <source>Erase this device?</source>
+        <translation>Vymazať toto zariadenie?</translation>
+    </message>
+    <message>
+        <source>Writing the image will erase all data on this device.</source>
+        <translation>Zápis obrazu vymaže všetky údaje na tomto zariadení.</translation>
+    </message>
+    <message>
+        <source>Target storage device</source>
+        <translation>Cieľové úložné zariadenie</translation>
+    </message>
+    <message>
+        <source>Storage device</source>
+        <translation>Úložné zariadenie</translation>
+    </message>
+    <message>
+        <source>This action cannot be undone. Back up any important files before continuing.</source>
+        <translation>Túto akciu nie je možné vrátiť späť. Pred pokračovaním si zálohujte dôležité súbory.</translation>
+    </message>
+    <message>
+        <source>Erase and write</source>
+        <translation>Vymazať a zapísať</translation>
+    </message>
+    <message>
+        <source>Erase and write (%1)</source>
+        <translation>Vymazať a zapísať (%1)</translation>
+    </message>
+</context>
+<context>
     <name>WriteProgressWatchdog</name>
     <message>
         <source>Switched to compatibility mode - write continuing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Prešiel na režim kompatibility - písať pokračuje...</translation>
     </message>
     <message>
         <source>Write stalled - no progress for %1 seconds.
 
 Please check your storage device and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Písanie zastavené - žiadny pokrok na %1 sekúnd.
+
+Prosím skontrolujte skladovacie zariadenie a skúste znova.</translation>
     </message>
     <message>
         <source>Storage device not responding. Restarting in compatibility mode...</source>
-        <translation type="unfinished"></translation>
+        <translation>Skladné zariadenie nereaguje. Opätovné spustenie v kompatibilnom režime...</translation>
     </message>
 </context>
 <context>
@@ -2567,6 +2835,10 @@ Please check your storage device and try again.</source>
         <translation>Zapísať</translation>
     </message>
     <message>
+        <source>Cancelling…</source>
+        <translation>Rušenie…</translation>
+    </message>
+    <message>
         <source>Summary</source>
         <translation>Súhrn</translation>
     </message>
@@ -2576,35 +2848,15 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Limited by download speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Obmedzený rýchlosťou stiahnutia</translation>
     </message>
     <message>
         <source>Limited by decompression speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Obmedzené rýchlosťou dekompresiu</translation>
     </message>
     <message>
         <source>Limited by storage device speed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You are about to ERASE all data on: %1</source>
-        <translation>Chystáte sa VYMAZAŤ všetky údaje na: %1</translation>
-    </message>
-    <message>
-        <source>the storage device</source>
-        <translation>úložné zariadenie</translation>
-    </message>
-    <message>
-        <source>This action is PERMANENT and CANNOT be undone.</source>
-        <translation>Táto akcia je TRVALÁ a NIE JE MOŽNÉ ju odvolať.</translation>
-    </message>
-    <message>
-        <source>I understand, erase and write</source>
-        <translation>Rozumiem, vymazať a zapísať</translation>
-    </message>
-    <message>
-        <source>Please wait...</source>
-        <translation>Čakajte, prosím…</translation>
+        <translation>Omezená rýchlosťou skladovacieho zariadenia</translation>
     </message>
     <message>
         <source>Writing... %1%</source>
@@ -2652,7 +2904,11 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Cancel write</source>
-        <translation>Zrušiť zapisovanie</translation>
+        <translation>Zrušiť zápis</translation>
+    </message>
+    <message>
+        <source>Cancelling… Please wait for the device to be released.</source>
+        <translation>Rušenie… Počkajte na uvoľnenie zariadenia.</translation>
     </message>
     <message>
         <source>Skip verification and finish the write process</source>
@@ -2679,6 +2935,18 @@ Please check your storage device and try again.</source>
         <translation>Priebeh zápisu</translation>
     </message>
     <message>
+        <source>Download: %1%</source>
+        <translation>Sťahovanie: %1%</translation>
+    </message>
+    <message>
+        <source>Downloaded: %1 MB</source>
+        <translation>Stiahnutý: %1 MB</translation>
+    </message>
+    <message>
+        <source>Downloading image…</source>
+        <translation>Sťahovanie obrazu…</translation>
+    </message>
+    <message>
         <source>Finalising…</source>
         <translation>Dokončujem…</translation>
     </message>
@@ -2691,12 +2959,8 @@ Please check your storage device and try again.</source>
         <translation>úpravy</translation>
     </message>
     <message>
-        <source>Please wait... %1</source>
-        <translation>Čakajte, prosím… %1</translation>
-    </message>
-    <message>
         <source>Writing... %1 MB written</source>
-        <translation type="unfinished"></translation>
+        <translation>Písanie... %1 MB napísané</translation>
     </message>
 </context>
 <context>
@@ -2710,24 +2974,8 @@ Please check your storage device and try again.</source>
         <translation>Chyba</translation>
     </message>
     <message>
-        <source>Erase</source>
-        <translation>Vymazať</translation>
-    </message>
-    <message>
-        <source>Format card as FAT32</source>
-        <translation>Formátovať kartu ako FAT32</translation>
-    </message>
-    <message>
-        <source>Use custom</source>
-        <translation>Použiť vlastný</translation>
-    </message>
-    <message>
-        <source>Select a custom .img from your computer</source>
-        <translation>Použiť vlastný súbor .img na vašom počítači</translation>
-    </message>
-    <message>
         <source>ZimaOS USB Creator is still busy. Are you sure you want to quit?</source>
-        <translation type="unfinished"></translation>
+        <translation>ZimaOS USB Creator ešte pracuje. Naozaj ho chcete ukončiť?</translation>
     </message>
     <message>
         <source>Storage device removed</source>
@@ -2742,20 +2990,16 @@ Please check your storage device and try again.</source>
         <translation>OK</translation>
     </message>
     <message>
-        <source>Close the error dialog and continue</source>
-        <translation>Zatvorte okno s chybou a pokračujte</translation>
-    </message>
-    <message>
         <source>Close the storage removed notification and return to storage selection</source>
         <translation>Zatvoriť oznámenie o odobraní úložiska a vrátiť sa k výberu úložiska</translation>
     </message>
     <message>
         <source>Return to ZimaOS USB Creator and continue the current operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Vrátiť sa do ZimaOS USB Creatora a pokračovať v aktuálnej operácii</translation>
     </message>
     <message>
         <source>Force quit ZimaOS USB Creator and cancel the current write operation</source>
-        <translation type="unfinished"></translation>
+        <translation>Vynútiť ukončenie ZimaOS USB Creatora a zrušiť prebiehajúci zápis</translation>
     </message>
     <message>
         <source>Insufficient Permissions</source>
@@ -2771,7 +3015,7 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Exit ZimaOS USB Creator - you must restart with elevated privileges to write images</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukončiť ZimaOS USB Creator – pre zápis obrazov ho musíte spustiť znova s vyššími oprávneniami</translation>
     </message>
     <message>
         <source>Install Authorization</source>
@@ -2783,7 +3027,7 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Install system authorization to allow ZimaOS USB Creator to run with elevated privileges</source>
-        <translation type="unfinished"></translation>
+        <translation>Nainštalovať systémové oprávnenia, aby mohol ZimaOS USB Creator bežať s vyššími oprávneniami</translation>
     </message>
     <message>
         <source>Save Performance Data</source>
@@ -2799,11 +3043,27 @@ Please check your storage device and try again.</source>
     </message>
     <message>
         <source>Offline</source>
-        <translation type="unfinished"></translation>
+        <translation>Offline</translation>
     </message>
     <message>
         <source>Using data from %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Používanie údajov z %1</translation>
+    </message>
+    <message>
+        <source>Format storage device</source>
+        <translation>Formátovať úložné zariadenie</translation>
+    </message>
+    <message>
+        <source>Erase data and format the storage device as FAT32</source>
+        <translation>Vymazať údaje a formátovať skladovacie zariadenie ako FAT32</translation>
+    </message>
+    <message>
+        <source>Use a local image</source>
+        <translation>Použiť lokálny obraz</translation>
+    </message>
+    <message>
+        <source>Select a local image file (IMG, ISO or compressed image)</source>
+        <translation>Vyberte lokálny súbor obrazu na disku (IMG, ISO alebo obrázok na stlačenom disku)</translation>
     </message>
 </context>
 </TS>

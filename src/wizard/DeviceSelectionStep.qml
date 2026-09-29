@@ -78,7 +78,25 @@ WizardStepBase {
             var success = root.hwModel.reload();
             if (success) {
                 modelLoaded = true;
-                // Do not auto-select first item to avoid unwanted highlighting on load
+                root.wizardContainer.singleDeviceMode = root.hwModel.rowCount() <= 1;
+                if (root.wizardContainer.singleDeviceMode) {
+                    if (root.hwModel.rowCount() === 1) {
+                        root.hwModel.currentIndex = 0;
+                        root.wizardContainer.selectedDeviceName = root.hwModel.currentName;
+                        root.hasDeviceSelected = true;
+                    } else {
+                        imageWriter.setHWFilterList([], false);
+                        imageWriter.setHWCapabilitiesList([]);
+                    }
+                    Qt.callLater(function() {
+                        if (root.wizardContainer.currentStep === root.wizardContainer.stepDeviceSelection)
+                            root.next();
+                    });
+                } else if (root.hwModel.currentIndex >= 0) {
+                    root.wizardContainer.selectedDeviceName = root.hwModel.currentName;
+                    root.hasDeviceSelected = true;
+                    hwlist.currentIndex = root.hwModel.currentIndex;
+                }
             }
             isReloadingModel = false;
         }
@@ -129,7 +147,7 @@ WizardStepBase {
                     }
 
                     Text {
-                        text: qsTr("The device list could not be downloaded. Please check your internet connection and try again.\n\nYou can still write a local image file by pressing Next and selecting 'Use custom' on the following screen.")
+                        text: qsTr("The device list could not be downloaded. Please check your internet connection and try again.\n\nYou can still write a local image file by pressing Next and selecting 'Use a local image' on the following screen.")
                         font.pixelSize: Style.fontSizeDescription
                         font.family: Style.fontFamily
                         color: Style.colorTextPrimary
@@ -219,7 +237,7 @@ WizardStepBase {
                 }
 
                 onCurrentIndexChanged: {
-                    root.hasDeviceSelected = currentIndex !== -1;
+                    root.hasDeviceSelected = root.hwModel.currentIndex >= 0;
                 }
 
                 onItemSelected: function (index, item) {
@@ -298,10 +316,11 @@ WizardStepBase {
                 anchors.bottomMargin: 0
                 anchors.topMargin: 0
 
-                color: (hwlist.currentIndex === hwitem.index) ? Style.colorSelectionSurface : (hwMouseArea.containsMouse ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
+                color: (root.hwModel.currentIndex === hwitem.index) ? Style.colorSelectionSurface : (hwMouseArea.containsMouse ? Style.colorSurfaceMuted : Style.colorSurfacePanel)
                 // border color is the same as the highlight color
-                border.color: (hwlist.currentIndex === hwitem.index) ? Style.listViewSelectedBorderColor : "transparent"
-                border.width: 1
+                border.color: hwlist.activeFocus && hwlist.currentIndex === hwitem.index ? Style.colorAccentPrimary
+                              : root.hwModel.currentIndex === hwitem.index ? Style.colorBorderSelection : "transparent"
+                border.width: hwlist.activeFocus && hwlist.currentIndex === hwitem.index ? 2 : 1
                 radius: Style.listItemBorderRadius
                 antialiasing: true  // Smooth edges at non-integer scale factors
                 anchors.rightMargin: (hwlist.contentHeight > hwlist.height ? Style.scrollBarWidth + 4 : 0)

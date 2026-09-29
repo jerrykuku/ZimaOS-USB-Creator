@@ -17,6 +17,7 @@ ListView {
     property bool autoSelectFirst: false
     property bool keyboardAutoAdvance: false
     property var nextFunction: null
+    property bool advanceOnSelection: false
     property var isItemSelectableFunction: null  // Function(index) that returns true if item can be selected
     property string accessibleName: "Selection list"
     property string accessibleDescription: "Use arrow keys to navigate, Enter or Space to select"
@@ -31,7 +32,9 @@ ListView {
     // Helper function for keyboard auto-advance
     function handleKeyboardSelection(index, item) {
         // Always call the itemSelected signal first
+        root.advanceOnSelection = true
         root.itemSelected(index, item)
+        root.advanceOnSelection = false
         
         // If auto-advance is enabled and we have a next function, call it
         if (root.keyboardAutoAdvance && root.nextFunction && typeof root.nextFunction === "function") {
@@ -180,7 +183,7 @@ ListView {
         if (currentIndex !== -1) {
             var item = itemAtIndex(currentIndex)
             root.spacePressed(currentIndex, item)
-            root.handleKeyboardSelection(currentIndex, item)
+            root.itemSelected(currentIndex, item)
         }
     }
     

@@ -531,3 +531,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         )
     endif()
 endif()
+
+# Default image selection is pure QtCore; no disk access or application required.
+add_executable(imageselectionpolicy_test imageselectionpolicy_test.cpp)
+target_link_libraries(imageselectionpolicy_test PRIVATE Qt6::Core)
+add_test(NAME imageselectionpolicy_test COMMAND imageselectionpolicy_test)

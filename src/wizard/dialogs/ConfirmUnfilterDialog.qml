@@ -11,84 +11,190 @@ import "../../qmlcomponents"
 
 BaseDialog {
     id: root
-    
-    // Override positioning for overlayParent support
-    closePolicy: Popup.CloseOnEscape
+
     required property Item overlayParent
     parent: overlayParent
     anchors.centerIn: parent
+    popupType: Popup.Item
+    closePolicy: Popup.CloseOnEscape
+    title: qsTr("Show system drives?")
+    header: null
+    width: Math.min(parent ? parent.width - Style.spacingPopupInset * 2 : Style.scaled(480), Style.scaled(480))
+    height: Math.min(parent ? parent.height - Style.spacingPopupInset * 2 : 600,
+                     contentLayout.implicitHeight + Style.spacingPopupInset * 2)
 
     signal confirmed()
     signal cancelled()
+    property bool showRequested: false
 
-    readonly property string riskText: CommonStrings.warningRiskText
-    readonly property string proceedText: CommonStrings.warningProceedText
-    readonly property string systemDriveText: CommonStrings.systemDriveText
-
-    // Custom escape handling
-    function escapePressed() {
-        root.close()
-        root.cancelled()
+    background: Rectangle {
+        color: Style.colorSurfacePanel
+        radius: Style.radiusPanel
+        border.color: Style.colorBorderSubtle
+        border.width: Style.borderWidthDefault
+        antialiasing: true
     }
 
-    // Register focus groups when component is ready
+    function escapePressed() { root.close() }
+
     Component.onCompleted: {
-        registerFocusGroup("warning", function(){ 
-            // Only include warning text when screen reader is active (otherwise it's not focusable)
-            return (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) ? [warningText] : []
+        registerFocusGroup("warning", function() {
+            return ImageWriterSingleton.screenReaderActive ? [heading, explanation, riskText, selectionText] : []
         }, 0)
-        registerFocusGroup("buttons", function(){ 
-            return [keepFilterButton, showSystemButton] 
-        }, 1)
+        registerFocusGroup("buttons", function() { return [keepFilterButton, showSystemButton] }, 1)
     }
 
-    // Dialog content
-    FocusableText {
-        id: warningText
-        textFormat: Text.StyledText
-        text: qsTr("By disabling system drive filtering, <b>system drives will be shown</b> in the list.")
-              + "<br><br>"
-              + root.systemDriveText
-              + "<br><br>" + root.riskText + "<br><br>" + root.proceedText
-        font.pointSize: Style.fontSizeDescription
-        font.family: Style.fontFamily
-        color: Style.colorTextPrimary
-        wrapMode: Text.WordWrap
-        Layout.fillWidth: true
-        Accessible.name: text.replace(/<[^>]+>/g, '')  // Strip HTML tags for accessibility
-        Accessible.ignored: false
+    onAboutToShow: showRequested = false
+
+    onOpened: {
+        detailsScroll.contentItem.contentY = 0
+        rebuildFocusOrder()
+        if (ImageWriterSingleton.screenReaderActive)
+            heading.forceActiveFocus()
+        else
+            keepFilterButton.forceActiveFocus()
     }
 
-    RowLayout {
+    // Apply the filter only after the dialog and its modal overlay have closed.
+    // Escape and any other dismissal keep system drives hidden.
+    onClosed: {
+        if (showRequested)
+            root.confirmed()
+        else
+            root.cancelled()
+    }
+
+    ColumnLayout {
         Layout.fillWidth: true
-        // Ensure minimum width accommodates buttons
-        Layout.minimumWidth: keepFilterButton.implicitWidth + showSystemButton.implicitWidth + Style.spacingMedium * 2
+        Layout.fillHeight: true
+        Layout.margins: Style.spacingTiny
         spacing: Style.spacingMedium
-        Item { Layout.fillWidth: true }
 
-        ImButtonRed {
-            id: keepFilterButton
-            text: qsTr("KEEP FILTER ON")
-            accessibleDescription: qsTr("Keep system drives hidden to prevent accidental damage to your operating system")
-            activeFocusOnTab: true
-            // Allow button to grow to fit text for this important warning dialog
-            implicitWidth: Math.max(Style.buttonWidthMinimum, implicitContentWidth + leftPadding + rightPadding)
-            onClicked: {
-                root.close()
-                root.cancelled()
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Style.spacingTiny
+
+            Image {
+                Layout.preferredWidth: Style.scaled(24)
+                Layout.preferredHeight: Style.scaled(24)
+                source: "../../icons/ic_warning_24px.svg"
+                sourceSize: Qt.size(width, height)
+                Accessible.ignored: true
+            }
+
+            FocusableHeading {
+                id: heading
+                text: root.title
+                font.family: Style.fontFamilyBold
+                font.pixelSize: Style.fontSizeHeadingChrome
+                font.bold: true
+                color: Style.colorTextPrimary
+                wrapMode: Text.Wrap
+                Layout.fillWidth: true
             }
         }
 
-        ImButton {
-            id: showSystemButton
-            text: qsTr("SHOW SYSTEM DRIVES")
-            accessibleDescription: qsTr("Remove the safety filter and display system drives in the storage device list")
-            activeFocusOnTab: true
-            // Allow button to grow to fit text for this important warning dialog
-            implicitWidth: Math.max(Style.buttonWidthMinimum, implicitContentWidth + leftPadding + rightPadding)
-            onClicked: {
-                root.close()
-                root.confirmed()
+        ImScrollView {
+            id: detailsScroll
+            objectName: "unfilterDetailsScroll"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.minimumHeight: 0
+            Layout.preferredHeight: details.implicitHeight
+            contentWidth: availableWidth
+            contentHeight: details.implicitHeight
+
+            ColumnLayout {
+                id: details
+                width: detailsScroll.availableWidth
+                spacing: Style.spacingMedium
+
+                FocusableText {
+                    id: explanation
+                    text: qsTr("System drives contain your operating system and may also contain personal files.")
+                    font.family: Style.fontFamily
+                    font.pixelSize: Style.fontSizePixelSm
+                    color: Style.colorTextSecondary
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    implicitHeight: warningDetails.implicitHeight + Style.spacingSmallPlus * 2
+                    radius: Style.radiusCard
+                    color: Style.colorSurfacePage
+                    border.color: Style.colorBorderSubtle
+
+                    ColumnLayout {
+                        id: warningDetails
+                        anchors.fill: parent
+                        anchors.margins: Style.spacingSmallPlus
+                        spacing: Style.spacingSmall
+
+                        FocusableText {
+                            id: riskText
+                            text: qsTr("Writing to the wrong drive will permanently erase its data and may prevent your computer from starting.")
+                            font.family: Style.fontFamily
+                            font.pixelSize: Style.fontSizePixelSm
+                            color: Style.formLabelErrorColor
+                            wrapMode: Text.Wrap
+                            Layout.fillWidth: true
+                        }
+
+                        FocusableText {
+                            id: selectionText
+                            text: qsTr("You will still need to select a device and confirm its name before writing to a system drive.")
+                            font.family: Style.fontFamily
+                            font.pixelSize: Style.fontSizePixelSm
+                            color: Style.colorTextSecondary
+                            wrapMode: Text.Wrap
+                            Layout.fillWidth: true
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            implicitHeight: Style.borderWidthDefault
+            color: Style.colorBorderSubtle
+            Accessible.ignored: true
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Style.spacingSmallPlus
+            Item { Layout.fillWidth: true }
+
+            ImButtonRed {
+                id: keepFilterButton
+                objectName: "keepSystemDrivesHiddenButton"
+                text: qsTr("Keep hidden")
+                accessibleDescription: qsTr("Keep system drives hidden to prevent accidental damage to your operating system")
+                activeFocusOnTab: true
+                Layout.preferredHeight: Style.buttonHeightStandard
+                Layout.minimumHeight: Style.buttonHeightStandard
+                Layout.maximumHeight: Style.buttonHeightStandard
+                Layout.preferredWidth: Math.max(Style.scaled(90), implicitWidth)
+                onClicked: root.close()
+            }
+
+            ImButton {
+                id: showSystemButton
+                objectName: "showSystemDrivesButton"
+                text: qsTr("Show system drives")
+                accessibleDescription: qsTr("Remove the safety filter and display system drives in the storage device list")
+                activeFocusOnTab: true
+                Layout.preferredHeight: Style.buttonHeightStandard
+                Layout.minimumHeight: Style.buttonHeightStandard
+                Layout.maximumHeight: Style.buttonHeightStandard
+                Layout.preferredWidth: Math.max(Style.scaled(90), implicitWidth)
+                onClicked: {
+                    root.showRequested = true
+                    root.close()
+                }
             }
         }
     }
