@@ -10,10 +10,34 @@ import QtQuick.Layouts
 import "../../qmlcomponents"
 import RpiImager
 
-BaseDialog {
+PanelDialog {
     id: root
+    title: qsTr("Keychain Access")
 
     property bool userAccepted: false
+    property bool responseSent: false
+
+    onAboutToShow: {
+        userAccepted = false
+        responseSent = false
+    }
+
+    function respond(accepted) {
+        responseSent = true
+        userAccepted = accepted
+        if (accepted)
+            root.accept()
+        else
+            root.reject()
+    }
+
+    // A programmatic dismissal also answers the pending backend request once.
+    onClosed: {
+        if (!responseSent) {
+            responseSent = true
+            root.rejected()
+        }
+    }
 
     function askForPermission() {
         root.userAccepted = false
@@ -22,87 +46,63 @@ BaseDialog {
 
     // Custom escape handling
     function escapePressed() {
-        root.userAccepted = false
-        root.reject()
+        root.respond(false)
     }
 
     // Register focus groups when component is ready
     Component.onCompleted: {
-        registerFocusGroup("content", function(){ 
+        registerFocusGroup("content", function () {
             // Only include text elements when screen reader is active (otherwise they're not focusable)
             if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                return [titleText, descriptionText, subText]
+                return [root.headingItem, descriptionText, subText]
             }
             return []
         }, 0)
-        registerFocusGroup("buttons", function(){ 
-            return [yesButton, noButton] 
+        registerFocusGroup("buttons", function () {
+            return [noButton, yesButton]
         }, 1)
-    }
-
-    // Dialog content goes directly into the BaseDialog's contentLayout
-    FocusableHeading {
-        id: titleText
-        text: qsTr("Keychain Access")
-        font.pointSize: Style.fontSizeHeading
-        font.family: Style.fontFamilyBold
-        font.bold: true
-        color: Style.formLabelColor
-        Layout.fillWidth: true
     }
 
     FocusableText {
         id: descriptionText
         text: qsTr("Would you like to prefill the Wi‑Fi password from the system keychain?")
-        wrapMode: Text.WordWrap
+        wrapMode: Text.Wrap
         color: Style.colorTextPrimary
-        font.pointSize: Style.fontSizeDescription
+        font.pixelSize: Style.fontSizePixelSm
         Layout.fillWidth: true
     }
 
     FocusableText {
         id: subText
         text: qsTr("This will require administrator authentication on macOS.")
-        wrapMode: Text.WordWrap
+        wrapMode: Text.Wrap
         color: Style.colorTextSecondary
-        font.pointSize: Style.fontSizeSmall
+        font.pixelSize: Style.fontSizePixelXs
         Layout.fillWidth: true
     }
 
-    RowLayout {
-        id: buttonRow
-        Layout.fillWidth: true
-        spacing: Style.spacingMedium
-        Item { Layout.fillWidth: true }
-
+    buttons: [
         ImButton {
             id: noButton
-            text: CommonStrings.no
+            objectName: "noButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
+            text: CommonStrings.cancel
             accessibleDescription: qsTr("Skip keychain access and manually enter the Wi-Fi password")
-            Layout.preferredWidth: 80
             activeFocusOnTab: true
-            onClicked: {
-                root.userAccepted = false
-                root.reject()
-            }
-        }
-
+            onClicked: root.respond(false)
+        },
         ImButtonRed {
             id: yesButton
-            text: CommonStrings.yes
+            objectName: "yesButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
+            text: CommonStrings.continueText
             accessibleDescription: qsTr("Retrieve the Wi-Fi password from the system keychain using administrator authentication")
-            Layout.preferredWidth: 80
             activeFocusOnTab: true
-            onClicked: {
-                root.userAccepted = true
-                root.accept()
-            }
+            onClicked: root.respond(true)
         }
-    }
-
-    onClosed: {
-        if (!root.userAccepted) {
-            root.rejected()
-        }
-    }
+    ]
 }

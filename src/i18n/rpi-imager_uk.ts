@@ -321,10 +321,6 @@
         <translation>Повірка. Точний тип: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>СКАСУВАТИ</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Відкласти програмування OTP і повернутися до попереднього екрану</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Варианти дебагування</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Ці варіанти для дебґування та тестування. Зміна їх може вплинути на продуктивність і цілісність даних.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Перейти операції на кінці пристрою зберігання. Отримайте це для фальсифікованих карт SD, які повідомляють про фальсіфіковану більшу потужність. Знімка диска повинна бути меншою, ніж реальна потужність картки.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Знайдіть це лише в тому випадку, якщо ваша картка SD повідомляє про більшу потужність, ніж вона насправді має. Переконайтеся, що зображення на диску менше, ніж реальна потужність картки!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Передові особливості</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</source>
         <translation>Знайдіть це тільки якщо ви розумієте ризики і маєте конкретну потребу, наприклад автоматизовані сценарії або безголовна операція.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>СКАСУВАТИ</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Занклюйте і збережіть sudo , що вимагає пароля</translation>
     </message>
@@ -2980,10 +2968,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Пристрій зберігання був видалений під час написання, тому операція була скасована. Будь ласка, перевставте пристрій або виберіть інший, щоб продовжити.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Добре.</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

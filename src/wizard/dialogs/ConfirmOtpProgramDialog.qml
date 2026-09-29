@@ -8,8 +8,11 @@ import QtQuick.Layouts
 import RpiImager
 import "../../qmlcomponents"
 
-BaseDialog {
+PanelDialog {
     id: root
+    title: qsTranslate("DebugOptionsDialog", "Secure Boot")
+    preferredWidth: Style.scaled(520)
+    iconSource: Qt.resolvedUrl("../../icons/ic_warning_24px.svg")
 
     required property Item overlayParent
     parent: overlayParent
@@ -20,8 +23,8 @@ BaseDialog {
     property string keyFingerprint: ""
     property bool lockJtag: false
 
-    signal confirmed()
-    signal cancelled()
+    signal confirmed
+    signal cancelled
 
     function escapePressed() {
         root.close()
@@ -29,26 +32,31 @@ BaseDialog {
     }
 
     Component.onCompleted: {
-        registerFocusGroup("warning", function(){
-            return (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) ? [warningText] : []
+        registerFocusGroup("warning", function () {
+            return (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) ? [root.headingItem, warningText, deviceModelText, deviceSerialText, fingerprintText] : []
         }, 0)
-        registerFocusGroup("input", function(){
+        registerFocusGroup("input", function () {
             return [jtagLockCheck, confirmInput]
         }, 1)
-        registerFocusGroup("buttons", function(){
+        registerFocusGroup("buttons", function () {
             return [cancelButton, programButton]
         }, 2)
     }
 
     onOpened: {
         confirmInput.text = ""
+        rebuildFocusOrder()
+        if (ImageWriterSingleton.screenReaderActive)
+            root.headingItem.forceActiveFocus()
+        else
+            cancelButton.forceActiveFocus()
     }
 
-    // Large red warning
+    // Explicit warning, followed by device details and typed confirmation.
     Rectangle {
         Layout.fillWidth: true
         implicitHeight: warningColumn.implicitHeight + Style.spacingMedium * 2
-        color: Style.colorSurfaceError
+        color: Style.colorSurfacePage
         radius: Style.cornerRadius(Style.sectionBorderRadius)
 
         ColumnLayout {
@@ -59,9 +67,9 @@ BaseDialog {
             Text {
                 id: warningText
                 Layout.fillWidth: true
-                wrapMode: Text.WordWrap
+                wrapMode: Text.Wrap
                 font.family: Style.fontFamily
-                font.pointSize: Style.fontSizeDescription
+                font.pixelSize: Style.fontSizePixelSm
                 font.bold: true
                 color: Style.colorTextErrorStrong
                 text: qsTr("WARNING: OTP Programming is PERMANENT and IRREVERSIBLE")
@@ -71,9 +79,9 @@ BaseDialog {
 
             Text {
                 Layout.fillWidth: true
-                wrapMode: Text.WordWrap
+                wrapMode: Text.Wrap
                 font.family: Style.fontFamily
-                font.pointSize: Style.fontSizeSmall
+                font.pixelSize: Style.fontSizePixelXs
                 color: Style.colorTextErrorStrong
                 text: qsTr("This operation will permanently program the secure boot public key hash into the device's one-time programmable (OTP) memory. Once programmed, this device will ONLY boot images signed with the corresponding private key. This action cannot be undone.")
                 Accessible.role: Accessible.StaticText
@@ -82,35 +90,52 @@ BaseDialog {
         }
     }
 
-    Rectangle { implicitHeight: 1; Layout.fillWidth: true; color: Style.titleSeparatorColor; Accessible.ignored: true }
+    Rectangle {
+        implicitHeight: 1
+        Layout.fillWidth: true
+        color: Style.titleSeparatorColor
+        Accessible.ignored: true
+    }
 
     // Device info
     ColumnLayout {
         Layout.fillWidth: true
 
-        Text {
+        FocusableText {
+            id: deviceModelText
+            Layout.fillWidth: true
+            textFormat: Text.PlainText
+            wrapMode: Text.WrapAnywhere
             text: qsTr("Device: %1").arg(root.deviceModel)
             font.family: Style.fontFamily
-            font.pointSize: Style.fontSizeDescription
+            font.pixelSize: Style.fontSizePixelSm
             color: Style.colorTextPrimary
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
 
-        Text {
+        FocusableText {
+            id: deviceSerialText
+            Layout.fillWidth: true
+            textFormat: Text.PlainText
+            wrapMode: Text.WrapAnywhere
             text: qsTr("Serial: %1").arg(root.deviceSerial)
             font.family: Style.fontFamily
-            font.pointSize: Style.fontSizeDescription
+            font.pixelSize: Style.fontSizePixelSm
             color: Style.colorTextPrimary
             visible: root.deviceSerial !== ""
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
 
-        Text {
+        FocusableText {
+            id: fingerprintText
+            Layout.fillWidth: true
+            textFormat: Text.PlainText
+            wrapMode: Text.WrapAnywhere
             text: qsTr("Key fingerprint: %1").arg(root.keyFingerprint)
             font.family: Style.fontFamily
-            font.pointSize: Style.fontSizeSm
+            font.pixelSize: Style.fontSizePixelSm
             font.bold: true
             color: Style.colorTextPrimary
             Accessible.role: Accessible.StaticText
@@ -118,25 +143,37 @@ BaseDialog {
         }
     }
 
-    Rectangle { implicitHeight: 1; Layout.fillWidth: true; color: Style.titleSeparatorColor; Accessible.ignored: true }
+    Rectangle {
+        implicitHeight: 1
+        Layout.fillWidth: true
+        color: Style.titleSeparatorColor
+        Accessible.ignored: true
+    }
 
     // JTAG lock option
     ImCheckBox {
         id: jtagLockCheck
+        Layout.fillWidth: true
+        Layout.minimumWidth: 0
         text: qsTr("Also lock JTAG debug port (additional irreversible action)")
         checked: root.lockJtag
         onCheckedChanged: root.lockJtag = checked
         Accessible.name: text
     }
 
-    Rectangle { implicitHeight: 1; Layout.fillWidth: true; color: Style.titleSeparatorColor; Accessible.ignored: true }
+    Rectangle {
+        implicitHeight: 1
+        Layout.fillWidth: true
+        color: Style.titleSeparatorColor
+        Accessible.ignored: true
+    }
 
     // Typed confirmation
     Text {
         Layout.fillWidth: true
-        wrapMode: Text.WordWrap
+        wrapMode: Text.Wrap
         font.family: Style.fontFamily
-        font.pointSize: Style.fontSizeDescription
+        font.pixelSize: Style.fontSizePixelSm
         color: Style.colorTextPrimary
         text: qsTr("To confirm, type the device serial number below:")
         Accessible.role: Accessible.StaticText
@@ -145,16 +182,20 @@ BaseDialog {
 
     Text {
         font.family: Style.fontFamily
-        font.pointSize: Style.fontSizeSm
+        font.pixelSize: Style.fontSizePixelSm
         font.bold: true
         color: Style.colorTextPrimary
         text: root.deviceSerial
+        textFormat: Text.PlainText
+        wrapMode: Text.WrapAnywhere
+        Layout.fillWidth: true
         Accessible.role: Accessible.StaticText
         Accessible.name: qsTr("Serial to type: %1").arg(text)
     }
 
-    TextField {
+    ImTextField {
         id: confirmInput
+        objectName: "otpSerialInput"
         Layout.fillWidth: true
         font.family: Style.fontFamily
         font.pointSize: Style.fontSizeInput
@@ -163,50 +204,67 @@ BaseDialog {
         activeFocusOnTab: true
         focusPolicy: Qt.TabFocus
         Accessible.name: qsTr("Confirmation input. Type exactly: %1").arg(root.deviceSerial)
-        Keys.onPressed: (event) => {
-            if ((event.key === Qt.Key_V && (event.modifiers & (Qt.ControlModifier | Qt.MetaModifier))) ||
-                (event.key === Qt.Key_Insert && (event.modifiers & Qt.ShiftModifier))) {
+        Keys.onPressed: event => {
+            if ((event.key === Qt.Key_V && (event.modifiers & (Qt.ControlModifier | Qt.MetaModifier))) || (event.key === Qt.Key_Insert && (event.modifiers & Qt.ShiftModifier))) {
                 event.accepted = true
                 return
             }
         }
         onAccepted: {
-            if (programButton.enabled) programButton.clicked()
+            if (programButton.enabled)
+                programButton.clicked()
         }
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.RightButton | Qt.MiddleButton
-            onPressed: (mouse) => { mouse.accepted = true }
+            onPressed: mouse => {
+                mouse.accepted = true
+            }
+        }
+        implicitHeight: Style.buttonHeightStandard + Style.spacingTiny
+        color: Style.colorTextPrimary
+        leftPadding: Style.spacingSmallPlus
+        rightPadding: Style.spacingSmallPlus
+        background: Rectangle {
+            radius: Style.radiusButton
+            color: Style.colorSurfacePanel
+            border.color: confirmInput.activeFocus ? Style.focusOutlineColor : Style.colorBorderSubtle
+            border.width: confirmInput.activeFocus ? Style.focusOutlineWidth : Style.borderWidthDefault
         }
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-        spacing: Style.spacingMedium
-        Item { Layout.fillWidth: true }
-
+    buttons: [
         ImButton {
             id: cancelButton
-            text: qsTr("CANCEL")
+            objectName: "cancelButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
+            text: CommonStrings.cancel
             accessibleDescription: qsTr("Cancel OTP programming and return to previous screen")
             activeFocusOnTab: true
             onClicked: {
                 root.close()
                 root.cancelled()
             }
-        }
-
+        },
         ImButtonRed {
             id: programButton
+            destructive: true
+            objectName: "programButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
             text: qsTr("PROGRAM OTP")
             accessibleDescription: qsTr("Permanently program the secure boot key into device OTP memory")
             enabled: confirmInput.text === root.deviceSerial && root.deviceSerial !== ""
             activeFocusOnTab: true
             onClicked: {
-                if (!enabled) return
+                if (!enabled)
+                    return
                 root.close()
                 root.confirmed()
             }
         }
-    }
+    ]
 }

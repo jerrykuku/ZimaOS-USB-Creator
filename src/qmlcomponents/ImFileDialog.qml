@@ -14,6 +14,34 @@ import RpiImager
 
 BaseDialog {
     id: dialog
+    title: dialogTitle
+    anchors.centerIn: parent
+    header: null
+    popupType: Popup.Item
+    closePolicy: Popup.CloseOnEscape
+    background: Rectangle {
+        color: Style.colorSurfacePanel
+        radius: Style.radiusPanel
+        border.color: Style.colorBorderSubtle
+        border.width: Style.borderWidthDefault
+        antialiasing: true
+    }
+
+    component BrowserField: ImTextField {
+        id: field
+        implicitHeight: Math.max(Style.buttonHeightStandard, implicitContentHeight + Style.spacingSmallPlus)
+        color: Style.colorTextPrimary
+        placeholderTextColor: Style.colorTextSecondary
+        leftPadding: Style.spacingSmallPlus
+        rightPadding: Style.spacingSmallPlus
+        background: Rectangle {
+            color: Style.colorSurfacePanel
+            radius: Style.radiusButton
+            border.color: field.activeFocus ? Style.focusOutlineColor : Style.colorBorderSubtle
+            border.width: field.activeFocus ? Style.focusOutlineWidth : Style.borderWidthDefault
+            antialiasing: true
+        }
+    }
 
     // Public API (aligning loosely with FileDialog)
     property string dialogTitle: qsTr("Select File")
@@ -52,8 +80,8 @@ BaseDialog {
     }
 
     // Override BaseDialog defaults for file dialog specific sizing
-    width: Math.min(720, Math.max(520, parent ? parent.width - 80 : 720))
-    height: Math.min(540, Math.max(360, parent ? parent.height - 80 : 540))
+    width: Math.max(0, Math.min(Style.scaled(720), parent ? parent.width - Style.spacingPopupInset * 2 : Style.scaled(720)))
+    height: Math.max(0, Math.min(Style.scaled(540), parent ? parent.height - Style.spacingPopupInset * 2 : Style.scaled(540)))
 
     // Convert Qt-style nameFilters to FolderListModel.nameFilters
     function _extractGlobs(filters) {
@@ -203,10 +231,13 @@ BaseDialog {
     
     // Initialize and register focus groups when component is ready
     Component.onCompleted: {
-        // Override contentLayout padding to maximize space
+        registerFocusGroup("heading", function() {
+            return ImageWriterSingleton.screenReaderActive ? [titleText] : []
+        }, -1)
+        // Keep the browser aligned with the other application panels.
         if (contentLayout) {
-            contentLayout.anchors.margins = 10
-            contentLayout.spacing = 4
+            contentLayout.anchors.margins = Style.spacingPopupInset
+            contentLayout.spacing = Style.spacingSmallPlus
         }
         
         // Add places based on dialog mode
@@ -285,27 +316,30 @@ BaseDialog {
         }
     }
 
-    // Title and address bar on same row
+    FocusableHeading {
+        id: titleText
+        Layout.fillWidth: true
+        wrapMode: Text.Wrap
+        text: dialog.dialogTitle
+        font.pixelSize: Style.fontSizeHeadingChrome
+        font.family: Style.fontFamilyBold
+        font.bold: true
+        color: Style.formLabelColor
+    }
+
+    // Address bar
     RowLayout {
         Layout.fillWidth: true
         Layout.bottomMargin: 6
         spacing: 12
-        
-        Text {
-            id: titleText
-            text: dialog.dialogTitle
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelColor
-        }
-        
+
         // ImTextField rather than a bare TextField so that a path pasted with a
         // trailing newline is scrubbed on the way in (see issues #1627, #1687);
         // it also supplies the font, focus and accessibility defaults this field
         // previously set by hand.
-        ImTextField {
+        BrowserField {
             id: pathField
+            objectName: "filePathField"
             Layout.fillWidth: true
             text: dialog._toDisplayPath(dialog.currentFolder)
             placeholderText: dialog.isSaveDialog
@@ -315,7 +349,7 @@ BaseDialog {
             onTextChanged: {
                 if (!dialog.isSaveDialog) {
                     dialog._pathFieldFile = dialog._looksLikeFilePath(pathField.value)
-                        ? dialog._toFileUrl(pathField.value) : ""
+                        ? dialog._tofileUrl(pathField.value) : ""
                 }
             }
             onAccepted: {
@@ -341,8 +375,9 @@ BaseDialog {
             color: Style.formLabelColor
         }
         
-        ImTextField {
+        BrowserField {
             id: filenameField
+            objectName: "fileFilenameField"
             Layout.fillWidth: true
             text: dialog._currentFilename
             placeholderText: qsTr("Enter filename…")
@@ -364,14 +399,20 @@ BaseDialog {
     // Main content with left navigation and file list
     RowLayout {
         id: mainRow
+        Layout.preferredHeight: Style.scaled(300)
+        Layout.minimumHeight: 0
         Layout.fillWidth: true
         Layout.fillHeight: true
         spacing: 6
 
         // Left navigation pane
         Frame {
+            implicitWidth: 0
+            implicitHeight: 0
             id: leftPane
-            Layout.preferredWidth: 180
+            Layout.minimumHeight: 0
+            Layout.preferredWidth: Math.min(Style.scaled(180), (dialog.width - Style.spacingPopupInset * 2) * 0.32)
+            Layout.minimumWidth: 0
             Layout.fillHeight: true
             clip: true
             padding: 8
@@ -392,6 +433,9 @@ BaseDialog {
                     id: placesList
                     Layout.fillWidth: true
                     Layout.preferredHeight: contentHeight
+                    Layout.maximumHeight: Math.max(Style.buttonHeightStandard, leftPane.availableHeight * 0.45)
+                    Layout.minimumHeight: 0
+                    ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded; width: Style.scrollBarWidth }
                     clip: true
                     activeFocusOnTab: true
                     focusPolicy: Qt.TabFocus
@@ -461,6 +505,8 @@ BaseDialog {
 
                 Text { 
                     text: qsTr("Folders")
+                    // Leave room for actual folders when the browser is short.
+                    visible: leftPane.availableHeight >= Style.scaled(140)
                     font.pointSize: Style.fontSizeDescription
                     color: Style.colorTextPrimary
                     Layout.fillWidth: true
@@ -506,7 +552,7 @@ BaseDialog {
                         required property string fileUrl
                         
                         width: (ListView.view ? ListView.view.width : 0)
-                        text: "📁 " + fileName
+                        text: fileName
                         highlighted: ListView.isCurrentItem
                         Accessible.role: Accessible.ListItem
                         Accessible.name: qsTr("Folder: %1").arg(fileName)
@@ -554,6 +600,8 @@ BaseDialog {
 
         // File list
         Frame {
+            implicitWidth: 0
+            implicitHeight: 0
             Layout.fillWidth: true
             Layout.fillHeight: true
             padding: 8
@@ -701,7 +749,10 @@ BaseDialog {
                             required property string fileUrl
                             
                             width: fileColumn.width
-                            text: "📄 " + fileName
+                            text: fileName
+                            icon.source: "../icons/use_custom.svg"
+                            icon.width: 20
+                            icon.height: 20
                             highlighted: ListView.isCurrentItem
                             Accessible.role: Accessible.ListItem
                             Accessible.name: qsTr("File: %1").arg(fileName)
@@ -768,28 +819,49 @@ BaseDialog {
         }
     }
 
-    // Buttons
-    RowLayout {
+    Rectangle {
+        Layout.fillWidth: true
+        implicitHeight: Style.borderWidthDefault
+        color: Style.colorBorderSubtle
+        Accessible.ignored: true
+    }
+
+    // Keep both actions visible with long translations.
+    GridLayout {
+        Layout.alignment: Qt.AlignRight
+        Layout.maximumWidth: Math.ceil(cancelButton.implicitWidth) + Math.ceil(openButton.implicitWidth) + columnSpacing + 4
+        columns: width >= cancelButton.implicitWidth + openButton.implicitWidth + columnSpacing ? 2 : 1
+        columnSpacing: Style.spacingSmallPlus
+        rowSpacing: Style.spacingTiny
         Layout.fillWidth: true
         Layout.topMargin: 6
-        spacing: Style.spacingMedium
-        Item { Layout.fillWidth: true }
+
         ImButton {
             id: cancelButton
+            objectName: "fileCancelButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
             text: CommonStrings.cancel
             activeFocusOnTab: true
             onClicked: { dialog.close(); dialog.rejected() }
         }
-        ImButton {
+        ImButtonRed {
             id: openButton
+            objectName: "fileOpenButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
             text: dialog.isSaveDialog ? qsTr("Save") : qsTr("Open")
             enabled: dialog.isSaveDialog
                 ? String(dialog._currentFilename).trim().length > 0
                 : (String(dialog.selectedFile).length > 0 || String(dialog._pathFieldFile).length > 0)
             activeFocusOnTab: true
             onClicked: {
+                if (!enabled)
+                    return
                 if (dialog.isSaveDialog) {
                     dialog.selectedFile = dialog._tofileUrl(dialog._buildFilePath())
+                } else if (String(dialog._pathFieldFile).length > 0) {
+                    dialog.selectedFile = dialog._pathFieldFile
                 }
                 dialog.close()
                 dialog.accepted()
@@ -797,4 +869,3 @@ BaseDialog {
         }
     }
 }
-

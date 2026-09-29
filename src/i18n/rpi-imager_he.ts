@@ -321,10 +321,6 @@
         <translation>הכניסה לאישור. סוג בדיוק: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ביטול</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>מבטל את התוכנה OTP וחזור לתמונה הקודמת</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>אפשרויות תיקון</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ אפשרויות אלה הן לתיקון וניסוי. שינוי בהם עלול להשפיע על ביצועים ואיכות המידע.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>חליפי פעולות בסוף מכשיר האחסון. תפעיל זאת עבור כרטיסים מזויפים SD אשר מדווחים על כמות גדולה יותר מזויפת. תמונת הדיסק חייבת להיות קטנה יותר מכוח הקרטון האמיתי.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ תפעיל את זה רק אם כרטיס SD שלך מדווח על כושר גדול יותר ממה שיש לו למעשה. ודא כי תמונת הדיסק שלך היא קטנה יותר מכוח הקלף האמיתי!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>תכונות מתקדמות</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</source>
         <translation>תפעיל את זה רק אם אתה מבין את הסיכונים ויש לך צורך ספציפי, כגון תסריטים אוטומטיים או פעילות ללא ראש.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ביטול</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>ביטול ולשמור sudo הדורשת סיסמה</translation>
     </message>
@@ -2980,10 +2968,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>התקן האחסון הוסר תוך כדי כתיבה, לכן הפעולה בוטלה. נא להכניס את ההתקן או לבחור בהתקן אחר כדי להמשיך.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>אישור</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

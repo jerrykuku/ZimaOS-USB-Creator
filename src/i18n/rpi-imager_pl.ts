@@ -321,10 +321,6 @@
         <translation>Wpływ potwierdzenia. Dokładny typ: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANULUJ</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Odwołaj program OTP i wróć do poprzedniego ekranu</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Wybory odbudowy</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Te opcje są do debugowania i testowania. Zmiana tych danych może mieć wpływ na wydajność i integralność danych.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Przejrzyj operacje na końcu urządzenia do przechowywania. Umożliwić to w przypadku fałszywych kart SD zgłaszających fałsz większą zdolność. Obraz dysku musi być mniejszy od rzeczywistej mocy karty.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Włącz to tylko wtedy, gdy karta SD zgłasza większą pojemność niż faktycznie. Upewnij się, że obraz na dysku jest mniejszy od rzeczywistej mocy karty!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Zaawansowane funkcje</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1940,10 +1932,6 @@ Szczegóły techniczne: %1</translation>
         <translation>Umożliwić to tylko wtedy, gdy rozumiesz ryzyko i masz szczególną potrzebę, np. automatyczne skrypty lub operację bez głowy.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANULUJ</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Odwołanie i zachowanie sudo wymagającego hasła</translation>
     </message>
@@ -2981,10 +2969,6 @@ Proszę sprawdzić urządzenie do przechowywania i spróbować ponownie.</transl
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Dysk został usunięty podczas zapisywania, więc operacja została anulowana. Proszę włożyć dysk ponownie lub wybrać inny w celu kontynuacji.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

@@ -321,10 +321,6 @@
         <translation>확인 입력 정확한 타입: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>취소</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>OTP 프로그래밍을 취소하고 이전 화면으로 돌아가</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>디버깅 옵션</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ 이 옵션은 디버깅 및 테스트를 위한 것입니다. 그 변경은 성능과 데이터의 무결성에 영향을 미칠 수 있습니다.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>저장 장치의 끝에서 동작을 건너뛰기 가짜 SD 카드에 대해 더 큰 용량을 신고하는 경우 이것을 활성화하십시오. 디스크 이미지는 카드의 실제 용량보다 작아야 합니다.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ SD 카드가 실제보다 더 큰 용량을 보고할 경우만 이 기능을 활성화하십시오. 디스크 이미지가 실제 카드 용량보다 작다는 것을 확인하세요!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>고급 기능</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</source>
         <translation>자동화된 스크립트나 헤드리스 운영과 같은 위험성을 이해하고 특별한 필요성이 있는 경우에만 이것을 가능하게 한다.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>취소</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>비밀번호가 필요한 sudo을 취소하고 보관</translation>
     </message>
@@ -2980,10 +2968,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>쓰기 중에 저장 장치가 제거되었습니다. 작업이 취소되었습니다. 다시 삽입하거나 다른 장치를 선택하십시오</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>확인</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

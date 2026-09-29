@@ -321,10 +321,6 @@
         <translation>নিশ্চিতকরণ ইনপুট। সঠিক টাইপঃ %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>বাতিল</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>OTP প্রোগ্রামিং বাতিল করুন এবং পূর্ববর্তী স্ক্রিনে ফিরে যান</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>ডিবাগ অপশন</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ এই বিকল্পগুলি ডিবাগিং এবং পরীক্ষার জন্য। তাদের পরিবর্তন পারফরম্যান্স এবং ডেটা অখণ্ডতা প্রভাবিত করতে পারে।</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>স্টোরেজ ডিভাইসের শেষে অপারেশনগুলি বাদ দিন। নকল SD কার্ডের জন্য এটি সক্ষম করুন যা নকল বৃহত্তর ক্ষমতা রিপোর্ট করে। ডিস্কের চিত্রটি অবশ্যই কার্ডের প্রকৃত ক্ষমতা থেকে ছোট হতে হবে।</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️️ শুধুমাত্র যদি আপনার SD কার্ডের প্রকৃত ক্যাপাসিটির চেয়ে বেশি ক্ষমতা থাকে তাহলে এটি সক্ষম করুন। নিশ্চিত করুন যে আপনার ডিস্কের চিত্রটি কার্ডের প্রকৃত ক্যাপাসিটির চেয়ে ছোট!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>উন্নত বৈশিষ্ট্য</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</source>
         <translation>আপনি যদি ঝুঁকিগুলি বুঝতে পারেন এবং একটি নির্দিষ্ট প্রয়োজন থাকে, যেমন স্বয়ংক্রিয় স্ক্রিপ্ট বা মাথাহীন অপারেশন, তবে এটি সক্ষম করুন।</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>বাতিল</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>sudo পাসওয়ার্ড প্রয়োজন হলে বাতিল করুন এবং রাখুন</translation>
     </message>
@@ -2980,10 +2968,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>লেখার সময় স্টোরেজ ডিভাইসটি সরানো হয়েছিল, তাই অপারেশন বাতিল করা হয়েছিল। দয়া করে ডিভাইসটি পুনরায় সন্নিবেশ করুন অথবা অন্য একটি নির্বাচন করুন।</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>ঠিক আছে</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

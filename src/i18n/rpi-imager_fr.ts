@@ -321,10 +321,6 @@
         <translation>Confirmation de saisie. Saisir exactement&#xa0;: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULER</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Annuler la programmation OTP et revenir à l&apos;étape précédente</translation>
     </message>
@@ -426,8 +422,8 @@
         <translation>Options de débogage</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation>⚠️ Ces options sont destinées au débogage et aux tests. Leur modification peut compromettre les performances et l&apos;intégrité des données.</translation>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation>Ces options sont destinées au débogage et aux tests. Leur modification peut compromettre les performances et l&apos;intégrité des données.</translation>
     </message>
     <message>
         <source>I/O Options</source>
@@ -514,12 +510,8 @@
         <translation>Ignorer les opérations à la fin du périphérique de stockage. Activer cette option avec les cartes SD contrefaites indiquant une capacité supérieure à la réalité. L&apos;image doit être d&apos;une taille inférieure à la capacité réelle de la carte.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation>⚠️ N&apos;activer ceci que si la carte SD annonce une capacité plus grande que sa capacité réelle. Assurez-vous que la taille de l&apos;image est plus petite que la capacité réelle de la carte&#xa0;!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Fonctionnalités avancées</translation>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>N&apos;activer ceci que si la carte SD annonce une capacité plus grande que sa capacité réelle. Assurez-vous que la taille de l&apos;image est plus petite que la capacité réelle de la carte&#xa0;!</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Détails techniques: %1</translation>
         <translation>Vous ne pouvez le faire que si vous comprenez les risques et que vous avez un besoin spécifique, comme des scripts automatisés ou un fonctionnement sans tête.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULER</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Annuler et conserver sudo nécessitant un mot de passe</translation>
     </message>
@@ -2980,10 +2968,6 @@ Veuillez vérifier votre appareil de stockage et réessayez.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Le périphérique de stockage a été débranché durant l&apos;écriture, ce qui a annulé l&apos;opération. Re-brancher le périphérique ou en sélectionner un autre pour continuer.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

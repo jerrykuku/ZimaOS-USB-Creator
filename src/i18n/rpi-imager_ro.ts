@@ -321,10 +321,6 @@
         <translation>Intrare de confirmare. Tip exact: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANULEAZĂ</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Anula programarea OTP și reveni la ecranul anterior</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Opțiuni de debug</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Aceste opțiuni sunt pentru debugging și testare. Modificarea acestora poate afecta performanța și integritatea datelor.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Skip operațiuni la sfârșitul dispozitivului de stocare. Acceptați acest lucru pentru carduri false SD care raportează o capacitate falsă mai mare. Imaginea de pe disc trebuie să fie mai mică decât capacitatea reală a cărții.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Acceptați acest lucru numai dacă cardul SD raportează o capacitate mai mare decât are de fapt. Asiguraţi-vă că imaginea de pe disc este mai mică decât capacitatea reală a cărţii!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Caracteristici avansate</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Detalii tehnice: %1</translation>
         <translation>Acceptați acest lucru numai dacă înțelegeți riscurile și aveți o nevoie specifică, cum ar fi scripturi automatizate sau operațiuni fără cap.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANULEAZĂ</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Anulaţi şi păstraţi sudo care necesită parola</translation>
     </message>
@@ -2980,10 +2968,6 @@ Vă rugăm să verificaţi dispozitivul de stocare şi să încercaţi din nou.<
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Dispozitivul de stocare a fost îndepărtat în timpul scrierii, așa că operația a fost anulată. Te rog reintrodu dispozitivul sau selectează un altul pentru a continua.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

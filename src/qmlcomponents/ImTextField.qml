@@ -127,13 +127,52 @@ TextField {
     
     Menu {
         id: contextMenu
+        objectName: "textEditMenu"
+        padding: Style.spacingXSmall
+        implicitWidth: {
+            let widest = Style.scaled(160)
+            for (let i = 0; i < count; ++i) {
+                const item = itemAt(i)
+                if (item)
+                    widest = Math.max(widest, item.implicitWidth + leftPadding + rightPadding)
+            }
+            return widest
+        }
+        font.family: Style.fontFamily
+        font.pixelSize: Style.fontSizePixelSm
+        background: Rectangle {
+            color: Style.colorSurfacePanel
+            radius: Style.radiusCard
+            border.color: Style.colorBorderSubtle
+            border.width: Style.borderWidthDefault
+            antialiasing: true
+        }
+
+        component EditMenuItem: MenuItem {
+            id: action
+            implicitWidth: implicitContentWidth + leftPadding + rightPadding
+            implicitHeight: Math.max(Style.buttonHeightStandard, implicitContentHeight + Style.spacingTiny * 2)
+            leftPadding: Style.spacingSmallPlus
+            rightPadding: Style.spacingSmallPlus
+            contentItem: Text {
+                text: action.text
+                font: contextMenu.font
+                color: action.enabled ? Style.colorTextPrimary : Style.colorTextSecondary
+                opacity: action.enabled ? 1 : 0.5
+                verticalAlignment: Text.AlignVCenter
+            }
+            background: Rectangle {
+                radius: Style.radiusButton
+                color: action.highlighted ? Style.colorSelectionSurface : "transparent"
+            }
+        }
 
         // On Linux (X11/Wayland), QClipboard::dataChanged is not reliably
         // emitted for external clipboard changes, so force a fresh check
         // each time the context menu opens.
         onAboutToShow: ClipboardHelper.refresh()
 
-        MenuItem {
+        EditMenuItem {
             text: qsTr("Cut")
             enabled: root.selectedText.length > 0 && !root.readOnly && root.echoMode === TextInput.Normal
             Accessible.role: Accessible.MenuItem
@@ -144,7 +183,7 @@ TextField {
                 root.remove(root.selectionStart, root.selectionEnd)
             }
         }
-        MenuItem {
+        EditMenuItem {
             text: qsTr("Copy")
             enabled: root.selectedText.length > 0 && root.echoMode === TextInput.Normal
             Accessible.role: Accessible.MenuItem
@@ -153,15 +192,21 @@ TextField {
                 ClipboardHelper.setText(root.selectedText)
             }
         }
-        MenuItem {
+        EditMenuItem {
             text: qsTr("Paste")
             enabled: !root.readOnly && ClipboardHelper.hasText
             Accessible.role: Accessible.MenuItem
             Accessible.name: text
             onTriggered: root.paste()
         }
-        MenuSeparator {}
-        MenuItem {
+        MenuSeparator {
+            padding: Style.spacingXSmall
+            contentItem: Rectangle {
+                implicitHeight: Style.borderWidthDefault
+                color: Style.colorBorderSubtle
+            }
+        }
+        EditMenuItem {
             text: qsTr("Select All")
             enabled: root.text.length > 0
             Accessible.role: Accessible.MenuItem
@@ -172,7 +217,4 @@ TextField {
 
     // No special key handling here; rely on WizardStepBase auto wiring
 }
-
-
-
 

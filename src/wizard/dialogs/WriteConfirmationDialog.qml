@@ -10,34 +10,25 @@ import QtQuick.Layouts
 import "../../qmlcomponents"
 import RpiImager
 
-BaseDialog {
+PanelDialog {
     id: root
 
     property string storageName: ""
     readonly property int confirmationDelay: 2
     property int countdown: confirmationDelay
     readonly property bool allowAccept: countdown === 0
-    signal confirmed()
+    signal confirmed
 
     title: qsTr("Erase this device?")
     // The title is rendered in the custom header and used for accessibility.
-    header: null
-    width: Math.min(parent ? parent.width - Style.spacingPopupInset * 2 : Style.scaled(460), Style.scaled(460))
-
-    background: Rectangle {
-        color: Style.colorSurfacePanel
-        radius: Style.radiusPanel
-        border.color: Style.colorBorderSubtle
-        border.width: Style.borderWidthDefault
-        antialiasing: true
-    }
+    preferredWidth: Style.scaled(480)
+    iconSource: Qt.resolvedUrl("../../icons/ic_warning_24px.svg")
 
     Component.onCompleted: {
-        registerFocusGroup("warning", function() {
-            return ImageWriterSingleton.screenReaderActive
-                    ? [heading, explanation, deviceName, permanentText] : []
+        registerFocusGroup("warning", function () {
+            return ImageWriterSingleton.screenReaderActive ? [root.headingItem, explanation, deviceName, permanentText] : []
         }, 0)
-        registerFocusGroup("buttons", function() {
+        registerFocusGroup("buttons", function () {
             return root.allowAccept ? [cancelButton, acceptButton] : [cancelButton]
         }, 1)
     }
@@ -50,7 +41,7 @@ BaseDialog {
         rebuildFocusOrder()
         focusInitialItem()
         if (ImageWriterSingleton.screenReaderActive)
-            heading.forceActiveFocus()
+            root.headingItem.forceActiveFocus()
     }
 
     onClosed: {
@@ -60,50 +51,17 @@ BaseDialog {
 
     ColumnLayout {
         Layout.fillWidth: true
-        Layout.margins: Style.spacingTiny
+        Layout.margins: 0
         spacing: Style.spacingMedium
 
-        ColumnLayout {
+        FocusableText {
+            id: explanation
+            text: qsTr("Writing the image will erase all data on this device.")
+            font.family: Style.fontFamily
+            font.pixelSize: Style.fontSizePixelSm
+            color: Style.colorTextSecondary
+            wrapMode: Text.WordWrap
             Layout.fillWidth: true
-            spacing: Style.spacingTiny
-
-            RowLayout {
-                id: headingRow
-                Layout.fillWidth: true
-                spacing: Style.spacingTiny
-
-                Image {
-                    id: warningIcon
-                    Layout.preferredWidth: Style.scaled(24)
-                    Layout.preferredHeight: Style.scaled(24)
-                    Layout.alignment: Qt.AlignVCenter
-                    source: "../../icons/ic_warning_24px.svg"
-                    sourceSize: Qt.size(width, height)
-                    Accessible.ignored: true
-                }
-
-                FocusableHeading {
-                    id: heading
-                    text: root.title
-                    font.family: Style.fontFamilyBold
-                    font.pointSize: Style.fontSizeHeading
-                    font.bold: true
-                    color: Style.colorTextPrimary
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-            }
-
-            FocusableText {
-                id: explanation
-                text: qsTr("Writing the image will erase all data on this device.")
-                font.family: Style.fontFamily
-                font.pointSize: Style.fontSizeDescription
-                color: Style.colorTextSecondary
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: true
-                Layout.leftMargin: warningIcon.width + headingRow.spacing
-            }
         }
 
         Rectangle {
@@ -148,7 +106,7 @@ BaseDialog {
                         text: root.storageName || qsTr("Storage device")
                         textFormat: Text.PlainText
                         font.family: Style.fontFamilyBold
-                        font.pointSize: Style.fontSizeFormLabel
+                        font.pixelSize: Style.fontSizePixelSm
                         font.bold: true
                         color: Style.colorTextPrimary
                         wrapMode: Text.Wrap
@@ -163,66 +121,52 @@ BaseDialog {
             id: permanentText
             text: qsTr("This action cannot be undone. Back up any important files before continuing.")
             font.family: Style.fontFamily
-            font.pointSize: Style.fontSizeDescription
+            font.pixelSize: Style.fontSizePixelSm
             color: Style.colorTextErrorStrong
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
-
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: Style.borderWidthDefault
-            color: Style.colorBorderSubtle
-            Accessible.ignored: true
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Style.spacingSmallPlus
-
-            Item { Layout.fillWidth: true }
-
-            ImButton {
-                id: cancelButton
-                text: CommonStrings.cancel
-                Layout.preferredHeight: Style.buttonHeightStandard
-                Layout.fillWidth: true
-                Layout.maximumWidth: Math.max(Style.scaled(100), implicitWidth)
-                accessibleDescription: qsTranslate("WritingStep", "Cancel and return to the write summary without erasing the storage device")
-                onClicked: root.close()
-            }
-
-            ImButtonRed {
-                id: acceptButton
-                objectName: "confirmEraseButton"
-                text: root.allowAccept ? qsTr("Erase and write") : qsTr("Erase and write (%1)").arg(root.countdown)
-                enabled: root.allowAccept
-                implicitWidth: Math.max(Style.scaled(168), countdownLabel.implicitWidth + leftPadding + rightPadding)
-                Layout.preferredHeight: Style.buttonHeightStandard
-                Layout.fillWidth: true
-                Layout.maximumWidth: implicitWidth
-                accessibleDescription: qsTranslate("WritingStep", "Confirm erasure and begin writing the image to the storage device")
-
-                background: Rectangle {
-                    radius: Style.radiusButton
-                    color: !acceptButton.enabled ? Style.buttonDisabledBackgroundColor
-                           : acceptButton.down ? Qt.darker(Style.colorTextErrorStrong, 1.25)
-                           : acceptButton.hovered ? Qt.darker(Style.colorTextErrorStrong, 1.1)
-                           : Style.colorTextErrorStrong
-                    border.width: acceptButton.visualFocus ? Style.focusOutlineWidth : 0
-                    border.color: Style.colorTextOnAccent
-                    antialiasing: true
-                }
-
-                onClicked: {
-                    if (!root.allowAccept)
-                        return
-                    root.close()
-                    root.confirmed()
-                }
-            }
-        }
     }
+
+    buttons: [
+        ImButton {
+            id: cancelButton
+            objectName: "cancelButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
+            text: CommonStrings.cancel
+            accessibleDescription: qsTranslate("WritingStep", "Cancel and return to the write summary without erasing the storage device")
+            onClicked: root.close()
+        },
+        ImButtonRed {
+            id: acceptButton
+
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
+            objectName: "confirmEraseButton"
+            text: root.allowAccept ? qsTr("Erase and write") : qsTr("Erase and write (%1)").arg(root.countdown)
+            enabled: root.allowAccept
+            implicitWidth: Math.max(Style.scaled(168), countdownLabel.implicitWidth + leftPadding + rightPadding)
+            accessibleDescription: qsTranslate("WritingStep", "Confirm erasure and begin writing the image to the storage device")
+
+            background: Rectangle {
+                radius: Style.radiusButton
+                color: !acceptButton.enabled ? Style.buttonDisabledBackgroundColor : acceptButton.down ? Qt.darker(Style.colorTextErrorStrong, 1.25) : acceptButton.hovered ? Qt.darker(Style.colorTextErrorStrong, 1.1) : Style.colorTextErrorStrong
+                border.width: acceptButton.visualFocus ? Style.focusOutlineWidth : 0
+                border.color: Style.colorTextOnAccent
+                antialiasing: true
+            }
+
+            onClicked: {
+                if (!root.allowAccept)
+                    return
+                root.close()
+                root.confirmed()
+            }
+        }
+    ]
 
     // Reserve the countdown label's width so enabling the button does not
     // resize the dialog or move either action under the pointer.

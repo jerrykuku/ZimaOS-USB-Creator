@@ -50,7 +50,8 @@ ApplicationWindow {
         targetWindow: window
         nativeMacTitleBar: window.usesMacTitleBar
         height: window.visibility === Window.FullScreen ? 0
-                : window.usesPlatformWindowChrome ? window.SafeArea.margins.top : 0
+                : window.usesMacTitleBar ? window.SafeArea.margins.top
+                : window.usesPlatformWindowChrome ? Math.max(Style.scaled(40), window.SafeArea.margins.top) : 0
         visible: height > 0
         titleColor: Style.colorTextChromeMuted
         titleFont.family: Style.fontFamilyBold
@@ -100,7 +101,10 @@ ApplicationWindow {
     readonly property alias overlayRootItem: overlayRoot
 
     width: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(680) + 2 * customShadowInset
-    height: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(450) + 2 * customShadowInset
+    // Leave room for the native frame and desktop panels on shorter displays.
+    height: ImageWriterSingleton.isEmbeddedMode() ? -1
+            : Math.min(Style.scaled(520) + 2 * customShadowInset,
+                       Math.max(minimumHeight, Screen.desktopAvailableHeight - 48))
     minimumWidth: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(680) + 2 * customShadowInset
     minimumHeight: ImageWriterSingleton.isEmbeddedMode() ? -1 : Style.scaled(420) + 2 * customShadowInset
 
@@ -459,8 +463,10 @@ ApplicationWindow {
     }
 
     // Specific dialog for storage removal during write
-    BaseDialog {
+    PanelDialog {
         id: storageRemovedDialog
+        title: qsTr("Storage device removed")
+        iconSource: Qt.resolvedUrl("icons/ic_warning_24px.svg")
         parent: overlayRoot
         anchors.centerIn: parent
 
@@ -471,58 +477,50 @@ ApplicationWindow {
 
         // Register focus groups when component is ready
         Component.onCompleted: {
-            registerFocusGroup("content", function(){ 
+            registerFocusGroup("content", function () {
                 // Only include text elements when screen reader is active (otherwise they're not focusable)
                 if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                    return [storageRemovedTitle, storageRemovedMessage]
+                    return [storageRemovedDialog.headingItem, storageRemovedMessage]
                 }
                 return []
             }, 0)
-            registerFocusGroup("buttons", function(){ 
-                return [storageOkButton] 
+            registerFocusGroup("buttons", function () {
+                return [storageOkButton]
             }, 1)
         }
 
         // Dialog content
-        FocusableHeading {
-            id: storageRemovedTitle
-            text: qsTr("Storage device removed")
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelColor
-            Layout.fillWidth: true
-        }
 
         FocusableText {
             id: storageRemovedMessage
             text: qsTr("The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.")
-            wrapMode: Text.WordWrap
-            font.pointSize: Style.fontSizeDescription
+            wrapMode: Text.Wrap
+            font.pixelSize: Style.fontSizePixelSm
             font.family: Style.fontFamily
             color: Style.colorTextPrimary
             Layout.fillWidth: true
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Style.spacingMedium
-            Item {
-                Layout.fillWidth: true
-            }
+        buttons: [
             ImButtonRed {
                 id: storageOkButton
-                text: qsTr("OK")
+                objectName: "storageOkButton"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
+                text: qsTranslate("ErrorDialog", "Got it")
                 accessibleDescription: qsTr("Close the storage removed notification and return to storage selection")
                 activeFocusOnTab: true
                 onClicked: storageRemovedDialog.close()
             }
-        }
+        ]
     }
 
     // Quit dialog (modern style)
-    BaseDialog {
+    PanelDialog {
         id: quitDialog
+        title: qsTr("Are you sure you want to quit?")
+        iconSource: Qt.resolvedUrl("icons/ic_warning_24px.svg")
         parent: overlayRoot
         anchors.centerIn: parent
 
@@ -533,64 +531,58 @@ ApplicationWindow {
 
         // Register focus groups when component is ready
         Component.onCompleted: {
-            registerFocusGroup("content", function(){ 
+            registerFocusGroup("content", function () {
                 // Only include text elements when screen reader is active (otherwise they're not focusable)
                 if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                    return [quitTitle, quitMessage]
+                    return [quitDialog.headingItem, quitMessage]
                 }
                 return []
             }, 0)
-            registerFocusGroup("buttons", function(){ 
-                return [quitNoButton, quitYesButton] 
+            registerFocusGroup("buttons", function () {
+                return [quitNoButton, quitYesButton]
             }, 1)
         }
 
         // Dialog content
-        FocusableHeading {
-            id: quitTitle
-            text: qsTr("Are you sure you want to quit?")
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelColor
-            Layout.fillWidth: true
-        }
 
         FocusableText {
             id: quitMessage
             text: qsTr("ZimaOS USB Creator is still busy. Are you sure you want to quit?")
-            font.pixelSize: Style.fontSizeDescription
+            font.pixelSize: Style.fontSizePixelSm
             font.family: Style.fontFamily
             color: Style.colorTextPrimary
-            wrapMode: Text.WordWrap
+            wrapMode: Text.Wrap
             Layout.fillWidth: true
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Style.spacingMedium
-            Item {
-                Layout.fillWidth: true
-            }
-
+        buttons: [
             ImButton {
                 id: quitNoButton
-                text: CommonStrings.no
+                objectName: "quitNoButton"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
+                text: CommonStrings.cancel
                 accessibleDescription: qsTr("Return to ZimaOS USB Creator and continue the current operation")
                 activeFocusOnTab: true
                 onClicked: quitDialog.close()
-            }
+            },
             ImButtonRed {
                 id: quitYesButton
-                text: CommonStrings.yes
+                destructive: true
+                objectName: "quitYesButton"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
+                text: qsTr("Exit")
                 accessibleDescription: qsTr("Force quit ZimaOS USB Creator and cancel the current write operation")
                 activeFocusOnTab: true
                 onClicked: {
-                    window.forceQuit = true;
-                    Qt.quit();
+                    window.forceQuit = true
+                    Qt.quit()
                 }
             }
-        }
+        ]
     }
 
     KeychainPermissionDialog {
@@ -616,78 +608,65 @@ ApplicationWindow {
     }
 
     // Permission warning dialog for when not running with elevated privileges
-    BaseDialog {
+    PanelDialog {
         id: permissionWarningDialog
+        title: qsTr("Insufficient Permissions")
+        iconSource: Qt.resolvedUrl("icons/ic_warning_24px.svg")
         parent: overlayRoot
         anchors.centerIn: parent
         closePolicy: Popup.NoAutoClose  // Prevent closing with escape or clicking outside
-        
+
         property string warningMessage: ""
-        
+
         function showWarning(message) {
             warningMessage = message
             open()
         }
-        
+
         // Custom escape handling - exit the application
         function escapePressed() {
             Qt.quit()
         }
-        
+
         // Register focus groups when component is ready
         Component.onCompleted: {
-            registerFocusGroup("heading", function(){ 
-                return [headingText] 
+            registerFocusGroup("heading", function () {
+                return [permissionWarningDialog.headingItem]
             }, 0)
-            registerFocusGroup("message", function(){ 
-                return [messageText] 
+            registerFocusGroup("message", function () {
+                return [messageText]
             }, 1)
-            registerFocusGroup("buttons", function(){ 
+            registerFocusGroup("buttons", function () {
                 return [installAuthButton, exitButton]
             }, 2)
         }
-        
+
         // Dialog content
-        FocusableHeading {
-            id: headingText
-            text: qsTr("Insufficient Permissions")
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelErrorColor
-            Layout.fillWidth: true
-            Accessible.description: text
-        }
-        
+
         FocusableText {
             id: messageText
             text: permissionWarningDialog.warningMessage
-            font.pointSize: Style.fontSizeDescription
+            font.pixelSize: Style.fontSizePixelSm
             font.family: Style.fontFamily
             color: Style.colorTextPrimary
-            wrapMode: Text.WordWrap
+            wrapMode: Text.Wrap
             Layout.fillWidth: true
             Accessible.description: qsTr("Error message explaining why elevated privileges are required")
             Accessible.ignored: false
         }
-        
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Style.spacingMedium
-            Item {
-                Layout.fillWidth: true
-            }
-            
-            // Install Authorization button - only visible for elevatable bundles (e.g., AppImage)
+
+        buttons: [
             ImButton {
                 id: installAuthButton
+                objectName: "installAuthButton"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
                 text: qsTr("Install Authorization")
                 accessibleDescription: qsTr("Install system authorization to allow ZimaOS USB Creator to run with elevated privileges")
                 activeFocusOnTab: true
                 visible: ImageWriterSingleton && ImageWriterSingleton.isElevatableBundle()
                 // Make button wide enough to fit the text, with sensible bounds
-                Layout.minimumWidth: Style.buttonWidthMinimum
-                Layout.maximumWidth: Style.buttonWidthMinimum * 2  // Cap at 2x to handle long translations
                 implicitWidth: Math.max(Style.buttonWidthMinimum, implicitContentWidth + leftPadding + rightPadding)
                 onClicked: {
                     if (ImageWriterSingleton.installElevationPolicy()) {
@@ -695,16 +674,19 @@ ApplicationWindow {
                         ImageWriterSingleton.restartWithElevatedPrivileges()
                     }
                 }
-            }
-            
+            },
             ImButtonRed {
                 id: exitButton
+                objectName: "exitButton"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
                 text: qsTr("Exit")
                 accessibleDescription: qsTr("Exit ZimaOS USB Creator - you must restart with elevated privileges to write images")
                 activeFocusOnTab: true
                 onClicked: Qt.quit()
             }
-        }
+        ]
     }
 
     // Lazily constructed: each of these dialogs is ~600 lines of QML and is only

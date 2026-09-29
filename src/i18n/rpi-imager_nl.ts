@@ -321,10 +321,6 @@
         <translation>Bevestigingsinvoer. Type precies: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULEREN</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Verwijder de programmering van OTP en keert terug naar het vorige scherm</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Debug-opties</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Deze opties zijn voor debugging en testen. Het wijzigen ervan kan gevolgen hebben voor de prestaties en de integriteit van de gegevens.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Skip operaties aan het einde van het opslagapparaat. Deze mogelijk maken voor vervalsing SD kaarten die een valse grotere capaciteit melden. Het schijfbeeld moet kleiner zijn dan de werkelijke capaciteit van de kaart.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Dit is alleen mogelijk als uw SD-kaart een grotere capaciteit rapporteert dan het daadwerkelijk heeft. Zorg ervoor dat uw schijfbeeld kleiner is dan de werkelijke capaciteit van de kaart!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Geavanceerde functies</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technische gegevens: %1</translation>
         <translation>Dit is alleen mogelijk als u de risico&apos;s begrijpt en een specifieke behoefte heeft, zoals automatische scripts of hoofdloze werking.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULEREN</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Afzeggen en bewaren van sudo dat een wachtwoord vereist</translation>
     </message>
@@ -2980,10 +2968,6 @@ Controleer uw opslagapparaat en probeer het opnieuw.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Het opslagapparaat werd verwijderd tijdens het schrijven, dus de operatie werd geannuleerd. Als u het apparaat opnieuw wilt inschakelen of een ander apparaat kunt selecteren om door te gaan.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Goed .</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

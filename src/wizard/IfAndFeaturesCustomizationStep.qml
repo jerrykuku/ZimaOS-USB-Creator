@@ -337,8 +337,9 @@ WizardStepBase {
     }
 
     // Confirmation dialog
-    BaseDialog {
+    PanelDialog {
         id: confirmDialog
+        iconSource: Qt.resolvedUrl("../icons/ic_warning_24px.svg")
         parent: root.wizardContainer && root.wizardContainer.overlayRootRef ? root.wizardContainer.overlayRootRef : undefined
         anchors.centerIn: parent
         visible: false
@@ -353,8 +354,11 @@ WizardStepBase {
 
         // Register focus groups when component is ready
         Component.onCompleted: {
-            registerFocusGroup("buttons", function(){ 
-                return [cancelBtn, acceptBtn] 
+            registerFocusGroup("content", function () {
+                return ImageWriterSingleton.screenReaderActive ? [confirmDialog.headingItem, gadgetWarning, gadgetDocumentation, gadgetCaution] : []
+            }, 0)
+            registerFocusGroup("buttons", function () {
+                return [cancelBtn, acceptBtn]
             }, 0)
         }
 
@@ -369,26 +373,28 @@ WizardStepBase {
         }
 
         // Dialog content
-        Text {
+        FocusableText {
+            id: gadgetWarning
             text: qsTr("USB Gadget Mode can change how your device behaves and may impact connectivity and host interaction.")
-            font.pointSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
+            font.pixelSize: Style.fontSizePixelSm
+            font.family: Style.fontFamily
+            font.bold: false
             color: Style.formLabelErrorColor
-            wrapMode: Text.WordWrap
+            wrapMode: Text.Wrap
             Layout.fillWidth: true
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
 
-        Text {
+        FocusableText {
+            id: gadgetDocumentation
             textFormat: Text.StyledText
             text: qsTr("Please review the <a href='%1'>documentation</a> before proceeding.").arg(chkEnableUsbGadget.helpUrl)
-            font.pointSize: Style.fontSizeFormLabel
-            font.family: Style.fontFamilyBold
+            font.pixelSize: Style.fontSizePixelSm
+            font.family: Style.fontFamily
             color: Style.formLabelColor
-            wrapMode: Text.WordWrap
-            onLinkActivated: function(link) {
+            wrapMode: Text.Wrap
+            onLinkActivated: function (link) {
                 if (ImageWriterSingleton) {
                     ImageWriterSingleton.openUrl(link)
                 } else {
@@ -400,44 +406,51 @@ WizardStepBase {
             Accessible.name: qsTr("Please review the documentation before proceeding.")
         }
 
-        Text {
+        FocusableText {
+            id: gadgetCaution
             text: qsTr("Only continue if you are sure you know what you are doing.")
-            font.pointSize: Style.fontSizeFormLabel
-            font.family: Style.fontFamilyBold
+            font.pixelSize: Style.fontSizePixelSm
+            font.family: Style.fontFamily
             color: Style.formLabelErrorColor
-            wrapMode: Text.WordWrap
+            wrapMode: Text.Wrap
             Layout.fillWidth: true
             Accessible.role: Accessible.StaticText
             Accessible.name: text
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Style.spacingMedium
-            Item { Layout.fillWidth: true }
-
+        buttons: [
             ImButton {
                 id: cancelBtn
+                objectName: "cancelBtn"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
                 text: CommonStrings.cancel
                 accessibleDescription: qsTr("Cancel and return to the interfaces and features settings without enabling USB Gadget Mode")
                 activeFocusOnTab: true
                 onClicked: confirmDialog.close()
-            }
-
+            },
             ImButtonRed {
                 id: acceptBtn
+                destructive: true
+                objectName: "acceptBtn"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
                 text: qsTr("I understand, continue")
                 accessibleDescription: confirmDialog.allowAccept ? qsTr("Confirm that you understand the risks and continue with USB Gadget Mode enabled") : qsTr("This button will be enabled after 2 seconds")
                 enabled: confirmDialog.allowAccept
                 activeFocusOnTab: true
                 onClicked: {
+                    if (!confirmDialog.allowAccept)
+                        return
                     confirmDialog.close()
                     root.isConfirmed = true
                     // Advance to next step
                     root.wizardContainer.nextStep()
                 }
             }
-        }
+        ]
     }
 
     // Delay accept for 2 seconds

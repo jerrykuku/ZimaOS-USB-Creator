@@ -178,22 +178,35 @@ ComboBox {
     // Provide a default popup with filter-as-you-type search
     popup: Popup {
         id: popupComponent
-        padding: 0
-        y: root.height
+        padding: Style.spacingXSmall
+        property real spaceBelow: 300
+        property real spaceAbove: 0
+        readonly property real desiredHeight: Math.min(Style.scaled(300), Math.max(root.itemHeight * 2, root.model.length * root.itemHeight + padding * 2))
+        readonly property bool openAbove: spaceBelow < desiredHeight && spaceAbove > spaceBelow
+        y: openAbove ? -height : root.height
         width: root.width
-        // Cap height to available space between the combo box bottom and window bottom
-        height: {
-            var ideal = Math.min(300, Math.max(150, root.model.length * root.itemHeight))
-            var win = root.Window.window
-            if (win) {
-                var globalY = root.mapToItem(null, 0, root.height).y
-                var margin = 8
-                var available = win.height - globalY - margin
-                return Math.max(root.itemHeight * 2, Math.min(ideal, available))
-            }
-            return ideal
-        }
+        height: Math.max(0, Math.min(desiredHeight, openAbove ? spaceAbove : spaceBelow))
         closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
+
+        // mapToItem() doesn't establish a binding on the ancestors' positions.
+        // Recompute on each opening, including after the form has scrolled.
+        function updatePlacement() {
+            const win = root.Window.window
+            spaceAbove = root.mapToItem(null, 0, 0).y - Style.spacingTiny
+            spaceBelow = win ? win.height - root.mapToItem(null, 0, root.height).y - Style.spacingTiny : 300
+        }
+        onAboutToShow: updatePlacement()
+
+        Connections {
+            target: root.Window.window
+            function onHeightChanged() { popupComponent.updatePlacement() }
+            function onWidthChanged() { popupComponent.updatePlacement() }
+        }
+        Connections {
+            target: root
+            function onYChanged() { if (popupComponent.visible) popupComponent.updatePlacement() }
+            function onHeightChanged() { if (popupComponent.visible) popupComponent.updatePlacement() }
+        }
         
         onVisibleChanged: {
             if (visible) {
@@ -220,8 +233,8 @@ ComboBox {
         }
         
         background: Rectangle {
-            color: Style.colorSurfacePage
-            radius: Style.cornerRadius(Style.sectionBorderRadius)
+            color: Style.colorSurfacePanel
+            radius: Style.radiusCard
             border.color: Style.colorBorderSubtle
             border.width: Style.sectionBorderWidth
             antialiasing: true
@@ -236,14 +249,19 @@ ComboBox {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: visible ? 28 : 0
-                color: Style.buttonFocusedBackgroundColor
+                height: visible ? Math.max(28, searchLabel.implicitHeight + Style.spacingTiny) : 0
+                color: Style.colorSurfaceMuted
+                radius: Style.radiusButton
                 z: 1
                 
                 Text {
+                    id: searchLabel
                     anchors.left: parent.left
                     anchors.leftMargin: Style.spacingTiny
+                    anchors.right: searchCount.left
+                    anchors.rightMargin: Style.spacingTiny
                     anchors.verticalCenter: parent.verticalCenter
+                    elide: Text.ElideRight
                     text: qsTr("Search: \"%1\"").arg(root.searchString)
                     font.pointSize: Style.fontSizeSmall
                     font.italic: true
@@ -251,6 +269,7 @@ ComboBox {
                 }
                 
                 Text {
+                    id: searchCount
                     anchors.right: parent.right
                     anchors.rightMargin: Style.spacingTiny
                     anchors.verticalCenter: parent.verticalCenter
@@ -313,6 +332,11 @@ ComboBox {
                 }
                 
                 highlighted: dropdownList.currentIndex === filterDelegate.index
+                background: Rectangle {
+                    radius: Style.radiusButton
+                    color: filterDelegate.highlighted ? Style.colorSelectionSurface
+                           : filterDelegate.hovered ? Style.colorSurfaceMuted : "transparent"
+                }
                 
                 onClicked: {
                     root.selectFilteredItem(filterDelegate.index)

@@ -321,10 +321,6 @@
         <translation>Input di conferma. Tipo esatto: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULLA</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Annulla la programmazione OTP e torna allo schermo precedente</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Opzioni di Debug</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Queste opzioni sono per il debugging e il test. La modifica di tali dati può influenzare le prestazioni e l&apos;integrità dei dati.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Salta le operazioni alla fine del dispositivo di archiviazione. Abilitare questo per le carte false SD che segnalano una capacità falsa maggiore. L&apos;immagine del disco deve essere inferiore alla capacità reale della scheda.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️️ Abilitare questo solo se la carta SD riporta una capacità maggiore di quella che ha effettivamente. Assicurati che l&apos;immagine del disco sia più piccola della capacità reale della scheda!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Caratteristiche avanzate</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Dettagli tecnici: %1</translation>
         <translation>Questo è possibile solo se si capiscono i rischi e se si ha un bisogno specifico, come lo script automatico o l&apos;operazione senza testa.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ANNULLA</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Cancellare e mantenere il sudo che richiede una password</translation>
     </message>
@@ -2980,10 +2968,6 @@ Si prega di controllare il dispositivo di archiviazione e riprova.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Il dispositivo di archiviazione è stato rimosso durante la scrittura, quindi l&apos;operazione è stata annullata. Reinserisci il dispositivo o selezionane uno diverso per continuare.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

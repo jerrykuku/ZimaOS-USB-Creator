@@ -321,10 +321,6 @@
         <translation>დადასტურება. ზუსტად შეიყვანეთ: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ᲒᲐᲣᲥᲛᲔᲑᲐ</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>OTP პროგრამის გაუქმება და წინა ეკრანზე დაბრუნება</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>დებუგის ვარიანტები</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ ეს ვარიანტები არის დებეგინგისა და ტესტირებისათვის. მათი შეცვლა შეიძლება შეეხოს შესრულებას და მონაცემთა მთლიანობას.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>გადასვლა ოპერაციები სათავსო მოწყობილობის ბოლოში. გაითვალისწინეთ ეს ყალბი SD ბარათებისთვის, რომლებიც ყალბად აცხადებენ უფრო დიდ სიმძლავრეს. დისკის გამოსახულება უნდა იყოს უფრო პატარა, ვიდრე ბარათის რეალური სიმძლავრე.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation>⚠️ შეამოწმეთ ეს მხოლოდ იმ შემთხვევაში, თუ თქვენი SD ბარათი რეალურად უფრო დიდი სიმძლავრის შესახებ იტყობინება. დარწმუნდით, რომ თქვენი დისკის გამოსახულება უფრო პატარაა, ვიდრე ბარათის რეალური სიმძლავრე!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>მოწინავე მახასიათებლები</translation>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>შეამოწმეთ ეს მხოლოდ იმ შემთხვევაში, თუ თქვენი SD ბარათი რეალურად უფრო დიდი სიმძლავრის შესახებ იტყობინება. დარწმუნდით, რომ თქვენი დისკის გამოსახულება უფრო პატარაა, ვიდრე ბარათის რეალური სიმძლავრე!</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1940,10 +1932,6 @@ Technical details: %1</source>
         <translation>ეს მხოლოდ იმ შემთხვევაშია შესაძლებელი, თუ თქვენ კარგად გესმით რისკები და გაქვთ კონკრეტული საჭიროება, როგორიცაა ავტომატიზებული სცენარები ან უთვალთვალო ოპერაცია.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ᲒᲐᲣᲥᲛᲔᲑᲐ</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>გაუქმება და შენარჩუნება sudo პაროლი საჭიროებს</translation>
     </message>
@@ -2981,10 +2969,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>საცავის მოწყობილობა მოხსნილია ჩაწერისას, ასე რომ, ოპერაცია შეწყდა. გასაგრძელებლად შეაერთეთ მოწყობილობა თავიდან, ან აირჩიეთ სხვა.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>დიახ</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

@@ -321,10 +321,6 @@
         <translation>Confirmation input. Type exactly: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCEL</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Cancel OTP programming and return to previous screen</translation>
     </message>
@@ -426,8 +422,8 @@
         <translation>Debug Options</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</translation>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation>These options are for debugging and testing. Changing them may affect performance and data integrity.</translation>
     </message>
     <message>
         <source>I/O Options</source>
@@ -514,12 +510,8 @@
         <translation>Skip operations at the end of the storage device. Enable this for counterfeit SD cards that report a fake larger capacity. The image must be smaller than the card&apos;s real capacity.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Advanced Features</translation>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</translation>
         <translation>Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCEL</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Cancel and keep sudo requiring a password</translation>
     </message>
@@ -2996,10 +2984,6 @@ Please check your storage device and try again.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

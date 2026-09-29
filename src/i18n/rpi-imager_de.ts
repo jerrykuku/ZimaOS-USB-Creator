@@ -321,10 +321,6 @@
         <translation>Bestätigungs-Eingabe. Genaue Typ: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ABBRECHEN</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Löschen Sie die Programmierung OTP und kehren Sie zum vorherigen Bildschirm zurück</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Debug-Optionen</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Diese Optionen sind für Debugging und Testen. Die Änderung dieser Daten kann Auswirkungen auf die Leistung und die Datenintegrität haben.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Überspringen Sie die Operationen am Ende des Speichergeräts. Dies für Fälschungen aktivieren SD Karten, die eine falsche größere Kapazität melden. Das Festplattenbild muss kleiner sein als die tatsächliche Kapazität der Karte.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Dies ist nur dann möglich, wenn Ihre SD-Karte eine größere Kapazität als tatsächlich hat. Stellen Sie sicher, dass Ihr Festplattenbild kleiner ist als die tatsächliche Kapazität der Karte!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Erweiterte Funktionen</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1940,10 +1932,6 @@ Technische Angaben: %1</translation>
         <translation>Dies ist nur möglich, wenn Sie die Risiken verstehen und eine spezifische Notwendigkeit haben, wie z. B. automatisierte Skripte oder Kopflosigkeit.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ABBRECHEN</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Löschen und behalten Sie sudo, das ein Passwort benötigt</translation>
     </message>
@@ -2981,10 +2969,6 @@ Bitte überprüfen Sie Ihr Speichergerät und versuchen Sie es erneut.</translat
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Der Vorgang wurde abgebrochen, da das Speichermedium während des Schreibvorgangs entfernt wurde. Bitte schließen Sie das Gerät erneut an oder wählen Sie ein anderes aus um fortzufahren.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

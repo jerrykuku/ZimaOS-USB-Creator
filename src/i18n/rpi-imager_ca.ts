@@ -321,10 +321,6 @@
         <translation>Entrada de confirmació. Tip exact: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCEL·LA</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Cancel·lar la programació OTP i tornar a la pantalla anterior</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Opcions de depreciació</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Aquestes opcions són per a la depuración i la prova. El seu canvi pot afectar el rendiment i la integritat de les dades.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Skip operacions al final del dispositiu de almacenament. Abilitar-ho per a tarjetes falses SD que indiquen una capacitat falsa més gran. La imatge del disc ha de ser menor que la capacitat real de la targeta.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Només habilitar això si la targeta SD informa d&apos;una capacitat més gran que realment té. Assegureu-vos que la imatge del disc és més petita que la capacitat real de la targeta!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Característiques avançades</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Detalls tècnics: %1</translation>
         <translation>Només habilitat això si entens els riscos i tens una necessitat específica, com els guions automàtics o l&apos;operació sense cap.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCEL·LA</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Cancel·lar i mantenir sudo que requereix una contrasenya</translation>
     </message>
@@ -2980,10 +2968,6 @@ Vegeu el vostre dispositiu d&apos;emmagatzematge i intenteu de nou.</translation
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>S&apos;ha retirat el dispositiu d&apos;emmagatzematge durant l&apos;escriptura, de manera que l&apos;operació s&apos;ha cancel·lat. Torneu a inserir el dispositiu o seleccioneu-ne un de diferent per continuar.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>D&apos;acord</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

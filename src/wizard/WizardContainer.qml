@@ -1088,9 +1088,11 @@ Item {
     }
 
     // Repository URL confirmation dialog — shown when a deep link contains a custom repo URL
-    BaseDialog {
+    PanelDialog {
         id: repositoryUrlDialog
-        parent: root
+        title: repositoryUrlDialog.isLocalFile ? qsTr("Open local repository file?") : qsTr("Switch to a custom repository?")
+        iconSource: Qt.resolvedUrl("../icons/ic_warning_24px.svg")
+        parent: root.overlayRootRef || root
         anchors.centerIn: parent
 
         // carry the repository URL we just received
@@ -1107,7 +1109,7 @@ Item {
             onTriggered: {
                 repositoryUrlDialog.allowAccept = true;
                 // Rebuild focus order now that switch button is enabled
-                repositoryUrlDialog.rebuildFocusOrder();
+                repositoryUrlDialog.rebuildFocusOrder()
             }
         }
 
@@ -1115,24 +1117,24 @@ Item {
             // If dialog is already open with a different URL, ignore the new one
             // User must dismiss current dialog first (prevents race condition attacks)
             if (repositoryUrlDialog.opened && repoUrl !== url) {
-                console.warn("Repository dialog already open, ignoring new URL:", url);
-                return;
+                console.warn("Repository dialog already open, ignoring new URL:", url)
+                return
             }
 
             repoUrl = url;
             // Local files are trusted, allow immediate acceptance
             if (url.startsWith("file://")) {
-                allowAccept = true;
+                allowAccept = true
             } else {
-                allowAccept = false;
-                repoAcceptEnableDelay.start();
+                allowAccept = false
+                repoAcceptEnableDelay.start()
             }
-            repositoryUrlDialog.open();
+            repositoryUrlDialog.open()
         }
 
         // ESC closes
         function escapePressed() {
-            repositoryUrlDialog.close();
+            repositoryUrlDialog.close()
         }
 
         Component.onCompleted: {
@@ -1140,42 +1142,31 @@ Item {
             registerFocusGroup("repo_url_content", function () {
                 // Only include text elements when screen reader is active (otherwise they're not focusable)
                 if (repositoryUrlDialog.imageWriter && repositoryUrlDialog.imageWriter.isScreenReaderActive()) {
-                    return [repoTitleText, repoBodyText, repoUrlText];
+                    return [repositoryUrlDialog.headingItem, repoBodyText, repoUrlText]
                 }
-                return [];
-            }, 0);
+                return []
+            }, 0)
             registerFocusGroup("repo_url_buttons", function () {
-                return [repoCancelBtn, repoSwitchBtn];
-            }, 1);
+                return [repoCancelBtn, repoSwitchBtn]
+            }, 1)
         }
 
         onClosed: {
-            repoAcceptEnableDelay.stop();
-            allowAccept = false;
-            repoUrl = "";
+            repoAcceptEnableDelay.stop()
+            allowAccept = false
+            repoUrl = ""
         }
 
         // ----- CONTENT -----
-        FocusableHeading {
-            id: repoTitleText
-            text: repositoryUrlDialog.isLocalFile ? qsTr("Open local repository file?") : qsTr("Switch to a custom repository?")
-            font.pixelSize: Style.fontSizeHeading
-            font.family: Style.fontFamilyBold
-            font.bold: true
-            color: Style.formLabelColor
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Accessible.ignored: false
-        }
 
         // Body / security note
         FocusableText {
             id: repoBodyText
             text: repositoryUrlDialog.isLocalFile ? qsTr("You are opening a local ZimaOS USB Creator manifest file. This will replace the current OS list with the contents of this file.") : qsTr("A website is requesting to switch ZimaOS USB Creator to use a custom OS repository.\n\n") + qsTr("Only accept if you trust this source and intentionally clicked a link to open this repository.")
-            font.pixelSize: Style.fontSizeFormLabel
+            font.pixelSize: Style.fontSizePixelSm
             font.family: Style.fontFamily
             color: Style.formLabelColor
-            wrapMode: Text.WordWrap
+            wrapMode: Text.Wrap
             Layout.fillWidth: true
             Accessible.ignored: false
         }
@@ -1190,60 +1181,60 @@ Item {
             border.width: 1
             radius: Style.listItemBorderRadius
 
-            Text {
+            FocusableText {
                 id: repoUrlText
                 anchors.fill: parent
                 anchors.margins: Style.spacingSmall
                 text: repositoryUrlDialog.repoUrl
-                font.pixelSize: Style.fontSizeCaption
-                font.family: "Menlo"
+                textFormat: Text.PlainText
+                font.pixelSize: Style.fontSizePixelXs
+                font.family: Style.fontFamily
                 color: Style.formLabelColor
                 wrapMode: Text.WrapAnywhere
-                elide: Text.ElideMiddle
-                maximumLineCount: 3
                 Accessible.name: qsTr("Repository URL: %1").arg(repositoryUrlDialog.repoUrl)
                 Accessible.ignored: false
             }
         }
 
         // Buttons row
-        RowLayout {
-            id: repoBtnRow
-            Layout.fillWidth: true
-            Layout.topMargin: Style.spacingSmall
-            spacing: Style.spacingMedium
-
-            Item {
-                Layout.fillWidth: true
-            }
-
+        buttons: [
             ImButton {
+                id: repoCancelBtn
+                objectName: "repoCancelBtn"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
+                text: qsTr("Cancel")
+                accessibleDescription: qsTr("Keep your current repository settings")
+                activeFocusOnTab: true
+                onClicked: repositoryUrlDialog.close()
+            },
+            ImButtonRed {
                 id: repoSwitchBtn
+                objectName: "repoSwitchBtn"
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                Layout.preferredHeight: Style.buttonHeightStandard
                 text: {
                     if (!repositoryUrlDialog.allowAccept)
-                        return qsTr("Please wait…");
-                    return repositoryUrlDialog.isLocalFile ? qsTr("Open") : qsTr("Switch repository");
+                        return qsTr("Please wait…")
+                    return repositoryUrlDialog.isLocalFile ? qsTr("Open") : qsTr("Switch repository")
                 }
                 accessibleDescription: repositoryUrlDialog.isLocalFile ? qsTr("Open the local manifest file and use it as the OS repository") : qsTr("Switch to the custom repository from the link")
                 enabled: repositoryUrlDialog.allowAccept
                 activeFocusOnTab: true
                 onClicked: {
+                    if (!repositoryUrlDialog.allowAccept)
+                        return
+                    const selectedUrl = repositoryUrlDialog.repoUrl
                     repositoryUrlDialog.close();
                     // Switch to the new repository and reset wizard
                     // QML auto-converts string to QUrl for C++ method
-                    root.imageWriter.refreshOsListFrom(repositoryUrlDialog.repoUrl);
-                    root.resetWizard();
+                    root.imageWriter.refreshOsListFrom(selectedUrl)
+                    root.resetWizard()
                 }
             }
-
-            ImButtonRed {
-                id: repoCancelBtn
-                text: qsTr("Cancel")
-                accessibleDescription: qsTr("Keep your current repository settings")
-                activeFocusOnTab: true
-                onClicked: repositoryUrlDialog.close()
-            }
-        }
+        ]
     }
 
     function onFinalizing() {

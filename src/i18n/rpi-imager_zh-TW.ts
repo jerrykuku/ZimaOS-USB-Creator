@@ -321,10 +321,6 @@
         <translation>確認輸入框。請準確輸入：%1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>取消</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>取消 OTP 程式設計並返回上一頁</translation>
     </message>
@@ -426,8 +422,8 @@
         <translation>除錯選項</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation>⚠️ 這些選項用於除錯和測試，修改後可能影響效能和資料完整性。</translation>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation>這些選項用於除錯和測試，修改後可能影響效能和資料完整性。</translation>
     </message>
     <message>
         <source>I/O Options</source>
@@ -514,12 +510,8 @@
         <translation>跳過對儲存裝置末尾的操作。適用於虛報容量的 SD 卡。映象大小必須小於卡的真實容量。</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation>⚠️ 僅在 SD 卡顯示的容量大於其真實容量時啟用。請確保映象大小小於卡的真實容量！</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>高階功能</translation>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>僅在 SD 卡顯示的容量大於其真實容量時啟用。請確保映象大小小於卡的真實容量！</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</source>
         <translation>僅在你瞭解風險且確有需要時啟用，例如用於自動化指令碼或無顯示器操作。</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>取消</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>取消，繼續要求輸入 sudo 密碼</translation>
     </message>
@@ -2996,10 +2984,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>寫入過程中儲存裝置被移除，操作已取消。請重新插入裝置或選擇其他裝置以繼續。</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>確定</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

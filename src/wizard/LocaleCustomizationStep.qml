@@ -148,9 +148,11 @@ WizardStepBase {
                         Accessible.name: qsTr("Why am I being asked this?")
                         Accessible.description: qsTr("This also sets the Wi-Fi regulatory domain for your region.")
 
-                        ToolTip.text: qsTr("This also sets the Wi-Fi regulatory domain for your region.")
-                        ToolTip.visible: capitalCityInfoArea.containsMouse
-                        ToolTip.delay: 300
+                        ImToolTip {
+                            text: qsTr("This also sets the Wi-Fi regulatory domain for your region.")
+                            visible: capitalCityInfoArea.containsMouse
+                            delay: 300
+                        }
 
                         MouseArea {
                             id: capitalCityInfoArea

@@ -321,10 +321,6 @@
         <translation>Ionchur deimhnithe. Clóscríobh go díreach: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CEALAIGH</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Cealaigh cláreoireacht OTP agus fill ar an scáileán roimhe seo</translation>
     </message>
@@ -426,8 +422,8 @@
         <translation>Roghanna Dífhabhtaithe</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation>⚠️ Is le haghaidh dífhabhtaithe agus tástála atá na roghanna seo. D’fhéadfadh tionchar a bheith ag athrú a n-athruithe ar fheidhmíocht agus ar shláine sonraí.</translation>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation>Is le haghaidh dífhabhtaithe agus tástála atá na roghanna seo. D’fhéadfadh tionchar a bheith ag athrú a n-athruithe ar fheidhmíocht agus ar shláine sonraí.</translation>
     </message>
     <message>
         <source>I/O Options</source>
@@ -514,12 +510,8 @@
         <translation>Seachain oibríochtaí ag deireadh an fheiste stórála. Cumasaigh é seo le haghaidh cártaí SD góchumtha a thuairiscíonn acmhainn níos mó bréige. Ní mór don íomhá a bheith níos lú ná fíoracmhainn an chárta.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation>⚠️ Ná cumasaigh é seo ach amháin má thuairiscíonn do chárta SD acmhainn níos mó ná mar atá aige i ndáiríre. Déan cinnte go bhfuil d&apos;íomhá níos lú ná fíoracmhainn an chárta!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Gnéithe Ardleibhéil</translation>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>Ná cumasaigh é seo ach amháin má thuairiscíonn do chárta SD acmhainn níos mó ná mar atá aige i ndáiríre. Déan cinnte go bhfuil d&apos;íomhá níos lú ná fíoracmhainn an chárta!</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Sonraí teicniúla: %1</translation>
         <translation>Ná cumasaigh é seo ach amháin má thuigeann tú na rioscaí agus má tá riachtanas sonrach agat, amhail scripteanna uathoibrithe nó oibriú gan cheann.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CEALAIGH</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Cealaigh agus coinnigh sudo ag iarraidh pasfhocal</translation>
     </message>
@@ -2980,10 +2968,6 @@ Seiceáil do ghléas stórála agus déan iarracht arís.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Baineadh an gléas stórála agus an scríobh ar siúl, mar sin cuireadh an oibríocht ar ceal. Cuir an gléas isteach arís nó roghnaigh ceann eile le leanúint ar aghaidh.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Ceart go leor</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

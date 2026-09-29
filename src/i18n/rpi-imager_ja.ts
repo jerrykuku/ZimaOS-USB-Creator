@@ -321,10 +321,6 @@
         <translation>確認入力 正確なタイプ: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>キャンセル</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>OTP のプログラミングをキャンセルし,以前の画面に戻る</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>デバッグオプション</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ これらのオプションはデバッグおよびテストのためのものです. これらの変更は,パフォーマンスとデータの整体に影響を与える可能性があります.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>貯蔵装置の端に操作をスキップする. 偽装されたSD カードで偽装した大きな容量を報告する場合はこれを有効にします. ディスク画像は,カードの実際の容量より小さい必要があります.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>%️ SD カードが実際に持っているよりも大きな容量を報告した場合のみ,これを有効にします. カードの実際の容量よりも小さいようにしてください.</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>高級 な 機能</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</source>
         <translation>自動スクリプトやヘッドレス操作などの リスクを理解し 特定の必要性がある場合にのみ この機能を有効にします</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>キャンセル</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>パスワードを必要とする sudo をキャンセルし保存する</translation>
     </message>
@@ -2980,10 +2968,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>書き込み中に収納装置が取り除かれ 操作はキャンセルされました デバイスを再挿入するか,別のデバイスを選択して続行してください.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>わかった</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

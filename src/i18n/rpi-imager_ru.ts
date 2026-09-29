@@ -321,10 +321,6 @@
         <translation>Вход подтверждения. Точный тип: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ОТМЕНА</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Отменить программу OTP и вернуться на предыдущий экран</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Обязательное изменение</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Эти варианты предназначены для дебгугирования и тестирования. Изменение данных может повлиять на производительность и целостность данных.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Пропускать операции в конце устройства хранения. Включить это для поддельных карт SD, которые сообщают о поддельной большей мощности. Изображение диска должно быть меньше, чем реальная емкость карты.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Включить это только в том случае, если ваша карта SD сообщает о большей емкости, чем на самом деле. Убедитесь, что изображение на диске меньше фактической емкости карты!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Усовершенствованные функции</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technical details: %1</source>
         <translation>Это можно сделать только в том случае, если вы понимаете риски и имеете определенные потребности, такие как автоматизированные сценарии или безголовная работа.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ОТМЕНА</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Отменить и сохранить sudo , требующий пароля</translation>
     </message>
@@ -2980,10 +2968,6 @@ Please check your storage device and try again.</source>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Во время записи было извлечено запоминающее устройство, поэтому операция была отменена. Пожалуйста, установите устройство обратно или выберите другое, чтобы продолжить.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Хорошо .</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

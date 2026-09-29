@@ -86,9 +86,11 @@ WizardStepBase {
                     elide: Text.ElideRight
                     Accessible.ignored: true
 
-                    ToolTip.text: text
-                    ToolTip.visible: truncated && deviceValueMouseArea.containsMouse
-                    ToolTip.delay: 500
+                    ImToolTip {
+                        text: deviceValue.text
+                        visible: deviceValue.truncated && deviceValueMouseArea.containsMouse
+                        delay: 500
+                    }
                     MouseArea {
                         id: deviceValueMouseArea
                         anchors.fill: parent
@@ -116,9 +118,11 @@ WizardStepBase {
                     elide: Text.ElideRight
                     Accessible.ignored: true
 
-                    ToolTip.text: text
-                    ToolTip.visible: truncated && osValueMouseArea.containsMouse
-                    ToolTip.delay: 500
+                    ImToolTip {
+                        text: osValue.text
+                        visible: osValue.truncated && osValueMouseArea.containsMouse
+                        delay: 500
+                    }
                     MouseArea {
                         id: osValueMouseArea
                         anchors.fill: parent
@@ -146,9 +150,11 @@ WizardStepBase {
                     elide: Text.ElideRight
                     Accessible.ignored: true
 
-                    ToolTip.text: text
-                    ToolTip.visible: truncated && storageValueMouseArea.containsMouse
-                    ToolTip.delay: 500
+                    ImToolTip {
+                        text: storageValue.text
+                        visible: storageValue.truncated && storageValueMouseArea.containsMouse
+                        delay: 500
+                    }
                     MouseArea {
                         id: storageValueMouseArea
                         anchors.fill: parent

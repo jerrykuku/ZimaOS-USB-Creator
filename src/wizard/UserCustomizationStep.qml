@@ -132,8 +132,10 @@ WizardStepBase {
                     Accessible.role: Accessible.StaticText
                     Accessible.name: qsTr("Passwordless sudo information: ") + infoText
 
-                    ToolTip.text: infoText
-                    ToolTip.visible: sudoInfoArea.containsMouse || activeFocus
+                    ImToolTip {
+                        text: sudoInfoIcon.infoText
+                        visible: sudoInfoArea.containsMouse || sudoInfoIcon.activeFocus
+                    }
 
                     MouseArea {
                         id: sudoInfoArea

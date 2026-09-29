@@ -64,7 +64,7 @@ int main(int argc, char **argv)
         ApplicationWindow {
             id: probeWindow
             visible: true
-            width: 680; height: 450
+            width: 680; height: 520
             minimumWidth: 680; minimumHeight: 420
             // Same public platform flags as the Windows branch in main.qml.
             flags: Qt.Window | Qt.CustomizeWindowHint | Qt.WindowSystemMenuHint
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
             onClosing: function(close) { closeAttempted = true; close.accepted = !protectClose }
             header: WindowTitleBar {
                 targetWindow: probeWindow
-                height: probeWindow.visibility === Window.FullScreen ? 0 : probeWindow.SafeArea.margins.top
+                height: probeWindow.visibility === Window.FullScreen ? 0 : Math.max(40, probeWindow.SafeArea.margins.top)
                 visible: height > 0
                 titleColor: "#646464"
                 titleFont.pixelSize: 14

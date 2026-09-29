@@ -321,10 +321,6 @@
         <translation>Potrditev. Tačni tip: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>PREKLIČI</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Preklicite programiranje OTP in se vrnite na prejšnji zaslon</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Možnosti popravkov</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Te možnosti so za napravo in testiranje. Sprememba teh podatkov lahko vpliva na učinkovitost in celovitost podatkov.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Operacije na koncu naprave za shranjevanje preskočite. To omogočite za ponarejene kartice SD, ki poročajo o ponarejeni večji zmogljivosti. Slika na disku mora biti manjša od dejanske zmogljivosti kartice.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ To omogočite le, če vaša kartica SD poroča o večji zmogljivosti, kot je dejansko. Poskrbite, da je slika na disku manjša od dejanske zmogljivosti kartice!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Napredne funkcije</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Tehnične podrobnosti: %1</translation>
         <translation>To omogočite le, če razumete tveganja in imate posebno potrebo, kot so avtomatizirani skripti ali delovanje brez glave.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>PREKLIČI</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Preklicati in ohraniti sudo zahteva geslo</translation>
     </message>
@@ -2980,10 +2968,6 @@ Prosim, preverite svojo shranjevalno napravo in poskusite znova.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Pri pisanju so odstranili skladišče, zato je operacija prekinjena. Prosimo, ponovno vstavite napravo ali izberite drugo, da nadaljujete.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>V redu.</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

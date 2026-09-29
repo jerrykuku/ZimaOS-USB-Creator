@@ -38,9 +38,15 @@ Windows uses the public `Qt::ExpandedClientAreaHint` and
 `Qt::NoTitleBarBackgroundHint` flags. `Qt::CustomizeWindowHint` and explicit
 minimize/maximize/close hints request all three controls without a second,
 left-aligned title/icon. `WindowTitleBar` draws the centered title, reserves
-symmetric button space and uses the window's `SafeArea` height. It starts
+symmetric button space and reserves at least 40 logical pixels (scaled with
+the application's text size), or the window's `SafeArea` height if larger. It starts
 system movement after the drag threshold and handles double-click maximize
 and restore. The application title remains available for the taskbar.
+
+The default desktop window is 680 × 520 logical pixels before text scaling
+and client shadow insets. Its starting height is capped to the screen's
+available height minus 48 pixels, while preserving the existing minimum
+height of 420 pixels. Embedded sizing and the macOS title-bar height are unchanged.
 
 In Qt 6.10.3 and 6.11.1 the Windows platform plugin draws those controls in a
 separate caption window above the Quick scene. They are Windows-style Qt

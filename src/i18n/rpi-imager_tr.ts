@@ -321,10 +321,6 @@
         <translation>Onay girişi. Tam olarak şunu yazın: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>İPTAL</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>OTP programlamayı iptal et ve önceki ekrana dön</translation>
     </message>
@@ -426,8 +422,8 @@
         <translation>Geliştirici seçenekleri</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation>⚠️ Bu seçenekler hata ayıklama ve test amaçlıdır. Bunları değiştirmek performansı ve veri bütünlüğünü etkileyebilir.</translation>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation>Bu seçenekler hata ayıklama ve test amaçlıdır. Bunları değiştirmek performansı ve veri bütünlüğünü etkileyebilir.</translation>
     </message>
     <message>
         <source>I/O Options</source>
@@ -514,12 +510,8 @@
         <translation>Depolama cihazının sonundaki işlemleri atlar. Sahte bir şekilde yüksek kapasite raporlayan sahte SD kartlar için bunu etkinleştirin. İmaj dosyası, kartın gerçek kapasitesinden küçük olmalıdır.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation>⚠️ Bunu yalnızca SD kartınız gerçekte olduğundan daha büyük bir kapasite bildiriyorsa etkinleştirin. İmajınızın kartın gerçek kapasitesinden küçük olduğundan emin olun!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Gelişmiş Özellikler</translation>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>Bunu yalnızca SD kartınız gerçekte olduğundan daha büyük bir kapasite bildiriyorsa etkinleştirin. İmajınızın kartın gerçek kapasitesinden küçük olduğundan emin olun!</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Teknik detaylar: %1</translation>
         <translation>Bunu yalnızca riskleri anlıyorsanız ve otomatik betikler veya başsız (headless) çalıştırma gibi özel bir ihtiyacınız varsa etkinleştirin.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>İPTAL</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>İptal et ve sudo için parola gereksinimini koru</translation>
     </message>
@@ -2980,10 +2968,6 @@ Lütfen depolama aygıtınızı kontrol edin ve tekrar deneyin.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Yazma sırasında depolama aygıtı çıkarıldı, bu nedenle işlem iptal edildi. Lütfen cihazı yeniden takın veya devam etmek için farklı bir cihaz seçin.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>Tamam</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

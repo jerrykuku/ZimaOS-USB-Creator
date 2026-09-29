@@ -321,10 +321,6 @@
         <translation>Potvrzení. Přesný typ: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ZRUŠIT</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Zrušit programování OTP a vrátit se na předchozí obrazovku</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Možnosti opravy</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Tyto možnosti jsou pro debugování a testování. Změna těchto údajů může mít vliv na výkonnost a integritu údajů.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>Přepínám operace na konci skladovacího zařízení. Umožněte to pro padělané karty SD, které hlásí falešnou větší kapacitu. Obraz na disku musí být menší než skutečná kapacita karty.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Umožněte to pouze v případě, že vaše karta SD hlásí větší kapacitu, než je ve skutečnosti. Ujistěte se, že obraz disku je menší než skutečná kapacita karty!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Pokročilé funkce</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technické údaje: %1</translation>
         <translation>Umožněte to pouze tehdy, pokud rozumíte rizikům a máte specifické potřeby, jako jsou automatizované scénáře nebo bezhlavní operace.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>ZRUŠIT</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Zrušit a uchovat sudo vyžadující heslo</translation>
     </message>
@@ -2980,10 +2968,6 @@ Zkontrolujte skladovací zařízení a zkuste znovu.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>Úložné zařízení bylo během zápisu odebráno, takže operace byla zrušena. Pro pokračování vložte zařízení znovu nebo vyberte jiné.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

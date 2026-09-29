@@ -321,10 +321,6 @@
         <translation>A megerősítés bejuttatása. Tökéletes típus: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>MÉGSE</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Törölje el a OTP programozást, és térjen vissza a korábbi képernyőre</translation>
     </message>
@@ -426,7 +422,7 @@
         <translation>Debug opció</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
         <translation>️ Ezek a lehetőségek hibázásra és tesztelésre szolgálnak. A módosítás hatással lehet a teljesítményre és az adatok integritására.</translation>
     </message>
     <message>
@@ -514,12 +510,8 @@
         <translation>A tárolóeszköz végére el kell hagyni a műveletet. Ezt engedélyezze a hamis SD kártyák esetében, amelyek hamis nagyobb kapacitást jelentenek. A lemezképnek kisebbnek kell lennie, mint a kártyának valódi kapacitása.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
         <translation>️ Csak akkor engedélyezze ezt, ha a SD kártyája nagyobb kapacitással rendelkezik, mint amilyen valójában. Győződjön meg róla, hogy a lemezkép kisebb, mint a kártyának valódi kapacitása!</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Fejlesztett funkciók</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Technikai részletek: %1</translation>
         <translation>Csak akkor engedélyezze ezt, ha tisztában van a kockázatokkal, és van egy konkrét szükséglete, mint például az automatizált szkriptek vagy a fej nélküli művelet.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>MÉGSE</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Törölni és megtartani a sudo jelszót</translation>
     </message>
@@ -2980,10 +2968,6 @@ Kérjük, ellenőrizze a tárolóeszközt és próbáljon meg újra.</translatio
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>A tárolóeszközt írás közben eltávolították, ezért a művelet megszakadt. Helyezze vissza az eszközt, vagy válasszon másikat a folytatáshoz.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

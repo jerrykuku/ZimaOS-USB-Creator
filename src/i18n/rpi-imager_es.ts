@@ -321,10 +321,6 @@
         <translation>Entrada de confirmación. Escriba exactamente: %1</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCELAR</translation>
-    </message>
-    <message>
         <source>Cancel OTP programming and return to previous screen</source>
         <translation>Cancelar la programación OTP y volver a la pantalla anterior</translation>
     </message>
@@ -426,8 +422,8 @@
         <translation>Opciones de depuración</translation>
     </message>
     <message>
-        <source>⚠️ These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
-        <translation>⚠️ Estas opciones son para depuración y pruebas. Cambiarlas puede afectar al rendimiento y a la integridad de los datos.</translation>
+        <source>These options are for debugging and testing. Changing them may affect performance and data integrity.</source>
+        <translation>Estas opciones son para depuración y pruebas. Cambiarlas puede afectar al rendimiento y a la integridad de los datos.</translation>
     </message>
     <message>
         <source>I/O Options</source>
@@ -514,12 +510,8 @@
         <translation>Omita operaciones al final del dispositivo de almacenamiento. Habilite esto para tarjetas SD falsificadas que informen de una capacidad mayor falsa. La imagen debe ser más pequeña que la capacidad real de la tarjeta.</translation>
     </message>
     <message>
-        <source>⚠️ Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
-        <translation>⚠️ Active esto solo si su tarjeta SD indica una capacidad mayor que la real. Asegúrese de que la imagen sea más pequeña que la capacidad real de la tarjeta.</translation>
-    </message>
-    <message>
-        <source>Advanced Features</source>
-        <translation>Funciones avanzadas</translation>
+        <source>Only enable this if your SD card reports a larger capacity than it actually has. Make sure your image is smaller than the card&apos;s real capacity!</source>
+        <translation>Active esto solo si su tarjeta SD indica una capacidad mayor que la real. Asegúrese de que la imagen sea más pequeña que la capacidad real de la tarjeta.</translation>
     </message>
     <message>
         <source>Secure Boot</source>
@@ -1939,10 +1931,6 @@ Detalles técnicos: %1</translation>
         <translation>Actívelo solo si comprende los riesgos y tiene una necesidad específica, como scripts automatizados o funcionamiento sin monitor ni teclado.</translation>
     </message>
     <message>
-        <source>CANCEL</source>
-        <translation>CANCELAR</translation>
-    </message>
-    <message>
         <source>Cancel and keep sudo requiring a password</source>
         <translation>Cancelar y mantener sudo que requiere una contraseña</translation>
     </message>
@@ -2980,10 +2968,6 @@ Compruebe su dispositivo de almacenamiento e inténtelo de nuevo.</translation>
     <message>
         <source>The storage device was removed while writing, so the operation was cancelled. Please reinsert the device or select a different one to continue.</source>
         <translation>El dispositivo de almacenamiento se ha retirado durante la escritura, por lo que la operación se ha cancelado. Vuelva a insertar el dispositivo o seleccione otro para continuar.</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation>ACEPTAR</translation>
     </message>
     <message>
         <source>Close the storage removed notification and return to storage selection</source>

@@ -21,6 +21,7 @@ Item {
     // Allow custom accessibility description
     property string accessibleDescription: ""
     property bool emphasized: true
+    property bool wrapText: false
     signal toggled(bool checked)
 
     // Expose the actual focusable control for tab navigation
@@ -46,7 +47,8 @@ Item {
         text: pill.text
     }
 
-    implicitHeight: Math.max(Style.buttonHeightStandard - 8, 28)
+    implicitHeight: Math.max(Style.buttonHeightStandard - 8, 28,
+                             wrapText ? textColumn.implicitHeight + Style.spacingTiny : 0)
     implicitWidth: label.implicitWidth + sw.implicitWidth + Style.cardPadding
     
     // Make the label text ignore accessibility so only the switch is read
@@ -59,6 +61,8 @@ Item {
         // Text block (label + optional help) on the left
         ColumnLayout {
             id: textColumn
+            Layout.fillWidth: pill.wrapText
+            Layout.minimumWidth: 0
             Layout.alignment: Qt.AlignVCenter
             // Constrain width so text elides properly, leaving room for switch
             Layout.maximumWidth: pill.width - sw.implicitWidth - Style.spacingMedium * 2
@@ -71,7 +75,8 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font: pill.labelFont
                 color: Style.formLabelColor
-                elide: Text.ElideRight
+                elide: pill.wrapText ? Text.ElideNone : Text.ElideRight
+                wrapMode: pill.wrapText ? Text.Wrap : Text.NoWrap
                 TapHandler { onTapped: sw.toggle() }
                 
                 // Ignore this for accessibility - the switch will handle it

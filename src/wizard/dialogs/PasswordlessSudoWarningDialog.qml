@@ -10,13 +10,15 @@ import QtQuick.Layouts
 import "../../qmlcomponents"
 import RpiImager
 
-BaseDialog {
+PanelDialog {
     id: root
+    title: qsTr("Passwordless Sudo")
+    iconSource: Qt.resolvedUrl("../../icons/ic_warning_24px.svg")
 
     property bool userAccepted: false
 
-    signal confirmed()
-    signal cancelled()
+    signal confirmed
+    signal cancelled
 
     function askForConfirmation() {
         root.userAccepted = false
@@ -31,65 +33,59 @@ BaseDialog {
 
     // Register focus groups when component is ready
     Component.onCompleted: {
-        registerFocusGroup("content", function(){
+        registerFocusGroup("content", function () {
             if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                return [titleText, warningText, detailText]
+                return [root.headingItem, warningText, detailText]
             }
             return []
         }, 0)
-        registerFocusGroup("buttons", function(){
+        registerFocusGroup("buttons", function () {
             return [cancelButton, enableButton]
         }, 1)
     }
 
     // Dialog content
-    FocusableHeading {
-        id: titleText
-        text: qsTr("Passwordless Sudo")
-        font.pointSize: Style.fontSizeHeading
-        font.family: Style.fontFamilyBold
-        font.bold: true
-        color: Style.formLabelErrorColor
-        Layout.fillWidth: true
-    }
 
     FocusableText {
         id: warningText
         text: qsTr("Enabling passwordless sudo allows any process running as this user to gain full root privileges without authentication. This significantly weakens the security of your system.")
-        wrapMode: Text.WordWrap
+        wrapMode: Text.Wrap
         color: Style.colorTextPrimary
-        font.pointSize: Style.fontSizeDescription
+        font.pixelSize: Style.fontSizePixelSm
         Layout.fillWidth: true
     }
 
     FocusableText {
         id: detailText
         text: qsTr("Only enable this if you understand the risks and have a specific need, such as automated scripts or headless operation.")
-        wrapMode: Text.WordWrap
+        wrapMode: Text.Wrap
         color: Style.colorTextSecondary
-        font.pointSize: Style.fontSizeSmall
+        font.pixelSize: Style.fontSizePixelXs
         Layout.fillWidth: true
     }
 
-    RowLayout {
-        id: buttonRow
-        Layout.fillWidth: true
-        spacing: Style.spacingMedium
-        Item { Layout.fillWidth: true }
-
+    buttons: [
         ImButton {
             id: cancelButton
-            text: qsTr("CANCEL")
+            objectName: "cancelButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
+            text: CommonStrings.cancel
             accessibleDescription: qsTr("Cancel and keep sudo requiring a password")
             activeFocusOnTab: true
             onClicked: {
                 root.userAccepted = false
                 root.close()
             }
-        }
-
+        },
         ImButtonRed {
             id: enableButton
+            destructive: true
+            objectName: "enableButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
             text: qsTr("ENABLE")
             accessibleDescription: qsTr("Enable passwordless sudo for this user account")
             activeFocusOnTab: true
@@ -98,7 +94,7 @@ BaseDialog {
                 root.close()
             }
         }
-    }
+    ]
 
     onClosed: {
         if (root.userAccepted) {

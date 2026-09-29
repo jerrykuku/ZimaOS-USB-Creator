@@ -10,9 +10,10 @@ import QtQuick.Layouts
 import "../../qmlcomponents"
 import RpiImager
 
-BaseDialog {
+PanelDialog {
     id: root
-    
+    title: qsTr("Update available")
+
     // For overlay parenting set by caller if needed
     property alias overlayParent: root.parent
 
@@ -26,59 +27,50 @@ BaseDialog {
 
     // Register focus groups when component is ready
     Component.onCompleted: {
-        registerFocusGroup("content", function(){ 
+        registerFocusGroup("content", function () {
             // Only include text elements when screen reader is active (otherwise they're not focusable)
             if (ImageWriterSingleton && ImageWriterSingleton.screenReaderActive) {
-                return [titleText, descriptionText]
+                return [root.headingItem, descriptionText]
             }
             return []
         }, 0)
-        registerFocusGroup("buttons", function(){ 
-            return [yesButton, noButton] 
+        registerFocusGroup("buttons", function () {
+            return [noButton, yesButton]
         }, 1)
     }
 
     // Dialog content
-    FocusableHeading {
-        id: titleText
-        text: qsTr("Update available")
-        font.pointSize: Style.fontSizeHeading
-        font.family: Style.fontFamilyBold
-        font.bold: true
-        color: Style.formLabelColor
-        Layout.fillWidth: true
-    }
 
     FocusableText {
         id: descriptionText
-        text: root.version.length > 0
-            ? qsTr("Creator version %1 is available. Would you like to visit the website to download it?").arg(root.version)
-            : qsTr("There is a newer version of Creator available. Would you like to visit the website to download it?")
-        wrapMode: Text.WordWrap
-        font.pointSize: Style.fontSizeDescription
+        text: root.version.length > 0 ? qsTr("Creator version %1 is available. Would you like to visit the website to download it?").arg(root.version) : qsTr("There is a newer version of Creator available. Would you like to visit the website to download it?")
+        wrapMode: Text.Wrap
+        font.pixelSize: Style.fontSizePixelSm
         font.family: Style.fontFamily
         color: Style.colorTextPrimary
         Layout.fillWidth: true
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.topMargin: Style.spacingSmall
-        spacing: Style.spacingMedium
-        Item { Layout.fillWidth: true }
-
+    buttons: [
         ImButton {
             id: noButton
-            text: CommonStrings.no
+            objectName: "noButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
+            text: CommonStrings.cancel
             accessibleDescription: qsTr("Continue using the current version of ZimaOS USB Creator")
             activeFocusOnTab: true
             onClicked: {
                 root.reject()
             }
-        }
-
+        },
         ImButtonRed {
             id: yesButton
+            objectName: "yesButton"
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            Layout.preferredHeight: Style.buttonHeightStandard
             text: qsTr("Update")
             // Make the primary action button wider to encourage clicking
             // Layout.minimumWidth: Style.buttonWidthMinimum * 1.5
@@ -96,5 +88,5 @@ BaseDialog {
                 root.accept()
             }
         }
-    }
+    ]
 }
