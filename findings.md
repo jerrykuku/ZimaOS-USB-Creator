@@ -195,3 +195,8 @@
 - 用户进一步指定 Ubuntu 风格按钮。参照 Ubuntu Yaru 官方 GTK 样式：中性色圆形背景，前景色 10%/15%/25% 对应普通/悬浮/按下；失焦移除背景并减弱图标。按钮按最小化、最大化/还原、关闭顺序放右侧。
 - 参考 https://github.com/ubuntu/yaru/blob/master/gtk/src/default/gtk-3.0/_tweaks.scss。尝试读取该目录 assets/window-maximize-symbolic.svg 返回 404；本实现自行绘制简单几何图标，不复制主题素材。
 - 最大化时图标切换为叠放方框；标题按实际按钮组宽度对称避让，保持窗口居中。
+
+## Windows 11 按钮被背景覆盖
+- DWM 扩展框架要求其下方像素 alpha=0；此前窗口 clear color 和页面背景均不透明，原生命中成功不能证明按钮显示。参考：https://learn.microsoft.com/en-us/windows/win32/dwm/customframe。
+- Qt 官方 6.11.1 QWindowsWindow::setWindowLayered 在有原生框架、opacity=1 时不会仅因 alpha buffer 增加 WS_EX_LAYERED；保留系统阴影/圆角所需样式。QQuickWindow 的透明 clear color 请求 alpha buffer，D3D11 的 alpha swapchain 使用 DirectComposition。
+- 使用共享 WindowFrameBackground 为 DWM 实测按钮范围留空；弹窗遮罩同样留空；非 alpha/软件后端或缺少有效按钮范围时保留标准系统标题栏。

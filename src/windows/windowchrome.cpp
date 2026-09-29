@@ -7,6 +7,8 @@
 #include <QAbstractNativeEventFilter>
 #include <QColor>
 #include <QCoreApplication>
+#include <QQuickWindow>
+#include <QSGRendererInterface>
 #include <QTimer>
 #include <QVariant>
 #include <QWindow>
@@ -26,6 +28,10 @@ public:
         connect(window, &QWindow::screenChanged, this, [this] { scheduleUpdate(); });
         connect(window, &QWindow::widthChanged, this, [this] { scheduleUpdate(); });
         connect(window, &QWindow::windowStateChanged, this, [this] { scheduleUpdate(); });
+        if (auto *quickWindow = qobject_cast<QQuickWindow *>(window)) {
+            connect(quickWindow, &QQuickWindow::sceneGraphInitialized,
+                    this, [this] { scheduleUpdate(); }, Qt::QueuedConnection);
+        }
         updateFrame();
     }
 
@@ -48,6 +54,7 @@ public:
         case WM_THEMECHANGED:
         case WM_SETTINGCHANGE:
         case WM_SHOWWINDOW:
+        case WM_ACTIVATE:
             scheduleUpdate();
             break;
         default:
@@ -138,7 +145,14 @@ private:
     void updateFrame()
     {
         BOOL composition = FALSE;
-        const bool available = SUCCEEDED(DwmIsCompositionEnabled(&composition)) && composition;
+        const auto *quickWindow = qobject_cast<QQuickWindow *>(_window);
+        const auto api = quickWindow ? quickWindow->rendererInterface()->graphicsApi() : QSGRendererInterface::Unknown;
+        const bool alphaSurface = _window->format().hasAlpha()
+                && (api == QSGRendererInterface::Direct3D11 || api == QSGRendererInterface::Direct3D12
+                    || api == QSGRendererInterface::OpenGL);
+        // Raster/software rendering cannot preserve this native-frame alpha
+        // path. Keep the complete system title bar rather than hidden buttons.
+        const bool available = alphaSurface && SUCCEEDED(DwmIsCompositionEnabled(&composition)) && composition;
         const bool fullScreen = _window->windowState() == Qt::WindowFullScreen;
         const MARGINS margins{0, 0, available && !fullScreen ? titleBarHeight() : 0, 0};
         const bool extended = SUCCEEDED(DwmExtendFrameIntoClientArea(_hwnd, &margins)) && available;
@@ -154,29 +168,65 @@ private:
             DwmSetWindowAttribute(_hwnd, static_cast<DWMWINDOWATTRIBUTE>(33), &round, sizeof(round));
             // Caption glyphs must contrast with the actual page beneath
             // them, even if the OS uses dark chrome and this page is light.
-            const QColor background = _window->property("color").value<QColor>();
+            const QColor background = _window->property("nativeTitleBarColor").value<QColor>();
             const BOOL dark = background.isValid() && background.lightnessF() < 0.5;
             DwmSetWindowAttribute(_hwnd, static_cast<DWMWINDOWATTRIBUTE>(20), &dark, sizeof(dark));
+            if (background.isValid()) {
+                // Match the part of the native frame visible through the
+                // transparent button region to the surrounding page (Win11).
+                const COLORREF captionColor = RGB(background.red(), background.green(), background.blue());
+                DwmSetWindowAttribute(_hwnd, static_cast<DWMWINDOWATTRIBUTE>(35),
+                                      &captionColor, sizeof(captionColor));
+            }
         }
 
         if (changed)
             SetWindowPos(_hwnd, nullptr, 0, 0, 0, 0,
                          SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 
+        if (IsIconic(_hwnd))
+            return; // DWM button bounds are undefined while minimized.
+
         const qreal scale = _window->devicePixelRatio();
-        const int height = _extended && !fullScreen ? titleBarHeight() : 0;
+        int height = _extended && !fullScreen ? titleBarHeight() : 0;
         // Reserve both sides symmetrically so even a long translated title
         // stays centered in the window and never runs under native buttons.
         RECT buttons{};
-        int inset = height * 5;
-        if (height && !IsIconic(_hwnd)
+        QRectF buttonRect;
+        if (height
                 && SUCCEEDED(DwmGetWindowAttribute(_hwnd, DWMWA_CAPTION_BUTTON_BOUNDS,
                                                    &buttons, sizeof(buttons)))
-                && buttons.right > buttons.left) {
-            inset = buttons.right - buttons.left + resizeBorder();
+                && buttons.right > buttons.left && buttons.bottom > buttons.top) {
+            RECT frame{}, client{};
+            GetWindowRect(_hwnd, &frame);
+            GetClientRect(_hwnd, &client);
+            POINT origin{frame.left, frame.top};
+            ScreenToClient(_hwnd, &origin);
+            // DWM reports window-relative native pixels; QML uses client-
+            // relative logical pixels. Also account for the maximized inset.
+            const QRect nativeButtons(buttons.left + origin.x, buttons.top + origin.y,
+                                      buttons.right - buttons.left, buttons.bottom - buttons.top);
+            const QRect visibleButtons = nativeButtons.intersected(QRect(0, 0, client.right, height));
+            buttonRect = QRectF(visibleButtons.x() / scale, visibleButtons.y() / scale,
+                                visibleButtons.width() / scale, visibleButtons.height() / scale);
+        }
+        if (height && buttonRect.isEmpty()) {
+            // Do not extend without knowing which Quick pixels must remain
+            // transparent. A standard native title bar is always usable.
+            _extended = false;
+            const MARGINS noMargins{0, 0, 0, 0};
+            DwmExtendFrameIntoClientArea(_hwnd, &noMargins);
+            SetWindowPos(_hwnd, nullptr, 0, 0, 0, 0,
+                         SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+            height = 0;
+            buttonRect = {};
         }
         _window->setProperty("nativeTitleBarHeight", height / scale);
-        _window->setProperty("nativeTitleBarInset", qCeil(inset / scale) + 12);
+        _window->setProperty("nativeCaptionButtonsRect", buttonRect);
+        const qreal inset = buttonRect.isEmpty() ? 0
+                : buttonRect.center().x() > _window->width() / 2.0
+                    ? _window->width() - buttonRect.left() : buttonRect.right();
+        _window->setProperty("nativeTitleBarInset", qCeil(inset) + 12);
     }
 
     QWindow *_window;

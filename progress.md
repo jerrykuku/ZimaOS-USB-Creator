@@ -391,3 +391,13 @@
 - Ubuntu 最终预览检查通过：普通态与还原态图标、按钮顺序/尺寸、标题居中与对称避让；失焦态和模拟激活态截图已核对。透明外角与弹窗遮罩保持圆角，轻阴影仍存在。
 - 完整 macOS 构建退出码 0；Linux 自绘界面合成鼠标回归、Windows 原生布局分支、macOS AppKit 原生按钮/透明/双击/关闭保护回归全部通过。Linux 拖动/缩放的真实合成器行为与 Windows DWM 显示仍未实机测试。
 - Windows DWM 源码没有变动；阴影仍由系统框架提供。本轮所有隔离预览已正常退出，git diff --check 通过。
+
+## Session: Windows 11 按钮缺失
+- 用户实机反馈 Windows 11 右上角三个按钮不可见。工作区干净，基线为 cc5583dd。
+- 现有方案只保留 DWM 命中与窗口样式，并未为 Qt Quick 客户区覆盖后的标题按钮提供绘制层。之前的探针仅检查命中和动作，不能证明按钮可见；本轮修正验证范围。
+- 修复 Windows clear color 为透明，新增共享 WindowFrameBackground 对原生按钮实测范围留空；BaseDialog 遮罩使用同一范围，标题颜色独立传给 DWM。
+- Windows 辅助类按渲染后端、alpha buffer、DWM 可用性和有效按钮范围决定扩展；不支持时保留完整原生标题栏。新增激活/场景图初始化后的重算，保持非 layered 原生框架。
+- Windows 独立探针新增实际桌面截图 glyph 对比、Quick alpha 检查、弹窗/最大化覆盖及软件回退测试；没有 Windows 环境，未编译或执行该探针。
+- macOS 完整构建通过。使用当前 main.qml 前缀和真实 BaseDialog 做隔离 QML 像素检查：Windows 普通/弹窗按钮预留区 alpha=0，正文 alpha=255；Linux 普通/弹窗外角 alpha=0 且阴影存在；macOS 页面仍不透明。三种预览均正常退出。
+- 临时测试 mock 首次在函数后写分号导致 QML 语法错误，修正 mock 后通过；字体相对路径缺失后补齐测试字体链接。产品构建无新增错误。
+- git diff --check 通过。未将本机 QML 模拟检查称为 Windows 原生可见性或 Linux 合成器验证。

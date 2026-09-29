@@ -33,6 +33,8 @@ ApplicationWindow {
     // Zero means the ordinary system title bar is in use (e.g. a fallback).
     property real nativeTitleBarHeight: 0
     property real nativeTitleBarInset: 0
+    property rect nativeCaptionButtonsRect: Qt.rect(0, 0, 0, 0)
+    readonly property color nativeTitleBarColor: Style.colorSurfacePage
     // Linux uses a client-drawn title bar with Ubuntu-style controls so its transparent
     // background and centered title do not depend on the desktop theme.
     // On Windows, the native helper extends the DWM frame; Qt's expanded
@@ -44,8 +46,9 @@ ApplicationWindow {
                                       | Qt.WindowCloseButtonHint
                                     : Qt.FramelessWindowHint | Qt.Window
 
-    background: Rectangle {
-        color: window.usesNativeWindowChrome ? Style.colorSurfacePage : Style.transparent
+    background: WindowFrameBackground {
+        surfaceColor: window.usesNativeWindowChrome ? Style.colorSurfacePage : Style.transparent
+        nativeControlsRect: window.nativeCaptionButtonsRect
     }
 
     // The header sits above ApplicationWindow's content control. A MouseArea
@@ -73,7 +76,9 @@ ApplicationWindow {
             elide: Text.ElideRight
         }
     }
-    color: usesNativeWindowChrome ? Style.colorSurfacePage : Style.transparent
+    // Windows needs alpha in the swapchain as well as a cutout in the page
+    // background: an opaque clear color would still cover the DWM buttons.
+    color: usesMacTitleBar ? Style.colorSurfacePage : Style.transparent
 
     function toggleMaximized() {
         if (visibility === Window.FullScreen)

@@ -44,11 +44,21 @@ not compete with Windows for mouse presses or double-clicks. Qt captures
 the resulting non-client margins. Caption metrics follow monitor DPI and
 reserve equal space on both sides of the centered title.
 
+The Quick window requests an alpha surface and clears to transparent. Its
+page background leaves a cutout at the DWM caption-button bounds, converted
+from window-relative native pixels to client-relative logical pixels.
+`WindowFrameBackground` applies the same cutout to dialog dimming. All other
+page pixels remain opaque. Without both the alpha surface and these cutouts,
+the Quick scene can cover the native buttons even though their hit tests work.
+On Windows 11 the native caption color matches the page underneath the controls.
+
 Windows 10 retains its native square outer corners. Windows 11 may also
 use square corners when maximized, snapped, or running remotely/virtually.
-If DWM frame extension is unavailable, the ordinary system title bar is
-retained and the QML title row stays hidden. No window-region mask or
-per-pixel transparent window is used to force rounding.
+If DWM frame extension, a supported alpha graphics surface, or valid caption
+button bounds are unavailable, the ordinary system title bar is retained
+and the QML title row stays hidden. Software rendering uses this fallback.
+No window-region mask or `WS_EX_LAYERED` flag is used to force rounding;
+the caption and resize styles remain for native shadows and corners.
 
 ## Validation
 
@@ -67,9 +77,13 @@ cmake --build build-windowchrome
 ctest --test-dir build-windowchrome --output-on-failure
 ```
 
-It checks native caption button hit codes (including maximize hover),
-title/body/top-edge hit testing, maximize/restore geometry, minimize and
-native close veto. A missing DWM session returns a CTest skip.
+It checks **composed desktop pixels** for all three caption glyphs in normal,
+dimmed and maximized states, saves `windowchrome-*.png` in the test directory,
+and checks the Quick surface's alpha cutout. It also checks native caption
+button hit codes (including maximize hover), title/body/top-edge hit testing,
+maximize/restore geometry, minimize and native close veto. A second run checks
+the software-rendering fallback. Run these tests on an unobscured interactive
+desktop; missing DWM or an unavailable foreground window returns a CTest skip.
 
 Before release, also inspect on Windows 10/11 and GNOME/KDE under both X11
 and Wayland: native button hover and Snap menu, title/background continuity,
